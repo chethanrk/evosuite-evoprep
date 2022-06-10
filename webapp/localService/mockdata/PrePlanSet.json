@@ -1,0 +1,20 @@
+{
+	"d": {
+		"results": [{
+			"PrePlanKey": "0001",
+			"Status": "FS",
+			"DateFrom": "/Date(1463011200000)/",
+			"DateTo": "/Date(1502668800000)/"
+		}, {
+			"PrePlanKey": "0002",
+			"Status": "FF",
+			"DateFrom": "/Date(1467011200000)/",
+			"DateTo": "/Date(1473011200000)/"
+		}, {
+			"PrePlanKey": "0003",
+			"Status": "FS",
+			"DateFrom": "/Date(1469011200000)/",
+			"DateTo": "/Date(1471000200000)/"
+		}]
+	}
+}

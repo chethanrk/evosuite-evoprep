@@ -1,11 +1,27 @@
 <mvc:View controllerName="com.evorait.evosuite.evoprep.controller.App" xmlns:mvc="sap.ui.core.mvc" displayBlock="true" xmlns="sap.m">
-	<Shell id="shell">
 		<App id="app">
 			<pages>
 				<Page id="page" title="{i18n>title}">
-					<content></content>
+					<customHeader>
+						<Bar>
+							<contentLeft></contentLeft>
+							<contentMiddle>
+								<Title text="{i18n>title}"></Title>
+							</contentMiddle>
+							<contentRight>
+									<Button id="idBtnShowDemands" text="Show Demands" type="Emphasized"
+									press="onShowDemandsPress"/>
+								<Button id="idBtnCreatePrePlan" text="Create PrePlan" type="Emphasized"
+									press="onCreatePrePlanPress"/>
+								<Button id="idBtnMessageManager" icon="sap-icon://alert" text="{= ${message>/}.length }" type="Emphasized" press="onMessageManagerPress"/>
+								<Button id="idButtonAboutDialog" icon="sap-icon://sys-help" tooltip="{i18n>xtit.infoDialogTitle}" press="onAboutIconPress"/>
+							</contentRight>
+						</Bar>
+					</customHeader>
+					<content>
+							<NavContainer id="idNavContainer"/>
+					</content>
 				</Page>
 			</pages>
 		</App>
-	</Shell>
 </mvc:View>

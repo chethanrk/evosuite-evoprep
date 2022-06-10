@@ -12,9 +12,28 @@
 		"sourceTemplate": {
 			"id": "ui5template.basicSAPUI5ApplicationProject",
 			"version": "1.38.11"
+		},
+		"dataSources": {
+			"mainService": {
+				"uri": "/sap/opu/odata/EVORA/EP_MAIN_SRV/",
+				"type": "OData",
+				"settings": {
+					"odataVersion": "2.0",
+					"localUri": "localService/metadata.xml",
+					"annotations": [
+						"annotations"
+					]
+				}
+			},
+			"annotations": {
+				"type": "ODataAnnotation",
+				"uri": "annotations/annotations.xml",
+				"settings": {
+					"localUri": "annotations/annotations.xml"
+				}
+			}
 		}
 	},
-
 	"sap.ui": {
 		"technology": "UI5",
 		"icons": {
@@ -31,7 +50,6 @@
 			"phone": true
 		}
 	},
-
 	"sap.ui5": {
 		"flexEnabled": false,
 		"rootView": {
@@ -58,6 +76,17 @@
 				"settings": {
 					"bundleName": "com.evorait.evosuite.evoprep.i18n.i18n"
 				}
+			},
+			"": {
+				"dataSource": "mainService",
+				"preload": true,
+				"settings": {
+					"defaultBindingMode": "TwoWay"
+				}
+			},
+			"@i18n": {
+				"type": "sap.ui.model.resource.ResourceModel",
+				"uri": "i18n/i18n.properties"
 			}
 		},
 		"resources": {
@@ -76,17 +105,57 @@
 				"clearControlAggregation": false
 			},
 			"routes": [{
-				"name": "RouteApp",
-				"pattern": "RouteApp",
-				"target": ["TargetApp"]
-			}],
+					"name": "PrePlanMaster",
+					"pattern": "",
+					"target": [
+						"PrePlanMaster",
+						"PrePlanDetail"
+					]
+				}, {
+					"name": "createPrePlan",
+					"pattern": "createPrePlan",
+					"target": [
+						"createPrePlan"
+					]
+				}, {
+					"name": "demandList",
+					"pattern": "Demands",
+					"target": [
+						"demandList"
+					]
+				}
+
+			],
 			"targets": {
-				"TargetApp": {
+				"PrePlanMaster": {
 					"viewType": "XML",
-					"transition": "slide",
-					"clearControlAggregation": false,
-					"viewId": "App",
-					"viewName": "App"
+					"viewName": "PrePlanMaster",
+					"controlId": "idFlexibleColumnLayout",
+					"controlAggregation": "beginColumnPages",
+					"parent": "PrePlan"
+				},
+				"PrePlanDetail": {
+					"viewType": "XML",
+					"viewName": "PrePlanDetail",
+					"controlId": "idFlexibleColumnLayout",
+					"controlAggregation": "midColumnPages",
+					"parent": "PrePlan"
+				},
+				"createPrePlan": {
+					"viewType": "XML",
+					"viewName": "CreatePrePlan",
+					"controlId": "idNavContainer"
+				},
+				"PrePlan": {
+					"viewType": "XML",
+					"viewName": "PrePlan",
+					"viewPath": "com.evorait.evosuite.evoprep.view.layouts",
+					"controlId": "idNavContainer"
+				},
+				"demandList": {
+					"viewType": "XML",
+					"viewName": "DemandList",
+					"controlId": "idNavContainer"
 				}
 			}
 		}

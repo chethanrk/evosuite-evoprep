@@ -41,6 +41,24 @@
       },
       "description": "SAPUI5 Test Resources"
     }
+    /*{
+      "path": "/sap/opu/odata",
+      "target": {
+        "type": "destination",
+        "name": "ED1CloudConnector",
+        "entryPath": "/sap/opu/odata"
+      },
+      "description": "Main Data Service Connection"
+    },
+    {
+      "path": "/sap/bc/lrep",
+      "target": {
+        "type": "destination",
+        "name": "ED1CloudConnector",
+        "entryPath": "/sap/bc/lrep"
+      },
+      "description": "UI Flexibility Service Connection"
+    }*/
   ],
   "sendWelcomeFileRedirect": true
 }

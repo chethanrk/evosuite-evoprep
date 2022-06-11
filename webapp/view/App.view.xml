@@ -9,9 +9,9 @@
 								<Title text="{i18n>title}"></Title>
 							</contentMiddle>
 							<contentRight>
-									<Button id="idBtnShowDemands" text="Show Demands" type="Emphasized"
+									<Button id="idBtnShowDemands" text="{i18n>xbut.ShowDemands}" type="Emphasized"
 									press="onShowDemandsPress"/>
-								<Button id="idBtnCreatePrePlan" text="Create PrePlan" type="Emphasized"
+								<Button id="idBtnCreatePrePlan" text="{i18n>xbut.CreatePrePlan}" type="Emphasized"
 									press="onCreatePrePlanPress"/>
 								<Button id="idBtnMessageManager" icon="sap-icon://alert" text="{= ${message>/}.length }" type="Emphasized" press="onMessageManagerPress"/>
 								<Button id="idButtonAboutDialog" icon="sap-icon://sys-help" tooltip="{i18n>xtit.infoDialogTitle}" press="onAboutIconPress"/>

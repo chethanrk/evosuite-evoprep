@@ -18,7 +18,7 @@ sap.ui.define([
 			this.getView().addStyleClass(this.getOwnerComponent().getContentDensityClass());
 
 		},
-		
+
 		/**
 		 * Initialize and open the Information dialog with necessary details
 		 * @param oEvent Button press event
@@ -62,13 +62,17 @@ sap.ui.define([
 		 */
 		onMessageManagerPress: function (oEvent) {
 			this.openMessageManager(this.getView(), oEvent);
-			
-		},
 
+		},
+		/**
+		 * Navigating to Create PrePlan View on Click of Create PrePlan Button
+		 */
 		onCreatePrePlanPress: function () {
 			this.getRouter().navTo("createPrePlan");
 		},
-		
+		/**
+		 * Navigating to Demand View on Click of Show Demands Button
+		 */
 		onShowDemandsPress: function () {
 			this.getRouter().navTo("demandList");
 		},

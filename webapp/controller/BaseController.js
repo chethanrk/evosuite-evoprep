@@ -9,8 +9,11 @@ sap.ui.define([
 	"sap/m/MessageBox",
 	"sap/ui/core/mvc/OverrideExecution",
 	"com/evorait/evosuite/evoprep/model/formatter",
-	"sap/base/util/deepClone"
-], function (Controller, History, Dialog, Button, Text, MessageToast, MessageBox, OverrideExecution, formatter, deepClone) {
+	"sap/base/util/deepClone",
+	"sap/f/library",
+	"sap/ui/core/Fragment"
+], function (Controller, History, Dialog, Button, Text, MessageToast, MessageBox, OverrideExecution, formatter, deepClone, library,
+	Fragment) {
 	"use strict";
 
 	return Controller.extend("com.evorait.evosuite.evoprep.controller.BaseController", {
@@ -95,18 +98,77 @@ sap.ui.define([
 				animationDuration: 1000, // default
 				closeOnBrowserNavigation: true // default
 			});
-		},	
-		
+		},
+
+		/**
+		 * Nav back function 
+		 * Check for the previous history
+		 * else navigate to master page
+		 */
 		onNavBack: function () {
 			var sPreviousHash = History.getInstance().getPreviousHash();
 			if (sPreviousHash !== undefined) {
 				history.go(-1);
 			} else {
-			var oRouter = this.getOwnerComponent().getRouter();
-				oRouter.navTo("PrePlanMaster");
+				var oRouter = this.getOwnerComponent().getRouter(),
+					oModel = this.getModel("viewModel");
+				oModel.setProperty("/layout", library.LayoutType.OneColumn);
+				oModel.refresh();
+				oRouter.navTo("PrePlanMaster", {}, true);
 			}
 		},
 
-	});
+		/**
+		 * Initialize and open the Information dialog with necessary details
+		 * @param oEvent Button press event
+		 */
+		onAboutIconPress: function (oEvent) {
+			// create popover
+			if (!this._infoDialog) {
+				Fragment.load({
+					name: "com.evorait.evosuite.evoprep.view.fragments.InformationPopover",
+					controller: this
+				}).then(function (oDialog) {
+					this._infoDialog = oDialog;
+					this.open(oDialog);
+				}.bind(this));
+			} else {
+				this.open(this._infoDialog);
+			}
+		},
 
+		/**
+		 * Open information popover 
+		 * @param {oDialog}  -- information dialog instance
+		 */
+		open: function (oDialog) {
+			var oView = this.getView();
+			oDialog.addStyleClass(this.getOwnerComponent().getContentDensityClass());
+			oView.addDependent(oDialog);
+			oDialog.open();
+		},
+
+		/**
+		 * Closes the information dialog
+		 */
+		onCloseDialog: function () {
+			this._infoDialog.close();
+		},
+
+		/**
+		 * Open Message Manager on click
+		 * @param oEvent
+		 */
+		onMessageManagerPress: function (oEvent) {
+			this.openMessageManager(this.getView(), oEvent);
+		},
+
+		/**
+		 * Navigating to Demand View on Click of Show Demands Button
+		 */
+		onShowDemandsPress: function () {
+			var oRouter = this.getOwnerComponent().getRouter();
+			oRouter.navTo("demandList");
+		}
+	});
 });

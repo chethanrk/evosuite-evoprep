@@ -1,10 +1,20 @@
 <mvc:View xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m"
 	controllerName="com.evorait.evosuite.evoprep.controller.CreatePrePlan" xmlns:html="http://www.w3.org/1999/xhtml">
-	<App>
-		<pages>
-			<Page title="Create Pre-Plan">
-				<content></content>
-			</Page>
-		</pages>
-	</App>
+	<Page class="sapUiNoContentPadding" enableScrolling="false" showHeader="true" showFooter="false" showSubHeader="false" showNavButton="true"
+		navButtonPress="onNavBack">
+		<customHeader>
+			<Bar>
+				<contentLeft>
+					<Button icon="sap-icon://nav-back" tooltip="nav-back" press="onNavBack"/>
+				</contentLeft>
+				<contentMiddle>
+					<Title text="Create Pre-Plan"></Title>
+				</contentMiddle>
+				<contentRight>
+					<core:Fragment fragmentName="com.evorait.evosuite.evoprep.view.fragments.HeaderAction" type="XML"/>
+				</contentRight>
+			</Bar>
+		</customHeader>
+		<content></content>
+	</Page>
 </mvc:View>

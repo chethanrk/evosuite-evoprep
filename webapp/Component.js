@@ -3,8 +3,9 @@ sap.ui.define([
 	"sap/ui/Device",
 	"com/evorait/evosuite/evoprep/model/models",
 	"com/evorait/evosuite/evoprep/controller/ErrorHandler",
-	"com/evorait/evosuite/evoprep/controller/MessageManager"
-], function (UIComponent, Device, models, ErrorHandler, MessageManager) {
+	"com/evorait/evosuite/evoprep/controller/MessageManager",
+	"sap/f/library"
+], function (UIComponent, Device, models, ErrorHandler, MessageManager, library) {
 	"use strict";
 
 	return UIComponent.extend("com.evorait.evosuite.evoprep.Component", {
@@ -22,9 +23,6 @@ sap.ui.define([
 			// call the base component's init function
 			UIComponent.prototype.init.apply(this, arguments);
 
-			// enable routing
-			this.getRouter().initialize();
-
 			// set the device model
 			this.setModel(models.createDeviceModel(), "device");
 
@@ -41,12 +39,10 @@ sap.ui.define([
 			this.setModel(models.createUserModel(this), "user");
 
 			var viewModelObj = {
-				formHandling: {},
-				busy: false,
-				gantBusy: false,
+				logoUrl: sap.ui.require.toUrl("com/evorait/evosuite/evoprep/assets/img/EvoPrep.png"),
+				busy: true,
 				delay: 100,
-				densityClass: this.getContentDensityClass(),
-				pendingChanges: false
+				densityClass: this.getContentDensityClass()
 			};
 			this.setModel(models.createHelperModel(viewModelObj), "viewModel");
 
@@ -54,6 +50,10 @@ sap.ui.define([
 
 			//GetSystemInformation Call
 			this._getSystemInformation();
+
+			// enable routing
+			this.getRouter().attachBeforeRouteMatched(this._onBeforeRouteMatched, this);
+			this.getRouter().initialize();
 		},
 
 		/**
@@ -128,6 +128,17 @@ sap.ui.define([
 				aMessages.push(oData[i]);
 			}
 			this.getModel("message").setData(aMessages);
+		},
+
+		_onBeforeRouteMatched: function (oEvent) {
+			var oModel = this.getModel("viewModel"),
+				sLayout = oEvent.getParameters().arguments.layout;
+
+			// If there is no layout parameter, set a default layout (normally OneColumn)
+			if (!sLayout) {
+				sLayout = library.LayoutType.OneColumn;
+			}
+			oModel.setProperty("/layout", sLayout);
 		}
 
 	});

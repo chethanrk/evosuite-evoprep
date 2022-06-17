@@ -1,7 +1,7 @@
 sap.ui.define([
-	//"sap/ui/core/mvc/Controller"
-	"com/evorait/evosuite/evoprep/controller/BaseController"
-], function (BaseController) {
+	"com/evorait/evosuite/evoprep/controller/BaseController",
+	"sap/f/library"
+], function (BaseController, library) {
 	"use strict";
 
 	return BaseController.extend("com.evorait.evosuite.evoprep.controller.PrePlanMaster", {
@@ -41,6 +41,34 @@ sap.ui.define([
 		//
 		//	}
 
-	});
+		/**
+		 * Bellow both methods should be remove while actula code implementation
+		 * simulate to reouting 
+		 */
+		onPressDetail: function () {
+			this.getView().getParent().getParent().removeAllMidColumnPages();
+			var oRouter = this.getOwnerComponent().getRouter();
+			oRouter.navTo("PrePlanDetail", {
+				layout: library.LayoutType.TwoColumnsMidExpanded,
+				plan: "01"
+			});
+		},
 
+		onPressComapre: function () {
+			this.getView().getParent().getParent().removeAllMidColumnPages();
+			var oRouter = this.getOwnerComponent().getRouter();
+			oRouter.navTo("PrePlanCompare", {
+				layout: library.LayoutType.TwoColumnsMidExpanded,
+				plans: "01"
+			});
+		},
+
+		/**
+		 * Navigating to Create PrePlan View on Click of Create PrePlan Button
+		 */
+		onCreatePrePlanPress: function () {
+			var oRouter = this.getOwnerComponent().getRouter();
+			oRouter.navTo("createPrePlan");
+		}
+	});
 });

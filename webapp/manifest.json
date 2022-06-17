@@ -1,0 +1,180 @@
+{
+	"_version": "1.12.0",
+	"sap.app": {
+		"id": "com.evorait.evosuite.evoprep",
+		"type": "application",
+		"i18n": "i18n/i18n.properties",
+		"applicationVersion": {
+			"version": "1.0.0"
+		},
+		"title": "{{appTitle}}",
+		"description": "{{appDescription}}",
+		"sourceTemplate": {
+			"id": "ui5template.basicSAPUI5ApplicationProject",
+			"version": "1.38.11"
+		},
+		"dataSources": {
+			"mainService": {
+				"uri": "/sap/opu/odata/EVORA/EP_MAIN_SRV/",
+				"type": "OData",
+				"settings": {
+					"odataVersion": "2.0",
+					"localUri": "localService/metadata.xml",
+					"annotations": [
+						"annotations"
+					]
+				}
+			},
+			"annotations": {
+				"type": "ODataAnnotation",
+				"uri": "annotations/annotations.xml",
+				"settings": {
+					"localUri": "annotations/annotations.xml"
+				}
+			}
+		}
+	},
+	"sap.ui": {
+		"technology": "UI5",
+		"icons": {
+			"icon": "",
+			"favIcon": "",
+			"phone": "",
+			"phone@2": "",
+			"tablet": "",
+			"tablet@2": ""
+		},
+		"deviceTypes": {
+			"desktop": true,
+			"tablet": true,
+			"phone": true
+		}
+	},
+	"sap.ui5": {
+		"flexEnabled": true,
+		"config": {
+			"fullWidth": true
+		},
+		"rootView": {
+			"viewName": "com.evorait.evosuite.evoprep.view.App",
+			"type": "XML",
+			"async": true,
+			"id": "App"
+		},
+		"dependencies": {
+			"minUI5Version": "1.65.6",
+			"libs": {
+				"sap.ui.layout": {},
+				"sap.ui.core": {},
+				"sap.m": {}
+			}
+		},
+		"contentDensities": {
+			"compact": true,
+			"cozy": true
+		},
+		"models": {
+			"i18n": {
+				"type": "sap.ui.model.resource.ResourceModel",
+				"settings": {
+					"bundleName": "com.evorait.evosuite.evoprep.i18n.i18n"
+				}
+			},
+			"": {
+				"dataSource": "mainService",
+				"preload": true,
+				"settings": {
+					"defaultBindingMode": "TwoWay"
+				}
+			},
+			"@i18n": {
+				"type": "sap.ui.model.resource.ResourceModel",
+				"uri": "i18n/i18n.properties"
+			}
+		},
+		"resources": {
+			"css": [{
+				"uri": "assets/css/style.css"
+			}]
+		},
+		"routing": {
+			"config": {
+				"routerClass": "sap.m.routing.Router",
+				"viewType": "XML",
+				"async": true,
+				"viewPath": "com.evorait.evosuite.evoprep.view",
+				"controlAggregation": "pages",
+				"controlId": "idFlexibleColumnLayout",
+				"clearControlAggregation": false
+			},
+			"routes": [{
+				"name": "PrePlanMaster",
+				"pattern": "",
+				"target": [
+					"PrePlanMaster"
+				]
+			}, {
+				"name": "PrePlanDetail",
+				"pattern": "PrePlanDetail/{layout}/{plan}",
+				"target": [
+					"PrePlanMaster",
+					"PrePlanDetail"
+				]
+			}, {
+				"name": "PrePlanCompare",
+				"pattern": "PrePlanCompare/{layout}/{plans}",
+				"target": [
+					"PrePlanMaster",
+					"PrePlanCompare"
+				]
+			}, {
+				"name": "createPrePlan",
+				"pattern": "createPrePlan",
+				"target": [
+					"createPrePlan"
+				]
+			}, {
+				"name": "demandList",
+				"pattern": "demandList",
+				"target": [
+					"demandList"
+				]
+			}],
+			"targets": {
+				"PrePlanMaster": {
+					"viewName": "PrePlanMaster",
+					"viewId": "PrePlanMaster",
+					"controlAggregation": "beginColumnPages",
+					"parent": "prePlan"
+				},
+				"PrePlanDetail": {
+					"viewName": "PrePlanDetail",
+					"viewId": "PrePlanDetail",
+					"controlAggregation": "midColumnPages",
+					"parent": "prePlan"
+				},
+				"PrePlanCompare": {
+					"viewName": "PrePlanCompare",
+					"viewId": "PrePlanCompare",
+					"controlAggregation": "midColumnPages",
+					"parent": "prePlan"
+				},
+				"createPrePlan": {
+					"viewName": "CreatePrePlan",
+					"viewId": "CreatePrePlan",
+					"controlId": "idNavContainer"
+				},
+				"demandList": {
+					"viewName": "DemandList",
+					"viewId": "DemandList",
+					"controlId": "idNavContainer"
+				},
+				"prePlan": {
+					"viewName": "PrePlan",
+					"viewId": "PrePlan",
+					"controlId": "idNavContainer"
+				}
+			}
+		}
+	}
+}

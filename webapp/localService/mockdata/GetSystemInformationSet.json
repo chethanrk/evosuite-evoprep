@@ -1,0 +1,16 @@
+{
+	"d": {
+		"results": [{
+			"Username": "RKC",
+			"PersNo": "2022",
+			"Firstname": "Chethan",
+			"Lastname": "RK",
+			"Fullname": "Chethan RK",
+			"ServerPath": "ed1.evorait.net:50103",
+			"CoreVersion": "2209.0.0",
+			"Client": "800",
+			"Systemid": "ED1",
+			"UserProfile": "/EVORA/EOR_DEFAULT"
+		}]
+	}
+}

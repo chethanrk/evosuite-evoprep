@@ -1,0 +1,8 @@
+<mvc:View xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m"
+	controllerName="com.evorait.evosuite.evoprep.controller.PrePlanCompare" xmlns:html="http://www.w3.org/1999/xhtml">
+	<Page class="sapUiNoContentPadding" enableScrolling="false" showHeader="false" showFooter="false" showSubHeader="false" showNavButton="false">
+		<content>
+			<Label text="PrePlan Compare"/>
+		</content>
+	</Page>
+</mvc:View>

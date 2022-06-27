@@ -38,6 +38,8 @@
 				<Property Name="Client" Type="Edm.String" Nullable="false" MaxLength="12" sap:label="Client"/>
 				<Property Name="Systemid" Type="Edm.String" Nullable="false" MaxLength="8" sap:label="System ID"/>
 				<Property Name="UserProfile" Type="Edm.String" Nullable="false" MaxLength="12" sap:label="UserProfile"/>
+				<Property Name="ENABLE_SHOW_ALL_DEMANDS" Type="Edm.Boolean" sap:label="Show all demands on"/>
+				<Property Name="ENABLE_DEMAND_UPDATE" Type="Edm.Boolean" sap:label="Allow demand update"/>
 			</EntityType>
 			<EntityType Name="PrePlan" sap:content-version="1">
 				<Key>
@@ -52,11 +54,11 @@
 				<Key>
 					<PropertyRef Name="ORDERID"/>
 				</Key>
-				<Property Name="ORDERID" Type="Edm.String" Nullable="false" MaxLength="12" sap:label="ORDER ID"/>
-				<Property Name="Status" Type="Edm.String" Nullable="false" MaxLength="8" sap:label="Status"/>
+				<Property Name="ORDERID" Type="Edm.String" Nullable="false" MaxLength="12" sap:label="ORDER ID" sap:updatable="false"/>
+				<Property Name="Status" Type="Edm.String" Nullable="false" MaxLength="8" sap:label="Status" sap:updatable="false"/>
 				<Property Name="DemandDesc" Type="Edm.String" MaxLength="40" sap:label="Demand Description"/>
 				<Property Name="MATERIAL_STATUS" Type="Edm.String" MaxLength="40" sap:label="Material Status"/>
-				<Property Name="OPERATIONID" Type="Edm.String" MaxLength="40" sap:label="Operation ID"/>
+				<Property Name="OPERATIONID" Type="Edm.String" MaxLength="40" sap:label="Operation ID" sap:updatable="false"/>
 				<Property Name="NOTIFICATION" Type="Edm.String" MaxLength="40" sap:label="Notification"/>
 				<Property Name="DateFrom" Type="Edm.DateTimeOffset" Precision="0" sap:label="From Date" sap:is-extension-field="true"/>
 				<Property Name="DateTo" Type="Edm.DateTimeOffset" Precision="0" sap:label="To Date" sap:is-extension-field="true"/>

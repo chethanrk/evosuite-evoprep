@@ -1,6 +1,6 @@
 sap.ui.define([
-//	"sap/ui/core/mvc/Controller"
-		"com/evorait/evosuite/evoprep/controller/BaseController"
+	//	"sap/ui/core/mvc/Controller"
+	"com/evorait/evosuite/evoprep/controller/BaseController"
 ], function (BaseController) {
 	"use strict";
 

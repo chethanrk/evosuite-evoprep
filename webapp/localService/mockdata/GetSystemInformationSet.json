@@ -10,7 +10,9 @@
 			"CoreVersion": "2209.0.0",
 			"Client": "800",
 			"Systemid": "ED1",
-			"UserProfile": "/EVORA/EOR_DEFAULT"
+			"UserProfile": "/EVORA/EOR_DEFAULT",
+			"ENABLE_SHOW_ALL_DEMANDS": true,
+			"ENABLE_DEMAND_UPDATE": true
 		}]
 	}
 }

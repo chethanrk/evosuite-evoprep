@@ -42,22 +42,35 @@ sap.ui.define([
 		//	}
 
 		/**
-		 * Bellow both methods should be remove while actula code implementation
-		 * simulate to reouting 
+		 * Called on click of Long text indicator
+		 * @param oEvent
 		 */
-		onPressDetail: function () {
+		showLongText: function (oEvent) {
+			var oContext = oEvent.getSource().getBindingContext();
+			var longText = oContext.getProperty("Notes");
+			this.displayLongText(longText);
+		},
+
+		/**
+		 * Event for the table row click
+		 * Navigate to detail page with selected plan details
+		 */
+			onClickTableRow: function (oEvent) {
 			this.getView().getParent().getParent().removeAllMidColumnPages();
-			var oRouter = this.getOwnerComponent().getRouter();
-			oRouter.navTo("PrePlanDetail", {
+			var sPlanId = oEvent.getSource().getBindingContext().getProperty("PrePlanId");
+			this.getRouter().navTo("PrePlanDetail", {
 				layout: library.LayoutType.TwoColumnsMidExpanded,
-				plan: "01"
+				plan: sPlanId
 			});
 		},
 
-		onPressComapre: function () {
+		/**
+		 * Bellow both methods should be remove while actula code implementation
+		 * simulate to reouting 
+		 */
+		onPressComapre: function (oEvent) {
 			this.getView().getParent().getParent().removeAllMidColumnPages();
-			var oRouter = this.getOwnerComponent().getRouter();
-			oRouter.navTo("PrePlanCompare", {
+			this.getRouter().navTo("PrePlanCompare", {
 				layout: library.LayoutType.TwoColumnsMidExpanded,
 				plans: "01"
 			});
@@ -67,8 +80,7 @@ sap.ui.define([
 		 * Navigating to Create PrePlan View on Click of Create PrePlan Button
 		 */
 		onCreatePrePlanPress: function () {
-			var oRouter = this.getOwnerComponent().getRouter();
-			oRouter.navTo("createPrePlan");
+			this.getRouter().navTo("createPrePlan");
 		}
 	});
 });

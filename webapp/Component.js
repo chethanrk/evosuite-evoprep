@@ -86,7 +86,7 @@ sap.ui.define([
 		 */
 		_getSystemInformation: function () {
 			this.oSystemInfoProm = new Promise(function (resolve) {
-				this.readData("/GetSystemInformationSet", []).then(function (oData) {
+				this.readData("/SystemInformationSet", []).then(function (oData) {
 					this.getModel("user").setData(oData.results[0]);
 					resolve(oData);
 				}.bind(this));

@@ -93,9 +93,11 @@
 			}
 		},
 		"resources": {
-			"css": [{
-				"uri": "assets/css/style.css"
-			}]
+			"css": [
+				{
+					"uri": "assets/css/style.css"
+				}
+			]
 		},
 		"routing": {
 			"config": {
@@ -107,39 +109,45 @@
 				"controlId": "idFlexibleColumnLayout",
 				"clearControlAggregation": false
 			},
-			"routes": [{
-				"name": "PrePlanMaster",
-				"pattern": "",
-				"target": [
-					"PrePlanMaster"
-				]
-			}, {
-				"name": "PrePlanDetail",
-				"pattern": "PrePlanDetail/{layout}/{plan}",
-				"target": [
-					"PrePlanMaster",
-					"PrePlanDetail"
-				]
-			}, {
-				"name": "PrePlanCompare",
-				"pattern": "PrePlanCompare/{layout}/{plans}",
-				"target": [
-					"PrePlanMaster",
-					"PrePlanCompare"
-				]
-			}, {
-				"name": "createPrePlan",
-				"pattern": "createPrePlan",
-				"target": [
-					"createPrePlan"
-				]
-			}, {
-				"name": "demandList",
-				"pattern": "demandList",
-				"target": [
-					"demandList"
-				]
-			}],
+			"routes": [
+				{
+					"name": "PrePlanMaster",
+					"pattern": "",
+					"target": [
+						"PrePlanMaster"
+					]
+				},
+				{
+					"name": "PrePlanDetail",
+					"pattern": "PrePlanDetail/{layout}/{plan}",
+					"target": [
+						"PrePlanMaster",
+						"PrePlanDetail"
+					]
+				},
+				{
+					"name": "PrePlanCompare",
+					"pattern": "PrePlanCompare/{layout}/{plans}",
+					"target": [
+						"PrePlanMaster",
+						"PrePlanCompare"
+					]
+				},
+				{
+					"name": "createPrePlan",
+					"pattern": "createPrePlan",
+					"target": [
+						"createPrePlan"
+					]
+				},
+				{
+					"name": "demandList",
+					"pattern": "demandList",
+					"target": [
+						"demandList"
+					]
+				}
+			],
 			"targets": {
 				"PrePlanMaster": {
 					"viewName": "PrePlanMaster",
@@ -176,5 +184,9 @@
 				}
 			}
 		}
+	},
+	"sap.platform.hcp": {
+		"uri": "webapp",
+		"_version": "1.1.0"
 	}
 }

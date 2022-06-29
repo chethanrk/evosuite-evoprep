@@ -55,9 +55,9 @@ sap.ui.define([
 		 * Event for the table row click
 		 * Navigate to detail page with selected plan details
 		 */
-			onClickTableRow: function (oEvent) {
+		onClickTableRow: function (oEvent) {
 			this.getView().getParent().getParent().removeAllMidColumnPages();
-			var sPlanId = oEvent.getSource().getBindingContext().getProperty("PrePlanId");
+			var sPlanId = oEvent.getSource().getBindingContext().getProperty("PLAN_ID");
 			this.getRouter().navTo("PrePlanDetail", {
 				layout: library.LayoutType.TwoColumnsMidExpanded,
 				plan: sPlanId

@@ -47,7 +47,7 @@ sap.ui.define([
 		 */
 		showLongText: function (oEvent) {
 			var oContext = oEvent.getSource().getBindingContext();
-			var longText = oContext.getProperty("Notes");
+			var longText = oContext.getProperty("NOTES");
 			this.displayLongText(longText);
 		},
 
@@ -56,8 +56,8 @@ sap.ui.define([
 		 * Navigate to detail page with selected plan details
 		 */
 		onClickTableRow: function (oEvent) {
-			this.getView().getParent().getParent().removeAllMidColumnPages();
 			var sPlanId = oEvent.getSource().getBindingContext().getProperty("PLAN_ID");
+			//this.getView().getParent().getParent().removeAllMidColumnPages();
 			this.getRouter().navTo("PrePlanDetail", {
 				layout: library.LayoutType.TwoColumnsMidExpanded,
 				plan: sPlanId
@@ -69,7 +69,6 @@ sap.ui.define([
 		 * simulate to reouting 
 		 */
 		onPressComapre: function (oEvent) {
-			this.getView().getParent().getParent().removeAllMidColumnPages();
 			this.getRouter().navTo("PrePlanCompare", {
 				layout: library.LayoutType.TwoColumnsMidExpanded,
 				plans: "01"
@@ -80,7 +79,7 @@ sap.ui.define([
 		 * Navigating to Create PrePlan View on Click of Create PrePlan Button
 		 */
 		onCreatePrePlanPress: function () {
-			this.getRouter().navTo("createPrePlan");
+			this.getRouter().navTo("CreatePrePlan");
 		}
 	});
 });

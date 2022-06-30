@@ -1,8 +1,128 @@
 <edmx:Edmx xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx" Version="4.0">
-	<edmx:Reference Uri="/sap/opu/odata/EVORA/ER_MAIN_SRV/$metadata">
+	<edmx:Reference Uri="/sap/opu/odata/EVORA/EPP_MAIN_SRV/$metadata">
 		<edmx:Include Alias="Metadata" Namespace="com.evorait.evoprep"/>
 	</edmx:Reference>
+	<edmx:Reference Uri="https://wiki.scn.sap.com/wiki/download/attachments/448470974/Common.xml?api=v2">
+		<edmx:Include Alias="Common" Namespace="com.sap.vocabularies.Common.v1"/>
+	</edmx:Reference>
+	<edmx:Reference Uri="http://docs.oasis-open.org/odata/odata/v4.0/errata02/os/complete/vocabularies/Core.xml">
+		<edmx:Include Alias="Core" Namespace="Org.OData.Core.V1"/>
+	</edmx:Reference>
+	<edmx:Reference Uri="http://docs.oasis-open.org/odata/odata/v4.0/cs01/vocabularies/Org.OData.Measures.V1.xml">
+		<edmx:Include Alias="CQP" Namespace="Org.OData.Measures.V1"/>
+	</edmx:Reference>
+	<edmx:Reference Uri="http://docs.oasis-open.org/odata/odata/v4.0/cs01/vocabularies/Org.OData.Capabilities.V1.xml">
+		<edmx:Include Alias="Capabilities" Namespace="Org.OData.Capabilities.V1"/>
+	</edmx:Reference>
+	<edmx:Reference Uri="http://docs.oasis-open.org/odata/odata-data-aggregation-ext/v4.0/cs02/vocabularies/Org.OData.Aggregation.V1.xml">
+		<edmx:Include Alias="Aggregation" Namespace="Org.OData.Aggregation.V1"/>
+	</edmx:Reference>
+	<edmx:Reference Uri="https://wiki.scn.sap.com/wiki/download/attachments/448470968/UI.xml?api=v2">
+		<edmx:Include Alias="UI" Namespace="com.sap.vocabularies.UI.v1"/>
+	</edmx:Reference>
 	<edmx:DataServices>
-		<Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="com.evorait.evoprep"></Schema>
+		<Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="com.evorait.evoprep">
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoprep.PlanHeader">
+				<Annotation Term="UI.HeaderFacets" Qualifier="PrePlanDetailHeader">
+					<Collection>
+						<Record Type="UI.CollectionFacet">
+							<PropertyValue Property="Facets">
+								<Collection>
+									<Record Type="UI.ReferenceFacet">
+										<PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#PrePlanDetailStatus"/>
+									</Record>
+								</Collection>
+							</PropertyValue>
+						</Record>
+					</Collection>
+				</Annotation>
+				<Annotation Term="UI.Facets" Qualifier="PrePlanDetailTabs">
+					<Collection>
+						<Record Type="UI.CollectionFacet">
+							<PropertyValue Property="Facets">
+								<Collection>
+									<Record Type="UI.ReferenceFacet">
+										<PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#PrePlanDetailGeneral"/>
+									</Record>
+									<Record Type="UI.ReferenceFacet">
+										<PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#LongText"/>
+									</Record>
+								</Collection>
+							</PropertyValue>
+							<PropertyValue Property="com.sap.vocabularies.Common.v1.Label" String="General"/>
+							<Annotation Term="Core.Description" String="Form"/>
+						</Record>
+						<Record Type="UI.ReferenceFacet">
+							<PropertyValue Property="Target" AnnotationPath="@UI.LineItem"/>
+							<PropertyValue Property="com.sap.vocabularies.Common.v1.Label" String="Capacity"/>
+							<Annotation Term="Core.Description" String="Table"/>
+							<Annotation Term="Core.LongDescription" String="CapacityTab"/>
+						</Record>
+						<Record Type="UI.ReferenceFacet">
+							<PropertyValue Property="Target" AnnotationPath="@UI.LineItem"/>
+							<PropertyValue Property="com.sap.vocabularies.Common.v1.Label" String="Planning"/>
+							<Annotation Term="Core.Description" String="Table"/>
+							<Annotation Term="Core.LongDescription" String="PlanningTab"/>
+						</Record>
+						<Record Type="UI.ReferenceFacet">
+							<PropertyValue Property="Target" AnnotationPath="@UI.LineItem"/>
+							<PropertyValue Property="com.sap.vocabularies.Common.v1.Label" String="Demands"/>
+							<Annotation Term="Core.Description" String="Table"/>
+							<Annotation Term="Core.LongDescription" String="DemandsTab"/>
+						</Record>
+					</Collection>
+				</Annotation>
+				<Annotation Term="UI.FieldGroup" Qualifier="LongText">
+					<Record Type="UI.FieldGroupType">
+						<PropertyValue Property="Label" String="Description"/>
+						<PropertyValue Property="Data">
+							<Collection>
+								<Record Type="UI.DataField">
+									<PropertyValue Property="Value" Path="NOTES"/>
+									<Annotation Term="Core.Description" String="longText"/>
+								</Record>
+							</Collection>
+						</PropertyValue>
+						<PropertyValue Property="com.sap.vocabularies.Common.v1.Label" String="Description"/>
+						<Annotation Term="Org.OData.Core.V1.Description" String="longText"/>
+					</Record>
+				</Annotation>
+				<Annotation Term="UI.FieldGroup" Qualifier="PrePlanDetailGeneral">
+					<Record Type="UI.FieldGroupType">
+						<PropertyValue Property="Label" String="General"/>
+						<PropertyValue Property="Data">
+							<Collection>
+								<Record Type="UI.DataField">
+									<PropertyValue Property="Value" Path="PLAN_ID"/>
+								</Record>
+								<Record Type="UI.DataField">
+									<PropertyValue Property="Value" Path="PLAN_NAME"/>
+								</Record>
+								<Record Type="UI.DataField">
+									<PropertyValue Property="Value" Path="START_DATE"/>
+								</Record>
+								<Record Type="UI.DataField">
+									<PropertyValue Property="Value" Path="END_DATE"/>
+								</Record>
+							</Collection>
+						</PropertyValue>
+						<PropertyValue Property="com.sap.vocabularies.Common.v1.Label" String="General"/>
+					</Record>
+				</Annotation>
+				<Annotation Term="UI.FieldGroup" Qualifier="PrePlanDetailStatus">
+					<Record Type="UI.FieldGroupType">
+						<PropertyValue Property="Label" String="PrePlan Header - Status"/>
+						<PropertyValue Property="Data">
+							<Collection>
+								<Record Type="UI.DataField">
+									<PropertyValue Property="Value" Path="STATUS_SHORT"/>
+								</Record>
+							</Collection>
+						</PropertyValue>
+						<PropertyValue Property="com.sap.vocabularies.Common.v1.Label" String="PrePlan Header - Status"/>
+					</Record>
+				</Annotation>
+			</Annotations>
+		</Schema>
 	</edmx:DataServices>
 </edmx:Edmx>

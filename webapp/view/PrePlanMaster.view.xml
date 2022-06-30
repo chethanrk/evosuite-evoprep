@@ -21,7 +21,7 @@
 				smartFilterId="idPagePrePlanSmartFilterBar" tableType="ResponsiveTable" useExportToExcel="true" useVariantManagement="true"
 				useTablePersonalisation="true" showRowCount="true" persistencyKey="com.evorait.evosuite.evoprep.PrePlanTable" enableAutoBinding="true"
 				demandPopin="true" customData:useSmartField="true" customData:useSmartToggle="true" fieldChange="onFieldChange"
-				beforeRebindTable="onBeforeRebindTable" afterVariantInitialise="onInitializedSmartVariant" requestAtLeastFields="">
+				beforeRebindTable="onBeforeRebindTable" afterVariantInitialise="onInitializedSmartVariant" requestAtLeastFields="NOTES">
 				<!-- layout data used to make the table growing but the filter bar fixed -->
 				<smartTable:layoutData>
 					<FlexItemData growFactor="1" baseSize="0%"/>
@@ -29,10 +29,10 @@
 				<smartTable:customToolbar>
 					<OverflowToolbar class="prePlanListToolbar">
 						<ToolbarSpacer/>
-						<Button id="idBtnComaprePrePlan" text="{i18n>xbut.comapre}" press="onPressComapre"/>
+						<Button id="idBtnComaprePrePlan" text="{i18n>xbut.comapre}" press="onPressComapre" enabled="false"/>
 						<Button id="idBtnCreatePrePlan" text="{i18n>xbut.create}" press="onCreatePrePlanPress"/>
-						<Button id="idBtnCopyPrePlan" text="{i18n>xbut.copy}"/>
-						<Button id="idBtnDeletePrePlan" text="{i18n>xbut.delete}"/>
+						<Button id="idBtnCopyPrePlan" text="{i18n>xbut.copy}" enabled="false"/>
+						<Button id="idBtnDeletePrePlan" text="{i18n>xbut.delete}" enabled="false"/>
 					</OverflowToolbar>
 				</smartTable:customToolbar>
 				<Table id="idPageMasterPageSmartTableTable" growing="true" mode="MultiSelect" sticky="ColumnHeaders,HeaderToolbar,InfoToolbar"

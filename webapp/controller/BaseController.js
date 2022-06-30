@@ -110,12 +110,18 @@ sap.ui.define([
 			if (sPreviousHash !== undefined) {
 				history.go(-1);
 			} else {
-				var oRouter = this.getOwnerComponent().getRouter(),
-					oModel = this.getModel("viewModel");
-				oModel.setProperty("/layout", library.LayoutType.OneColumn);
-				oModel.refresh();
-				oRouter.navTo("PrePlanMaster", {}, true);
+				this.nav2Master();
 			}
+		},
+
+		/**
+		 * Navigation to master page from any other page
+		 */
+		nav2Master: function () {
+			var oRouter = this.getOwnerComponent().getRouter(),
+				oModel = this.getModel("viewModel");
+			oModel.setProperty("/layout", library.LayoutType.OneColumn);
+			oRouter.navTo("PrePlanMaster", {}, true);
 		},
 
 		/**
@@ -182,6 +188,29 @@ sap.ui.define([
 		onShowDemandsPress: function () {
 			var oRouter = this.getOwnerComponent().getRouter();
 			oRouter.navTo("demandList");
+		},
+
+		/**
+		 * handle detail/compare page full scrren
+		 * validate based on the icon pressed
+		 */
+		onPressFullScreen: function (oEvent) {
+			var oSource = oEvent.getSource(),
+				oViewModel = this.getModel("viewModel");
+			if (oSource.getIcon() === "sap-icon://full-screen") {
+				oViewModel.setProperty("/layout", library.LayoutType.MidColumnFullScreen);
+				oViewModel.setProperty("/fullscreen", false);
+			} else {
+				oViewModel.setProperty("/layout", library.LayoutType.TwoColumnsMidExpanded);
+				oViewModel.setProperty("/fullscreen", true);
+			}
+		},
+
+		/**
+		 * onpress detail page close
+		 */
+		onPressClose: function (oEvent) {
+			this.nav2Master();
 		}
 	});
 });

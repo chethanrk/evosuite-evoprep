@@ -244,7 +244,7 @@ sap.ui.define([],
 		 * checks if annotation description has tab name inside
 		 */
 		var hasTabNameInDescription = function (sValue, sAnnotation, sLongAnnotation) {
-			if (sLongAnnotation.indexOf(sValue) >= 0 || sAnnotation.indexOf(sValue) >= 0 ) {
+			if ( sAnnotation.indexOf(sValue) >= 0 || sLongAnnotation.indexOf(sValue) >= 0 ) {
 				return true;
 			}
 			return false;

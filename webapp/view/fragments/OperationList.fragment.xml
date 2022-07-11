@@ -1,0 +1,43 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:smartFilterBar="sap.ui.comp.smartfilterbar"
+	xmlns:smartTable="sap.ui.comp.smarttable" xmlns:f="sap.f"
+	xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
+	<Dialog id="idOperationListDialog" title="Add Operations" class="sapUiTinyMargin" draggable="true" resizable="true" verticalScrolling="true"
+		horizontalScrolling="true" contentHeight="auto" contentWidth="auto">
+		<content>
+			<core:ExtensionPoint name="DialogExtP|OrderDetail|WONotificationSet|Content|Before"/>
+			<core:ExtensionPoint name="DialogExtP|OrderDetail|WONotificationSet|Content|Instead">
+				<f:DynamicPage headerExpanded="true" preserveHeaderStateOnScroll="true" showFooter="true" class="sapUiNoContentPadding">
+					<f:header>
+						<f:DynamicPageHeader pinnable="true">
+							<f:content>
+								<smartFilterBar:SmartFilterBar id="idOperationListFragSmartFilterBar" entitySet="PlanItemsSet" useDateRangeType="true">
+									<!-- layout data used to make the table growing but the filter bar fixed -->
+									<smartFilterBar:layoutData>
+										<FlexItemData shrinkFactor="0"/>
+									</smartFilterBar:layoutData>
+								</smartFilterBar:SmartFilterBar>
+							</f:content>
+						</f:DynamicPageHeader>
+					</f:header>
+					<f:content>
+						<smartTable:SmartTable id="idOperationListFragSmartTable" height="100%" width="100%" entitySet="PlanItemsSet" header="Operations"
+							smartFilterId="idOperationListFragSmartFilterBar" tableType="ResponsiveTable" useExportToExcel="true" useVariantManagement="false"
+							useTablePersonalisation="true" showRowCount="true" enableAutoBinding="true" demandPopin="true" requestAtLeastFields="ObjectKey">
+							<!-- layout data used to make the table growing but the filter bar fixed -->
+							<smartTable:layoutData>
+								<FlexItemData growFactor="1" baseSize="0%"/>
+							</smartTable:layoutData>
+							<Table growing="true" mode="MultiSelect" sticky="ColumnHeaders,HeaderToolbar,InfoToolbar" selectionChange="onWorkListSelectionChange"></Table>
+						</smartTable:SmartTable>
+					</f:content>
+				</f:DynamicPage>
+			</core:ExtensionPoint>
+			<core:ExtensionPoint name="DialogExtP|OrderDetail|WONotificationSet|Content|After"/>
+		</content>
+		<buttons>
+			<Button text="{i18n>xbtn.add}" press="onPressAdd" type="Emphasized"/>
+			<Button text="{i18n>xbtn.cancel}" press="onPressOperationListCancel" type="Emphasized"/>
+			<core:ExtensionPoint name="DialogExtP|OrderDetail|WONotificationSet|Buttons"/>
+		</buttons>
+	</Dialog>
+</core:FragmentDefinition>

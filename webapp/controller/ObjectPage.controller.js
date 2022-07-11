@@ -141,13 +141,45 @@ sap.ui.define([
 		 * create pre plan page
 		 */
 		_setCreatePrePlanPageInfo: function (sRouteName, oArgs) {
-			var sViewName = "com.evorait.evosuite.evoprep.view.templates.CreatePrePlan#Create";
-			this.getModel("templateProperties").setProperty("/annotationPath", {
-				entitySet: "PlanHeaderSet",
-				path: "com.sap.vocabularies.UI.v1.Facets#CreatePrePlan"
-			});
-			this._onRouteMatched(sViewName, "PlanHeaderSet", "new");
-		}
+			this._getCretaeOpAnnotations().then(function () {
+				var sViewName = "com.evorait.evosuite.evoprep.view.templates.CreatePrePlan#Create";
+				this.getModel("templateProperties").setProperty("/annotationPath", {
+					entitySet: "PlanHeaderSet",
+					path: "com.sap.vocabularies.UI.v1.Facets#Create"
+				});
+				this._onRouteMatched(sViewName, "PlanHeaderSet", "new");
+			}.bind(this));
+		},
 
+		/**
+		 * set in oDataModel different batch groups 
+		 * for handling create requests of notification and children
+		 */
+		_getCretaeOpAnnotations: function () {
+			return new Promise(function (resolve) {
+				this.getOwnerComponent().oTemplatePropsProm.then(function () {
+					var oTempModel = this.getModel("templateProperties"),
+						mTabs = oTempModel.getProperty("/Configs/Tabs"),
+						oModel = this.getModel();
+
+					//collect all tab IDs
+					oModel.getMetaModel().loaded().then(function () {
+						mTabs.forEach(function (tab, idx) {
+							var sEntitySet = tab.entitySet,
+								oMetaModel = oModel.getMetaModel(),
+								oEntitySet = oMetaModel.getODataEntitySet(sEntitySet),
+								oEntityType = oMetaModel.getODataEntityType(oEntitySet.entityType),
+								aLineItems = oEntityType["com.sap.vocabularies.UI.v1.LineItem"];
+
+							if (aLineItems) {
+								oTempModel.setProperty("/Configs/Tabs/" + idx + "/lineItems", aLineItems);
+							}
+							console.log(aLineItems);
+						});
+					}.bind(this));
+				}.bind(this));
+				resolve();
+			}.bind(this));
+		}
 	});
 });

@@ -9,6 +9,8 @@ sap.ui.define([
 ], function (UIComponent, Device, models, ErrorHandler, MessageManager, library, JSONModel) {
 	"use strict";
 
+	var oMessageManager = sap.ui.getCore().getMessageManager();
+	
 	return UIComponent.extend("com.evorait.evosuite.evoprep.Component", {
 
 		metadata: {
@@ -50,6 +52,7 @@ sap.ui.define([
 				fullscreen: true
 			};
 			this.setModel(models.createHelperModel(viewModelObj), "viewModel");
+			this.setModel(models.createCreateModel(), "CreateModel");
 
 			this.MessageManager = new MessageManager();
 
@@ -57,10 +60,12 @@ sap.ui.define([
 			this._getSystemInformation();
 
 			this._getTemplateProps();
+			this.oTemplatePropsProm.then(function () {
+				// enable routing
+				this.getRouter().attachBeforeRouteMatched(this._onBeforeRouteMatched, this);
+				this.getRouter().initialize();
+			}.bind(this));
 
-			// enable routing
-			this.getRouter().attachBeforeRouteMatched(this._onBeforeRouteMatched, this);
-			this.getRouter().initialize();
 		},
 
 		/**
@@ -86,6 +91,14 @@ sap.ui.define([
 				}
 			}
 			return this._sContentDensityClass;
+		},
+
+		/**
+		 * This method registers the view to the message manager
+		 * @param oView
+		 */
+		registerViewToMessageManager: function (oView) {
+			oMessageManager.registerObject(oView, true);
 		},
 
 		/**
@@ -124,6 +137,25 @@ sap.ui.define([
 				this.getModel().read(sUri, {
 					filters: aFilters,
 					urlParameters: mUrlParams || {},
+					success: function (oData) {
+						resolve(oData);
+					},
+					error: function (oError) {
+						//Handle Error
+						reject(oError);
+					}
+				});
+			}.bind(this));
+		},
+
+		/**
+		 * post data
+		 * returns promise
+		 */
+		postData: function (sUri, oEntry) {
+			return new Promise(function (resolve, reject) {
+				this.getModel().create(sUri, oEntry, {
+					refreshAfterChange: false,
 					success: function (oData) {
 						resolve(oData);
 					},

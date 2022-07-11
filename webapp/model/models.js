@@ -29,6 +29,12 @@ sap.ui.define([
 			oModel.setDefaultBindingMode("TwoWay");
 			return oModel;
 		},
+		
+		createCreateModel: function () {
+			var oModel = new JSONModel({"results":[]});
+			oModel.setDefaultBindingMode("TwoWay");
+			return oModel;
+		},
 
 		createInformationModel: function (oComponent) {
 			var oMetadata = oComponent.getMetadata();

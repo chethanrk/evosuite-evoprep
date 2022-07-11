@@ -61,25 +61,26 @@ sap.ui.define([
 		 * @private
 		 * @param sMessage
 		 */
-		_showServiceError: function (sMessage) {
+		_showServiceError: function (sDetails) {
 			if (this._bMessageOpen) {
 				return;
 			}
 			this._bMessageOpen = true;
-			if (typeof sMessage === "object") {
-				sMessage = this._extractError(sMessage);
-			}
-
-			MessageBox.error(
-				this._sErrorText, {
-					details: sMessage.replace(/\n/g, "<br/>"),
-					styleClass: this._oComponent.getContentDensityClass(),
-					actions: [MessageBox.Action.CLOSE],
-					onClose: function () {
-						this._bMessageOpen = false;
-					}.bind(this)
-				}
-			);
+			var extractedError = this._extractError(sDetails);
+			if (extractedError != "") {
+				MessageBox.error(
+					this._sErrorText, {
+						id: "serviceErrorMessageBox",
+						details: typeof (extractedError) === "string" ? extractedError.replace(/\n/g, "<br/>") : extractedError,
+						styleClass: this._oComponent.getContentDensityClass(),
+						actions: [MessageBox.Action.CLOSE],
+						onClose: function () {
+							this._bMessageOpen = false;
+						}.bind(this)
+					}
+				);
+			} else
+				this._bMessageOpen = false;
 		},
 
 		/**

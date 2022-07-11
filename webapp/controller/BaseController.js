@@ -115,6 +115,27 @@ sap.ui.define([
 		},
 
 		/**
+		 * Show dialog when user wants to cancel order change/creations
+		 */
+		confirmEditCancelDialog: function () {
+			var sTitle = this.getResourceBundle().getText("tit.cancelCreate"),
+				sMsg = this.getResourceBundle().getText("msg.leaveWithoutSave");
+
+			var successcallback = function () {
+				var oContext = this.getView().getBindingContext();
+
+				//delete created entry
+				this.nav2Master();
+				this.getModel().deleteCreatedEntry(oContext);
+				this.getModel("CreateModel").getData().results = [];
+				this.getModel("CreateModel").refresh();
+			};
+
+			var cancelCallback = function () {};
+			this.showConfirmDialog(sTitle, sMsg, successcallback.bind(this), cancelCallback.bind(this));
+		},
+
+		/**
 		 * Navigation to master page from any other page
 		 */
 		nav2Master: function () {
@@ -211,6 +232,144 @@ sap.ui.define([
 		 */
 		onPressClose: function (oEvent) {
 			this.nav2Master();
+		},
+
+		/**
+		 * get all forms of different tabs in one page 
+		 */
+		getAllSmartForms: function (aGroups) {
+			var aForms = [];
+			for (var i = 0; i < aGroups.length; i++) {
+				if (aGroups[i] instanceof sap.ui.comp.smartform.SmartForm) {
+					aForms.push(aGroups[i]);
+				}
+			}
+			return aForms;
+		},
+
+		/**
+		 * set editable true/false for all forms in one page
+		 */
+		setFormsEditable: function (aForms, isEditable) {
+			if (aForms) {
+				aForms.forEach(function (oForm) {
+					oForm.setEditable(isEditable);
+				});
+			}
+		},
+
+		/**
+		 * Validate smartForm with custom fields
+		 * @public
+		 */
+		validateForm: function (aForms) {
+			if (!aForms) {
+				return {
+					state: "error"
+				};
+			}
+			var aCustomFields = this.getView().getControlsByFieldGroupId("CustomFormField"),
+				validatedSmartFields = [];
+
+			aForms.forEach(function (oForm) {
+				var validated = oForm.check(); //SmartForm validation
+				validatedSmartFields = validatedSmartFields.concat(validated);
+			});
+
+			var isValid = validatedSmartFields.length === 0,
+				invalidFields = validatedSmartFields;
+
+			//validate custom input fields
+			for (var i = 0; i < aCustomFields.length; i++) {
+				if (aCustomFields[i].getValue) {
+					var sValue = aCustomFields[i].getValue();
+					try {
+						if (aCustomFields[i].getRequired() && aCustomFields[i].getEditable() && (!sValue || sValue.trim() === "")) {
+							aCustomFields[i].setValueState(sap.ui.core.ValueState.Error);
+							isValid = false;
+							invalidFields.push(aCustomFields[i]);
+						} else {
+							aCustomFields[i].setValueState(sap.ui.core.ValueState.None);
+						}
+					} catch (e) {
+						//do nothing
+					}
+				}
+			}
+
+			if (isValid) {
+				return {
+					state: "success"
+				};
+			} else {
+				return {
+					state: "error",
+					fields: invalidFields
+				};
+			}
+		},
+
+		/**
+		 * Save changes method to handle post request
+		 * @param {oPayload}     --- Payload data to save updated network
+		 * @param successCallback  --- success callback function
+		 * @param errorCallback  --- error callback function
+		 */
+		CreatePrePlan: function (oPayload, successCallback, errorCallback) {
+			this.oViewModel.setProperty("/busy", true);
+			this.getOwnerComponent().postData("/PlanHeaderSet", oPayload).then(function (oResult) {
+				if (successCallback) {
+					successCallback(oResult);
+				}
+
+				this.oViewModel.setProperty("/busy", false);
+			}.bind(this), function (error) {
+				if (errorCallback) {
+					errorCallback(error);
+				}
+				this.oViewModel.setProperty("/busy", false);
+			}.bind(this));
+		},
+
+		/**
+		 * show confirm dialog where user needs confirm some action
+		 * @param sTitle
+		 * @param sMsg
+		 * @param successCallback
+		 * @param cancelCallback
+		 */
+		showConfirmDialog: function (sTitle, sMsg, successCallback, cancelCallback, sState) {
+			var dialog = new sap.m.Dialog({
+				title: sTitle,
+				type: "Message",
+				state: sState || "None",
+				content: new sap.m.Text({
+					text: sMsg
+				}),
+				beginButton: new sap.m.Button({
+					text: this.getResourceBundle().getText("btn.confirm"),
+					press: function () {
+						dialog.close();
+						if (successCallback) {
+							successCallback();
+						}
+					}.bind(this)
+				}),
+				endButton: new sap.m.Button({
+					text: this.getResourceBundle().getText("btn.no"),
+					press: function () {
+						if (cancelCallback) {
+							cancelCallback();
+						}
+						dialog.close();
+					}.bind(this)
+				}),
+				afterClose: function () {
+					dialog.destroy();
+				}
+			});
+			dialog.addStyleClass(this.getModel("viewModel").getProperty("/densityClass"));
+			dialog.open();
 		}
 	});
 });

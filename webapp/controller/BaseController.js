@@ -164,6 +164,19 @@ sap.ui.define([
 		},
 
 		/**
+		 * Display Long text on MessageBox
+		 * @param longText
+		 */
+		displayLongText: function (longText) {
+			var title = this.getView().getModel("i18n").getResourceBundle().getText("tit.longText");
+			MessageBox.show(longText, {
+				title: title,
+				styleClass: this.getOwnerComponent().getContentDensityClass(),
+				actions: [MessageBox.Action.OK]
+			});
+		},
+
+		/**
 		 * Navigating to Demand View on Click of Show Demands Button
 		 */
 		onShowDemandsPress: function () {

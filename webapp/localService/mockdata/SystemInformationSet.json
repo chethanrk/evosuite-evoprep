@@ -1,18 +1,25 @@
 {
 	"d": {
 		"results": [{
-			"Username": "RKC",
-			"PersNo": "2022",
-			"Firstname": "Chethan",
-			"Lastname": "RK",
-			"Fullname": "Chethan RK",
-			"ServerPath": "ed1.evorait.net:50103",
-			"CoreVersion": "2209.0.0",
-			"Client": "800",
-			"Systemid": "ED1",
-			"UserProfile": "/EVORA/EOR_DEFAULT",
-			"ENABLE_SHOW_ALL_DEMANDS": true,
-			"ENABLE_DEMAND_UPDATE": true
+			"__metadata": {
+				"id": "https://ed1cloud.evorait.net:50103/sap/opu/odata/EVORA/EPP_MAIN_SRV/SystemInformationSet('SMEGHARAJ')",
+				"uri": "https://ed1cloud.evorait.net:50103/sap/opu/odata/EVORA/EPP_MAIN_SRV/SystemInformationSet('SMEGHARAJ')",
+				"type": "com.evorait.evoprep.SystemInformation"
+			},
+			"Username": "SMEGHARAJ",
+			"PERS_NO": "00067109",
+			"FIRSTNAME": "Megharaj",
+			"LASTNAME": "S",
+			"FULLNAME": "Megharaj S",
+			"SERVER_PATH": "ed1.evorait.net:50103",
+			"CORE_VERSION": "2209.0.0",
+			"CLIENT": "800",
+			"SYSTEMID": "ED1",
+			"USER_PROFILE": "/EVORA/EPP_DEFAULT",
+			"ENABLE_PREPLAN_CREATE": "X",
+			"ENABLE_ITEM_ADD": "X",
+			"ENABLE_ITEM_UPDATE": "X",
+            "ENABLE_SHOW_ALL_DEMANDS": "X"
 		}]
 	}
 }

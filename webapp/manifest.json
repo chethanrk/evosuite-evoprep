@@ -5,7 +5,7 @@
 		"type": "application",
 		"i18n": "i18n/i18n.properties",
 		"applicationVersion": {
-			"version": "1.0.0"
+			"version": "2209.0.0"
 		},
 		"title": "{{appTitle}}",
 		"description": "{{appDescription}}",
@@ -134,10 +134,10 @@
 					]
 				},
 				{
-					"name": "createPrePlan",
-					"pattern": "createPrePlan",
+					"name": "CreatePrePlan",
+					"pattern": "CreatePrePlan/new",
 					"target": [
-						"createPrePlan"
+						"CreatePrePlan"
 					]
 				},
 				{
@@ -156,20 +156,20 @@
 					"parent": "prePlan"
 				},
 				"PrePlanDetail": {
-					"viewName": "PrePlanDetail",
-					"viewId": "PrePlanDetail",
+					"viewName": "ObjectPage",
+					"viewId": "EvoPrepObjectPage",
 					"controlAggregation": "midColumnPages",
 					"parent": "prePlan"
 				},
 				"PrePlanCompare": {
-					"viewName": "PrePlanCompare",
-					"viewId": "PrePlanCompare",
+					"viewName": "ObjectPage",
+					"viewId": "EvoPrepObjectPage",
 					"controlAggregation": "midColumnPages",
 					"parent": "prePlan"
 				},
-				"createPrePlan": {
-					"viewName": "CreatePrePlan",
-					"viewId": "CreatePrePlan",
+				"CreatePrePlan": {
+					"viewName": "ObjectPage",
+					"viewId": "EvoPrepObjectPage",
 					"controlId": "idNavContainer"
 				},
 				"demandList": {
@@ -184,5 +184,9 @@
 				}
 			}
 		}
+	},
+	"sap.platform.hcp": {
+		"uri": "webapp",
+		"_version": "1.1.0"
 	}
 }

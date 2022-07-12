@@ -10,7 +10,7 @@
 				<contentMiddle></contentMiddle>
 				<contentRight>
 					<Button id="idBtnShowDemands" text="{i18n>xbut.ShowDemands}" type="Emphasized" press="onShowDemandsPress"
-						visible="{user>/ENABLE_SHOW_ALL_DEMANDS}"/>
+						visible="{= ${user>/ENABLE_SHOW_ALL_DEMANDS} === 'X'}"/>
 					<core:Fragment fragmentName="com.evorait.evosuite.evoprep.view.fragments.HeaderAction" type="XML"/>
 				</contentRight>
 			</Bar>

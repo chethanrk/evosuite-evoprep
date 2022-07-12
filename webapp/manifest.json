@@ -15,7 +15,7 @@
 		},
 		"dataSources": {
 			"mainService": {
-				"uri": "/sap/opu/odata/EVORA/EP_MAIN_SRV/",
+				"uri": "/sap/opu/odata/EVORA/EPP_MAIN_SRV/",
 				"type": "OData",
 				"settings": {
 					"odataVersion": "2.0",
@@ -93,9 +93,11 @@
 			}
 		},
 		"resources": {
-			"css": [{
-				"uri": "assets/css/style.css"
-			}]
+			"css": [
+				{
+					"uri": "assets/css/style.css"
+				}
+			]
 		},
 		"routing": {
 			"config": {
@@ -107,39 +109,45 @@
 				"controlId": "idFlexibleColumnLayout",
 				"clearControlAggregation": false
 			},
-			"routes": [{
-				"name": "PrePlanMaster",
-				"pattern": "",
-				"target": [
-					"PrePlanMaster"
-				]
-			}, {
-				"name": "PrePlanDetail",
-				"pattern": "PrePlanDetail/{layout}/{plan}",
-				"target": [
-					"PrePlanMaster",
-					"PrePlanDetail"
-				]
-			}, {
-				"name": "PrePlanCompare",
-				"pattern": "PrePlanCompare/{layout}/{plans}",
-				"target": [
-					"PrePlanMaster",
-					"PrePlanCompare"
-				]
-			}, {
-				"name": "createPrePlan",
-				"pattern": "createPrePlan",
-				"target": [
-					"createPrePlan"
-				]
-			}, {
-				"name": "demandList",
-				"pattern": "demandList",
-				"target": [
-					"demandList"
-				]
-			}],
+			"routes": [
+				{
+					"name": "PrePlanMaster",
+					"pattern": "",
+					"target": [
+						"PrePlanMaster"
+					]
+				},
+				{
+					"name": "PrePlanDetail",
+					"pattern": "PrePlanDetail/{layout}/{plan}",
+					"target": [
+						"PrePlanMaster",
+						"PrePlanDetail"
+					]
+				},
+				{
+					"name": "PrePlanCompare",
+					"pattern": "PrePlanCompare/{layout}/{plans}",
+					"target": [
+						"PrePlanMaster",
+						"PrePlanCompare"
+					]
+				},
+				{
+					"name": "createPrePlan",
+					"pattern": "createPrePlan",
+					"target": [
+						"createPrePlan"
+					]
+				},
+				{
+					"name": "demandList",
+					"pattern": "demandList",
+					"target": [
+						"demandList"
+					]
+				}
+			],
 			"targets": {
 				"PrePlanMaster": {
 					"viewName": "PrePlanMaster",

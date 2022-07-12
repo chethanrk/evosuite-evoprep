@@ -24,7 +24,7 @@
 	</edmx:Reference>
 	<edmx:DataServices m:DataServiceVersion="2.0">
 		<Schema xmlns="http://schemas.microsoft.com/ado/2008/09/edm" Namespace="com.evorait.evoprep" xml:lang="en" sap:schema-version="1">
-			<EntityType Name="GetSystemInformation" sap:content-version="1">
+			<EntityType Name="SystemInformation" sap:content-version="1">
 				<Key>
 					<PropertyRef Name="Username"/>
 				</Key>
@@ -50,23 +50,36 @@
 				<Property Name="DateFrom" Type="Edm.DateTimeOffset" Precision="0" sap:label="From Date" sap:is-extension-field="true"/>
 				<Property Name="DateTo" Type="Edm.DateTimeOffset" Precision="0" sap:label="To Date" sap:is-extension-field="true"/>
 			</EntityType>
-			<EntityType Name="Demand" sap:content-version="1">
+			<EntityType Name="PlanItems" sap:content-version="1">
 				<Key>
 					<PropertyRef Name="ORDERID"/>
 				</Key>
-				<Property Name="ORDERID" Type="Edm.String" Nullable="false" MaxLength="12" sap:label="ORDER ID" sap:updatable="false"/>
+				<Property Name="ORDERID" Type="Edm.String" Nullable="false" MaxLength="6" sap:label="ORDER ID" sap:updatable="false"/>
 				<Property Name="Status" Type="Edm.String" Nullable="false" MaxLength="8" sap:label="Status" sap:updatable="false"/>
 				<Property Name="DemandDesc" Type="Edm.String" MaxLength="40" sap:label="Demand Description"/>
-				<Property Name="MATERIAL_STATUS" Type="Edm.String" MaxLength="40" sap:label="Material Status"/>
-				<Property Name="OPERATIONID" Type="Edm.String" MaxLength="40" sap:label="Operation ID" sap:updatable="false"/>
-				<Property Name="NOTIFICATION" Type="Edm.String" MaxLength="40" sap:label="Notification"/>
-				<Property Name="DateFrom" Type="Edm.DateTimeOffset" Precision="0" sap:label="From Date" sap:is-extension-field="true"/>
-				<Property Name="DateTo" Type="Edm.DateTimeOffset" Precision="0" sap:label="To Date" sap:is-extension-field="true"/>
+				<Property Name="MATERIAL_STATUS" Type="Edm.String" MaxLength="10" sap:label="Material Status"/>
+				<Property Name="OPERATIONID" Type="Edm.String" MaxLength="6" sap:label="Operation ID" sap:updatable="false"/>
+				<Property Name="NOTIFICATION" Type="Edm.String" MaxLength="6" sap:label="Notification"/>
+				<Property Name="DateFrom" Type="Edm.DateTime" Precision="0" sap:label="From Date" sap:is-extension-field="true" sap:display-format="Date"/>
+				<Property Name="DateTo" Type="Edm.DateTime" Precision="0" sap:label="To Date" sap:is-extension-field="true" sap:display-format="Date"/>
+				<Property Name="PrePlanKey" Type="Edm.String" MaxLength="20" sap:label="Pre Plan ID" sap:is-extension-field="true"/>
+			</EntityType>
+			<EntityType Name="NavLinks" sap:content-version="1">
+				<Key>
+					<PropertyRef Name="ApplicationId"/>
+					<PropertyRef Name="LaunchMode"/>
+				</Key>
+				<Property Name="ApplicationName" Type="Edm.String" Nullable="false" MaxLength="60" sap:label="Nav App description"/>
+				<Property Name="ApplicationId" Type="Edm.String" Nullable="false" MaxLength="20" sap:label="Application Id"/>
+				<Property Name="LaunchMode" Type="Edm.String" Nullable="false" MaxLength="10" sap:label="Launch Mode"/>
+				<Property Name="Value1" Type="Edm.String" Nullable="false" MaxLength="255" sap:label="UI Hyperlink Value1"/>
+				<Property Name="Value2" Type="Edm.String" Nullable="false" MaxLength="255" sap:label="UI Hyperlink Value2"/>
 			</EntityType>
 			<EntityContainer Name="com_evorait_evoprep_Entities" m:IsDefaultEntityContainer="true" sap:supported-formats="atom json xlsx">
 				<EntitySet Name="PrePlanSet" EntityType="com.evorait.evoprep.PrePlan" sap:content-version="1"/>
-				<EntitySet Name="GetSystemInformationSet" EntityType="com.evorait.evoprep.GetSystemInformation" sap:content-version="1"/>
-				<EntitySet Name="DemandSet" EntityType="com.evorait.evoprep.Demand" sap:content-version="1"/>
+				<EntitySet Name="SystemInformationSet" EntityType="com.evorait.evoprep.SystemInformation" sap:content-version="1"/>
+				<EntitySet Name="PlanItemsSet" EntityType="com.evorait.evoprep.PlanItems" sap:content-version="1"/>
+				<EntitySet Name="NavLinksSet" EntityType="com.evorait.evoprep.NavLinks" sap:content-version="1"/>
 			</EntityContainer>
 			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoprep.PrePlan">
 				<Annotation Term="com.sap.vocabularies.UI.v1.SelectionFields">
@@ -98,7 +111,7 @@
 					</Collection>
 				</Annotation>
 			</Annotations>
-			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoprep.Demand">
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoprep.PlanItems">
 				<Annotation Term="com.sap.vocabularies.UI.v1.SelectionFields">
 					<Collection>
 						<PropertyPath>ORDERID</PropertyPath>
@@ -141,9 +154,16 @@
 							<PropertyValue Property="Value" Path="MATERIAL_STATUS"/>
 							<PropertyValue Property="Position" Int="8"/>
 						</Record>
+						<!--<Record Type="com.sap.vocabularies.UI.v1.DataField">-->
+						<!--	<PropertyValue Property="Value" Path="PrePlanKey"/>-->
+						<!--	<PropertyValue Property="Position" Int="9"/>-->
+						<!--</Record>-->
 					</Collection>
 				</Annotation>
 			</Annotations>
+			<!--<Annotations Target="com.evorait.evoprep.PlanItems/PrePlanKey" xmlns="http://docs.oasis-open.org/odata/ns/edm">-->
+			<!--	<Annotation Term="com.sap.vocabularies.Common.v1.SemanticObject" String="PrePlanKey"/>-->
+			<!--</Annotations>-->
 		</Schema>
 	</edmx:DataServices>
 </edmx:Edmx>

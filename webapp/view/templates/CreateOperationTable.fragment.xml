@@ -8,9 +8,9 @@
 					items="{path:'CreateModel>/results'}" growing="true" growingThreshold="10">
 					<headerToolbar>
 						<OverflowToolbar design="Transparent">
-							<Title text="Operations" level="H2"/>
+							<Title text="{i18n>tit.operations}" level="H2"/>
 							<ToolbarSpacer/>
-							<OverflowToolbarButton icon="sap-icon://add" text="{i18n>xbtn.add}" press="onPressAddOperations"
+							<OverflowToolbarButton icon="sap-icon://add" text="{i18n>xbtn.add}" tooltip="{i18n>xbtn.add}" press="onPressAddOperations"
 								visible="{= ${user>/ENABLE_ITEM_ADD} === 'X'}">
 								<customData>
 									<core:CustomData key="tab"
@@ -28,8 +28,8 @@
 										<Text text="{= '{/' + ${tabItem>entitySet} + '/' + ${lineItem>Value/Path} + '/##com.sap.vocabularies.Common.v1.Label/String}' }"/>
 									</Column>
 								</template:repeat>
-								<Column>
-									<Text text="Delete"/>
+								<Column hAlign="End">
+									<Text text=""/>
 								</Column>
 							</columns>
 							<items>
@@ -45,7 +45,7 @@
 												</template:else>
 											</template:if>
 										</template:repeat>
-										<Button icon="sap-icon://delete" type="Reject" press="removeOperation"/>
+										<Button icon="sap-icon://sys-cancel" type="Reject" tooltip="{i18n>btn.remove}" press="removeOperation"/>
 									</cells>
 								</ColumnListItem>
 							</items>

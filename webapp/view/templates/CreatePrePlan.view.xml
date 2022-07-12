@@ -13,18 +13,18 @@
 							<uxap:actions>
 								<uxap:ObjectPageHeaderActionButton icon="sap-icon://save" type="Emphasized" text="{i18n>xbtn.save}" hideText="false"
 									tooltip="{i18n>xbtn.save}" press="onPressSave"/>
-								<uxap:ObjectPageHeaderActionButton icon="sap-icon://cancel" type="Default" press="onNavBackMaster" text="{i18n>xbtn.cancel}" hideText="false"
-									tooltip="{i18n>xbtn.cancel}"/>
+								<uxap:ObjectPageHeaderActionButton icon="sap-icon://cancel" type="Default" press="onNavBackMaster" text="{i18n>xbtn.cancel}"
+									hideText="false" tooltip="{i18n>xbtn.cancel}"/>
 								<core:ExtensionPoint name="PageExtP|PrePlanCreate|PlanHeaderSet|Title|Action"/>
 							</uxap:actions>
 							<uxap:navigationBar>
 								<Bar class="sapUiTinyMarginTop">
 									<contentLeft>
-										<Button icon="sap-icon://nav-back" tooltip="nav-back" press="onNavBackMaster"/>
+										<Button icon="sap-icon://nav-back" tooltip="{i18n>btn.navBack}" press="onNavBackMaster"/>
 										<core:ExtensionPoint name="PageExtP|PrePlanCreate|PlanHeaderSet|NavigationBar|Left"/>
 									</contentLeft>
 									<contentMiddle>
-										<Title text="Create Pre-Plan"/>
+										<Title text="{i18n>tit.createPrePlan}"/>
 									</contentMiddle>
 									<contentRight>
 										<core:Fragment fragmentName="com.evorait.evosuite.evoprep.view.fragments.HeaderAction" type="XML"/>

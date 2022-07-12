@@ -139,7 +139,7 @@ sap.ui.define([
 				aSelectedItems = oTable.getSelectedItems();
 
 			if (aSelectedItems.length === 0) {
-				this.showMessageToast("Select atleast one operation");
+				this.showMessageToast(this.getResourceBundle().getText("msg.selectAtleast"));
 				return;
 			}
 			var oOperationData = this.oCreateModel.getData();
@@ -239,10 +239,12 @@ sap.ui.define([
 
 		_createSuccess: function (oResponse) {
 			console.log(oResponse);
+			this.showMessageToast("Successfully created");
 		},
 
 		_createFail: function (oError) {
 			console.log(oError);
+			this.showMessageToast("Error occurred");
 		},
 
 	});

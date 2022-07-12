@@ -21,7 +21,7 @@ sap.ui.define([
 		/* =========================================================== */
 
 		/**
-		 * worklist on init
+		 *  on init
 		 */
 		onInit: function () {
 			this.oViewModel = this.getModel("viewModel");

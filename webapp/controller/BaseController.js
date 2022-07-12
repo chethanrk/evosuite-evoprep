@@ -11,12 +11,119 @@ sap.ui.define([
 	"com/evorait/evosuite/evoprep/model/formatter",
 	"sap/base/util/deepClone",
 	"sap/f/library",
-	"sap/ui/core/Fragment"
+	"sap/ui/core/Fragment",
 ], function (Controller, History, Dialog, Button, Text, MessageToast, MessageBox, OverrideExecution, formatter, deepClone, library,
 	Fragment) {
 	"use strict";
 
 	return Controller.extend("com.evorait.evosuite.evoprep.controller.BaseController", {
+
+		metadata: {
+			// extension can declare the public methods
+			// in general methods that start with "_" are private
+			methods: {
+
+				getRouter: {
+					public: true,
+					final: true
+				},
+
+				getModel: {
+					public: true,
+					final: true
+				},
+
+				setModel: {
+					public: true,
+					final: true
+				},
+
+				getResourceBundle: {
+					public: true,
+					final: true
+				},
+
+				clearAllMessages: {
+					public: true,
+					final: true
+				},
+
+				openMessageManager: {
+					public: true,
+					final: true
+				},
+
+				showMessageToast: {
+					public: true,
+					final: true
+				},
+				onNavBack: {
+					public: true,
+					final: true
+				},
+				confirmEditCancelDialog: {
+					public: true,
+					final: true
+				},
+				nav2Master: {
+					public: true,
+					final: true
+				},
+				onAboutIconPress: {
+					public: true,
+					final: true
+				},
+				open: {
+					public: true,
+					final: true
+				},
+				onCloseDialog: {
+					public: true,
+					final: true
+				},
+				onMessageManagerPress: {
+					public: true,
+					final: true
+				},
+
+				displayLongText: {
+					public: true,
+					final: true
+				},
+				onShowDemandsPress: {
+					public: true,
+					final: true
+				},
+				onPressFullScreen: {
+					public: true,
+					final: true
+				},
+				onPressClose: {
+					public: true,
+					final: true
+				},
+				getAllSmartForms: {
+					public: true,
+					final: true
+				},
+				setFormsEditable: {
+					public: true,
+					final: true
+				},
+				validateForm: {
+					public: true,
+					final: true
+				},
+				CreatePrePlan: {
+					public: true,
+					final: true
+				},
+				showConfirmDialog: {
+					public: true,
+					final: true
+				}
+			}
+		},
 
 		formatter: formatter,
 

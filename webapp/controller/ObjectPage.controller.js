@@ -142,7 +142,7 @@ sap.ui.define([
 		 */
 		_setCreatePrePlanPageInfo: function (sRouteName, oArgs) {
 			this._getCretaeOpAnnotations().then(function () {
-				var sViewName = "com.evorait.evosuite.evoprep.view.templates.CreatePrePlan#Create";
+				var sViewName = "com.evorait.evosuite.evoprep.view.templates.CreatePrePlan#CreatePrePlan";
 				this.getModel("templateProperties").setProperty("/annotationPath", {
 					entitySet: "PlanHeaderSet",
 					path: "com.sap.vocabularies.UI.v1.Facets#Create"

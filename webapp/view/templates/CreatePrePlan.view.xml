@@ -45,13 +45,9 @@
 											<uxap:subSections>
 												<uxap:ObjectPageSubSection>
 													<uxap:blocks>
-														<template:if test="{:= (${createTabs>Org.OData.Core.V1.Description/String} === 'Form')}">
-															<template:then>
-																<template:with path="createTabs>Facets" var="facets">
-																	<core:Fragment fragmentName="com.evorait.evosuite.evoprep.view.templates.SmartFormTemplate" type="XML"/>
-																</template:with>
-															</template:then>
-														</template:if>
+														<template:with path="createTabs>Facets" var="facets">
+															<core:Fragment fragmentName="com.evorait.evosuite.evoprep.view.templates.SmartFormTemplate" type="XML"/>
+														</template:with>
 													</uxap:blocks>
 												</uxap:ObjectPageSubSection>
 											</uxap:subSections>

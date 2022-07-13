@@ -4,7 +4,8 @@
 	<smartTable:SmartTable id="demandBlockSmartTable" height="100%" width="100%" entitySet="PlanItemsSet" header="{i18n>tit.OperationsTable}"
 		tableType="ResponsiveTable" useExportToExcel="false" useVariantManagement="true" useTablePersonalisation="true" showRowCount="true"
 		enableAutoBinding="true" demandPopin="false" smartFilterId="demandListSmartFilterBar" customData:useSmartField="true"
-		customData:useSmartToggle="true" editTogglable="{= ${user>/ENABLE_PREPLAN_UPDATE} === 'X'}" ignoredFields="PLAN_ID,NETWORK_KEY">
+		customData:useSmartToggle="true" editTogglable="{= ${user>/ENABLE_PREPLAN_UPDATE} === 'X'}" ignoredFields="PLAN_ID,NETWORK_KEY"
+		tableBindingPath="PlanHeaderToPlanItems">
 		<!--layout data used to make the table growing but the filter bar fixed-->
 		<smartTable:layoutData>
 			<FlexItemData growFactor="1" baseSize="0%"/>

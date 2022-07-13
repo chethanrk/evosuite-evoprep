@@ -11,7 +11,7 @@ sap.ui.define([
 		 * @memberOf com.evorait.evosuite.evoprep.block.demand.DemandsBlock
 		 */
 		onInit: function () {
-
+			this._oSmartTable = this.getView().byId("demandBlockSmartTable");
 		},
 
 		/**
@@ -39,6 +39,23 @@ sap.ui.define([
 		//	onExit: function() {
 		//
 		//	}
+
+		/**
+		 * Opens popup to add operation in demand list
+		 */
+		addOperations: function () {
+			// var mParams = {
+			// 	viewName: this.setViewNameWithOrderType("com.evorait.evosuite.evoprep.view.templates.DialogContentWrapper#AddEditTime"),
+			// 	// annotationPath: this.setViewNameWithOrderType("com.sap.vocabularies.UI.v1.Facets#AddOperation"),
+			// 	entitySet: "PlanItemsSet",
+			// 	controllerName: "PrePlanDetail",
+			// 	title: "tit.addOperation",
+			// 	type: "add",
+			// 	section: "demand",
+			// 	smartTable: this._oSmartTable
+			// };
+			// this.getOwnerComponent().DialogTemplateRenderer.open(this.getView(), mParams);
+		}
 
 	});
 

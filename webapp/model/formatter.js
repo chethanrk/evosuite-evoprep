@@ -28,10 +28,10 @@ sap.ui.define([
 				return mCriticallyStates["0"].state;
 			}
 		},
-		
-		getOperationDate:function(oDate){
+
+	/*	getOperationDate: function (oDate) {
 			debugger;
-		}
+		}*/
 	};
 
 });

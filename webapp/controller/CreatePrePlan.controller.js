@@ -46,6 +46,12 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
+				},
+				
+				onUpdateFinished: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
@@ -161,7 +167,9 @@ sap.ui.define([
 		 */
 		removeOperation: function (oEvent) {
 			var oSource = oEvent.getSource(),
-				sPath = oSource.getId().slice(-1);
+				oSelItem = oSource.getParent(),
+				oContext = oSelItem.getBindingContext("CreateModel"),
+				sPath = oContext.getPath().slice(-1);
 
 			this.oCreateModel.getData().results.splice(parseInt(sPath, 10), 1);
 			this.oCreateModel.refresh();
@@ -187,6 +195,29 @@ sap.ui.define([
 					}.bind(this));
 				}
 			}
+		},
+
+		/**
+		 * Called when each time CreateModel gets update
+		 * set operation table row count 
+		 * validate the From Date and To date with operations earliast start date and latest end date
+		 */
+		onUpdateFinished: function (oEvent) {
+			var oSource = oEvent.getSource(),
+				aItems = oSource.getItems();
+			//set operation table row count
+			this.getModel("viewModel").setProperty("/operationTableCount", this.getResourceBundle().getText("tit.opr", (aItems.length).toString()));
+
+			//validate from and to date with operations
+			aItems.forEach(function (oItem) {
+				var oContext = oItem.getBindingContext("CreateModel"),
+					esd = oContext.getProperty("EARLIEST_START_DATE"),
+					eed = oContext.getProperty("EARLIEST_END_DATE"),
+					sPath = this.getView().getBindingContext().getPath();
+
+				this.getModel().setProperty(sPath + "/START_DATE", esd);
+				this.getModel().setProperty(sPath + "/END_DATE", eed);
+			}.bind(this));
 		},
 
 		/* =========================================================== */

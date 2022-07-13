@@ -21,6 +21,7 @@
 								<Bar class="sapUiTinyMarginTop">
 									<contentLeft>
 										<Button icon="sap-icon://nav-back" tooltip="{i18n>btn.navBack}" press="onNavBackMaster"/>
+										<!--<Image src="{viewModel>/logoUrl}" densityAware="false" height="30px" alt="EvoResource" id="idEvoPrepImageLogo"/>-->
 										<core:ExtensionPoint name="PageExtP|PrePlanCreate|PlanHeaderSet|NavigationBar|Left"/>
 									</contentLeft>
 									<contentMiddle>

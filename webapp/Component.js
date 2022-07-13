@@ -10,7 +10,7 @@ sap.ui.define([
 	"use strict";
 
 	var oMessageManager = sap.ui.getCore().getMessageManager();
-	
+
 	return UIComponent.extend("com.evorait.evosuite.evoprep.Component", {
 
 		metadata: {
@@ -49,7 +49,8 @@ sap.ui.define([
 				busy: true,
 				delay: 100,
 				densityClass: this.getContentDensityClass(),
-				fullscreen: true
+				fullscreen: true,
+				operationTableCount: ""
 			};
 			this.setModel(models.createHelperModel(viewModelObj), "viewModel");
 			this.setModel(models.createCreateModel(), "CreateModel");

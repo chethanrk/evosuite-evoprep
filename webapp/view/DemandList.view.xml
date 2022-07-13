@@ -1,20 +1,61 @@
-<mvc:View xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m"
+<mvc:View xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:f="sap.f"
+	xmlns:smartFilterBar="sap.ui.comp.smartfilterbar" xmlns:smartTable="sap.ui.comp.smarttable" xmlns:table="sap.ui.table"
+	xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
 	controllerName="com.evorait.evosuite.evoprep.controller.DemandList" xmlns:html="http://www.w3.org/1999/xhtml">
-	<Page class="sapUiNoContentPadding" enableScrolling="false" showHeader="true" showFooter="false" showSubHeader="false" showNavButton="true"
-		navButtonPress="onNavBack">
-		<customHeader>
-			<Bar>
-				<contentLeft>
-					<Button icon="sap-icon://nav-back" tooltip="nav-back" press="onNavBack"/>
-				</contentLeft>
-				<contentMiddle>
-					<Title text="Demands"></Title>
-				</contentMiddle>
-				<contentRight>
+	<f:DynamicPage id="demandListPage" headerExpanded="true" preserveHeaderStateOnScroll="true" showFooter="false" class="sapUiNoContentPadding">
+		<f:title>
+			<f:DynamicPageTitle>
+				<f:heading>
+					<Image src="{viewModel>/logoUrl}" densityAware="false" height="30px" alt="EvoPrep" id="imageLogo"/>
+				</f:heading>
+				<f:navigationActions>
 					<core:Fragment fragmentName="com.evorait.evosuite.evoprep.view.fragments.HeaderAction" type="XML"/>
-				</contentRight>
-			</Bar>
-		</customHeader>
-		<content></content>
-	</Page>
+				</f:navigationActions>
+			</f:DynamicPageTitle>
+		</f:title>
+		<f:header>
+			<f:DynamicPageHeader pinnable="true">
+				<f:content>
+					<smartFilterBar:SmartFilterBar id="demandListSmartFilterBar" entitySet="PlanItemsSet" useDateRangeType="true"
+						persistencyKey="com.evorait.evosuite.evoorder.demandListsFilterbar" initialized="onInitializedSmartVariant">
+						<!-- layout data used to make the table growing but the filter bar fixed -->
+						<smartFilterBar:layoutData>
+							<FlexItemData shrinkFactor="0"/>
+						</smartFilterBar:layoutData>
+					</smartFilterBar:SmartFilterBar>
+				</f:content>
+			</f:DynamicPageHeader>
+		</f:header>
+		<f:content>
+			<smartTable:SmartTable id="demandListSmartTable" height="100%" width="100%" entitySet="PlanItemsSet" header="{i18n>tit.OperationsTable}"
+				tableType="Table" useExportToExcel="true" useVariantManagement="true" useTablePersonalisation="true" showRowCount="true"
+				enableAutoBinding="true" demandPopin="false" smartFilterId="demandListSmartFilterBar" customData:useSmartField="true"
+				customData:useSmartToggle="true" editTogglable="true">
+				<!-- layout data used to make the table growing but the filter bar fixed -->
+				<smartTable:layoutData>
+					<FlexItemData growFactor="1" baseSize="0%"/>
+				</smartTable:layoutData>
+				<!--<table:Table id="demandListPageSmartTableTable" rowActionCount="1">-->
+				<!--	<table:rowActionTemplate>-->
+				<!--		<table:RowAction visible="{= ${navLinks>/results/}.length > 0}">-->
+				<!--			<table:items>-->
+				<!--				<table:RowActionItem press="onRowActionPress" icon="sap-icon://action"/>-->
+				<!--			</table:items>-->
+				<!--		</table:RowAction>-->
+				<!--	</table:rowActionTemplate>-->
+				<!--	<table:columns>-->
+				<!--		<table:Column hAlign="Center" width="3rem">-->
+				<!--			<table:customData>-->
+				<!--				<core:CustomData key="p13nData" value='\{"columnKey": "PrePlanKey", "leadingProperty": "PrePlanKey", "columnIndex": 2}'/>-->
+				<!--			</table:customData>-->
+				<!--			<Label text="{/#PlanItemsSet/PrePlanKey/@sap:label}"/>-->
+				<!--			<table:template>-->
+				<!--				<Link text="{PrePlanKey}"/>-->
+				<!--			</table:template>-->
+				<!--		</table:Column>-->
+				<!--	</table:columns>-->
+				<!--</table:Table>-->
+			</smartTable:SmartTable>
+		</f:content>
+	</f:DynamicPage>
 </mvc:View>

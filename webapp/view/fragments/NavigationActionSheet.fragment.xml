@@ -1,0 +1,7 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+	<ActionSheet id="idNavActionSheet" buttons="{ path:'navLinks>/results/'}">
+		<buttons>
+			<Button text="{navLinks>ApplicationName}" press="onClickNavAction"/>
+		</buttons>
+	</ActionSheet>
+</core:FragmentDefinition>

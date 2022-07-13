@@ -42,6 +42,7 @@ This XML file does not appear to have any style information associated with it. 
 				<Property Name="ENABLE_PREPLAN_CREATE" Type="Edm.String" MaxLength="1" sap:label="Enable PrePla Create" sap:is-extension-field="true"/>
 				<Property Name="ENABLE_ITEM_ADD" Type="Edm.String" MaxLength="1" sap:label="Enable Item Add" sap:is-extension-field="true"/>
 				<Property Name="ENABLE_ITEM_UPDATE" Type="Edm.String" MaxLength="1" sap:label="Enable Item Update" sap:is-extension-field="true"/>
+                <Property Name="ENABLE_SHOW_ALL_DEMANDS" Type="Edm.Boolean" sap:label="Show all demands on"/>
 			</EntityType>
 			<EntityType Name="PlanItems" sap:content-version="1">
 				<Key>
@@ -114,6 +115,31 @@ This XML file does not appear to have any style information associated with it. 
 				<NavigationProperty Name="PlanHeaderToPlanItems" Relationship="com.evorait.evoprep.PlanHeaderToPlanItems"
 					FromRole="FromRole_PlanHeaderToPlanItems" ToRole="ToRole_PlanHeaderToPlanItems"/>
 			</EntityType>
+            <EntityType Name="PlanItems" sap:content-version="1">
+				<Key>
+					<PropertyRef Name="ObjectKey"/>
+				</Key>
+				<Property Name="ORDERID" Type="Edm.String" Nullable="false" MaxLength="6" sap:label="ORDER ID" sap:updatable="false"/>
+				<Property Name="Status" Type="Edm.String" Nullable="false" MaxLength="8" sap:label="Status" sap:updatable="false"/>
+				<Property Name="DemandDesc" Type="Edm.String" MaxLength="40" sap:label="Demand Description"/>
+				<Property Name="MATERIAL_STATUS" Type="Edm.String" MaxLength="10" sap:label="Material Status"/>
+				<Property Name="OPERATIONID" Type="Edm.String" MaxLength="6" sap:label="Operation ID" sap:updatable="false"/>
+				<Property Name="NOTIFICATION" Type="Edm.String" MaxLength="6" sap:label="Notification"/>
+				<Property Name="DateFrom" Type="Edm.DateTime" Precision="0" sap:label="From Date" sap:is-extension-field="true" sap:display-format="Date"/>
+				<Property Name="DateTo" Type="Edm.DateTime" Precision="0" sap:label="To Date" sap:is-extension-field="true" sap:display-format="Date"/>
+				<Property Name="PrePlanKey" Type="Edm.String" MaxLength="20" sap:label="Pre Plan ID" sap:is-extension-field="true"/>
+			</EntityType>
+			<EntityType Name="NavLinks" sap:content-version="1">
+				<Key>
+					<PropertyRef Name="ApplicationId"/>
+					<PropertyRef Name="LaunchMode"/>
+				</Key>
+				<Property Name="ApplicationName" Type="Edm.String" Nullable="false" MaxLength="60" sap:label="Nav App description"/>
+				<Property Name="ApplicationId" Type="Edm.String" Nullable="false" MaxLength="20" sap:label="Application Id"/>
+				<Property Name="LaunchMode" Type="Edm.String" Nullable="false" MaxLength="10" sap:label="Launch Mode"/>
+				<Property Name="Value1" Type="Edm.String" Nullable="false" MaxLength="255" sap:label="UI Hyperlink Value1"/>
+				<Property Name="Value2" Type="Edm.String" Nullable="false" MaxLength="255" sap:label="UI Hyperlink Value2"/>
+			</EntityType>
 			<Association Name="PlanHeaderToPlanItems" sap:content-version="1">
 				<End Type="com.evorait.evoprep.PlanHeader" Multiplicity="1" Role="FromRole_PlanHeaderToPlanItems"/>
 				<End Type="com.evorait.evoprep.PlanItems" Multiplicity="*" Role="ToRole_PlanHeaderToPlanItems"/>
@@ -129,6 +155,7 @@ This XML file does not appear to have any style information associated with it. 
 			<EntityContainer Name="com_evorait_evoprep_Entities" m:IsDefaultEntityContainer="true" sap:supported-formats="atom json xlsx">
 				<EntitySet Name="SystemInformationSet" EntityType="com.evorait.evoprep.SystemInformation" sap:content-version="1"/>
 				<EntitySet Name="PlanItemsSet" EntityType="com.evorait.evoprep.PlanItems" sap:content-version="1"/>
+                <EntitySet Name="NavLinksSet" EntityType="com.evorait.evoprep.NavLinks" sap:content-version="1"/>
 				<EntitySet Name="PlanHeaderSet" EntityType="com.evorait.evoprep.PlanHeader" sap:content-version="1"/>
 				<AssociationSet Name="PlanHeaderToPlanItemsSet" Association="com.evorait.evoprep.PlanHeaderToPlanItems" sap:creatable="false"
 					sap:updatable="false" sap:deletable="false" sap:content-version="1">
@@ -203,6 +230,10 @@ This XML file does not appear to have any style information associated with it. 
 							<PropertyValue Property="Value" Path="SYSTEM_STATUS_DESC"/>
 							<PropertyValue Property="Position" Int="8"/>
 						</Record>
+						<!--<Record Type="com.sap.vocabularies.UI.v1.DataField">-->
+						<!--	<PropertyValue Property="Value" Path="PrePlanKey"/>-->
+						<!--	<PropertyValue Property="Position" Int="9"/>-->
+						<!--</Record>-->
 					</Collection>
 				</Annotation>
 				<Annotation Term="com.sap.vocabularies.UI.v1.SelectionFields">

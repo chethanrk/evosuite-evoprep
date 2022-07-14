@@ -56,11 +56,11 @@ sap.ui.define([
 		 * Navigate to detail page with selected plan details
 		 */
 		onClickTableRow: function (oEvent) {
-			var sPlanId = oEvent.getSource().getBindingContext().getProperty("PLAN_ID");
+			var sobjectKeyId = oEvent.getSource().getBindingContext().getProperty("ObjectKey");
 			//this.getView().getParent().getParent().removeAllMidColumnPages();
 			this.getRouter().navTo("PrePlanDetail", {
 				layout: library.LayoutType.TwoColumnsMidExpanded,
-				plan: sPlanId
+				plan: sobjectKeyId
 			});
 		},
 

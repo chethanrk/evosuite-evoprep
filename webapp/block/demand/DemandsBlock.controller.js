@@ -5,13 +5,28 @@ sap.ui.define([
 
 	return Controller.extend("com.evorait.evosuite.evoprep.block.demand.DemandsBlock", {
 
+		metadata: {
+			// extension can declare the public methods
+			// in general methods that start with "_" are private
+			methods: {
+				addOperations: {
+					public: true,
+					final: true
+				}
+			}
+		}
+
+		/* =========================================================== */
+		/* Lifecycle methods                                           */
+		/* =========================================================== */
+
 		/**
 		 * Called when a controller is instantiated and its View controls (if available) are already created.
 		 * Can be used to modify the View before it is displayed, to bind event handlers and do other one-time initialization.
 		 * @memberOf com.evorait.evosuite.evoprep.block.demand.DemandsBlock
 		 */
 		onInit: function () {
-			this._oSmartTable = this.getView().byId("demandBlockSmartTable");
+			this._oSmartTable = this.getView().byId("idDemandBlockSmartTable");
 		},
 
 		/**
@@ -39,6 +54,10 @@ sap.ui.define([
 		//	onExit: function() {
 		//
 		//	}
+
+		/* =========================================================== */
+		/* Public methods                                           */
+		/* =========================================================== */
 
 		/**
 		 * Opens popup to add operation in demand list

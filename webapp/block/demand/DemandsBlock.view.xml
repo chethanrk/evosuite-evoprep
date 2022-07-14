@@ -3,9 +3,9 @@
 	controllerName="com.evorait.evosuite.evoprep.block.demand.DemandsBlock" xmlns:html="http://www.w3.org/1999/xhtml">
 	<smartTable:SmartTable id="demandBlockSmartTable" height="100%" width="100%" entitySet="PlanItemsSet" header="{i18n>tit.OperationsTable}"
 		tableType="ResponsiveTable" useExportToExcel="false" useVariantManagement="true" useTablePersonalisation="true" showRowCount="true"
-		enableAutoBinding="true" demandPopin="false" smartFilterId="demandListSmartFilterBar" customData:useSmartField="true"
-		customData:useSmartToggle="true" editTogglable="{= ${user>/ENABLE_PREPLAN_UPDATE} === 'X'}" ignoredFields="PLAN_ID,NETWORK_KEY"
-		tableBindingPath="PlanHeaderToPlanItems">
+		persistencyKey="evoPrep_demands" enableAutoBinding="true" demandPopin="true" smartFilterId="demandListSmartFilterBar"
+		customData:useSmartField="true" customData:useSmartToggle="true" editTogglable="{= ${user>/ENABLE_PREPLAN_UPDATE} === 'X'}"
+		ignoredFields="PLAN_ID,NETWORK_KEY" tableBindingPath="PlanHeaderToPlanItems">
 		<!--layout data used to make the table growing but the filter bar fixed-->
 		<smartTable:layoutData>
 			<FlexItemData growFactor="1" baseSize="0%"/>
@@ -14,6 +14,7 @@
 			<Toolbar>
 				<ToolbarSpacer/>
 				<Button icon="sap-icon://add" press="addOperations" tooltip="{i18n>btn.addOper}" visible="{= ${user>/ENABLE_PREPLAN_UPDATE} === 'X'}"/>
+				<core:ExtensionPoint name="TableExtP|PrePlanDetail|PlanItemsSet|CustomToolbar"/>
 			</Toolbar>
 		</smartTable:customToolbar>
 		<!--<Table mode="SingleSelectMaster" growingThreshold="100" growing="true"></Table>-->

@@ -121,6 +121,10 @@ sap.ui.define([
 				showConfirmDialog: {
 					public: true,
 					final: true
+				},
+				getBatchChangeResponse: {
+					public: true,
+					final: true
 				}
 			}
 		},
@@ -477,6 +481,22 @@ sap.ui.define([
 			});
 			dialog.addStyleClass(this.getModel("viewModel").getProperty("/densityClass"));
 			dialog.open();
+		},
+		/**
+		 * picks out the change response data from a batch call
+		 * Need for create entries 
+		 * Example: CreateNotification saveCreateSuccessFn
+		 * @param oResponse
+		 */
+		getBatchChangeResponse: function (oResponse) {
+			var batch = oResponse.__batchResponses[0];
+			//success
+			if (batch.__changeResponses) {
+				if (batch && (batch.__changeResponses[0].data)) {
+					return batch.__changeResponses[0].data;
+				}
+			}
+			return null;
 		}
 	});
 });

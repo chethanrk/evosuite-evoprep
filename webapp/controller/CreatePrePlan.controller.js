@@ -47,7 +47,7 @@ sap.ui.define([
 					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
-				
+
 				onUpdateFinished: {
 					public: true,
 					final: false,
@@ -191,7 +191,7 @@ sap.ui.define([
 						oPayloadData.PlanHeaderToPlanItems = aOperationData.results;
 						console.log(oPayloadData);
 
-						this.CreatePrePlan(oPayloadData, this._createSuccess.bind(this), this._createFail.bind(this));
+						this.CreatePrePlan(oPayloadData, this._createSuccess.bind(this));
 					}.bind(this));
 				}
 			}
@@ -209,15 +209,7 @@ sap.ui.define([
 			this.getModel("viewModel").setProperty("/operationTableCount", this.getResourceBundle().getText("tit.opr", (aItems.length).toString()));
 
 			//validate from and to date with operations
-			aItems.forEach(function (oItem) {
-				var oContext = oItem.getBindingContext("CreateModel"),
-					esd = oContext.getProperty("EARLIEST_START_DATE"),
-					eed = oContext.getProperty("EARLIEST_END_DATE"),
-					sPath = this.getView().getBindingContext().getPath();
-
-				this.getModel().setProperty(sPath + "/START_DATE", esd);
-				this.getModel().setProperty(sPath + "/END_DATE", eed);
-			}.bind(this));
+			//TODO function import for the start date and enddate
 		},
 
 		/* =========================================================== */
@@ -268,15 +260,25 @@ sap.ui.define([
 			}.bind(this));
 		},
 
+		/**
+		 * Called when create request sussessfully saved in backend
+		 * @{param} oResponse - response from the backend
+		 * unbind old context and bind new context
+		 * Set default values
+		 */
 		_createSuccess: function (oResponse) {
-			console.log(oResponse);
-			this.showMessageToast("Successfully created");
-		},
+			if (oResponse) {
+				//Bind new context
+				this.getView().unbindElement();
+				var oContext = this.getView().getModel().createEntry("/PlanHeaderSet");
+				this.getView().setBindingContext(oContext);
+				this.getModel("CreateModel").getData().results = [];
+				this.getModel("CreateModel").refresh();
 
-		_createFail: function (oError) {
-			console.log(oError);
-			this.showMessageToast("Error occurred");
-		},
+				// defaulting values
+				this._initializeView();
+			}
+		}
 
 	});
 

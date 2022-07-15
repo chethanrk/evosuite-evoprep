@@ -62,7 +62,7 @@ sap.ui.define([
 			var sPlanId = oEvent.getSource().getBindingContext().getProperty("PLAN_ID");
 			this.getRouter().navTo("PrePlanDetail", {
 				layout: library.LayoutType.TwoColumnsMidExpanded,
-				plan: sPlanId
+				plan: sobjectKeyId
 			});
 		},
 

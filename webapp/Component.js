@@ -96,7 +96,7 @@ sap.ui.define([
 
 		/**
 		 * This method registers the view to the message manager
-		 * @param oView
+		 * @{param} oView
 		 */
 		registerViewToMessageManager: function (oView) {
 			oMessageManager.registerObject(oView, true);

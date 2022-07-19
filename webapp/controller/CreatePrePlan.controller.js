@@ -152,8 +152,8 @@ sap.ui.define([
 			aSelectedItems.forEach(function (oItem) {
 				var oSelObject = oItem.getBindingContext().getObject();
 				delete oSelObject.__metadata;
-				var iFindIndex = this._checkDuplicate(oOperationData.results, oSelObject.ObjectKey);
-				if (iFindIndex === -1) {
+				//validate for the duplicate
+				if (this._checkDuplicate(oOperationData.results, oSelObject.ObjectKey)) {
 					oOperationData.results.push(oSelObject);
 				}
 			}.bind(this));
@@ -189,7 +189,6 @@ sap.ui.define([
 						oPayloadData.PlanHeaderToPlanItems = [];
 						var aOperationData = this.oCreateModel.getData();
 						oPayloadData.PlanHeaderToPlanItems = aOperationData.results;
-						console.log(oPayloadData);
 
 						this.CreatePrePlan(oPayloadData, this._createSuccess.bind(this));
 					}.bind(this));
@@ -236,9 +235,14 @@ sap.ui.define([
 		 * @param ObjectKey - object key to compare
 		 */
 		_checkDuplicate: function (oData, ObjectKey) {
-			return oData.findIndex(function (oItem) {
-				return (oItem.ObjectKey === ObjectKey);
+			var bIndicator = true;
+			oData.forEach(function (oItem) {
+				if (oItem.ObjectKey === ObjectKey) {
+					bIndicator = false;
+					return;
+				}
 			});
+			return bIndicator;
 		},
 
 		/**

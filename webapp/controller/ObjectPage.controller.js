@@ -174,7 +174,6 @@ sap.ui.define([
 							if (aLineItems) {
 								oTempModel.setProperty("/Configs/Tabs/" + idx + "/lineItems", aLineItems);
 							}
-							console.log(aLineItems);
 						});
 					}.bind(this));
 				}.bind(this));

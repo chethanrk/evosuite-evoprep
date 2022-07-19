@@ -497,6 +497,36 @@ sap.ui.define([
 				}
 			}
 			return null;
-		}
+		},
+
+		/**
+		 * Method to call Function Import
+		 * @param oParams {object} parameter to be passed to function import
+		 * @param sFuncName {string} function import name
+		 * @param sMethod {string} method of the function import, default is "POST"
+		 * @param fCallback {function} callback function when function import return value
+		 */
+		callFunctionImport: function (oParams, sFuncName, sMethod, fCallback) {
+			var oModel = this.getModel(),
+				oViewModel = this.getModel("viewModel"),
+				oResourceBundle = this.getResourceBundle();
+			oViewModel.setProperty("/busy", true);
+			oModel.callFunction("/" + sFuncName, {
+				method: sMethod || "POST",
+				urlParameters: oParams,
+				refreshAfterChange: false,
+				success: function (oData) {
+					//Handle Success
+					oViewModel.setProperty("/busy", false);
+					fCallback(oData);
+				}.bind(this),
+				error: function (oError) {
+					//Handle Error
+					oViewModel.setProperty("/busy", false);
+					this.showMessageToast(oResourceBundle.getText("errorText"));
+				}.bind(this)
+			});
+
+		},
 	});
 });

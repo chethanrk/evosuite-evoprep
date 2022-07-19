@@ -209,7 +209,13 @@ sap.ui.define([
 			this.getModel("viewModel").setProperty("/operationTableCount", this.getResourceBundle().getText("tit.opr", (aItems.length).toString()));
 
 			//validate from and to date with operations
-			//TODO function import for the start date and enddate
+			if (aItems.length) {
+				this._getValidationParameters(aItems).then(function (oPreparedData) {
+					if (oPreparedData && oPreparedData.sOrder && oPreparedData.sOpr) {
+						this._triggerFunctionImport(oPreparedData);
+					}
+				}.bind(this));
+			}
 		},
 
 		/* =========================================================== */
@@ -278,6 +284,57 @@ sap.ui.define([
 				// defaulting values
 				this._initializeView();
 			}
+		},
+
+		/**
+		 * Prepare function import parameter ready
+		 * check for the order number and operation number 
+		 * @[param] - aItems - operationlist items
+		 */
+		_getValidationParameters: function (aItems) {
+			return new Promise(function (resolve) {
+				var oPrepData = {
+					"sOrder": undefined,
+					"sOpr": undefined
+				};
+				aItems.forEach(function (oItem) {
+					var sordnum = oItem.getBindingContext("CreateModel").getProperty("ORDER_NUMBER"),
+						soprnum = oItem.getBindingContext("CreateModel").getProperty("OPERATION_NUMBER");
+
+					if (typeof oPrepData.sOrder === "undefined") {
+						oPrepData.sOrder = sordnum;
+					} else {
+						oPrepData.sOrder += "|" + sordnum;
+					}
+					if (typeof oPrepData.sOpr === "undefined") {
+						oPrepData.sOpr = soprnum;
+					} else {
+						oPrepData.sOpr += "|" + soprnum;
+					}
+				});
+				resolve(oPrepData);
+			}.bind(this));
+		},
+
+		/**
+		 * Trigger function import with url parameters
+		 * @{param} oParam - Url parameter
+		 */
+		_triggerFunctionImport: function (oParam) {
+			var oParams = {
+					PlanID: '',
+					OrderNumber: oParam.sOrder,
+					OperationNumber: oParam.sOpr,
+				},
+				sFunctionName = "CalculateDate";
+
+			var callbackfunction = function (oImportedData) {
+				var sPath = this.getView().getBindingContext().getPath();
+				this.getModel().setProperty(sPath + "/START_DATE", oImportedData.START_DATE);
+				this.getModel().setProperty(sPath + "/END_DATE", oImportedData.END_DATE);
+			}.bind(this);
+
+			this.callFunctionImport(oParams, sFunctionName, "GET", callbackfunction);
 		}
 
 	});

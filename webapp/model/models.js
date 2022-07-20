@@ -25,13 +25,20 @@ sap.ui.define([
 		},
 
 		createMessageModel: function () {
-			var oModel = new JSONModel([]);
+			var oModel = new JSONModel({
+				MandatoryInputValue: "",
+				DateValue: null,
+				IntegerValue: undefined,
+				Dummy: ""
+			});
 			oModel.setDefaultBindingMode("TwoWay");
 			return oModel;
 		},
-		
+
 		createCreateModel: function () {
-			var oModel = new JSONModel({"results":[]});
+			var oModel = new JSONModel({
+				"results": []
+			});
 			oModel.setDefaultBindingMode("TwoWay");
 			return oModel;
 		},

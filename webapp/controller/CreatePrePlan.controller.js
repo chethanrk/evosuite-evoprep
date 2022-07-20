@@ -119,11 +119,14 @@ sap.ui.define([
 				}).then(function (oDialog) {
 					this._addOperationsFrag = oDialog;
 					this.open(oDialog);
-					sap.ui.getCore().byId("idOperationListFragSmartTable").getTable().removeSelections();
+					this._addOperationsFrag.attachAfterOpen(function () {
+						var oOpSmartTable = sap.ui.getCore().byId("idOperationListFragSmartTable");
+						oOpSmartTable.getTable().removeSelections();
+						oOpSmartTable.rebindTable();
+					}.bind(this));
 				}.bind(this));
 			} else {
 				this.open(this._addOperationsFrag);
-				sap.ui.getCore().byId("idOperationListFragSmartTable").getTable().removeSelections();
 			}
 		},
 
@@ -328,7 +331,7 @@ sap.ui.define([
 			var oParams = {
 					PlanID: '',
 					OrderNumber: oParam.sOrder,
-					OperationNumber: oParam.sOpr,
+					OperationNumber: oParam.sOpr
 				},
 				sFunctionName = "CalculateDate";
 
@@ -336,6 +339,17 @@ sap.ui.define([
 				var sPath = this.getView().getBindingContext().getPath();
 				this.getModel().setProperty(sPath + "/START_DATE", oImportedData.START_DATE);
 				this.getModel().setProperty(sPath + "/END_DATE", oImportedData.END_DATE);
+
+				var oStartDate = this.getFormFieldByName("idSTART_DATE", this.aSmartForms),
+					oEndData = this.getFormFieldByName("idEND_DATE", this.aSmartForms);
+
+				if (oStartDate) {
+					oStartDate.getContent().setMaxDate(oImportedData.START_DATE);
+				}
+				if (oEndData) {
+					oEndData.getContent().setMinDate(oImportedData.END_DATE);
+				}
+
 			}.bind(this);
 
 			this.callFunctionImport(oParams, sFunctionName, "GET", callbackfunction);

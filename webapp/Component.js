@@ -39,7 +39,7 @@ sap.ui.define([
 			this.setModel(models.createInformationModel(this), "InformationModel");
 
 			//Creating the Global message model for MessageManager
-			this.setModel(models.createMessageModel(), "message");
+			this.setModel(models.createMessageModel(), "messageManager");
 
 			//Creating the Global User model
 			this.setModel(models.createUserModel(this), "user");
@@ -56,6 +56,8 @@ sap.ui.define([
 			this.setModel(models.createCreateModel(), "CreateModel");
 
 			this.MessageManager = new MessageManager();
+			
+			this.setModel(oMessageManager.getMessageModel(), "message");
 
 			//GetSystemInformation Call
 			this._getSystemInformation();
@@ -166,23 +168,6 @@ sap.ui.define([
 					}
 				});
 			}.bind(this));
-		},
-
-		/**
-		 * Adds messages from MessageModel to local message model
-		 */
-		createMessages: function () {
-			var aMessages = [];
-			var oMessageModel = sap.ui.getCore().getMessageManager().getMessageModel();
-			var oData = oMessageModel.getData();
-
-			if (oData.length === 0) {
-				return;
-			}
-			for (var i = 0; i < oData.length; i++) {
-				aMessages.push(oData[i]);
-			}
-			this.getModel("message").setData(aMessages);
 		},
 
 		_onBeforeRouteMatched: function (oEvent) {

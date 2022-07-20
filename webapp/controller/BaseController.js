@@ -114,6 +114,10 @@ sap.ui.define([
 					public: true,
 					final: true
 				},
+				getFormFieldByName: {
+					public: true,
+					final: true
+				},
 				CreatePrePlan: {
 					public: true,
 					final: true
@@ -130,6 +134,13 @@ sap.ui.define([
 		},
 
 		formatter: formatter,
+
+		onInit: function () {
+			//Bind the message model to the view and register it
+			if (this.getOwnerComponent) {
+				this.getOwnerComponent().registerViewToMessageManager(this.getView());
+			}
+		},
 
 		/**
 		 * Convenience method for accessing the router in every controller of the application.
@@ -367,6 +378,26 @@ sap.ui.define([
 					oForm.setEditable(isEditable);
 				});
 			}
+		},
+
+		/**
+		 * returns a SmartField from a SmartForm by name
+		 * @param sName
+		 * @param aForms
+		 */
+		getFormFieldByName: function (sName, aForms) {
+			if (!sName || !aForms) {
+				return null;
+			}
+			for (var j = 0; aForms.length > j; j++) {
+				var aSmartFields = aForms[j].getSmartFields();
+				for (var i = 0; aSmartFields.length > i; i++) {
+					if (aSmartFields[i].getName() === sName) {
+						return aSmartFields[i];
+					}
+				}
+			}
+			return null;
 		},
 
 		/**

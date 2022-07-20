@@ -5,7 +5,7 @@ sap.ui.define([
 ], function (UI5Object, MessageBox, Message) {
 	"use strict";
 
-	return UI5Object.extend("com.evorait.evosuite.evoorder.controller.ErrorHandler", {
+	return UI5Object.extend("com.evorait.evosuite.evoprep.controller.ErrorHandler", {
 
 		metadata: {
 			// extension can declare the public methods
@@ -23,7 +23,7 @@ sap.ui.define([
 		 * @class
 		 * @param {sap.ui.core.UIComponent} oComponent reference to the app's component
 		 * @public
-		 * @alias com.evorait.evosuite.evoorder.controller.ErrorHandler
+		 * @alias com.evorait.evosuite.evoprep.controller.ErrorHandler
 		 */
 		constructor: function (oComponent) {
 			this._oResourceBundle = oComponent.getModel("i18n").getResourceBundle();
@@ -210,8 +210,14 @@ sap.ui.define([
 		_showMsgByStatusText: function (oBatchResponse, bShowSuccessPopup) {
 			if (oBatchResponse.response.statusCode >= 200 && oBatchResponse.response.statusCode < 300) {
 				// on success no content are coming from backend so fetch details from oDataModel
+				if (oBatchResponse.response.headers['location']) {
+					var sLoc = oBatchResponse.response.headers['location'],
+						aLoc = sLoc.split("/");
+					oBatchResponse.url = aLoc[aLoc.length - 1];
+
+				}
 				var oData = this._oModel.getProperty("/" + oBatchResponse.url),
-					sNumber = oData ? oData.ORDER_NUMBER : "",
+					sNumber = oData ? oData.PLAN_ID : "",
 					msg = this._oResourceBundle.getText("msg.saveSuccess");
 
 				if (sNumber) {
@@ -224,6 +230,7 @@ sap.ui.define([
 						this.sSuccessMessage = msg;
 					}
 				}
+
 				this._addSuccessMessageToMessageManager(msg);
 			} else {
 				var errorMessage = this._extractError(oBatchResponse.response);

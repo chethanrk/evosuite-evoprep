@@ -1,8 +1,9 @@
 sap.ui.define([
 	//	"sap/ui/core/mvc/Controller"
 	"com/evorait/evosuite/evoprep/controller/BaseController",
-	"sap/ui/core/Fragment"
-], function (BaseController, Fragment) {
+	"sap/ui/core/Fragment",
+	"sap/ui/core/mvc/OverrideExecution"
+], function (BaseController, Fragment, OverrideExecution) {
 	"use strict";
 
 	return BaseController.extend("com.evorait.evosuite.evoprep.controller.DemandList", {
@@ -13,22 +14,38 @@ sap.ui.define([
 			methods: {
 				onRowActionPress: {
 					public: true,
-					final: true
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				},
 				onClickNavAction: {
 					public: true,
-					final: true
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				},
 				onNavLinkVisibilty: {
 					public: true,
-					final: true
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				},
 				goBackToPrePlans: {
 					public: true,
-					final: true
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				handleDemandSelectionChange: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onPressCreatePrePlanButton: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
+
+		oSmartTable: null,
 
 		/* =========================================================== */
 		/* Lifecycle methods                                           */
@@ -40,7 +57,10 @@ sap.ui.define([
 		 * @memberOf com.evorait.evosuite.evoprep.view.DemandList
 		 */
 		onInit: function () {
+			this.oSmartTable = this.getView().byId("demandListSmartTable");
 
+			this.oViewModel = this.getModel("viewModel");
+			this.oCreateModel = this.getModel("CreateModel");
 		},
 
 		/**
@@ -131,6 +151,43 @@ sap.ui.define([
 		 */
 		goBackToPrePlans: function () {
 			this.getOwnerComponent().getRouter().navTo("PrePlanMaster");
+		},
+
+		/**
+		 * Called when operation list selection change method 
+		 * Enabled/Disabled create preplan button
+		 * Validate for the minimum 1 operation selection
+		 */
+		handleDemandSelectionChange: function (oEvent) {
+			var isEnabledPrePlanreate = false;
+			var aSelecteOperationIndice = this.oSmartTable.getTable().getSelectedIndices();
+			if (aSelecteOperationIndice.length > 0) {
+				isEnabledPrePlanreate = true;
+			}
+			this.getModel("viewModel").setProperty("/allowPrePlanCreate", isEnabledPrePlanreate);
+		},
+
+		/**
+		 * Called when create button on operation list page
+		 * Navigate to the create preplan page
+		 */
+		onPressCreatePrePlanButton: function (oEvent) {
+			var oTable = this.oSmartTable.getTable(),
+				aSelectedIndices = oTable.getSelectedIndices();
+
+			var oOperationData = this.oCreateModel.getData();
+			aSelectedIndices.forEach(function (iIndex) {
+				var oItem = oTable.getContextByIndex(iIndex),
+					oSelObject = oItem.getObject();
+				delete oSelObject.__metadata;
+				//validate for the duplicate
+				if (this.checkDuplicate(oOperationData.results, oSelObject.ObjectKey)) {
+					oOperationData.results.push(oSelObject);
+				}
+			}.bind(this));
+			this.oCreateModel.refresh();
+			oTable.clearSelection(true);
+			this.getRouter().navTo("CreatePrePlan");
 		}
 	});
 

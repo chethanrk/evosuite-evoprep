@@ -38,27 +38,27 @@
 				<smartTable:layoutData>
 					<FlexItemData growFactor="1" baseSize="0%"/>
 				</smartTable:layoutData>
-				<!--<table:Table id="demandListPageSmartTableTable" rowActionCount="1">-->
-				<!--	<table:rowActionTemplate>-->
-				<!--		<table:RowAction visible="{= ${navLinks>/results/}.length > 0}">-->
-				<!--			<table:items>-->
-				<!--				<table:RowActionItem press="onRowActionPress" icon="sap-icon://action"/>-->
-				<!--			</table:items>-->
-				<!--		</table:RowAction>-->
-				<!--	</table:rowActionTemplate>-->
-				<!--	<table:columns>-->
-				<!--<core:ExtensionPoint name="PageExtP|DemandList|PlanItemsSet|SmartTable|Columns"/>-->
-				<!--		<table:Column hAlign="Center" width="3rem">-->
-				<!--			<table:customData>-->
-				<!--				<core:CustomData key="p13nData" value='\{"columnKey": "PrePlanKey", "leadingProperty": "PrePlanKey", "columnIndex": 2}'/>-->
-				<!--			</table:customData>-->
-				<!--			<Label text="{/#PlanItemsSet/PrePlanKey/@sap:label}"/>-->
-				<!--			<table:template>-->
-				<!--				<Link text="{PrePlanKey}"/>-->
-				<!--			</table:template>-->
-				<!--		</table:Column>-->
-				<!--	</table:columns>-->
-				<!--</table:Table>-->
+				<smartTable:customToolbar>
+					<Toolbar>
+						<ToolbarSpacer/>
+						<Button press="onPressCreatePrePlanButton" tooltip="{i18n>tit.createPrePlan}" text="{i18n>tit.createPrePlan}"
+							visible="{= ${user>/ENABLE_PREPLAN_CREATE} === 'X'}" enabled="{viewModel>/allowPrePlanCreate}"/>
+						<core:ExtensionPoint name="TableExtP|DemandList|PlanItemsSet|CustomToolbar"/>
+					</Toolbar>
+				</smartTable:customToolbar>
+				<table:Table id="demandListPageSmartTableTable" rowActionCount="1" visibleRowCountMode="Auto"
+					rowSelectionChange="handleDemandSelectionChange" enableSelectAll="false">
+					<table:rowActionTemplate>
+						<table:RowAction visible="{= ${navLinks>/results/}.length > 0}">
+							<table:items>
+								<table:RowActionItem press="onRowActionPress" icon="sap-icon://action"/>
+							</table:items>
+						</table:RowAction>
+					</table:rowActionTemplate>
+					<table:columns>
+						<core:ExtensionPoint name="PageExtP|DemandList|PlanItemsSet|SmartTable|Columns"/>
+					</table:columns>
+				</table:Table>
 			</smartTable:SmartTable>
 		</f:content>
 	</f:DynamicPage>

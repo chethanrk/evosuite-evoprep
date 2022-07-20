@@ -50,13 +50,14 @@ sap.ui.define([
 				delay: 100,
 				densityClass: this.getContentDensityClass(),
 				fullscreen: true,
-				operationTableCount: ""
+				operationTableCount: "",
+				allowPrePlanCreate: false
 			};
 			this.setModel(models.createHelperModel(viewModelObj), "viewModel");
 			this.setModel(models.createCreateModel(), "CreateModel");
 
 			this.MessageManager = new MessageManager();
-			
+
 			this.setModel(oMessageManager.getMessageModel(), "message");
 
 			//GetSystemInformation Call

@@ -56,8 +56,6 @@ sap.ui.define([
 			}
 		},
 
-		oViewModel: null,
-		oCreateModel: null,
 		aSmartForms: [],
 		/**
 		 * Called when a controller is instantiated and its View controls (if available) are already created.
@@ -156,7 +154,7 @@ sap.ui.define([
 				var oSelObject = oItem.getBindingContext().getObject();
 				delete oSelObject.__metadata;
 				//validate for the duplicate
-				if (this._checkDuplicate(oOperationData.results, oSelObject.ObjectKey)) {
+				if (this.checkDuplicate(oOperationData.results, oSelObject.ObjectKey)) {
 					oOperationData.results.push(oSelObject);
 				}
 			}.bind(this));
@@ -230,22 +228,6 @@ sap.ui.define([
 		_initializeView: function () {
 			this.aSmartForms = this.getAllSmartForms(this.getView().getControlsByFieldGroupId("smartFormTemplate"));
 			this.setFormsEditable(this.aSmartForms, true);
-		},
-
-		/**
-		 * check dulicate entires 
-		 * @{param} oData - create model operation data
-		 * @param ObjectKey - object key to compare
-		 */
-		_checkDuplicate: function (oData, ObjectKey) {
-			var bIndicator = true;
-			oData.forEach(function (oItem) {
-				if (oItem.ObjectKey === ObjectKey) {
-					bIndicator = false;
-					return;
-				}
-			});
-			return bIndicator;
 		},
 
 		/**

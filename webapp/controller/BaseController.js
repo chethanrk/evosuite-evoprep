@@ -129,11 +129,17 @@ sap.ui.define([
 				getBatchChangeResponse: {
 					public: true,
 					final: true
+				},
+				checkDuplicate: {
+					public: true,
+					final: true
 				}
 			}
 		},
 
 		formatter: formatter,
+		oViewModel: null,
+		oCreateModel: null,
 
 		onInit: function () {
 			//Bind the message model to the view and register it
@@ -558,6 +564,22 @@ sap.ui.define([
 				}.bind(this)
 			});
 
+		},
+
+		/**
+		 * check dulicate entires 
+		 * @{param} oData - create model operation data
+		 * @param ObjectKey - object key to compare
+		 */
+		checkDuplicate: function (oData, ObjectKey) {
+			var bIndicator = true;
+			oData.forEach(function (oItem) {
+				if (oItem.ObjectKey === ObjectKey) {
+					bIndicator = false;
+					return;
+				}
+			});
+			return bIndicator;
 		},
 	});
 });

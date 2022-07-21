@@ -7,6 +7,33 @@ sap.ui.define([
 
 	return BaseController.extend("com.evorait.evosuite.evoprep.controller.DemandList", {
 
+		metadata: {
+			// extension can declare the public methods
+			// in general methods that start with "_" are private
+			methods: {
+				onRowActionPress: {
+					public: true,
+					final: true
+				},
+				onClickNavAction: {
+					public: true,
+					final: true
+				},
+				onNavLinkVisibilty: {
+					public: true,
+					final: true
+				},
+				goBackToPrePlans: {
+					public: true,
+					final: true
+				}
+			}
+		},
+
+		/* =========================================================== */
+		/* Lifecycle methods                                           */
+		/* =========================================================== */
+
 		/**
 		 * Called when a controller is instantiated and its View controls (if available) are already created.
 		 * Can be used to modify the View before it is displayed, to bind event handlers and do other one-time initialization.
@@ -41,6 +68,10 @@ sap.ui.define([
 		//	onExit: function() {
 		//
 		//	}
+
+		/* =========================================================== */
+		/* Public methods                                              */
+		/* =========================================================== */
 
 		/**
 		 * Opens the popup containing button to nav to other Evo Apps
@@ -80,8 +111,8 @@ sap.ui.define([
 		},
 
 		/*
-		 Navigation Action Sheet button dynamic visibilty
-			*/
+		 * Navigation Action Sheet button dynamic visibilty
+		 */
 		onNavLinkVisibilty: function (oView) {
 			var sEnableField,
 				oNavLinksData = oView.getModel("navLinks").getData();
@@ -94,6 +125,13 @@ sap.ui.define([
 			}
 			oView.getModel("navLinks").refresh(true);
 		},
+
+		/*
+		 * Navigates back to Pre-Plans list
+		 */
+		goBackToPrePlans: function () {
+			this.getOwnerComponent().getRouter().navTo("PrePlanMaster");
+		}
 	});
 
 });

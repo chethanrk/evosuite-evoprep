@@ -6,16 +6,19 @@
 		<f:title>
 			<f:DynamicPageTitle>
 				<f:heading>
-					<Image src="{viewModel>/logoUrl}" densityAware="false" height="30px" alt="EvoPrep" id="imageLogo"/>
+					<Image src="{viewModel>/logoUrl}" densityAware="false" height="30px" alt="EvoPrep" id="idEvoPrepImageLogo"/>
 				</f:heading>
 				<f:navigationActions>
+					<Button text="{i18n>btn.showPrePlan}" type="Emphasized" press="goBackToPrePlans"/>
 					<core:Fragment fragmentName="com.evorait.evosuite.evoprep.view.fragments.HeaderAction" type="XML"/>
+					<core:ExtensionPoint name="PageExtP|DemandList|PlanItemsSet|Title|Actions"/>
 				</f:navigationActions>
 			</f:DynamicPageTitle>
 		</f:title>
 		<f:header>
 			<f:DynamicPageHeader pinnable="true">
 				<f:content>
+					<core:ExtensionPoint name="PageExtP|DemandList|PlanItemsSet|Head"/>
 					<smartFilterBar:SmartFilterBar id="demandListSmartFilterBar" entitySet="PlanItemsSet" useDateRangeType="true"
 						persistencyKey="com.evorait.evosuite.evoorder.demandListsFilterbar" initialized="onInitializedSmartVariant">
 						<!-- layout data used to make the table growing but the filter bar fixed -->
@@ -28,9 +31,9 @@
 		</f:header>
 		<f:content>
 			<smartTable:SmartTable id="demandListSmartTable" height="100%" width="100%" entitySet="PlanItemsSet" header="{i18n>tit.OperationsTable}"
-				tableType="Table" useExportToExcel="true" useVariantManagement="true" useTablePersonalisation="true" showRowCount="true"
-				enableAutoBinding="true" demandPopin="false" smartFilterId="demandListSmartFilterBar" customData:useSmartField="true"
-				customData:useSmartToggle="true" editTogglable="true">
+				tableType="Table" useExportToExcel="true" useVariantManagement="true" persistencyKey="com.evorait.evosuite.evoprep.DemandListTable"
+				useTablePersonalisation="true" showRowCount="true" enableAutoBinding="true" demandPopin="false" smartFilterId="demandListSmartFilterBar"
+				customData:useSmartField="true" customData:useSmartToggle="true" editTogglable="true">
 				<!-- layout data used to make the table growing but the filter bar fixed -->
 				<smartTable:layoutData>
 					<FlexItemData growFactor="1" baseSize="0%"/>
@@ -44,6 +47,7 @@
 				<!--		</table:RowAction>-->
 				<!--	</table:rowActionTemplate>-->
 				<!--	<table:columns>-->
+				<!--<core:ExtensionPoint name="PageExtP|DemandList|PlanItemsSet|SmartTable|Columns"/>-->
 				<!--		<table:Column hAlign="Center" width="3rem">-->
 				<!--			<table:customData>-->
 				<!--				<core:CustomData key="p13nData" value='\{"columnKey": "PrePlanKey", "leadingProperty": "PrePlanKey", "columnIndex": 2}'/>-->

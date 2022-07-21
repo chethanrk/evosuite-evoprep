@@ -30,7 +30,7 @@
 					<OverflowToolbar class="prePlanListToolbar">
 						<ToolbarSpacer/>
 						<Button id="idBtnComaprePrePlan" text="{i18n>xbut.comapre}" press="onPressComapre" enabled="false"/>
-						<Button id="idBtnCreatePrePlan" text="{i18n>xbut.create}" press="onCreatePrePlanPress"/>
+						<Button id="idBtnCreatePrePlan" text="{i18n>xbut.create}" press="onCreatePrePlanPress" visible="{= ${user>/ENABLE_PREPLAN_CREATE} === 'X'}"/>
 						<Button id="idBtnCopyPrePlan" text="{i18n>xbut.copy}" enabled="false"/>
 						<Button id="idBtnDeletePrePlan" text="{i18n>xbut.delete}" enabled="false"/>
 					</OverflowToolbar>

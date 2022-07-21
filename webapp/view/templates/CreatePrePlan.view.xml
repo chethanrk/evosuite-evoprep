@@ -1,20 +1,79 @@
 <mvc:View xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m"
-	controllerName="com.evorait.evosuite.evoprep.controller.CreatePrePlan" xmlns:html="http://www.w3.org/1999/xhtml">
-	<Page class="sapUiNoContentPadding" enableScrolling="false" showHeader="true" showFooter="false" showSubHeader="false" showNavButton="true"
-		navButtonPress="onNavBack">
-		<customHeader>
-			<Bar>
-				<contentLeft>
-					<Button icon="sap-icon://nav-back" tooltip="nav-back" press="onNavBack"/>
-				</contentLeft>
-				<contentMiddle>
-					<Title text="Create Pre-Plan"></Title>
-				</contentMiddle>
-				<contentRight>
-					<core:Fragment fragmentName="com.evorait.evosuite.evoprep.view.fragments.HeaderAction" type="XML"/>
-				</contentRight>
-			</Bar>
-		</customHeader>
-		<content></content>
-	</Page>
+	controllerName="com.evorait.evosuite.evoprep.controller.CreatePrePlan" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:uxap="sap.uxap"
+	xmlns:smartTable="sap.ui.comp.smarttable" xmlns:layout="sap.ui.layout" xmlns:smartField="sap.ui.comp.smartfield"
+	xmlns:template="http://schemas.sap.com/sapui5/extension/sap.ui.core.template/1"
+	xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
+	<template:alias name=".AH" value="sap.ui.model.odata.AnnotationHelper">
+		<template:alias name=".evoAH" value="com.evorait.evosuite.evoprep.model.AnnotationHelper">
+			<template:with path="templateProperties>/" var="tempProps">
+				<uxap:ObjectPageLayout id="createPrePlanPage" enableLazyLoading="false" isChildPage="true" showFooter="false" busy="{viewModel>/busy}"
+					busyIndicatorDelay="{viewModel>/delay}">
+					<uxap:headerTitle>
+						<uxap:ObjectPageHeader>
+							<uxap:actions>
+								<uxap:ObjectPageHeaderActionButton icon="sap-icon://save" type="Emphasized" text="{i18n>xbtn.save}" hideText="false"
+									tooltip="{i18n>xbtn.save}" press="onPressSave"/>
+								<uxap:ObjectPageHeaderActionButton icon="sap-icon://cancel" type="Default" press="onNavBackMaster" text="{i18n>xbtn.cancel}"
+									hideText="false" tooltip="{i18n>xbtn.cancel}"/>
+								<core:ExtensionPoint name="PageExtP|PrePlanCreate|PlanHeaderSet|Title|Action"/>
+							</uxap:actions>
+							<uxap:navigationBar>
+								<Bar class="sapUiTinyMarginTop">
+									<contentLeft>
+										<Button icon="sap-icon://nav-back" tooltip="{i18n>btn.navBack}" press="onNavBackMaster"/>
+										<!--<Image src="{viewModel>/logoUrl}" densityAware="false" height="30px" alt="EvoResource" id="idEvoPrepImageLogo"/>-->
+										<core:ExtensionPoint name="PageExtP|PrePlanCreate|PlanHeaderSet|NavigationBar|Left"/>
+									</contentLeft>
+									<contentMiddle>
+										<Title text="{i18n>tit.createPrePlan}"/>
+									</contentMiddle>
+									<contentRight>
+										<core:Fragment fragmentName="com.evorait.evosuite.evoprep.view.fragments.HeaderAction" type="XML"/>
+										<core:ExtensionPoint name="PageExtP|PrePlanCreate|PlanHeaderSet|NavigationBar|Right"/>
+									</contentRight>
+								</Bar>
+							</uxap:navigationBar>
+						</uxap:ObjectPageHeader>
+					</uxap:headerTitle>
+					<uxap:headerContent></uxap:headerContent>
+					<uxap:sections>
+						<template:with path="templateProperties>/annotationPath"
+							helper="com.evorait.evosuite.evoprep.model.AnnotationHelper.resolveObjectContentPath" var="createTabs">
+							<template:repeat list="{createTabs>}">
+								<template:if test="{:= ${createTabs>Core.Description/String} === 'Form' || ${createTabs>Org.OData.Core.V1.Description/String} === 'Form'}">
+									<template:then>
+										<uxap:ObjectPageSection title="{path:'createTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}">
+											<uxap:subSections>
+												<uxap:ObjectPageSubSection>
+													<uxap:blocks>
+														<template:with path="createTabs>Facets" var="facets">
+															<core:Fragment fragmentName="com.evorait.evosuite.evoprep.view.templates.SmartFormTemplate" type="XML"/>
+														</template:with>
+													</uxap:blocks>
+												</uxap:ObjectPageSubSection>
+											</uxap:subSections>
+										</uxap:ObjectPageSection>
+									</template:then>
+									<template:elseif
+										test="{:= ${createTabs>Core.Description/String} === 'Table' || ${createTabs>Org.OData.Core.V1.Description/String} === 'Table'}">
+										<core:ExtensionPoint name="SectionExtP|PrePlanCreate|{:= ${createTabs>Core.LongDescription/String} }|Before"/>
+										<uxap:ObjectPageSection title="{path:'createTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}" visible="true">
+											<uxap:subSections>
+												<uxap:ObjectPageSubSection>
+													<uxap:blocks>
+														<core:Fragment fragmentName="com.evorait.evosuite.evoprep.view.templates.CreateOperationTable" type="XML"/>
+													</uxap:blocks>
+												</uxap:ObjectPageSubSection>
+											</uxap:subSections>
+										</uxap:ObjectPageSection>
+										<core:ExtensionPoint name="SectionExtP|PrePlanCreate|{:= ${contentTabs>Core.LongDescription/String} }|After"/>
+									</template:elseif>
+								</template:if>
+							</template:repeat>
+						</template:with>
+					</uxap:sections>
+				</uxap:ObjectPageLayout>
+			</template:with>
+		</template:alias>
+	</template:alias>
 </mvc:View>

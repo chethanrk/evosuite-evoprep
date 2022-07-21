@@ -1,9 +1,11 @@
 sap.ui.define([
-	"sap/ui/core/mvc/Controller"
-], function (Controller) {
+	"com/evorait/evosuite/evoprep/controller/BaseController",
+	"sap/ui/core/mvc/Controller",
+	"sap/base/util/isEmptyObject"
+], function (BaseController, Controller, isEmptyObject) {
 	"use strict";
 
-	return Controller.extend("com.evorait.evosuite.evoprep.block.demand.DemandsBlock", {
+	return BaseController.extend("com.evorait.evosuite.evoprep.block.demand.DemandsBlockController", {
 
 		metadata: {
 			// extension can declare the public methods
@@ -12,9 +14,13 @@ sap.ui.define([
 				addOperations: {
 					public: true,
 					final: true
+				},
+				onPressEdit: {
+					public: true,
+					final: true
 				}
 			}
-		}
+		},
 
 		/* =========================================================== */
 		/* Lifecycle methods                                           */
@@ -74,6 +80,16 @@ sap.ui.define([
 			// 	smartTable: this._oSmartTable
 			// };
 			// this.getOwnerComponent().DialogTemplateRenderer.open(this.getView(), mParams);
+		},
+
+		/**
+		 * Sends the changed data to backend
+		 */
+		onPressEdit: function (oEvent) {
+			var bEdit = oEvent.getParameter("editable");
+			if (!bEdit && !isEmptyObject(this.getModel().getPendingChanges())) {
+				this.saveChanges(this._oSmartTable);
+			}
 		}
 
 	});

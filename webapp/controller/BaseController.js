@@ -211,6 +211,21 @@ sap.ui.define([
 		 */
 		onPressClose: function (oEvent) {
 			this.nav2Master();
+		},
+
+		/**
+		 * Sends save request to backend
+		 */
+		saveChanges: function (oTable) {
+			this.getModel().submitChanges({
+				success: function () {
+					if (oTable) {
+						oTable.rebindTable(true);
+					}
+					this.showMessageToast(this.getResourceBundle().getText("msg.saveSuccess"));
+					this.getModel().resetChanges();
+				}.bind(this)
+			});
 		}
 	});
 });

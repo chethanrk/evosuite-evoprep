@@ -1,1 +1,19 @@
 /* Enter your custom styles here */
+
+.smartFormTemplate .sapUiRespGridSpanL12.sapUiRespGridSpanM12.sapUiRespGridSpanS12.sapUiRespGridSpanXL12 .sapUiFormElementLbl,
+.smartFormTemplate>.sapUiForm>.sapUiFormResGrid>.sapUiFormContainerTitle .sapUiFormElementLbl {
+    float: none;
+    display: none;
+}
+
+.smartFormTemplate .sapUiRespGridSpanL12.sapUiRespGridSpanM12.sapUiRespGridSpanS12.sapUiRespGridSpanXL12 div[class*="sapUiRespGridSpan"],
+.smartFormTemplate>.sapUiForm>.sapUiFormResGrid>.sapUiFormContainerTitle div[class*="sapUiRespGridSpan"] {
+    float: none;
+    width: 100%;
+}
+
+.sapMObjectStatusLarge .sapMObjStatusTitle,
+.sapMObjectStatusLarge .sapMObjStatusText,
+.sapMObjectStatusLarge .sapMObjStatusIcon {
+    font-size: 1.25rem;
+}

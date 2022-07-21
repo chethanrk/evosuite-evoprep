@@ -9,6 +9,8 @@ sap.ui.define([
 ], function (UIComponent, Device, models, ErrorHandler, MessageManager, library, JSONModel) {
 	"use strict";
 
+	var oMessageManager = sap.ui.getCore().getMessageManager();
+
 	return UIComponent.extend("com.evorait.evosuite.evoprep.Component", {
 
 		metadata: {
@@ -37,7 +39,7 @@ sap.ui.define([
 			this.setModel(models.createInformationModel(this), "InformationModel");
 
 			//Creating the Global message model for MessageManager
-			this.setModel(models.createMessageModel(), "message");
+			this.setModel(models.createMessageModel(), "messageManager");
 
 			//Creating the Global User model
 			this.setModel(models.createUserModel(this), "user");
@@ -47,20 +49,27 @@ sap.ui.define([
 				busy: true,
 				delay: 100,
 				densityClass: this.getContentDensityClass(),
-				fullscreen: true
+				fullscreen: true,
+				operationTableCount: "",
+				allowPrePlanCreate: false
 			};
 			this.setModel(models.createHelperModel(viewModelObj), "viewModel");
+			this.setModel(models.createCreateModel(), "CreateModel");
 
 			this.MessageManager = new MessageManager();
+
+			this.setModel(oMessageManager.getMessageModel(), "message");
 
 			//GetSystemInformation Call
 			this._getSystemInformation();
 
 			this._getTemplateProps();
+			this.oTemplatePropsProm.then(function () {
+				// enable routing
+				this.getRouter().attachBeforeRouteMatched(this._onBeforeRouteMatched, this);
+				this.getRouter().initialize();
+			}.bind(this));
 
-			// enable routing
-			this.getRouter().attachBeforeRouteMatched(this._onBeforeRouteMatched, this);
-			this.getRouter().initialize();
 		},
 
 		/**
@@ -86,6 +95,14 @@ sap.ui.define([
 				}
 			}
 			return this._sContentDensityClass;
+		},
+
+		/**
+		 * This method registers the view to the message manager
+		 * @{param} oView
+		 */
+		registerViewToMessageManager: function (oView) {
+			oMessageManager.registerObject(oView, true);
 		},
 
 		/**
@@ -136,20 +153,22 @@ sap.ui.define([
 		},
 
 		/**
-		 * Adds messages from MessageModel to local message model
+		 * post data
+		 * returns promise
 		 */
-		createMessages: function () {
-			var aMessages = [];
-			var oMessageModel = sap.ui.getCore().getMessageManager().getMessageModel();
-			var oData = oMessageModel.getData();
-
-			if (oData.length === 0) {
-				return;
-			}
-			for (var i = 0; i < oData.length; i++) {
-				aMessages.push(oData[i]);
-			}
-			this.getModel("message").setData(aMessages);
+		postData: function (sUri, oEntry) {
+			return new Promise(function (resolve, reject) {
+				this.getModel().create(sUri, oEntry, {
+					refreshAfterChange: false,
+					success: function (oData) {
+						resolve(oData);
+					},
+					error: function (oError) {
+						//Handle Error
+						reject(oError);
+					}
+				});
+			}.bind(this));
 		},
 
 		_onBeforeRouteMatched: function (oEvent) {

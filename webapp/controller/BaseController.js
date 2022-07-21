@@ -11,14 +11,142 @@ sap.ui.define([
 	"com/evorait/evosuite/evoprep/model/formatter",
 	"sap/base/util/deepClone",
 	"sap/f/library",
-	"sap/ui/core/Fragment"
+	"sap/ui/core/Fragment",
 ], function (Controller, History, Dialog, Button, Text, MessageToast, MessageBox, OverrideExecution, formatter, deepClone, library,
 	Fragment) {
 	"use strict";
 
 	return Controller.extend("com.evorait.evosuite.evoprep.controller.BaseController", {
 
+		metadata: {
+			// extension can declare the public methods
+			// in general methods that start with "_" are private
+			methods: {
+
+				getRouter: {
+					public: true,
+					final: true
+				},
+
+				getModel: {
+					public: true,
+					final: true
+				},
+
+				setModel: {
+					public: true,
+					final: true
+				},
+
+				getResourceBundle: {
+					public: true,
+					final: true
+				},
+
+				clearAllMessages: {
+					public: true,
+					final: true
+				},
+
+				openMessageManager: {
+					public: true,
+					final: true
+				},
+
+				showMessageToast: {
+					public: true,
+					final: true
+				},
+				onNavBack: {
+					public: true,
+					final: true
+				},
+				confirmEditCancelDialog: {
+					public: true,
+					final: true
+				},
+				nav2Master: {
+					public: true,
+					final: true
+				},
+				onAboutIconPress: {
+					public: true,
+					final: true
+				},
+				open: {
+					public: true,
+					final: true
+				},
+				onCloseDialog: {
+					public: true,
+					final: true
+				},
+				onMessageManagerPress: {
+					public: true,
+					final: true
+				},
+
+				displayLongText: {
+					public: true,
+					final: true
+				},
+				onShowDemandsPress: {
+					public: true,
+					final: true
+				},
+				onPressFullScreen: {
+					public: true,
+					final: true
+				},
+				onPressClose: {
+					public: true,
+					final: true
+				},
+				getAllSmartForms: {
+					public: true,
+					final: true
+				},
+				setFormsEditable: {
+					public: true,
+					final: true
+				},
+				validateForm: {
+					public: true,
+					final: true
+				},
+				getFormFieldByName: {
+					public: true,
+					final: true
+				},
+				CreatePrePlan: {
+					public: true,
+					final: true
+				},
+				showConfirmDialog: {
+					public: true,
+					final: true
+				},
+				getBatchChangeResponse: {
+					public: true,
+					final: true
+				},
+				checkDuplicate: {
+					public: true,
+					final: true
+				}
+			}
+		},
+
 		formatter: formatter,
+		oViewModel: null,
+		oCreateModel: null,
+
+		onInit: function () {
+			//Bind the message model to the view and register it
+			if (this.getOwnerComponent) {
+				this.getOwnerComponent().registerViewToMessageManager(this.getView());
+			}
+		},
 
 		/**
 		 * Convenience method for accessing the router in every controller of the application.
@@ -112,6 +240,27 @@ sap.ui.define([
 			} else {
 				this.nav2Master();
 			}
+		},
+
+		/**
+		 * Show dialog when user wants to cancel order change/creations
+		 */
+		confirmEditCancelDialog: function () {
+			var sTitle = this.getResourceBundle().getText("tit.cancelCreate"),
+				sMsg = this.getResourceBundle().getText("msg.leaveWithoutSave");
+
+			var successcallback = function () {
+				var oContext = this.getView().getBindingContext();
+
+				//delete created entry
+				this.nav2Master();
+				this.getModel().deleteCreatedEntry(oContext);
+				this.getModel("CreateModel").getData().results = [];
+				this.getModel("CreateModel").refresh();
+			};
+
+			var cancelCallback = function () {};
+			this.showConfirmDialog(sTitle, sMsg, successcallback.bind(this), cancelCallback.bind(this));
 		},
 
 		/**
@@ -214,6 +363,226 @@ sap.ui.define([
 		},
 
 		/**
+		 * get all forms of different tabs in one page 
+		 */
+		getAllSmartForms: function (aGroups) {
+			var aForms = [];
+			for (var i = 0; i < aGroups.length; i++) {
+				if (aGroups[i] instanceof sap.ui.comp.smartform.SmartForm) {
+					aForms.push(aGroups[i]);
+				}
+			}
+			return aForms;
+		},
+
+		/**
+		 * set editable true/false for all forms in one page
+		 */
+		setFormsEditable: function (aForms, isEditable) {
+			if (aForms) {
+				aForms.forEach(function (oForm) {
+					oForm.setEditable(isEditable);
+				});
+			}
+		},
+
+		/**
+		 * returns a SmartField from a SmartForm by name
+		 * @param sName
+		 * @param aForms
+		 */
+		getFormFieldByName: function (sName, aForms) {
+			if (!sName || !aForms) {
+				return null;
+			}
+			for (var j = 0; aForms.length > j; j++) {
+				var aSmartFields = aForms[j].getSmartFields();
+				for (var i = 0; aSmartFields.length > i; i++) {
+					if (aSmartFields[i].getName() === sName) {
+						return aSmartFields[i];
+					}
+				}
+			}
+			return null;
+		},
+
+		/**
+		 * Validate smartForm with custom fields
+		 * @public
+		 */
+		validateForm: function (aForms) {
+			if (!aForms) {
+				return {
+					state: "error"
+				};
+			}
+			var aCustomFields = this.getView().getControlsByFieldGroupId("CustomFormField"),
+				validatedSmartFields = [];
+
+			aForms.forEach(function (oForm) {
+				var validated = oForm.check(); //SmartForm validation
+				validatedSmartFields = validatedSmartFields.concat(validated);
+			});
+
+			var isValid = validatedSmartFields.length === 0,
+				invalidFields = validatedSmartFields;
+
+			//validate custom input fields
+			for (var i = 0; i < aCustomFields.length; i++) {
+				if (aCustomFields[i].getValue) {
+					var sValue = aCustomFields[i].getValue();
+					try {
+						if (aCustomFields[i].getRequired() && aCustomFields[i].getEditable() && (!sValue || sValue.trim() === "")) {
+							aCustomFields[i].setValueState(sap.ui.core.ValueState.Error);
+							isValid = false;
+							invalidFields.push(aCustomFields[i]);
+						} else {
+							aCustomFields[i].setValueState(sap.ui.core.ValueState.None);
+						}
+					} catch (e) {
+						//do nothing
+					}
+				}
+			}
+
+			if (isValid) {
+				return {
+					state: "success"
+				};
+			} else {
+				return {
+					state: "error",
+					fields: invalidFields
+				};
+			}
+		},
+
+		/**
+		 * Save changes method to handle post request
+		 * @param {oPayload}     --- Payload data to save updated network
+		 * @param successCallback  --- success callback function
+		 * @param errorCallback  --- error callback function
+		 */
+		CreatePrePlan: function (oPayload, successCallback, errorCallback) {
+			this.oViewModel.setProperty("/busy", true);
+			this.getOwnerComponent().postData("/PlanHeaderSet", oPayload).then(function (oResult) {
+				if (successCallback) {
+					successCallback(oResult);
+				}
+
+				this.oViewModel.setProperty("/busy", false);
+			}.bind(this), function (error) {
+				if (errorCallback) {
+					errorCallback(error);
+				}
+				this.oViewModel.setProperty("/busy", false);
+			}.bind(this));
+		},
+
+		/**
+		 * show confirm dialog where user needs confirm some action
+		 * @param sTitle
+		 * @param sMsg
+		 * @param successCallback
+		 * @param cancelCallback
+		 */
+		showConfirmDialog: function (sTitle, sMsg, successCallback, cancelCallback, sState) {
+			var dialog = new sap.m.Dialog({
+				title: sTitle,
+				type: "Message",
+				state: sState || "None",
+				content: new sap.m.Text({
+					text: sMsg
+				}),
+				beginButton: new sap.m.Button({
+					text: this.getResourceBundle().getText("btn.confirm"),
+					press: function () {
+						dialog.close();
+						if (successCallback) {
+							successCallback();
+						}
+					}.bind(this)
+				}),
+				endButton: new sap.m.Button({
+					text: this.getResourceBundle().getText("btn.no"),
+					press: function () {
+						if (cancelCallback) {
+							cancelCallback();
+						}
+						dialog.close();
+					}.bind(this)
+				}),
+				afterClose: function () {
+					dialog.destroy();
+				}
+			});
+			dialog.addStyleClass(this.getModel("viewModel").getProperty("/densityClass"));
+			dialog.open();
+		},
+		/**
+		 * picks out the change response data from a batch call
+		 * Need for create entries 
+		 * Example: CreateNotification saveCreateSuccessFn
+		 * @param oResponse
+		 */
+		getBatchChangeResponse: function (oResponse) {
+			var batch = oResponse.__batchResponses[0];
+			//success
+			if (batch.__changeResponses) {
+				if (batch && (batch.__changeResponses[0].data)) {
+					return batch.__changeResponses[0].data;
+				}
+			}
+			return null;
+		},
+
+		/**
+		 * Method to call Function Import
+		 * @param oParams {object} parameter to be passed to function import
+		 * @param sFuncName {string} function import name
+		 * @param sMethod {string} method of the function import, default is "POST"
+		 * @param fCallback {function} callback function when function import return value
+		 */
+		callFunctionImport: function (oParams, sFuncName, sMethod, fCallback) {
+			var oModel = this.getModel(),
+				oViewModel = this.getModel("viewModel"),
+				oResourceBundle = this.getResourceBundle();
+			oViewModel.setProperty("/busy", true);
+			oModel.callFunction("/" + sFuncName, {
+				method: sMethod || "POST",
+				urlParameters: oParams,
+				refreshAfterChange: false,
+				success: function (oData) {
+					//Handle Success
+					oViewModel.setProperty("/busy", false);
+					fCallback(oData);
+				}.bind(this),
+				error: function (oError) {
+					//Handle Error
+					oViewModel.setProperty("/busy", false);
+					this.showMessageToast(oResourceBundle.getText("errorText"));
+				}.bind(this)
+			});
+
+		},
+
+		/**
+		 * check dulicate entires 
+		 * @{param} oData - create model operation data
+		 * @param ObjectKey - object key to compare
+		 */
+		checkDuplicate: function (oData, ObjectKey) {
+			var bIndicator = true;
+			oData.forEach(function (oItem) {
+				if (oItem.ObjectKey === ObjectKey) {
+					bIndicator = false;
+					return;
+				}
+			});
+			return bIndicator;
+		},
+        
+        /**
 		 * Sends save request to backend
 		 */
 		saveChanges: function (oTable) {

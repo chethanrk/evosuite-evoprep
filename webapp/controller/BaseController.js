@@ -581,16 +581,13 @@ sap.ui.define([
 			});
 			return bIndicator;
 		},
-        
-        /**
+
+		/**
 		 * Sends save request to backend
 		 */
-		saveChanges: function (oTable) {
+		saveChanges: function () {
 			this.getModel().submitChanges({
 				success: function () {
-					if (oTable) {
-						oTable.rebindTable(true);
-					}
 					this.showMessageToast(this.getResourceBundle().getText("msg.saveSuccess"));
 					this.getModel().resetChanges();
 				}.bind(this)

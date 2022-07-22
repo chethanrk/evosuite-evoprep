@@ -88,7 +88,7 @@ sap.ui.define([
 		onPressEdit: function (oEvent) {
 			var bEdit = oEvent.getParameter("editable");
 			if (!bEdit && !isEmptyObject(this.getModel().getPendingChanges())) {
-				this.saveChanges(this._oSmartTable);
+				this.saveChanges();
 			}
 		}
 

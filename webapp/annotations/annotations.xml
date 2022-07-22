@@ -28,6 +28,10 @@
 						<PropertyValue Property="RequestAtLeast">
 							<Collection>
 								<PropertyPath>OBJECT_NUMBER</PropertyPath>
+								<PropertyPath>EARLIEST_START_DATE</PropertyPath>
+								<PropertyPath>EARLIEST_START_TIME</PropertyPath>
+								<PropertyPath>EARLIEST_END_DATE</PropertyPath>
+								<PropertyPath>EARLIEST_END_TIME</PropertyPath>
 							</Collection>
 						</PropertyValue>
 					</Record>

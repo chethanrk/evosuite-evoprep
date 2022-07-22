@@ -182,16 +182,19 @@ sap.ui.define([
 		onPressSave: function (oEvent) {
 			if (this.aSmartForms.length > 0) {
 				var mErrors = this.validateForm(this.aSmartForms);
+				var aOpr = this.oCreateModel.getProperty("/results");
 				//if form is valid save created entry
-				if (mErrors.state === "success") {
+				if (mErrors.state === "success" && aOpr && aOpr.length) {
 					var oformData = this.getView().getBindingContext(),
 						oDataObject = oformData.getObject();
 					this._prepareHeaderData(oDataObject).then(function (oPayloadData) {
-						oPayloadData.PlanHeaderToPlanItems = [];
-						var aOperationData = this.oCreateModel.getData();
-						oPayloadData.PlanHeaderToPlanItems = aOperationData.results;
+						if (oPayloadData) {
+							oPayloadData.PlanHeaderToPlanItems = [];
+							oPayloadData.PlanHeaderToPlanItems = this.oCreateModel.getProperty("/results");
+							oPayloadData.FUNCTION = this.getModel("user").getProperty("/DEFAULT_FUNCTION");
 
-						this.CreatePrePlan(oPayloadData, this._createSuccess.bind(this));
+							this.CreatePrePlan(oPayloadData, this._createSuccess.bind(this));
+						}
 					}.bind(this));
 				}
 			}

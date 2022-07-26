@@ -29,6 +29,10 @@ sap.ui.define([
 			// call the base component's init function
 			UIComponent.prototype.init.apply(this, arguments);
 
+			//!Important as there are multiple issues when POST or UPDATE request happended
+			// and refresh call send with same batch request
+			this.getModel().setRefreshAfterChange(false);
+
 			// set the device model
 			this.setModel(models.createDeviceModel(), "device");
 

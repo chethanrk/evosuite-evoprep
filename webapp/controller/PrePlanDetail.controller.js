@@ -1,7 +1,7 @@
 sap.ui.define([
 	"com/evorait/evosuite/evoprep/controller/BaseController",
-	"sap/f/library"
-], function (BaseController, library) {
+	"sap/ui/core/mvc/OverrideExecution"
+], function (BaseController, OverrideExecution) {
 	"use strict";
 
 	return BaseController.extend("com.evorait.evosuite.evoprep.controller.PrePlanDetail", {
@@ -9,11 +9,16 @@ sap.ui.define([
 			// extension can declare the public methods
 			// in general methods that start with "_" are private
 			methods: {
-
+				oPressDetailDelete: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				}
 			}
 		},
 
 		oViewModel: null,
+		_oContext: null,
 
 		/**
 		 * Called when a controller is instantiated and its View controls (if available) are already created.
@@ -22,33 +27,66 @@ sap.ui.define([
 		 */
 		onInit: function () {
 			this.oViewModel = this.getModel("viewModel");
+			var eventBus = sap.ui.getCore().getEventBus();
+			//Binnding has changed in TemplateRenderController.js
+			eventBus.subscribe("TemplateRendererEvoPrep", "changedBinding", this._changedBinding, this);
 		},
 
 		/**
-		 * Similar to onAfterRendering, but this hook is invoked before the controller's View is re-rendered
-		 * (NOT before the first rendering! onInit() is used for that one!).
-		 * @memberOf com.evorait.evosuite.evoprep.view.PrePlanDetail
+		 * Called when a controller is destroyed
+		 * Object on exit
 		 */
-		//	onBeforeRendering: function() {
-		//
-		//	},
+		onExit: function () {
+			this.getView().unbindElement();
+			var eventBus = sap.ui.getCore().getEventBus();
+			eventBus.unsubscribe("TemplateRendererEvoPrep", "changedBinding", this._changedBinding, this);
+		},
+
+		/* =========================================================== */
+		/* public methods                                              */
+		/* =========================================================== */
 
 		/**
-		 * Called when the View has been rendered (so its HTML is part of the document). Post-rendering manipulations of the HTML could be done here.
-		 * This hook is the same one that SAPUI5 controls get after being rendered.
-		 * @memberOf com.evorait.evosuite.evoprep.view.PrePlanDetail
+		 * Detail page delete functionality
 		 */
-		//	onAfterRendering: function() {
-		//
-		//	},
+		oPressDetailDelete: function () {
+			var sTitle = this.getResourceBundle().getText("tit.confirmDelete"),
+				sMsg = this.getResourceBundle().getText("msg.confirmDeleteSelectedPrepLan");
+
+			if (this._oContext) {
+				var successFn = function () {
+					this.deleteEntries([this._oContext], null).then(function () {
+						this.nav2Master();
+					}.bind(this));
+				};
+				this.showConfirmDialog(sTitle, sMsg, successFn.bind(this));
+			}
+		},
+
+		/* =========================================================== */
+		/* public methods                                              */
+		/* =========================================================== */
 
 		/**
-		 * Called when the Controller is destroyed. Use this one to free resources and finalize activities.
-		 * @memberOf com.evorait.evosuite.evoprep.view.PrePlanDetail
+		 * TemplateRenderer changedBinding Event
+		 * set new this._oContext
+		 * @param sChannel
+		 * @param sEvent
+		 * @param oData
 		 */
-		//	onExit: function() {
-		//
-		//	}
+		_changedBinding: function (sChannel, sEvent, oData) {
+			if (sChannel === "TemplateRendererEvoPrep" && sEvent === "changedBinding") {
+				var sViewName = this.getView().getViewName() + "#" + this.getView().getId();
+
+				if (!oData) {
+					return;
+				}
+
+				if (oData.viewNameId === sViewName) {
+					this._oContext = this.getView().getBindingContext();
+				}
+			}
+		}
 
 	});
 

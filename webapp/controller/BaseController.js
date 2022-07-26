@@ -590,10 +590,10 @@ sap.ui.define([
 		 * send changes to backend
 		 */
 		saveChanges: function (oTable) {
-			this.getModel().setRefreshAfterChange(false);
+        this.getModel().setRefreshAfterChange(false);
 			this.getModel().submitChanges({
 				success: function () {
-					if (oTable) {
+                if (oTable) {
 						oTable.rebindTable(true);
 					}
 					this.showMessageToast(this.getResourceBundle().getText("msg.saveSuccess"));
@@ -601,6 +601,5 @@ sap.ui.define([
 				}.bind(this)
 			});
 		}
-
 	});
 });

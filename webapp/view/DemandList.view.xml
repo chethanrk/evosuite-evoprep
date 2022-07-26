@@ -33,7 +33,8 @@
 			<smartTable:SmartTable id="demandListSmartTable" height="100%" width="100%" entitySet="PlanItemsSet" header="{i18n>tit.OperationsTable}"
 				tableType="Table" useExportToExcel="true" useVariantManagement="true" persistencyKey="com.evorait.evosuite.evoprep.DemandListTable"
 				useTablePersonalisation="true" showRowCount="true" enableAutoBinding="true" demandPopin="false" smartFilterId="demandListSmartFilterBar"
-				customData:useSmartField="true" customData:useSmartToggle="true" editTogglable="true">
+				customData:useSmartField="true" customData:useSmartToggle="true" editTogglable="{= ${user>/ENABLE_ITEM_UPDATE} === 'X'}"
+				editToggled="onPressEdit">
 				<!-- layout data used to make the table growing but the filter bar fixed -->
 				<smartTable:layoutData>
 					<FlexItemData growFactor="1" baseSize="0%"/>

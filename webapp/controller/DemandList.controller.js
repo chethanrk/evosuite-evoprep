@@ -2,8 +2,9 @@ sap.ui.define([
 	//	"sap/ui/core/mvc/Controller"
 	"com/evorait/evosuite/evoprep/controller/BaseController",
 	"sap/ui/core/Fragment",
-	"sap/ui/core/mvc/OverrideExecution"
-], function (BaseController, Fragment, OverrideExecution) {
+	"sap/ui/core/mvc/OverrideExecution",
+	"sap/base/util/isEmptyObject"
+], function (BaseController, Fragment, OverrideExecution, isEmptyObject) {
 	"use strict";
 
 	return BaseController.extend("com.evorait.evosuite.evoprep.controller.DemandList", {
@@ -188,6 +189,16 @@ sap.ui.define([
 			this.oCreateModel.refresh();
 			oTable.clearSelection(true);
 			this.getRouter().navTo("CreatePrePlan");
+		},
+
+		/**
+		 * Sends the changed data to backend
+		 */
+		onPressEdit: function (oEvent) {
+			var bEdit = oEvent.getParameter("editable");
+			if (!bEdit && !isEmptyObject(this.getModel().getPendingChanges())) {
+				this.saveChanges(this._oSmartTable);
+			}
 		}
 	});
 

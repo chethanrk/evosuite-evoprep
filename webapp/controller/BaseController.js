@@ -133,6 +133,10 @@ sap.ui.define([
 				checkDuplicate: {
 					public: true,
 					final: true
+				},
+				saveChanges: {
+					public: true,
+					final: true
 				}
 			}
 		},
@@ -581,5 +585,22 @@ sap.ui.define([
 			});
 			return bIndicator;
 		},
+
+		/**
+		 * send changes to backend
+		 */
+		saveChanges: function (oTable) {
+			this.getModel().setRefreshAfterChange(false);
+			this.getModel().submitChanges({
+				success: function () {
+					if (oTable) {
+						oTable.rebindTable(true);
+					}
+					this.showMessageToast(this.getResourceBundle().getText("msg.saveSuccess"));
+					this.getModel().resetChanges();
+				}.bind(this)
+			});
+		}
+
 	});
 });

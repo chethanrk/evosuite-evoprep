@@ -51,7 +51,8 @@ sap.ui.define([
 				densityClass: this.getContentDensityClass(),
 				fullscreen: true,
 				operationTableCount: "",
-				allowPrePlanCreate: false
+				allowPrePlanCreate: false,
+				isPrePlanSelected: false,
 			};
 			this.setModel(models.createHelperModel(viewModelObj), "viewModel");
 			this.setModel(models.createCreateModel(), "CreateModel");

@@ -581,5 +581,17 @@ sap.ui.define([
 			});
 			return bIndicator;
 		},
+
+		/**
+		 * Sends save request to backend
+		 */
+		saveChanges: function () {
+			this.getModel().submitChanges({
+				success: function () {
+					this.showMessageToast(this.getResourceBundle().getText("msg.saveSuccess"));
+					this.getModel().resetChanges();
+				}.bind(this)
+			});
+		}
 	});
 });

@@ -66,11 +66,6 @@ sap.ui.define([
 			this.oViewModel = this.getModel("viewModel");
 			this.oCreateModel = this.getModel("CreateModel");
 
-			//Bind the message model to the view and register it
-			if (this.getOwnerComponent) {
-				this.getOwnerComponent().registerViewToMessageManager(this.getView());
-			}
-
 			var oRouter = this.getRouter();
 			//route for page create new preplan
 			oRouter.getRoute("CreatePrePlan").attachMatched(function (oEvent) {

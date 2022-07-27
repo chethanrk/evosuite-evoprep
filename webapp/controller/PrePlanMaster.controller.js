@@ -55,6 +55,7 @@ sap.ui.define([
 			var oRouter = this.getRouter();
 			//route for page create new order
 			oRouter.getRoute("PrePlanMaster").attachMatched(this._routeMatched, this);
+			oRouter.getRoute("PrePlanDetail").attachMatched(this._routeMatched, this);
 		},
 
 		/* =========================================================== */

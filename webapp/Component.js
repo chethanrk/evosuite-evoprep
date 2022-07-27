@@ -4,9 +4,12 @@ sap.ui.define([
 	"com/evorait/evosuite/evoprep/model/models",
 	"com/evorait/evosuite/evoprep/controller/ErrorHandler",
 	"com/evorait/evosuite/evoprep/controller/MessageManager",
+	"com/evorait/evosuite/evoprep/model/Constants",
 	"sap/f/library",
-	"sap/ui/model/json/JSONModel"
-], function (UIComponent, Device, models, ErrorHandler, MessageManager, library, JSONModel) {
+	"sap/ui/model/json/JSONModel",
+	"sap/ui/model/Filter",
+	"sap/ui/model/FilterOperator"
+], function (UIComponent, Device, models, ErrorHandler, MessageManager, Constants, library, JSONModel, Filter, FilterOperator) {
 	"use strict";
 
 	var oMessageManager = sap.ui.getCore().getMessageManager();
@@ -19,6 +22,7 @@ sap.ui.define([
 
 		oTemplatePropsProm: null,
 		oSystemInfoProm: null,
+		oFunctionSetProm: null,
 
 		/**
 		 * The component is initialized by UI5 automatically during the startup of the app and calls the init method once.
@@ -57,7 +61,12 @@ sap.ui.define([
 				operationTableCount: "",
 				allowPrePlanCreate: false,
 				isPrePlanSelected: false,
+				showStatusButton:false
 			};
+
+			//GetSystemInformation Call
+			this._getSystemInformation();
+
 			this.setModel(models.createHelperModel(viewModelObj), "viewModel");
 			this.setModel(models.createCreateModel(), "CreateModel");
 
@@ -65,10 +74,9 @@ sap.ui.define([
 
 			this.setModel(oMessageManager.getMessageModel(), "message");
 
-			//GetSystemInformation Call
-			this._getSystemInformation();
-
 			this._getTemplateProps();
+			this.oTemplatePropsProm.then(this._getFunctionSets.bind(this));
+
 			this.oTemplatePropsProm.then(function () {
 				// enable routing
 				this.getRouter().attachBeforeRouteMatched(this._onBeforeRouteMatched, this);
@@ -134,6 +142,29 @@ sap.ui.define([
 					this.setModel(oTempJsonModel, "templateProperties");
 					resolve(oTempJsonModel.getData());
 				}.bind(this));
+			}.bind(this));
+		},
+
+		/**
+		 * get SystemStatus and UserStatus FunctionsSet
+		 * what can be selected for changing status of an order
+		 * important for visibility based on startpage
+		 */
+		_getFunctionSets: function () {
+			this.oFunctionSetProm = new Promise(function (resolve) {
+				var oFilter = new Filter("ObjectCategory", FilterOperator.EQ, "GOB"),
+					oFilter1 = new Filter("FunctionType", FilterOperator.EQ, "U"),
+					oFunctionSet = {
+						userStatus: []
+					};
+				this.readData("/FunctionsSet", [oFilter, oFilter1])
+					.then(function (data) {
+						data.results.forEach(function (oItem) {
+							oFunctionSet.userStatus.push(oItem);
+						}.bind(this));
+						this.getModel("templateProperties").setProperty("/functionsSet/", oFunctionSet);
+						resolve(oFunctionSet);
+					}.bind(this));
 			}.bind(this));
 		},
 

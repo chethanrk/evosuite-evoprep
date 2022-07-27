@@ -61,7 +61,8 @@ sap.ui.define([
 				operationTableCount: "",
 				allowPrePlanCreate: false,
 				isPrePlanSelected: false,
-				showStatusButton:false
+				showStatusButton:false,
+				editMode:true
 			};
 
 			//GetSystemInformation Call

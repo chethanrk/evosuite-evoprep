@@ -753,7 +753,7 @@ sap.ui.define([
 			} else {
 				this.getView().getModel("viewModel").setProperty("/busy", bIsInProgress);
 			}
-		}
+		},
 
 	});
 });

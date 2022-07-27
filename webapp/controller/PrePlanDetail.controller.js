@@ -1,8 +1,9 @@
 sap.ui.define([
 	"com/evorait/evosuite/evoprep/controller/BaseController",
 	"sap/ui/core/Fragment",
-	"sap/ui/core/mvc/OverrideExecution"
-], function (BaseController, Fragment, OverrideExecution) {
+	"sap/ui/core/mvc/OverrideExecution",
+	"sap/f/library"
+], function (BaseController, Fragment, OverrideExecution, library) {
 	"use strict";
 
 	return BaseController.extend("com.evorait.evosuite.evoprep.controller.PrePlanDetail", {
@@ -10,25 +11,20 @@ sap.ui.define([
 			// extension can declare the public methods
 			// in general methods that start with "_" are private
 			methods: {
-            	onPressHeaderEdit: {
+				onPressHeaderEdit: {
 					public: true,
-					final: true
-				},
-				_validateDates: {
-					public: true,
-					final: true
+					final: true,
+					overrideExecution: OverrideExecution.Instead
 				},
 				onSavePrePlanHeaderEdit: {
 					public: true,
-					final: true
+					final: true,
+					overrideExecution: OverrideExecution.Instead
 				},
 				submitPrePlanHeaderEditChanges: {
 					public: true,
-					final: true
-				},
-				_clearData: {
-					public: true,
-					final: true
+					final: true,
+					overrideExecution: OverrideExecution.Instead
 				},
 				oPressDetailDelete: {
 					public: true,
@@ -62,7 +58,14 @@ sap.ui.define([
 			//Binnding has changed in TemplateRenderController.js
 			eventBus.subscribe("TemplateRendererEvoPrep", "changedBinding", this._changedBinding, this);
 		},
-
+		/**
+		 * Called when the View has been rendered (so its HTML is part of the document). Post-rendering manipulations of the HTML could be done here.
+		 * This hook is the same one that SAPUI5 controls get after being rendered.
+		 * @memberOf com.evorait.evosuite.evoprep.view.PrePlanDetail
+		 */
+		onAfterRendering: function () {
+			this._initializeView();
+		},
 		/**
 		 * Called when a controller is destroyed
 		 * Object on exit
@@ -81,9 +84,6 @@ sap.ui.define([
 		/* =========================================================== */
 		/* public methods                                              */
 		/* =========================================================== */
-onAfterRendering: function () {
-			this._initializeView();
-		},
 
 		/**
 		 * when view was integrated set additional page parameters
@@ -91,9 +91,10 @@ onAfterRendering: function () {
 		_initializeView: function () {
 			this.aSmartForms = this.getAllSmartForms(this.getView().getControlsByFieldGroupId("smartFormTemplate"));
 		},
-		
+
 		/*
 		Validating Header Dates 
+		Setting Max and Min Dates for Header Start Date and End Dates
 		*/
 		_validateDates: function () {
 			var sPath = this.getView().getBindingContext().getPath(),
@@ -112,6 +113,7 @@ onAfterRendering: function () {
 		},
 
 		/*On Press of Header Edit Button
+		 * @param oEvent
 		 */
 		onPressHeaderEdit: function (oEvent) {
 			var oSource = oEvent.getSource();
@@ -119,22 +121,30 @@ onAfterRendering: function () {
 				oSource.setIcon("sap-icon://display");
 				this.setFormsEditable(this.aSmartForms, true);
 				this._validateDates();
+				this.oViewModel.setProperty("/editMode", false);
 			} else {
 				this.onSavePrePlanHeaderEdit();
 			}
 			this.oViewModel.setProperty("/layout", library.LayoutType.MidColumnFullScreen);
 			this.oViewModel.setProperty("/fullscreen", false);
-
 		},
 
+		/**
+		 * Called before saving edited header data 
+		 * Confirmation Pop-Up before Saving Edited Data
+		 */
 		onSavePrePlanHeaderEdit: function () {
-			this._showConfirmMessageBox(this.getResourceBundle().getText("ymsg.savePrePlanHeaderEdit")).then(function (resolve) {
-				if (sap.m.MessageBox.Action.YES === resolve) {
-					this.submitPrePlanHeaderEditChanges();
-				} else {
-					this._clearData();
-				}
-			}.bind(this));
+			var successFn = function () {
+				this.submitPrePlanHeaderEditChanges();
+			};
+
+			var cancelFun = function () {
+				this._clearData();
+			};
+
+			this.showConfirmDialog("Confirm", this.getResourceBundle().getText("ymsg.savePrePlanHeaderEdit"), successFn.bind(this), cancelFun.bind(
+				this));
+
 		},
 
 		/*
@@ -148,17 +158,7 @@ onAfterRendering: function () {
 				//if form is valid save created entry
 				if (mErrors.state === "success") {
 					if (oModel.hasPendingChanges()) {
-						this.oViewModel.setProperty("/busy", true);
-						this.getModel().submitChanges({
-							success: function (oData, oResponse) {
-								this.oViewModel.setProperty("/busy", false);
-								sap.m.MessageBox.success(oResourceBundle.getText("ymsg.saveSuccessPrePlanHeaderEdit"));
-								this._clearData();
-							}.bind(this),
-							error: function (oError) {
-								this.oViewModel.setProperty("/busy", false);
-							}
-						});
+						this.saveChangesMain(mErrors, this._saveSuccess.bind(this));
 					} else {
 						sap.m.MessageToast.show(oResourceBundle.getText("ymsg.noChangesPrePlanHeaderEdit"));
 					}
@@ -166,6 +166,15 @@ onAfterRendering: function () {
 					sap.m.MessageToast.show(oResourceBundle.getText("ymsg.invalidChangesPrePlanHeaderEdit"));
 				}
 			}
+		},
+		/**
+		 * Event triggered after header data is updated successfully and to refresh the context
+		 * @private
+		 */
+		_saveSuccess: function () {
+			var oResourceBundle = this.getResourceBundle();
+			sap.m.MessageBox.success(oResourceBundle.getText("ymsg.saveSuccessPrePlanHeaderEdit"));
+			this._clearData();
 		},
 
 		/*
@@ -175,8 +184,9 @@ onAfterRendering: function () {
 			this.getView().byId("idStatusEdit").setIcon("sap-icon://edit");
 			this.getModel().resetChanges();
 			this.setFormsEditable(this.aSmartForms, false);
+			this.oViewModel.setProperty("/editMode", true);
 		},
-	
+
 		/**
 		 * Detail page delete functionality
 		 */

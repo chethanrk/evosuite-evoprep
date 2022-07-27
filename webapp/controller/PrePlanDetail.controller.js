@@ -154,16 +154,16 @@ sap.ui.define([
 			//set user status button functions only when it's enabled
 			this.getOwnerComponent().oSystemInfoProm.then(function (oUser) {
 				this.oViewModel.setProperty("/showStatusButton", false);
-
-				var mPreplanAllows = {};
-				Object.keys(objData).forEach(function (key) {
-					if (key.startsWith("ALLOW_")) {
-						mPreplanAllows[key] = objData[key];
-					}
-				});
-				this.oViewModel.setProperty("/PrePlanAllows", mPreplanAllows);
-
-				this._setStatusButtonVisibility(mPreplanAllows);
+				if (oUser.ENABLE_STATUS_CHANGE) { //Formation of mPreplanAllows object
+					var mPreplanAllows = {};
+					Object.keys(objData).forEach(function (key) {
+						if (key.startsWith("ALLOW_")) {
+							mPreplanAllows[key] = objData[key];
+						}
+					});
+					this.oViewModel.setProperty("/PrePlanAllows", mPreplanAllows);
+					this._setStatusButtonVisibility(mPreplanAllows);
+				}
 
 			}.bind(this));
 		},

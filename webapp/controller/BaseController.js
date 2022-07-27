@@ -590,16 +590,33 @@ sap.ui.define([
 		 * send changes to backend
 		 */
 		saveChanges: function (oTable) {
-        this.getModel().setRefreshAfterChange(false);
+			this.getModel().setRefreshAfterChange(false);
 			this.getModel().submitChanges({
 				success: function () {
-                if (oTable) {
+					if (oTable) {
 						oTable.rebindTable(true);
 					}
 					this.showMessageToast(this.getResourceBundle().getText("msg.saveSuccess"));
 					this.getModel().resetChanges();
 				}.bind(this)
 			});
-		}
+		},
+
+		_showConfirmMessageBox: function (message) {
+			var oController = this;
+			return new Promise(function (resolve, reject) {
+				MessageBox.confirm(
+					message, {
+						styleClass: oController.getOwnerComponent().getContentDensityClass(),
+						icon: sap.m.MessageBox.Icon.CONFIRM,
+						title: oController.getResourceBundle().getText("xtit.confirm"),
+						actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
+						onClose: function (oEvent) {
+							resolve(oEvent);
+						}
+					}
+				);
+			});
+		},
 	});
 });

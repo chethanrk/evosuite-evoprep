@@ -29,9 +29,19 @@ sap.ui.define([
 			}
 		},
 
-	/*	getOperationDate: function (oDate) {
-			debugger;
-		}*/
+		/**
+		 * show/hide options for System status or User status buttons
+		 */
+		showStatusSelectOption: function (sFunction, mAllowParams) {
+			for (var key in mAllowParams) {
+				var sAllowFunc = "ALLOW_" + sFunction;
+				if (key === sAllowFunc && (mAllowParams[key] === true || mAllowParams[key] === "X")) {
+					return true;
+				}
+			}
+
+			return false;
+		}
 	};
 
 });

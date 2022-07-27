@@ -11,14 +11,15 @@
 					<uxap:headerTitle>
 						<uxap:ObjectPageHeader objectTitle="{PLAN_NAME}" objectSubtitle="{ObjectKey}">
 							<uxap:actions>
-								<uxap:ObjectPageHeaderActionButton id="idStatusChangeMenu" hideText="false" type="Default" text="{i18n>xbut.status}" enabled="false" tooltip="{i18n>xbut.status}"/>
+								<uxap:ObjectPageHeaderActionButton id="idStatusChangeMenu" hideText="false" type="Default" text="{i18n>xbut.status}"
+									tooltip="{i18n>xbut.status}" visible="{viewModel>/showStatusButton}" press="onPressChangeStatus"/>
 								<uxap:ObjectPageHeaderActionButton id="idStatusCopy" hideText="false" type="Default" text="{i18n>xbut.copy}" tooltip="{i18n>xbut.copy}"
-									enabled="false"/>
+									visible="false"/>
 								<uxap:ObjectPageHeaderActionButton id="idStatusDelete" hideText="false" type="Default" text="{i18n>xbut.delete}"
-									tooltip="{i18n>xbut.delete}" enabled="false"/>
-									<uxap:ObjectPageHeaderActionButton id="idStatusEdit" hideText="false" type="Default" enabled="true" icon="sap-icon://edit"
+									tooltip="{i18n>xbut.delete}" visible="{= ${user>/ENABLE_PLAN_DELETE} === 'X'}" press="oPressDetailDelete"/>
+							<uxap:ObjectPageHeaderActionButton id="idStatusEdit" hideText="false" type="Default" enabled="true" icon="sap-icon://edit"
 									tooltip="{i18n>xbut.edit}" visible="{= ${user>/ENABLE_PREPLAN_UPDATE} === 'X'}" press="onPressHeaderEdit"/>
-								<core:ExtensionPoint name="PageExtP|PrePlanDetail|PlanHeaderSet|Title|Action"/>
+                    <core:ExtensionPoint name="PageExtP|PrePlanDetail|PlanHeaderSet|Title|Action"/>
 							</uxap:actions>
 							<uxap:sideContentButton></uxap:sideContentButton>
 							<uxap:navigationBar>

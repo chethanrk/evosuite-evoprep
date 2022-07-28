@@ -41,6 +41,25 @@ sap.ui.define([
 			}
 
 			return false;
+		},
+		
+		/**
+		 * format date by given format from language file
+		 * @param date
+		 * @param format
+		 * @returns {string}
+		 */
+		formatDate: function (date, format) {
+			if (!date || date === "") {
+				return "-";
+			}
+			if (!format) {
+				format = "MMM dd, yyyy";
+			}
+			var oDateFormat = DateFormat.getDateTimeInstance({
+				pattern: format
+			});
+			return oDateFormat.format(new Date(date));
 		}
 	};
 

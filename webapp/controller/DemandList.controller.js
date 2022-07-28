@@ -129,6 +129,7 @@ sap.ui.define([
 		 * Navigates back to Pre-Plans list
 		 */
 		goBackToPrePlans: function () {
+			this._removeOprTableSelection();
 			this.getOwnerComponent().getRouter().navTo("PrePlanMaster");
 		},
 
@@ -165,7 +166,7 @@ sap.ui.define([
 				}
 			}.bind(this));
 			this.oCreateModel.refresh();
-			oTable.clearSelection(true);
+			this._removeOprTableSelection();
 			this.getRouter().navTo("CreatePrePlan");
 		},
 
@@ -195,6 +196,18 @@ sap.ui.define([
 					this._oPlanPopover.openBy(oSource);
 				}
 			}
+		},
+
+		/* =========================================================== */
+		/* Private methods                                           */
+		/* =========================================================== */
+
+		/**
+		 * Method to deselect the selcted items
+		 */
+		_removeOprTableSelection: function () {
+			this.oSmartTable.getTable().clearSelection(true);
+			this.getModel("viewModel").setProperty("/allowPrePlanCreate", false);
 		}
 	});
 

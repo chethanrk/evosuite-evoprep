@@ -16,7 +16,12 @@ sap.ui.define([
 					final: true,
 					overrideExecution: OverrideExecution.Instead
 				},
-				onSavePrePlanHeaderEdit: {
+				onPressSavePrePlanHeaderEdit: {
+					public: true,
+					final: true,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onPressCancelPrePlanHeader: {
 					public: true,
 					final: true,
 					overrideExecution: OverrideExecution.Instead
@@ -116,41 +121,28 @@ sap.ui.define([
 		 * @param oEvent
 		 */
 		onPressHeaderEdit: function (oEvent) {
-			var oSource = oEvent.getSource();
-			if (oSource.getIcon() === "sap-icon://edit") {
-				oSource.setIcon("sap-icon://display");
-				this.setFormsEditable(this.aSmartForms, true);
-				this._validateDates();
-				this.oViewModel.setProperty("/editMode", false);
-			} else {
-				this.onSavePrePlanHeaderEdit();
-			}
+			this.setFormsEditable(this.aSmartForms, true);
+			this._validateDates();
+			this.oViewModel.setProperty("/editMode", false);
 			this.oViewModel.setProperty("/layout", library.LayoutType.MidColumnFullScreen);
 			this.oViewModel.setProperty("/fullscreen", false);
 		},
 
 		/**
-		 * Called before saving edited header data 
-		 * Confirmation Pop-Up before Saving Edited Data
+		 * Called onClick of Cancel when edit is enabled for header
+		 * Shows dialog when user wants to cancel the edited changes
 		 */
-		onSavePrePlanHeaderEdit: function () {
+		onPressCancelPrePlanHeader: function () {
 			var successFn = function () {
-				this.submitPrePlanHeaderEditChanges();
-			};
-
-			var cancelFun = function () {
 				this._clearData();
 			};
-
-			this.showConfirmDialog("Confirm", this.getResourceBundle().getText("ymsg.savePrePlanHeaderEdit"), successFn.bind(this), cancelFun.bind(
-				this));
-
+			this.showConfirmDialog("Confirm", this.getResourceBundle().getText("msg.leaveWithoutSave"), successFn.bind(this));
 		},
 
 		/*
 		Saving Edited Header Data Using Submit Changes	
 		*/
-		submitPrePlanHeaderEditChanges: function () {
+		onPressSavePrePlanHeader: function () {
 			if (this.aSmartForms.length > 0) {
 				var oModel = this.getModel(),
 					oResourceBundle = this.getResourceBundle(),

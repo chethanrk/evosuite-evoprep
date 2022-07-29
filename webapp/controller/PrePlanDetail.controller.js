@@ -90,33 +90,6 @@ sap.ui.define([
 		/* public methods                                              */
 		/* =========================================================== */
 
-		/**
-		 * when view was integrated set additional page parameters
-		 */
-		_initializeView: function () {
-			this.aSmartForms = this.getAllSmartForms(this.getView().getControlsByFieldGroupId("smartFormTemplate"));
-		},
-
-		/*
-		Validating Header Dates 
-		Setting Max and Min Dates for Header Start Date and End Dates
-		*/
-		_validateDates: function () {
-			var sPath = this.getView().getBindingContext().getPath(),
-				sStartDate = this.getModel().getProperty(sPath + "/START_DATE"),
-				sEndDate = this.getModel().getProperty(sPath + "/END_DATE"),
-				oStartDate = this.getFormFieldByName("idSTART_DATE", this.aSmartForms),
-				oEndData = this.getFormFieldByName("idEND_DATE", this.aSmartForms);
-
-			if (oStartDate) {
-				oStartDate.getContent().setMaxDate(sStartDate);
-			}
-			if (oEndData) {
-				oEndData.getContent().setMinDate(sEndDate);
-			}
-
-		},
-
 		/*On Press of Header Edit Button
 		 * @param oEvent
 		 */
@@ -158,25 +131,6 @@ sap.ui.define([
 					sap.m.MessageToast.show(oResourceBundle.getText("ymsg.invalidChangesPrePlanHeaderEdit"));
 				}
 			}
-		},
-		/**
-		 * Event triggered after header data is updated successfully and to refresh the context
-		 * @private
-		 */
-		_saveSuccess: function () {
-			var oResourceBundle = this.getResourceBundle();
-			sap.m.MessageBox.success(oResourceBundle.getText("ymsg.saveSuccessPrePlanHeaderEdit"));
-			this._clearData();
-		},
-
-		/*
-		Resetting Header Form 
-		*/
-		_clearData: function () {
-			this.getView().byId("idStatusEdit").setIcon("sap-icon://edit");
-			this.getModel().resetChanges();
-			this.setFormsEditable(this.aSmartForms, false);
-			this.oViewModel.setProperty("/editMode", true);
 		},
 
 		/**
@@ -341,7 +295,53 @@ sap.ui.define([
 					this._setStatusButtonVisibility(mResult);
 				}
 			}.bind(this));
-		}
+		},
+		/**
+		 * when view was integrated set additional page parameters
+		 */
+		_initializeView: function () {
+			this.aSmartForms = this.getAllSmartForms(this.getView().getControlsByFieldGroupId("smartFormTemplate"));
+		},
+
+		/*
+		Validating Header Dates 
+		Setting Max and Min Dates for Header Start Date and End Dates
+		*/
+		_validateDates: function () {
+			var sPath = this.getView().getBindingContext().getPath(),
+				sStartDate = this.getModel().getProperty(sPath + "/START_DATE"),
+				sEndDate = this.getModel().getProperty(sPath + "/END_DATE"),
+				oStartDate = this.getFormFieldByName("idSTART_DATE", this.aSmartForms),
+				oEndData = this.getFormFieldByName("idEND_DATE", this.aSmartForms);
+
+			if (oStartDate) {
+				oStartDate.getContent().setMaxDate(sStartDate);
+			}
+			if (oEndData) {
+				oEndData.getContent().setMinDate(sEndDate);
+			}
+
+		},
+		/**
+		 * Event triggered after header data is updated successfully and to refresh the context
+		 * @private
+		 */
+		_saveSuccess: function () {
+			var oResourceBundle = this.getResourceBundle();
+			sap.m.MessageBox.success(oResourceBundle.getText("ymsg.saveSuccessPrePlanHeaderEdit"));
+			this._clearData();
+		},
+
+		/*
+		Resetting Header Form 
+		*/
+		_clearData: function () {
+			this.getModel().resetChanges();
+			this.setFormsEditable(this.aSmartForms, false);
+			this.oViewModel.setProperty("/editMode", true);
+			this.oViewModel.setProperty("/layout", library.LayoutType.TwoColumnsMidExpanded);
+			this.oViewModel.setProperty("/fullscreen", true);
+		},
 	});
 
 });

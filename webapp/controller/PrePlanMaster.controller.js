@@ -80,10 +80,9 @@ sap.ui.define([
 			//unselect all the selected rows
 			this._removeTableSelection();
 			var sobjectKeyId = oEvent.getSource().getBindingContext().getProperty("ObjectKey");
-			this.getRouter().navTo("PrePlanDetail", {
-				layout: library.LayoutType.TwoColumnsMidExpanded,
-				plan: sobjectKeyId
-			});
+			if (sobjectKeyId) {
+				this.navToDetail(sobjectKeyId);
+			}
 		},
 
 		/**

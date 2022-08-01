@@ -4,10 +4,10 @@
 			<core:ExtensionPoint name="DialogExtP|OperationPlanDisplay|Content|Before"/>
 			<core:ExtensionPoint name="DialogExtP|OperationPlanDisplay|Content|Instead"></core:ExtensionPoint>
 			<smartList:SmartList id="idOprPlanDisplay" entitySet="PlanItemsSet" listBindingPath="PlanItemsToPlanHeader" showRowCount="false"
-				showFullScreenButton="true" enableAutoBinding="true" selectFields="PLAN_NAME,STATUS_SHORT,PLAN_ID,START_DATE,END_DATE"
+				showFullScreenButton="true" enableAutoBinding="true" selectFields="PLAN_NAME,STATUS_SHORT,PLAN_ID,START_DATE,END_DATE,ObjectKey"
 				header="{i18n>tit.plan}">
 				<smartList:listItemTemplate>
-					<ObjectListItem title="{PLAN_NAME}" type="Active">
+					<ObjectListItem title="{PLAN_NAME}" type="Active" press="onListPlanItemPress">
 						<firstStatus>
 							<ObjectStatus text="{STATUS_SHORT}"/>
 						</firstStatus>

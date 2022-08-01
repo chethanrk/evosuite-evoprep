@@ -46,6 +46,11 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
+				},
+				onListPlanItemPress: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
@@ -195,6 +200,20 @@ sap.ui.define([
 					this._oPlanPopover.setBindingContext(oContext);
 					this._oPlanPopover.openBy(oSource);
 				}
+			}
+		},
+
+		/**
+		 * Called when plan item pressed inside popover display
+		 * Navigate to detail page with selected plan
+		 */
+		onListPlanItemPress: function (oEvent) {
+			var oSource = oEvent.getSource(),
+				oContext = oSource.getBindingContext();
+			this._removeOprTableSelection();
+			var sObjKey = oContext.getProperty("ObjectKey");
+			if (sObjKey) {
+				this.navToDetail(sObjKey);
 			}
 		},
 

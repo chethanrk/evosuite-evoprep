@@ -29,9 +29,49 @@ sap.ui.define([
 			}
 		},
 
-	/*	getOperationDate: function (oDate) {
-			debugger;
-		}*/
+		/**
+		 * show/hide options for System status or User status buttons
+		 */
+		showStatusSelectOption: function (sFunction, mAllowParams) {
+			for (var key in mAllowParams) {
+				var sAllowFunc = "ALLOW_" + sFunction;
+				if (key === sAllowFunc && (mAllowParams[key] === true || mAllowParams[key] === "X")) {
+					return true;
+				}
+			}
+
+			return false;
+		},
+
+		/**
+		 * Visibility of delete butotn in maste page
+		 */
+		showDeleteMasterList: function (sEnableDelete, sLayout) {
+			if (sEnableDelete && sEnableDelete === "X" && sLayout && sLayout === "OneColumn") {
+				return true;
+			}
+
+			return false;
+		},
+
+		/**
+		 * format date by given format from language file
+		 * @param date
+		 * @param format
+		 * @returns {string}
+		 */
+		formatDate: function (date, format) {
+			if (!date || date === "") {
+				return "-";
+			}
+			if (!format) {
+				format = "MMM dd, yyyy";
+			}
+			var oDateFormat = DateFormat.getDateTimeInstance({
+				pattern: format
+			});
+			return oDateFormat.format(new Date(date));
+		}
 	};
 
 });

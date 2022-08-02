@@ -34,7 +34,7 @@
 				tableType="Table" useExportToExcel="true" useVariantManagement="true" persistencyKey="com.evorait.evosuite.evoprep.DemandListTable"
 				useTablePersonalisation="true" showRowCount="true" enableAutoBinding="true" demandPopin="false" smartFilterId="demandListSmartFilterBar"
 				customData:useSmartField="true" customData:useSmartToggle="true" editTogglable="{= ${user>/ENABLE_ITEM_UPDATE} === 'X'}"
-				editToggled="onPressEdit">
+				editToggled="onPressEdit" requestAtLeastFields="ObjectKey,NO_OF_PLAN_ID">
 				<!-- layout data used to make the table growing but the filter bar fixed -->
 				<smartTable:layoutData>
 					<FlexItemData growFactor="1" baseSize="0%"/>
@@ -57,6 +57,16 @@
 						</table:RowAction>
 					</table:rowActionTemplate>
 					<table:columns>
+						<table:Column hAlign="Center" sortProperty="NO_OF_PLAN_ID" filterProperty="NO_OF_PLAN_ID" width="7rem">
+							<Label text="{/PlanItemsSet/NO_OF_PLAN_ID/##com.sap.vocabularies.Common.v1.Label/String}"/>
+							<table:customData>
+								<core:CustomData key="p13nData"
+									value='\{"columnKey": "NO_OF_PLAN_ID", "leadingProperty":"NO_OF_PLAN_ID", "filterProperty":"NO_OF_PLAN_ID", "sortProperty":"NO_OF_PLAN_ID", "columnIndex":"4"}'/>
+							</table:customData>
+							<table:template>
+								<Link text="{NO_OF_PLAN_ID}" press="onPressPlanNumber"/>
+							</table:template>
+						</table:Column>
 						<core:ExtensionPoint name="PageExtP|DemandList|PlanItemsSet|SmartTable|Columns"/>
 					</table:columns>
 				</table:Table>

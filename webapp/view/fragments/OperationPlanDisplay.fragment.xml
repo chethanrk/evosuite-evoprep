@@ -1,0 +1,27 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:smartList="sap.ui.comp.smartlist">
+	<ResponsivePopover id="idOperationPlanDisplay" class="sapUiContentPadding" showHeader="false" contentWidth="50%" contentHeight="auto">
+		<content>
+			<core:ExtensionPoint name="DialogExtP|OperationPlanDisplay|Content|Before"/>
+			<core:ExtensionPoint name="DialogExtP|OperationPlanDisplay|Content|Instead"></core:ExtensionPoint>
+			<smartList:SmartList id="idOprPlanDisplay" entitySet="PlanItemsSet" listBindingPath="PlanItemsToPlanHeader" showRowCount="false"
+				showFullScreenButton="true" enableAutoBinding="true" selectFields="PLAN_NAME,STATUS_SHORT,PLAN_ID,START_DATE,END_DATE,ObjectKey"
+				header="{i18n>tit.plan}">
+				<smartList:listItemTemplate>
+					<ObjectListItem title="{PLAN_NAME}" type="Active" press="onListPlanItemPress">
+						<firstStatus>
+							<ObjectStatus text="{STATUS_SHORT}"/>
+						</firstStatus>
+						<attributes>
+							<ObjectAttribute text="{PLAN_ID}"/>
+							<ObjectAttribute text="{path:'START_DATE',formatter:'.formatter.formatDate'}"/>
+							<ObjectAttribute text="{path:'END_DATE',formatter:'.formatter.formatDate'}"/>
+						</attributes>
+					</ObjectListItem>
+				</smartList:listItemTemplate>
+			</smartList:SmartList>
+			<core:ExtensionPoint name="DialogExtP|OperationPlanDisplay|Content|After"/>
+		</content>
+		<beginButton></beginButton>
+		<endButton></endButton>
+	</ResponsivePopover>
+</core:FragmentDefinition>

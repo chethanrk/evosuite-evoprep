@@ -42,7 +42,18 @@ sap.ui.define([
 
 			return false;
 		},
-		
+
+		/**
+		 * Visibility of delete butotn in maste page
+		 */
+		showDeleteMasterList: function (sEnableDelete, sLayout) {
+			if (sEnableDelete && sEnableDelete === "X" && sLayout && sLayout === "OneColumn") {
+				return true;
+			}
+
+			return false;
+		},
+
 		/**
 		 * format date by given format from language file
 		 * @param date

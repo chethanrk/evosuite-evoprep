@@ -52,6 +52,11 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
+				},
+				onPressEdit: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
@@ -217,14 +222,14 @@ sap.ui.define([
 				this.navToDetail(sObjKey);
 			}
 		},
-        
-        /**
+
+		/**
 		 * Sends the changed data to backend
 		 */
 		onPressEdit: function (oEvent) {
 			var bEdit = oEvent.getParameter("editable");
 			if (!bEdit && !isEmptyObject(this.getModel().getPendingChanges())) {
-				this.saveChanges(this._oSmartTable);
+				this.saveChanges(this.oSmartTable);
 			}
 		},
 

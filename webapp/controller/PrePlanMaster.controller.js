@@ -54,8 +54,8 @@ sap.ui.define([
 			this.oSmartTable = this.getView().byId("idPagePrePlanSmartTable");
 			var oRouter = this.getRouter();
 			//route for page create new order
-			oRouter.getRoute("PrePlanMaster").attachMatched(this._routeMatched, this);
-			oRouter.getRoute("PrePlanDetail").attachMatched(this._routeMatched, this);
+			oRouter.getRoute("PrePlanMaster").attachMatched(this._routeMatchedMaster, this);
+			oRouter.getRoute("PrePlanDetail").attachMatched(this._routeMatchedDetail, this);
 		},
 
 		/* =========================================================== */
@@ -77,13 +77,16 @@ sap.ui.define([
 		 * Navigate to detail page with selected plan details
 		 */
 		onClickTableRow: function (oEvent) {
-			//unselect all the selected rows
 			this._removeTableSelection();
-			var sobjectKeyId = oEvent.getSource().getBindingContext().getProperty("ObjectKey");
-			this.getRouter().navTo("PrePlanDetail", {
-				layout: library.LayoutType.TwoColumnsMidExpanded,
-				plan: sobjectKeyId
-			});
+			var oSource = oEvent.getSource(),
+				oTable = this.oSmartTable.getTable();
+			oSource.setSelected(true);
+			oTable.fireSelectionChange(oSource);
+			this.getModel("viewModel").setProperty("/loadMaster", true);
+			var sobjectKeyId = oSource.getBindingContext().getProperty("ObjectKey");
+			if (sobjectKeyId) {
+				this.navToDetail(sobjectKeyId);
+			}
 		},
 
 		/**
@@ -144,9 +147,25 @@ sap.ui.define([
 		/* =========================================================== */
 		/* Private methods                                              */
 		/* =========================================================== */
+		/**
+		 * Handle master route match 
+		 * load table data
+		 */
+		_routeMatchedMaster: function (data) {
+			if (this.oSmartTable) {
+				this.oSmartTable.rebindTable();
+			}
+		},
 
-		_routeMatched: function () {
-			this.oSmartTable.rebindTable();
+		/**
+		 * Handle detail route match 
+		 * load table data
+		 */
+		_routeMatchedDetail: function (data) {
+			var oParam = data.getParameter("arguments");
+			if (this.oSmartTable && !this.getModel("viewModel").getProperty("/loadMaster")) {
+				this.oSmartTable.rebindTable();
+			}
 		},
 
 		/**

@@ -150,6 +150,10 @@ sap.ui.define([
 				deleteEntries: {
 					public: true,
 					final: true
+				},
+				navToDetail: {
+					public: true,
+					final: true
 				}
 			}
 		},
@@ -708,6 +712,16 @@ sap.ui.define([
 				technical: true
 			});
 			sap.ui.getCore().getMessageManager().addMessages(oMessage);
+		},
+
+		/**
+		 * Navigate to detail page with selected plan
+		 */
+		navToDetail: function (sPlanObject) {
+			this.getRouter().navTo("PrePlanDetail", {
+				layout: library.LayoutType.TwoColumnsMidExpanded,
+				plan: sPlanObject
+			});
 		},
 
 		/* =========================================================== */

@@ -228,9 +228,12 @@ sap.ui.define([
 		 */
 		onPressEdit: function (oEvent) {
 			var bEdit = oEvent.getParameter("editable");
+			this.getModel("viewModel").setProperty("/orderListEditMode", bEdit);
+			this.getModel("viewModel").setProperty("/demandRowActionCount", bEdit);
 			if (!bEdit && !isEmptyObject(this.getModel().getPendingChanges())) {
 				this.saveChanges(this.oSmartTable);
 			}
+
 		},
 
 		/* =========================================================== */

@@ -63,7 +63,9 @@ sap.ui.define([
 				isPrePlanSelected: false,
 				showStatusButton: false,
 				editMode: true,
-				loadMaster: false
+				loadMaster: false,
+				orderListEditMode: false,
+				demandRowActionCount: false
 			};
 
 			//GetSystemInformation Call

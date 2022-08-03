@@ -64,8 +64,7 @@ sap.ui.define([
 				showStatusButton: false,
 				editMode: true,
 				loadMaster: false,
-				orderListEditMode: false,
-				demandRowActionCount: false
+				orderListEditMode: false
 			};
 
 			//GetSystemInformation Call

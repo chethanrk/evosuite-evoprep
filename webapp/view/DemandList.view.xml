@@ -47,7 +47,7 @@
 						<core:ExtensionPoint name="TableExtP|DemandList|PlanItemsSet|CustomToolbar"/>
 					</Toolbar>
 				</smartTable:customToolbar>
-				<table:Table id="demandListPageSmartTableTable" rowActionCount="{= ${viewModel>/demandRowActionCount} ? 0 : 1}" visibleRowCountMode="Auto"
+				<table:Table id="demandListPageSmartTableTable" rowActionCount="{= ${viewModel>/orderListEditMode} ? 0 : 1}" visibleRowCountMode="Auto"
 					rowSelectionChange="handleDemandSelectionChange" enableSelectAll="false"
 					selectionMode="{= ${viewModel>/orderListEditMode} ? 'None' : 'MultiToggle'}">
 					<table:rowActionTemplate>

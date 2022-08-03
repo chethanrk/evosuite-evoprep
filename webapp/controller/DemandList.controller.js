@@ -47,6 +47,11 @@ sap.ui.define([
 					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
+				onPressNetworkKey: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
 				onListPlanItemPress: {
 					public: true,
 					final: false,
@@ -204,6 +209,34 @@ sap.ui.define([
 		},
 
 		/**
+		 * Called when clicks on the network key 
+		 * If operation is assigned to any network it will allow to open popover with network details
+		 */
+		onPressNetworkKey: function (oEvent) {
+			var oSource = oEvent.getSource(),
+				oLineItem = oSource.getParent(),
+				oContext = oLineItem.getBindingContext(),
+				PlanNumber = oEvent.getSource().getText();
+			if (!isNaN(PlanNumber) && parseInt(PlanNumber, 10) > 0) {
+				if (!this._oNetworkPopover) {
+					Fragment.load({
+						name: "com.evorait.evosuite.evoprep.view.fragments.OperationNetworkDisplay",
+						controller: this
+					}).then(function (pPopover) {
+						this._oNetworkPopover = pPopover;
+						this.getView().addDependent(this._oNetworkPopover);
+						this._oNetworkPopover.setBindingContext(oContext);
+						this._oNetworkPopover.openBy(oSource);
+
+					}.bind(this));
+				} else {
+					this._oNetworkPopover.setBindingContext(oContext);
+					this._oNetworkPopover.openBy(oSource);
+				}
+			}
+		},
+
+		/**
 		 * Called when plan item pressed inside popover display
 		 * Navigate to detail page with selected plan
 		 */
@@ -215,6 +248,15 @@ sap.ui.define([
 			if (sObjKey) {
 				this.navToDetail(sObjKey);
 			}
+		},
+
+		/**
+		 * Called when network item press inside popover display
+		 * Navigate to evoorderreleate application
+		 */
+		onListNetworkItemPress: function (oEvent) {
+			/*var oSource = oEvent.getSource();
+			this.openApp2AppPopover(oSource, "NETWORK_KEY");*/
 		},
 
 		/* =========================================================== */

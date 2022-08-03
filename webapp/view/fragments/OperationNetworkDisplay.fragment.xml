@@ -1,0 +1,24 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:smartList="sap.ui.comp.smartlist">
+	<ResponsivePopover id="idOperationNetworkDisplay" class="sapUiContentPadding" showHeader="false" contentWidth="50%" contentHeight="auto">
+		<content>
+			<core:ExtensionPoint name="DialogExtP|OperationNetworkDisplay|Content|Before"/>
+			<core:ExtensionPoint name="DialogExtP|OperationNetworkDisplay|Content|Instead"></core:ExtensionPoint>
+			<smartList:SmartList id="idOprPlanDisplay" entitySet="NetworkRelationSet" listBindingPath="PlanItemsToRelation" showRowCount="false"
+				showFullScreenButton="true" enableAutoBinding="true" selectFields="NETWORK_KEY,ObjectKey,DESCRIPTION" header="{i18n>tit.networks}">
+				<smartList:listItemTemplate>
+					<ObjectListItem title="{PLAN_NAME}" type="Active" press="onListNetworkItemPress">
+						<firstStatus>
+							<ObjectStatus text="{DESCRIPTION}"/>
+						</firstStatus>
+						<attributes>
+							<ObjectAttribute text="{NETWORK_KEY}"/>
+						</attributes>
+					</ObjectListItem>
+				</smartList:listItemTemplate>
+			</smartList:SmartList>
+			<core:ExtensionPoint name="DialogExtP|OperationNetworkDisplay|Content|After"/>
+		</content>
+		<beginButton></beginButton>
+		<endButton></endButton>
+	</ResponsivePopover>
+</core:FragmentDefinition>

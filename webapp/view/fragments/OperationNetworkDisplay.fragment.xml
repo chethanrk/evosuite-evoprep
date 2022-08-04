@@ -3,7 +3,7 @@
 		<content>
 			<core:ExtensionPoint name="DialogExtP|OperationNetworkDisplay|Content|Before"/>
 			<core:ExtensionPoint name="DialogExtP|OperationNetworkDisplay|Content|Instead"></core:ExtensionPoint>
-			<smartList:SmartList id="idOprPlanDisplay" entitySet="NetworkRelationSet" listBindingPath="PlanItemsToRelation" showRowCount="false"
+			<smartList:SmartList id="idOprNetworkDisplay" entitySet="NetworkRelationSet" listBindingPath="PlanItemsToRelation" showRowCount="false"
 				showFullScreenButton="true" enableAutoBinding="true" selectFields="NETWORK_KEY,ObjectKey,DESCRIPTION" header="{i18n>tit.networks}">
 				<smartList:listItemTemplate>
 					<ObjectListItem title="{PLAN_NAME}" type="Active" press="onListNetworkItemPress">

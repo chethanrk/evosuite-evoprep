@@ -255,8 +255,15 @@ sap.ui.define([
 		 * Navigate to evoorderreleate application
 		 */
 		onListNetworkItemPress: function (oEvent) {
-			/*var oSource = oEvent.getSource();
-			this.openApp2AppPopover(oSource, "NETWORK_KEY");*/
+			var oSource = oEvent.getSource();
+			var oNavLinks = this.getModel("templateProperties").getProperty("/navLinks"),
+				oContext = oSource.getBindingContext(),
+				sProp = "NETWORK_KEY";
+
+			if (oContext && oNavLinks[sProp]) {
+				var sPath = oContext.getPath() + "/" + oNavLinks[sProp].Property;
+				this.openEvoAPP(this.getModel().getProperty(sPath), oNavLinks[sProp].ApplicationId);
+			}
 		},
 
 		/* =========================================================== */

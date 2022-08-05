@@ -1,0 +1,14 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+	<ActionSheet title="{i18n>xbut.status}" showCancelButton="true" placement="Bottom"
+		buttons="{ path:'templateProperties>/functionsSet/userStatus/', templateShareable:true }">
+		<buttons>
+			<Button text="{templateProperties>Description}" press="onSelectChangeStatus"
+				visible="{parts: [{path:'templateProperties>Function'},{path:'viewModel>/PrePlanAllows'} ], formatter:'.formatter.showStatusSelectOption'}">
+				<customData>
+					<core:CustomData key="key" value="{templateProperties>Function}"/>
+					<core:CustomData key="type" value="{templateProperties>FunctionType}"/>
+				</customData>
+			</Button>
+		</buttons>
+	</ActionSheet>
+</core:FragmentDefinition>

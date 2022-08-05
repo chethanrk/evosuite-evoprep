@@ -41,6 +41,16 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
+				},
+				onPressPlanNumber: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onListPlanItemPress: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
@@ -62,32 +72,6 @@ sap.ui.define([
 			this.oViewModel = this.getModel("viewModel");
 			this.oCreateModel = this.getModel("CreateModel");
 		},
-
-		/**
-		 * Similar to onAfterRendering, but this hook is invoked before the controller's View is re-rendered
-		 * (NOT before the first rendering! onInit() is used for that one!).
-		 * @memberOf com.evorait.evosuite.evoprep.view.DemandList
-		 */
-		//	onBeforeRendering: function() {
-		//
-		//	},
-
-		/**
-		 * Called when the View has been rendered (so its HTML is part of the document). Post-rendering manipulations of the HTML could be done here.
-		 * This hook is the same one that SAPUI5 controls get after being rendered.
-		 * @memberOf com.evorait.evosuite.evoprep.view.DemandList
-		 */
-		//	onAfterRendering: function() {
-		//
-		//	},
-
-		/**
-		 * Called when the Controller is destroyed. Use this one to free resources and finalize activities.
-		 * @memberOf com.evorait.evosuite.evoprep.view.DemandList
-		 */
-		//	onExit: function() {
-		//
-		//	}
 
 		/* =========================================================== */
 		/* Public methods                                              */
@@ -150,6 +134,7 @@ sap.ui.define([
 		 * Navigates back to Pre-Plans list
 		 */
 		goBackToPrePlans: function () {
+			this._removeOprTableSelection();
 			this.getOwnerComponent().getRouter().navTo("PrePlanMaster");
 		},
 
@@ -186,8 +171,62 @@ sap.ui.define([
 				}
 			}.bind(this));
 			this.oCreateModel.refresh();
-			oTable.clearSelection(true);
+			this._removeOprTableSelection();
 			this.getRouter().navTo("CreatePrePlan");
+		},
+
+		/**
+		 * Called when clicks on the number of plan link
+		 * To display plan details inside popover
+		 */
+		onPressPlanNumber: function (oEvent) {
+			var oSource = oEvent.getSource(),
+				oLineItem = oSource.getParent(),
+				oContext = oLineItem.getBindingContext(),
+				PlanNumber = oEvent.getSource().getText();
+			if (!isNaN(PlanNumber) && parseInt(PlanNumber, 10) > 0) {
+				if (!this._oPlanPopover) {
+					Fragment.load({
+						name: "com.evorait.evosuite.evoprep.view.fragments.OperationPlanDisplay",
+						controller: this
+					}).then(function (pPopover) {
+						this._oPlanPopover = pPopover;
+						this.getView().addDependent(this._oPlanPopover);
+						this._oPlanPopover.setBindingContext(oContext);
+						this._oPlanPopover.openBy(oSource);
+
+					}.bind(this));
+				} else {
+					this._oPlanPopover.setBindingContext(oContext);
+					this._oPlanPopover.openBy(oSource);
+				}
+			}
+		},
+
+		/**
+		 * Called when plan item pressed inside popover display
+		 * Navigate to detail page with selected plan
+		 */
+		onListPlanItemPress: function (oEvent) {
+			var oSource = oEvent.getSource(),
+				oContext = oSource.getBindingContext();
+			this._removeOprTableSelection();
+			var sObjKey = oContext.getProperty("ObjectKey");
+			if (sObjKey) {
+				this.navToDetail(sObjKey);
+			}
+		},
+
+		/* =========================================================== */
+		/* Private methods                                           */
+		/* =========================================================== */
+
+		/**
+		 * Method to deselect the selcted items
+		 */
+		_removeOprTableSelection: function () {
+			this.oSmartTable.getTable().clearSelection(true);
+			this.getModel("viewModel").setProperty("/allowPrePlanCreate", false);
 		}
 	});
 

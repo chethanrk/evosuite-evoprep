@@ -27,9 +27,23 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
+				},
+
+				onDeletePrePlanPress: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+
+				onWPrePlanListSelectionChange: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
+
+		oSmartTable: null,
 
 		/**
 		 * Called when a controller is instantiated and its View controls (if available) are already created.
@@ -37,7 +51,11 @@ sap.ui.define([
 		 * @memberOf com.evorait.evosuite.evoprep.view.PrePlanMaster
 		 */
 		onInit: function () {
-
+			this.oSmartTable = this.getView().byId("idPagePrePlanSmartTable");
+			var oRouter = this.getRouter();
+			//route for page create new order
+			oRouter.getRoute("PrePlanMaster").attachMatched(this._routeMatchedMaster, this);
+			oRouter.getRoute("PrePlanDetail").attachMatched(this._routeMatchedDetail, this);
 		},
 
 		/* =========================================================== */
@@ -59,11 +77,16 @@ sap.ui.define([
 		 * Navigate to detail page with selected plan details
 		 */
 		onClickTableRow: function (oEvent) {
-			var sobjectKeyId = oEvent.getSource().getBindingContext().getProperty("ObjectKey");
-			this.getRouter().navTo("PrePlanDetail", {
-				layout: library.LayoutType.TwoColumnsMidExpanded,
-				plan: sobjectKeyId
-			});
+			this._removeTableSelection();
+			var oSource = oEvent.getSource(),
+				oTable = this.oSmartTable.getTable();
+			oSource.setSelected(true);
+			oTable.fireSelectionChange(oSource);
+			this.getModel("viewModel").setProperty("/loadMaster", true);
+			var sobjectKeyId = oSource.getBindingContext().getProperty("ObjectKey");
+			if (sobjectKeyId) {
+				this.navToDetail(sobjectKeyId);
+			}
 		},
 
 		/**
@@ -71,6 +94,8 @@ sap.ui.define([
 		 * simulate to reouting 
 		 */
 		onPressComapre: function (oEvent) {
+			//unselect all the selected rows
+			this._removeTableSelection();
 			this.getRouter().navTo("PrePlanCompare", {
 				layout: library.LayoutType.TwoColumnsMidExpanded,
 				plans: "01"
@@ -81,7 +106,108 @@ sap.ui.define([
 		 * Navigating to Create PrePlan View on Click of Create PrePlan Button
 		 */
 		onCreatePrePlanPress: function () {
+			//unselect all the selected rows
+			this._removeTableSelection();
 			this.getRouter().navTo("CreatePrePlan");
+		},
+
+		/**
+		 * Event on selecting/deselecting a row using checkbox
+		 * @param oEvent
+		 */
+		onWPrePlanListSelectionChange: function (oEvent) {
+			var isPreplanDeletEnabled = false;
+			this.selectedFunction = "";
+			var oSelectedPrePlanContext = this.oSmartTable.getTable().getSelectedContexts();
+			if (oSelectedPrePlanContext.length > 0) {
+				isPreplanDeletEnabled = true;
+			}
+			this.getModel("viewModel").setProperty("/isPrePlanSelected", isPreplanDeletEnabled);
+		},
+
+		/**
+		 * Called when delete button pressed on the preplan table
+		 * Validate for the atleast one selection
+		 */
+		onDeletePrePlanPress: function (oEvent) {
+			var oTable = this.oSmartTable.getTable(),
+				sTitle = this.getResourceBundle().getText("tit.confirmDelete"),
+				sMsg = this.getResourceBundle().getText("msg.confirmDeleteSelectedPrepLan"),
+				oSelectedContext = oTable.getSelectedContexts();
+
+			var successFn = function () {
+				this.deleteEntries(oSelectedContext, this.oSmartTable).then(function () {
+					//unselect all the selected rows
+					this._removeTableSelection();
+				}.bind(this));
+			};
+			this.showConfirmDialog(sTitle, sMsg, successFn.bind(this));
+		},
+
+		/* =========================================================== */
+		/* Private methods                                              */
+		/* =========================================================== */
+		/**
+		 * Handle master route match 
+		 * load table data
+		 */
+		_routeMatchedMaster: function (data) {
+			if (this.oSmartTable) {
+				this.oSmartTable.rebindTable();
+			}
+		},
+
+		/**
+		 * Handle detail route match 
+		 * load table data
+		 */
+		_routeMatchedDetail: function (data) {
+			var oParam = data.getParameter("arguments");
+			if (this.oSmartTable && !this.getModel("viewModel").getProperty("/loadMaster")) {
+				this.oSmartTable.rebindTable();
+			}
+		},
+
+		/**
+		 * delete multiple preplan delete
+		 * prepare with promises
+		 */
+		_massPrePlanDelete: function () {
+			var oSelectedContext = this.oSmartTable.getTable().getSelectedContexts(),
+				aPromises = [],
+				aPaths = [];
+
+			if (oSelectedContext.length > 0) {
+				//get more order details from backend
+				//so collect all requests in Promise and wait when all finished
+				for (var i = 0; i < oSelectedContext.length; i++) {
+					var sPath = oSelectedContext[i].getPath();
+					aPaths.push(sPath);
+					aPromises.push(this.getOwnerComponent().readData(sPath, []));
+				}
+				//finished all reads from backend
+				Promise.all(aPromises).then(function () {
+					aPaths.forEach(function (path) {
+						this._updateDeleteIndicator(path);
+					}.bind(this));
+					if (this.getModel().hasPendingChanges()) {
+						//response of merge call is handle in ErrorHandler.js
+						this.saveChanges(this.oSmartTable);
+					} else {
+						this.showSaveErrorPrompt(this.getResourceBundle().getText("msg.prePlanDeleteError"));
+					}
+					//unselect all the selected rows
+					this._removeTableSelection();
+				}.bind(this));
+			}
+		},
+
+		/**
+		 * Remove table selection
+		 */
+		_removeTableSelection: function () {
+			this.oSmartTable.getTable().removeSelections();
+			this.getModel("viewModel").setProperty("/isPrePlanSelected", false);
 		}
 	});
 });

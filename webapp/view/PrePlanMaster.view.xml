@@ -19,9 +19,9 @@
 		<f:content>
 			<smartTable:SmartTable id="idPagePrePlanSmartTable" height="100%" width="100%" entitySet="PlanHeaderSet" header="{i18n>tit.plan}"
 				smartFilterId="idPagePrePlanSmartFilterBar" tableType="ResponsiveTable" useExportToExcel="true" useVariantManagement="true"
-				useTablePersonalisation="true" showRowCount="true" persistencyKey="com.evorait.evosuite.evoprep.PrePlanTable" enableAutoBinding="true"
+				useTablePersonalisation="true" showRowCount="true" persistencyKey="com.evorait.evosuite.evoprep.PrePlanTable" enableAutoBinding="false"
 				demandPopin="true" customData:useSmartField="true" customData:useSmartToggle="true" fieldChange="onFieldChange"
-				beforeRebindTable="onBeforeRebindTable" afterVariantInitialise="onInitializedSmartVariant" requestAtLeastFields="NOTES,ObjectKey">
+				beforeRebindTable="onBeforeRebindTable" afterVariantInitialise="onInitializedSmartVariant" requestAtLeastFields="NOTES,ObjectKey,FUNCTION">
 				<!-- layout data used to make the table growing but the filter bar fixed -->
 				<smartTable:layoutData>
 					<FlexItemData growFactor="1" baseSize="0%"/>
@@ -29,14 +29,15 @@
 				<smartTable:customToolbar>
 					<OverflowToolbar class="prePlanListToolbar">
 						<ToolbarSpacer/>
-						<Button id="idBtnComaprePrePlan" text="{i18n>xbut.comapre}" press="onPressComapre" enabled="false"/>
+						<Button id="idBtnComaprePrePlan" text="{i18n>xbut.comapre}" press="onPressComapre" visible="false"/>
 						<Button id="idBtnCreatePrePlan" text="{i18n>xbut.create}" press="onCreatePrePlanPress" visible="{= ${user>/ENABLE_PREPLAN_CREATE} === 'X'}"/>
-						<Button id="idBtnCopyPrePlan" text="{i18n>xbut.copy}" enabled="false"/>
-						<Button id="idBtnDeletePrePlan" text="{i18n>xbut.delete}" enabled="false"/>
+						<Button id="idBtnCopyPrePlan" text="{i18n>xbut.copy}" visible="false"/>
+						<Button id="idBtnDeletePrePlan" text="{i18n>xbut.delete}" press="onDeletePrePlanPress" enabled="{viewModel>/isPrePlanSelected}"
+							visible="{parts:[{path:'user>/ENABLE_PLAN_DELETE'},{path:'viewModel>/layout'}],formatter:'.formatter.showDeleteMasterList'}"/>
 					</OverflowToolbar>
 				</smartTable:customToolbar>
 				<Table id="idPageMasterPageSmartTableTable" growing="true" mode="MultiSelect" sticky="ColumnHeaders,HeaderToolbar,InfoToolbar"
-					selectionChange="onWorkListSelectionChange">
+					selectionChange="onWPrePlanListSelectionChange">
 					<columns>
 						<Column width="6rem">
 							<customData>

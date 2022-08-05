@@ -12,8 +12,9 @@ sap.ui.define([
 	"sap/base/util/deepClone",
 	"sap/f/library",
 	"sap/ui/core/Fragment",
+	"sap/ui/core/message/Message"
 ], function (Controller, History, Dialog, Button, Text, MessageToast, MessageBox, OverrideExecution, formatter, deepClone, library,
-	Fragment) {
+	Fragment, Message) {
 	"use strict";
 
 	return Controller.extend("com.evorait.evosuite.evoprep.controller.BaseController", {
@@ -131,6 +132,26 @@ sap.ui.define([
 					final: true
 				},
 				checkDuplicate: {
+					public: true,
+					final: true
+				},
+				saveChanges: {
+					public: true,
+					final: true
+				},
+				saveChangesMain: {
+					public: true,
+					final: true
+				},
+				addMsgToMessageManager: {
+					public: true,
+					final: true
+				},
+				deleteEntries: {
+					public: true,
+					final: true
+				},
+				navToDetail: {
 					public: true,
 					final: true
 				}
@@ -583,15 +604,170 @@ sap.ui.define([
 		},
 
 		/**
-		 * Sends save request to backend
+		 * send changes to backend
 		 */
-		saveChanges: function () {
+		saveChanges: function (oTable) {
 			this.getModel().submitChanges({
 				success: function () {
+					if (oTable) {
+						oTable.rebindTable(true);
+					}
 					this.showMessageToast(this.getResourceBundle().getText("msg.saveSuccess"));
 					this.getModel().resetChanges();
 				}.bind(this)
 			});
-		}
+		},
+
+		/**
+		 * loop through collection of selected table items 
+		 * and set delete property
+		 * @param aSelected
+		 * @param successFn
+		 * @param errorFn
+		 */
+		deleteEntries: function (aSelected, oTable) {
+			return new Promise(function (resolve) {
+				var oModel = this.getModel(),
+					aContext = [];
+				aSelected.forEach(function (oItem) {
+					var oContext = oItem.getPath ? oItem : oItem.getBindingContext();
+					if (oContext) {
+						oModel.setProperty(oContext.getPath() + "/DELETE_ENTRY", "X");
+						aContext.push(oContext);
+					}
+				}.bind(this));
+
+				this.saveChangesMain({
+					state: "success",
+					isDelete: true,
+					aContext: aContext
+				}, function (oResponse) {
+					this.showMessageToast(this.getResourceBundle().getText("msg.saveSuccess"));
+					if (oTable) {
+						oTable.rebindTable();
+					}
+					resolve();
+				}.bind(this), null, oTable);
+			}.bind(this));
+		},
+
+		/**
+		 * Form is valid now so send to sap
+		 * @param mParams
+		 * @param oSuccessCallback
+		 * @param oErrorCallback
+		 * @param oCtrl
+		 */
+		saveChangesMain: function (mParams, oSuccessCallback, oErrorCallback, oCtrl) {
+			if (mParams.state === "success") {
+				this._setBusyWhileSaving(oCtrl, true);
+
+				this.getModel().submitChanges({
+					success: function (oResponse) {
+						this._setBusyWhileSaving(oCtrl, false);
+
+						if (oResponse.__batchResponses && oResponse.__batchResponses[0].response && oResponse.__batchResponses[0].response.statusCode ===
+							"400") {
+							if (oErrorCallback) {
+								oErrorCallback(oResponse);
+							}
+						} else {
+							//on error don't delete created entry as its still needed when create entry dialog is open 
+							//and form needs stay with pre-filled values and send maybe again
+							this._deleteCreatedLocalEntry(mParams);
+							if (oSuccessCallback) {
+								oSuccessCallback(oResponse);
+							}
+						}
+						if (mParams.isDelete) {
+							this._deleteCreatedLocalDeleteEntry(mParams);
+						}
+					}.bind(this),
+					error: function (oError) {
+						this.getModel().resetChanges();
+						this._setBusyWhileSaving(oCtrl, false);
+						this.showSaveErrorPrompt(oError);
+						if (oErrorCallback) {
+							oErrorCallback(oError);
+						}
+					}.bind(this)
+				});
+			} else if (mParams.state === "error") {
+				//var aErrorFields = mParams.fields;
+			}
+		},
+
+		/**
+		 * Create Success, Warning, Info, Error message and add to MessageManager
+		 * @param sType
+		 * @param sMessage
+		 * @param sTarget
+		 */
+		addMsgToMessageManager: function (sType, sMessage, sTarget) {
+			var oMessage = new Message({
+				message: sMessage,
+				type: sType,
+				target: sTarget,
+				processor: this.getModel("messageManager"),
+				technical: true
+			});
+			sap.ui.getCore().getMessageManager().addMessages(oMessage);
+		},
+
+		/**
+		 * Navigate to detail page with selected plan
+		 */
+		navToDetail: function (sPlanObject) {
+			this.getRouter().navTo("PrePlanDetail", {
+				layout: library.LayoutType.TwoColumnsMidExpanded,
+				plan: sPlanObject
+			});
+		},
+
+		/* =========================================================== */
+		/* Private methods                                              */
+		/* =========================================================== */
+
+		/*
+		 * function to deleted recent created context if exist
+		 *
+		 */
+		_deleteCreatedLocalEntry: function (mParams) {
+			var oContext = mParams.oContext || this.getView().getBindingContext();
+			if (oContext && mParams.isCreate) {
+				this.getModel().deleteCreatedEntry(oContext);
+			}
+		},
+
+		/*
+		 * function to deleted recent created delete context if exist
+		 *@param mParams
+		 *mParams.isDelete - to check if it is delete operation
+		 *mParams.aContext - will have all context of delete entries
+		 *
+		 */
+		_deleteCreatedLocalDeleteEntry: function (mParams) {
+			var aContext = mParams.aContext;
+			if (aContext) {
+				aContext.forEach(function (oContext) {
+					if (oContext && mParams.isDelete) {
+						this.getModel().deleteCreatedEntry(oContext);
+					}
+				}.bind(this));
+			}
+
+		},
+
+		/**
+		 * set busy state for control while saving
+		 */
+		_setBusyWhileSaving: function (oCtrl, bIsInProgress) {
+			if (oCtrl) {
+				oCtrl.setBusy(bIsInProgress);
+			} else {
+				this.getView().getModel("viewModel").setProperty("/busy", bIsInProgress);
+			}
+		},
+
 	});
 });

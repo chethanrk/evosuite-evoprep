@@ -64,7 +64,8 @@ sap.ui.define([
 				showStatusButton: false,
 				editMode: true,
 				loadMaster: false,
-				orderListEditMode: false
+				launchMode: Constants.LAUNCH_MODE.BSP,
+                orderListEditMode: false
 			};
 
 			//GetSystemInformation Call
@@ -78,6 +79,8 @@ sap.ui.define([
 			this.setModel(oMessageManager.getMessageModel(), "message");
 
 			this._getTemplateProps();
+
+			this._setApp2AppLinks();
 			this.oTemplatePropsProm.then(this._getFunctionSets.bind(this));
 
 			this.oTemplatePropsProm.then(function () {
@@ -169,6 +172,28 @@ sap.ui.define([
 						resolve(oFunctionSet);
 					}.bind(this));
 			}.bind(this));
+		},
+
+		/**
+		 * read app2app navigation links from backend
+		 */
+		_setApp2AppLinks: function () {
+			if (sap.ushell && sap.ushell.Container) {
+				this.getModel("viewModel").setProperty("/launchMode", Constants.LAUNCH_MODE.FIORI);
+			}
+			var oFilter = new Filter("LaunchMode", FilterOperator.EQ, this.getModel("viewModel").getProperty("/launchMode")),
+				mProps = {};
+
+			this.readData("/NavigationLinksSet", [oFilter])
+				.then(function (data) {
+					data.results.forEach(function (oItem) {
+						if (oItem.Value1 && Constants.APPLICATION[oItem.ApplicationId]) {
+							oItem.Property = oItem.Value2 || Constants.PROPERTY[oItem.ApplicationId];
+							mProps[oItem.Property] = oItem;
+						}
+					});
+					this.getModel("templateProperties").setProperty("/navLinks/", mProps);
+				}.bind(this));
 		},
 
 		/**

@@ -22,7 +22,7 @@
 									press="oPressDetailDelete"/>
 								<uxap:ObjectPageHeaderActionButton id="idStatusEdit" hideText="false" type="Default" enabled="true" icon="sap-icon://edit"
 									tooltip="{i18n>xbut.edit}"
-									visible="{parts: [{path:'viewModel>/showStatusButton'},{path:'viewModel>/editMode'}, {path:'viewModel>/PrePlanAllows/ALLOW_FINAL'} ], formatter:'.formatter.showDetailStatusEdit'}"
+									visible="{parts: [{path:'user>/ENABLE_PREPLAN_UPDATE'},{path:'viewModel>/editMode'}, {path:'viewModel>/PrePlanAllows/ALLOW_FINAL'} ], formatter:'.formatter.showDetailStatusEdit'}"
 									press="onPressHeaderEdit"/>
 								<uxap:ObjectPageHeaderActionButton icon="sap-icon://save" type="Emphasized" text="{i18n>xbtn.save}" hideText="false"
 									tooltip="{i18n>xbtn.save}" press="onPressSavePrePlanHeader" visible="{= !${viewModel>/editMode} === true}"/>

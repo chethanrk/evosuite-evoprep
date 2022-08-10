@@ -5,7 +5,7 @@
 		tableType="ResponsiveTable" useExportToExcel="false" useVariantManagement="true" useTablePersonalisation="true" showRowCount="true"
 		persistencyKey="com.evorait.evosuite.evoprep.DetailDemandTable" enableAutoBinding="true" demandPopin="true" customData:useSmartField="true"
 		customData:useSmartToggle="true"
-		editTogglable="{parts: [{path:'user>/ENABLE_ITEM_UPDATE'}, {path:'viewModel>/PrePlanAllows/ALLOW_FINAL'} ], formatter:'.formatter.showOperationAddEdit'}"
+		editTogglable="{parts: [{path:'user>/ENABLE_ITEM_UPDATE'}, {path:'ALLOW_FINAL'} ], formatter:'.formatter.showOperationAddEdit'}"
 		editToggled="onPressEdit" tableBindingPath="PlanHeaderToPlanItems">
 		<!--layout data used to make the table growing but the filter bar fixed-->
 		<smartTable:layoutData>
@@ -15,7 +15,7 @@
 			<Toolbar>
 				<ToolbarSpacer/>
 				<Button icon="sap-icon://add" press="addOperations" tooltip="{i18n>btn.addOper}"
-					visible="{parts: [{path:'user>/ENABLE_ITEM_UPDATE'}, {path:'viewModel>/PrePlanAllows/ALLOW_FINAL'} ], formatter:'.formatter.showOperationAddEdit'}"/>
+					visible="{parts: [{path:'user>/ENABLE_ITEM_UPDATE'}, {path:'ALLOW_FINAL'} ], formatter:'.formatter.showOperationAddEdit'}"/>
 				<core:ExtensionPoint name="TableExtP|PrePlanDetail|PlanItemsSet|CustomToolbar"/>
 			</Toolbar>
 		</smartTable:customToolbar>

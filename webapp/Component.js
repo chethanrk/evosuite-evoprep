@@ -64,7 +64,8 @@ sap.ui.define([
 				showStatusButton: false,
 				editMode: true,
 				loadMaster: false,
-				launchMode: Constants.LAUNCH_MODE.BSP
+				launchMode: Constants.LAUNCH_MODE.BSP,
+				bEnableSave:false
 			};
 
 			//GetSystemInformation Call

@@ -4,8 +4,9 @@
 	<smartTable:SmartTable id="idDemandBlockSmartTable" height="100%" width="100%" entitySet="PlanItemsSet" header="{i18n>tit.OperationsTable}"
 		tableType="ResponsiveTable" useExportToExcel="false" useVariantManagement="true" useTablePersonalisation="true" showRowCount="true"
 		persistencyKey="com.evorait.evosuite.evoprep.DetailDemandTable" enableAutoBinding="true" demandPopin="true" customData:useSmartField="true"
-		customData:useSmartToggle="true" editTogglable="{= ${user>/ENABLE_ITEM_UPDATE} === 'X'}" editToggled="onPressEdit"
-		tableBindingPath="PlanHeaderToPlanItems">
+		customData:useSmartToggle="true"
+		editTogglable="{parts: [{path:'user>/ENABLE_ITEM_UPDATE'}, {path:'ALLOW_FINAL'} ], formatter:'.formatter.showOperationAddEdit'}"
+		editToggled="onPressEdit" tableBindingPath="PlanHeaderToPlanItems">
 		<!--layout data used to make the table growing but the filter bar fixed-->
 		<smartTable:layoutData>
 			<FlexItemData growFactor="1" baseSize="0%"/>
@@ -13,7 +14,8 @@
 		<smartTable:customToolbar>
 			<Toolbar>
 				<ToolbarSpacer/>
-				<Button icon="sap-icon://add" press="addOperations" tooltip="{i18n>btn.addOper}" visible="{= ${user>/ENABLE_ITEM_UPDATE} === 'X'}"/>
+				<Button icon="sap-icon://add" press="addOperations" tooltip="{i18n>btn.addOper}"
+					visible="{parts: [{path:'user>/ENABLE_ITEM_UPDATE'}, {path:'ALLOW_FINAL'} ], formatter:'.formatter.showOperationAddEdit'}"/>
 				<core:ExtensionPoint name="TableExtP|PrePlanDetail|PlanItemsSet|CustomToolbar"/>
 			</Toolbar>
 		</smartTable:customToolbar>

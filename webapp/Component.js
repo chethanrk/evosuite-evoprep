@@ -65,6 +65,7 @@ sap.ui.define([
 				editMode: true,
 				loadMaster: false,
 				launchMode: Constants.LAUNCH_MODE.BSP,
+				bEnableSave:false,
                 orderListEditMode: false
 			};
 

@@ -153,7 +153,9 @@ sap.ui.define([
 		 */
 		_routeMatchedMaster: function (data) {
 			if (this.oSmartTable) {
-				this.oSmartTable.rebindTable();
+				this.getModel().metadataLoaded().then(function () {
+					this.oSmartTable.rebindTable();
+				}.bind(this));
 			}
 		},
 

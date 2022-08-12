@@ -152,6 +152,7 @@ sap.ui.define([
 				if (this.checkDuplicate(oOperationData.results, oSelObject.ObjectKey)) {
 					oOperationData.results.push(oSelObject);
 				}
+
 			}.bind(this));
 			this.oCreateModel.refresh();
 			this.onPressOperationListCancel();
@@ -205,9 +206,10 @@ sap.ui.define([
 				aItems = oSource.getItems();
 			//set operation table row count
 			this.getModel("viewModel").setProperty("/operationTableCount", this.getResourceBundle().getText("tit.opr", (aItems.length).toString()));
-
+			this.getModel("viewModel").setProperty("/bEnableSave", false);
 			//validate from and to date with operations
 			if (aItems.length) {
+				this.getModel("viewModel").setProperty("/bEnableSave", true);
 				this._getValidationParameters(aItems).then(function (oPreparedData) {
 					if (oPreparedData && oPreparedData.sOrder && oPreparedData.sOpr) {
 						this._triggerFunctionImport(oPreparedData);

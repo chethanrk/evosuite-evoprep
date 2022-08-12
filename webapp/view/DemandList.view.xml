@@ -51,7 +51,7 @@
 					rowSelectionChange="handleDemandSelectionChange" enableSelectAll="false"
 					selectionMode="{= ${viewModel>/orderListEditMode} ? 'None' : 'MultiToggle'}">
 					<table:rowActionTemplate>
-						<table:RowAction visible="{= ${navLinks>/results/}.length > 0}">
+						<table:RowAction visible="{parts: [{path:'templateProperties>/navLinks'}], formatter:'.formatter.showDemandRowAction'}">
 							<table:items>
 								<table:RowActionItem press="onRowActionPress" icon="sap-icon://action"/>
 							</table:items>

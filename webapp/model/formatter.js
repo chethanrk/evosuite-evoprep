@@ -71,6 +71,20 @@ sap.ui.define([
 				pattern: format
 			});
 			return oDateFormat.format(new Date(date));
+		},
+
+		/**
+		 * format visibility of row action based on nav links
+		 * @param aNavLinks
+		 * @returns {boolean}
+		 */
+		showDemandRowAction: function (sNavLinks) {
+			for (var n in sNavLinks) {
+				if (sNavLinks[n].btnVisibility) {
+					return true;
+				}
+			}
+			return false;
 		}
 	};
 

@@ -81,6 +81,15 @@ sap.ui.define([
 		onAfterRendering: function () {
 			this._initializeView();
 		},
+		
+		/**
+		 * Called when the View has been destroyed (so its HTML is part of the document). Post-rendering manipulations of the HTML could be done here.
+		 * This hook is the same one that SAPUI5 controls get after being rendered.
+		 * @memberOf com.evorait.evosuite.evoprep.view.CreatePrePlan
+		 */
+		onExit: function () {
+			this.destroyOperationListFragment();
+		},
 
 		/* =========================================================== */
 		/* public methods                                              */
@@ -97,30 +106,7 @@ sap.ui.define([
 			} else {
 				this.onNavBack();
 			}
-		},
-
-		/**
-		 * On press add button on the create plan page
-		 * It will open a fragment with operation list to enable selection
-		 */
-		onPressAddOperations: function (oEvent) {
-			// create popover
-			if (!this._addOperationsFrag) {
-				Fragment.load({
-					name: "com.evorait.evosuite.evoprep.view.fragments.OperationList",
-					controller: this
-				}).then(function (oDialog) {
-					this._addOperationsFrag = oDialog;
-					this.open(oDialog);
-					this._addOperationsFrag.attachAfterOpen(function () {
-						var oOpSmartTable = sap.ui.getCore().byId("idOperationListFragSmartTable");
-						oOpSmartTable.getTable().removeSelections();
-						oOpSmartTable.rebindTable();
-					}.bind(this));
-				}.bind(this));
-			} else {
-				this.open(this._addOperationsFrag);
-			}
+			this.destroyOperationListFragment();
 		},
 
 		/**
@@ -128,7 +114,7 @@ sap.ui.define([
 		 * Before close it will remove table selection
 		 */
 		onPressOperationListCancel: function (oEvent) {
-			this._addOperationsFrag.close();
+			this.onPressOperationSelectCancel();
 		},
 
 		/**

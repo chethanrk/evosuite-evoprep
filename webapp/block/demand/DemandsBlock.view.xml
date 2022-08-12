@@ -13,7 +13,7 @@
 		<smartTable:customToolbar>
 			<Toolbar>
 				<ToolbarSpacer/>
-				<Button icon="sap-icon://add" press="addOperations" tooltip="{i18n>btn.addOper}" visible="{= ${user>/ENABLE_ITEM_UPDATE} === 'X'}"/>
+				<Button icon="sap-icon://add" press="onPressAddOperations" tooltip="{i18n>btn.addOper}" visible="{= ${user>/ENABLE_ITEM_ADD} === 'X'}"/>
 				<core:ExtensionPoint name="TableExtP|PrePlanDetail|PlanItemsSet|CustomToolbar"/>
 			</Toolbar>
 		</smartTable:customToolbar>

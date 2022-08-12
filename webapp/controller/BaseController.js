@@ -814,6 +814,49 @@ sap.ui.define([
 			}
 		},
 
+		/**
+		 * Opens popup to add operation in demand list
+		 */
+		onPressAddOperations: function (oEvent) {
+			// create popover
+			if (!this._addOperationsDetail) {
+				Fragment.load({
+					name: "com.evorait.evosuite.evoprep.view.fragments.OperationList",
+					controller: this
+				}).then(function (oDialog) {
+					this._addOperationsDetail = oDialog;
+					this.getView().addDependent(oDialog);
+					this.open(oDialog);
+					this._addOperationsDetail.attachAfterOpen(function () {
+						var oOpSmartTable = sap.ui.getCore().byId("idOperationListFragSmartTable");
+						oOpSmartTable.getTable().removeSelections();
+						oOpSmartTable.rebindTable();
+					}.bind(this));
+				}.bind(this));
+			} else {
+				this.open(this._addOperationsDetail);
+			}
+		},
+
+		/**
+		 * Close operation list frgament
+		 * Before close it will remove table selection
+		 */
+		onPressOperationSelectCancel: function (oEvent) {
+			this._addOperationsDetail.close();
+		},
+
+		/**
+		 * destroy the created fragment on exit
+		 * @param oEvent
+		 */
+		destroyOperationListFragment: function () {
+			if (this._addOperationsDetail) {
+				this._addOperationsDetail.destroy(true);
+				this._addOperationsDetail = null;
+			}
+		},
+
 		/* =========================================================== */
 		/* Private methods                                              */
 		/* =========================================================== */

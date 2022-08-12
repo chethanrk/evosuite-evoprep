@@ -65,7 +65,8 @@ sap.ui.define([
 				editMode: true,
 				loadMaster: false,
 				launchMode: Constants.LAUNCH_MODE.BSP,
-				bEnableSave:false
+				bEnableSave:false,
+                orderListEditMode: false
 			};
 
 			//GetSystemInformation Call

@@ -71,6 +71,27 @@ sap.ui.define([
 				pattern: format
 			});
 			return oDateFormat.format(new Date(date));
+		},
+
+		/**
+		 * format visibility of status change button in PrePlan Detail
+		 * @param bStatus
+		 * @param bEdit
+		 * @param bFInal
+		 * @returns {boolean}
+		 */
+		showDetailStatusEdit: function (bStatus, bEdit, bFinal) {
+			return Boolean(bStatus && bEdit && bFinal);
+		},
+
+		/**
+		 * format visibility of status change button in PrePlan Detail
+		 * @param bUpdate
+		 * @param bFinal
+		 * @returns {boolean}
+		 */
+		showOperationAddEdit: function (bUpdate, bFinal) {
+			return Boolean(bUpdate && bFinal);
 		}
 	};
 

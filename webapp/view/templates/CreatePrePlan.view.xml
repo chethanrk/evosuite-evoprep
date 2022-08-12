@@ -12,7 +12,7 @@
 						<uxap:ObjectPageHeader>
 							<uxap:actions>
 								<uxap:ObjectPageHeaderActionButton icon="sap-icon://save" type="Emphasized" text="{i18n>xbtn.save}" hideText="false"
-									tooltip="{i18n>xbtn.save}" press="onPressSave"/>
+									tooltip="{i18n>xbtn.save}" press="onPressSave" enabled="{viewModel>/bEnableSave}"/>
 								<uxap:ObjectPageHeaderActionButton icon="sap-icon://cancel" type="Default" press="onNavBackMaster" text="{i18n>xbtn.cancel}"
 									hideText="false" tooltip="{i18n>xbtn.cancel}"/>
 								<core:ExtensionPoint name="PageExtP|PrePlanCreate|PlanHeaderSet|Title|Action"/>

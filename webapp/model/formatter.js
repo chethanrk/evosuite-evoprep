@@ -92,6 +92,20 @@ sap.ui.define([
 		 */
 		showOperationAddEdit: function (bUpdate, bFinal) {
 			return Boolean(bUpdate && bFinal);
+		},
+        
+        /**
+		 * format visibility of row action based on nav links
+		 * @param aNavLinks
+		 * @returns {boolean}
+		 */
+		showDemandRowAction: function (sNavLinks) {
+			for (var n in sNavLinks) {
+				if (sNavLinks[n].btnVisibility) {
+					return true;
+				}
+			}
+			return false;
 		}
 	};
 

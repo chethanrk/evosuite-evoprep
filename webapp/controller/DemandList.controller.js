@@ -2,8 +2,9 @@ sap.ui.define([
 	//	"sap/ui/core/mvc/Controller"
 	"com/evorait/evosuite/evoprep/controller/BaseController",
 	"sap/ui/core/Fragment",
-	"sap/ui/core/mvc/OverrideExecution"
-], function (BaseController, Fragment, OverrideExecution) {
+	"sap/ui/core/mvc/OverrideExecution",
+	"sap/base/util/isEmptyObject"
+], function (BaseController, Fragment, OverrideExecution, isEmptyObject) {
 	"use strict";
 
 	return BaseController.extend("com.evorait.evosuite.evoprep.controller.DemandList", {
@@ -56,11 +57,17 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
+				},
+				onPressEdit: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
 
 		oSmartTable: null,
+		aAllowedLinks: ['EVOPLAN', 'EVOORDER'],
 
 		/* =========================================================== */
 		/* Lifecycle methods                                           */
@@ -76,6 +83,7 @@ sap.ui.define([
 
 			this.oViewModel = this.getModel("viewModel");
 			this.oCreateModel = this.getModel("CreateModel");
+			this._navLinksVisibility();
 		},
 
 		/* =========================================================== */
@@ -91,7 +99,7 @@ sap.ui.define([
 				oModel = oContext.getModel(),
 				sPath = oContext.getPath(),
 				oParent = oEvent.getSource().getParent();
-			this.selectedDemandData = oModel.getProperty(sPath);
+			this.selectedPlanData = oModel.getProperty(sPath);
 			if (!this._oDialog) {
 				Fragment.load({
 					name: "com.evorait.evosuite.evoprep.view.fragments.NavigationActionSheet",
@@ -115,24 +123,9 @@ sap.ui.define([
 		 * @param oEvent
 		 */
 		onClickNavAction: function (oEvent) {
-			var appName = oEvent.getSource().getProperty("text"),
-				results = oEvent.getSource().getBindingContext("navLinks").getModel().getData().results[0].Value1;
-		},
-
-		/*
-		 * Navigation Action Sheet button dynamic visibilty
-		 */
-		onNavLinkVisibilty: function (oView) {
-			var sEnableField,
-				oNavLinksData = oView.getModel("navLinks").getData();
-			for (var n = 0; n < oNavLinksData.length; n++) {
-				sEnableField = "ENABLE_ROUTE_" + oNavLinksData[n].ApplicationId;
-				oNavLinksData[n].btnVisibility = false;
-				if (this.selectedDemandData[sEnableField] === true) {
-					oNavLinksData[n].btnVisibility = true;
-				}
-			}
-			oView.getModel("navLinks").refresh(true);
+			var appName = oEvent.getSource().getBindingContext("templateProperties").getPath().split('/')[2],
+				navContext = this.getModel("templateProperties").getProperty("/navLinks")[appName].ApplicationId;
+			this.openEvoAPP(this.selectedPlanData.ORDER_NUMBER, navContext);
 		},
 
 		/*
@@ -266,6 +259,18 @@ sap.ui.define([
 			}
 		},
 
+		/**
+		 * Sends the changed data to backend
+		 */
+		onPressEdit: function (oEvent) {
+			var bEdit = oEvent.getParameter("editable");
+			this.getModel("viewModel").setProperty("/orderListEditMode", bEdit);
+			if (!bEdit && !isEmptyObject(this.getModel().getPendingChanges())) {
+				this.saveChanges(this.oSmartTable);
+			}
+
+		},
+
 		/* =========================================================== */
 		/* Private methods                                           */
 		/* =========================================================== */
@@ -276,6 +281,16 @@ sap.ui.define([
 		_removeOprTableSelection: function () {
 			this.oSmartTable.getTable().clearSelection(true);
 			this.getModel("viewModel").setProperty("/allowPrePlanCreate", false);
+		},
+
+		/**
+		 * Handle nav link button visibility in Navigation action sheet
+		 */
+		_navLinksVisibility: function () {
+			var oNavModel = this.getModel("templateProperties").getProperty("/navLinks");
+			for (var n in oNavModel) {
+				oNavModel[n].btnVisibility = this.aAllowedLinks.indexOf(oNavModel[n].ApplicationId) !== -1 ? true : false;
+			}
 		}
 	});
 

@@ -1,0 +1,5 @@
+<core:FragmentDefinition xmlns="sap.ui.table" xmlns:core="sap.ui.core" xmlns:gnt2="sap.gantt.simple">
+	<gnt2:Relationship visible="{= ${user>/ENABLE_HIDE_DEPENDENCY} === 'X' &amp;&amp; ${viewModel>/bShowDependencies} === true}" shapeId="{ganttModel>HeaderObjectKey}" predecessor="{ganttModel>PRE_GUID}"
+		successor="{ganttModel>SUC_GUID}" type="{path:'ganttModel>REL_TYPE', formatter:'.formatter.showRelationshipType'}"
+		stroke="{ganttModel>COLOR}"/>
+</core:FragmentDefinition>

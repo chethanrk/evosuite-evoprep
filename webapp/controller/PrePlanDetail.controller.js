@@ -2,11 +2,18 @@ sap.ui.define([
 	"com/evorait/evosuite/evoprep/controller/BaseController",
 	"sap/ui/core/Fragment",
 	"sap/ui/core/mvc/OverrideExecution",
-	"sap/f/library"
-], function (BaseController, Fragment, OverrideExecution, library) {
+	"sap/f/library",
+	"sap/ui/model/Filter",
+	"sap/ui/model/FilterOperator",
+	"sap/base/util/deepClone",
+	"com/evorait/evosuite/evoprep/model/formatter"
+], function (BaseController, Fragment, OverrideExecution, library, Filter, FilterOperator, deepClone, formatter) {
 	"use strict";
 
 	return BaseController.extend("com.evorait.evosuite.evoprep.controller.PrePlanDetail", {
+
+		formatter: formatter,
+
 		metadata: {
 			// extension can declare the public methods
 			// in general methods that start with "_" are private
@@ -206,6 +213,7 @@ sap.ui.define([
 				if (oData.viewNameId === sViewName) {
 					this._oContext = this.getView().getBindingContext();
 					this._rebindPage();
+					this._loadGanttData();
 				}
 			}
 		},
@@ -341,6 +349,91 @@ sap.ui.define([
 			this.oViewModel.setProperty("/editMode", true);
 			this.oViewModel.setProperty("/layout", library.LayoutType.TwoColumnsMidExpanded);
 			this.oViewModel.setProperty("/fullscreen", true);
+			this._loadGanttData();
+		},
+
+		/**
+		 * Set initial data to the Gantt model
+		 */
+		_initialiseGanttModel: function () {
+			this.oOriginData = {
+				data: {
+					children: []
+				},
+				tempData: {},
+				changedData: [],
+				hasChanges: false,
+				deletedData: []
+			};
+			this.oGanttModel = this.getOwnerComponent().getModel("ganttModel");
+			this.oGanttModel.setData(deepClone(this.oOriginData));
+		},
+
+		/**
+		 * Load the tree data and process the data as child nodes
+		 **/
+		_loadGanttData: function () {
+			this._initialiseGanttModel();
+			this._getGanttData(0)
+				.then(this._getGanttData.bind(this))
+				.then(function () {
+					//backup original data
+					this.oOriginData = deepClone(this.oGanttModel.getProperty("/"));
+					this.getModel("viewModel").setProperty("/ganttSettings/busy", false);
+				}.bind(this));
+		},
+
+		/**
+		 * set filters and read data for Gantt
+		 * set result with deepClone to Json Model
+		 * @param {object} iLevel - level of hierarchy if Gantt tree
+		 * @returns {Promise}
+		 **/
+		_getGanttData: function (iLevel) {
+			this.getModel("viewModel").setProperty("/ganttSettings/busy", true);
+			return new Promise(function (resolve) {
+				var sEntitySet = "/GanttHierarchySet",
+					aFilters = [],
+					mParams = {
+						"$expand": "GanttHierarchyToDependency"
+					},
+					sPath = this._oContext.getPath();
+				var sHeaderKey = this.getModel().getProperty(sPath + "/ObjectKey");
+				aFilters.push(new Filter("HIERARCHY_LEVEL", FilterOperator.EQ, iLevel));
+				aFilters.push(new Filter("HeaderObjectKey", FilterOperator.EQ, sHeaderKey));
+
+				this.getModel("viewModel").setProperty("/ganttSettings/sStartDate", this.getModel().getProperty(sPath + "/START_DATE"));
+				this.getModel("viewModel").setProperty("/ganttSettings/sEndDate", this.getModel().getProperty(sPath + "/END_DATE"));
+
+				//is also very fast with expands
+				this.getOwnerComponent().readData(sEntitySet, aFilters, mParams).then(function (oData) {
+					if (iLevel > 0) {
+						this._addChildrenToParent(iLevel, oData.results);
+					} else {
+						this.oGanttModel.setProperty("/data/children", oData.results);
+					}
+					resolve(iLevel + 1);
+				}.bind(this));
+			}.bind(this));
+		},
+
+		/**
+		 * when data was loaded then children needs added to right parent node
+		 * @param iLevel
+		 * @param oChildData
+		 */
+		_addChildrenToParent: function (iLevel, oChildData) {
+			var aChildren = this.oGanttModel.getProperty("/data/children");
+			var callbackFn = function (oItem) {
+				oItem.children = [];
+				oChildData.forEach(function (oResItem) {
+					if (oItem.ObjectKey === oResItem.HeaderObjectKey) {
+						oItem.children.push(oResItem);
+					}
+				});
+			}.bind(this);
+			aChildren = this._recurseChildren2Level(aChildren, iLevel, callbackFn);
+			this.oGanttModel.setProperty("/data/children", aChildren);
 		},
 	});
 

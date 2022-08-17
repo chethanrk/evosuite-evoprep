@@ -65,8 +65,14 @@ sap.ui.define([
 				editMode: true,
 				loadMaster: false,
 				launchMode: Constants.LAUNCH_MODE.BSP,
-				bEnableSave:false,
-                orderListEditMode: false
+				bEnableSave: false,
+				orderListEditMode: false,
+				bShowDependencies: true,
+				ganttSettings: {
+					busy: true,
+					sStartDate: null,
+					sEndDate: null
+				}
 			};
 
 			//GetSystemInformation Call
@@ -78,6 +84,9 @@ sap.ui.define([
 			this.MessageManager = new MessageManager();
 
 			this.setModel(oMessageManager.getMessageModel(), "message");
+
+			//Creating the Global Gantt Model for PlanningGanttChart
+			this.setModel(models.createHelperModel(), "ganttModel");
 
 			this._getTemplateProps();
 

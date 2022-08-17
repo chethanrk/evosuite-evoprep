@@ -33,7 +33,8 @@
 			<smartTable:SmartTable id="demandListSmartTable" height="100%" width="100%" entitySet="PlanItemsSet" header="{i18n>tit.OperationsTable}"
 				tableType="Table" useExportToExcel="true" useVariantManagement="true" persistencyKey="com.evorait.evosuite.evoprep.DemandListTable"
 				useTablePersonalisation="true" showRowCount="true" enableAutoBinding="true" demandPopin="false" smartFilterId="demandListSmartFilterBar"
-				customData:useSmartField="true" customData:useSmartToggle="true" editTogglable="true" requestAtLeastFields="ObjectKey,NO_OF_PLAN_ID">
+				customData:useSmartField="true" customData:useSmartToggle="true" editTogglable="{= ${user>/ENABLE_ITEM_UPDATE} === 'X'}"
+				editToggled="onPressEdit" requestAtLeastFields="ObjectKey,NO_OF_PLAN_ID,NO_OF_NW_KEY">
 				<!-- layout data used to make the table growing but the filter bar fixed -->
 				<smartTable:layoutData>
 					<FlexItemData growFactor="1" baseSize="0%"/>
@@ -46,10 +47,11 @@
 						<core:ExtensionPoint name="TableExtP|DemandList|PlanItemsSet|CustomToolbar"/>
 					</Toolbar>
 				</smartTable:customToolbar>
-				<table:Table id="demandListPageSmartTableTable" rowActionCount="1" visibleRowCountMode="Auto"
-					rowSelectionChange="handleDemandSelectionChange" enableSelectAll="false">
+				<table:Table id="demandListPageSmartTableTable" rowActionCount="{= ${viewModel>/orderListEditMode} ? 0 : 1}" visibleRowCountMode="Auto"
+					rowSelectionChange="handleDemandSelectionChange" enableSelectAll="false"
+					selectionMode="{= ${viewModel>/orderListEditMode} ? 'None' : 'MultiToggle'}">
 					<table:rowActionTemplate>
-						<table:RowAction visible="{= ${navLinks>/results/}.length > 0}">
+						<table:RowAction visible="{parts: [{path:'templateProperties>/navLinks'}], formatter:'.formatter.showDemandRowAction'}">
 							<table:items>
 								<table:RowActionItem press="onRowActionPress" icon="sap-icon://action"/>
 							</table:items>
@@ -64,6 +66,16 @@
 							</table:customData>
 							<table:template>
 								<Link text="{NO_OF_PLAN_ID}" press="onPressPlanNumber"/>
+							</table:template>
+						</table:Column>
+						<table:Column hAlign="Center" sortProperty="NO_OF_NW_KEY" filterProperty="NO_OF_NW_KEY" width="9rem">
+							<Label text="{/PlanItemsSet/NO_OF_NW_KEY/##com.sap.vocabularies.Common.v1.Label/String}"/>
+							<table:customData>
+								<core:CustomData key="p13nData"
+									value='\{"columnKey": "NO_OF_NW_KEY", "leadingProperty":"NO_OF_NW_KEY", "filterProperty":"NO_OF_NW_KEY", "sortProperty":"NO_OF_NW_KEY", "columnIndex":"4"}'/>
+							</table:customData>
+							<table:template>
+								<Link text="{NO_OF_NW_KEY}" press="onPressNetworkKey"/>
 							</table:template>
 						</table:Column>
 						<core:ExtensionPoint name="PageExtP|DemandList|PlanItemsSet|SmartTable|Columns"/>

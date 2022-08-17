@@ -1,6 +1,7 @@
 /*global history */
 sap.ui.define([
 	"sap/ui/core/mvc/Controller",
+	"com/evorait/evosuite/evoprep/model/Constants",
 	"sap/ui/core/routing/History",
 	"sap/m/Dialog",
 	"sap/m/Button",
@@ -13,7 +14,8 @@ sap.ui.define([
 	"sap/f/library",
 	"sap/ui/core/Fragment",
 	"sap/ui/core/message/Message"
-], function (Controller, History, Dialog, Button, Text, MessageToast, MessageBox, OverrideExecution, formatter, deepClone, library,
+], function (Controller, Constants, History, Dialog, Button, Text, MessageToast, MessageBox, OverrideExecution, formatter, deepClone,
+	library,
 	Fragment, Message) {
 	"use strict";
 
@@ -148,6 +150,14 @@ sap.ui.define([
 					final: true
 				},
 				navToDetail: {
+					public: true,
+					final: true
+				},
+				openApp2AppPopover: {
+					public: true,
+					final: true
+				},
+				openEvoAPP: {
 					public: true,
 					final: true
 				}
@@ -705,6 +715,86 @@ sap.ui.define([
 			});
 		},
 
+		/**
+		 * render a popover with button inside
+		 * @param oSource
+		 * @param sProp
+		 */
+		openApp2AppPopover: function (oSource, sProp) {
+			var oNavLinks = this.getModel("templateProperties").getProperty("/navLinks"),
+				oContext = oSource.getBindingContext();
+
+			if (oContext && oNavLinks[sProp]) {
+				var sPath = oContext.getPath() + "/" + oNavLinks[sProp].Property;
+				var oPopover = new sap.m.ResponsivePopover({
+					placement: sap.m.PlacementType.Auto,
+					showHeader: false,
+					showCloseButton: true,
+					afterClose: function () {
+						oPopover.destroy(true);
+					}
+				});
+				var oButton = new sap.m.Button({
+					text: this.getResourceBundle().getText("btn.App2App", oNavLinks[sProp].ApplicationName),
+					icon: "sap-icon://action",
+					press: function () {
+						oPopover.close();
+						oPopover.destroy(true);
+						this.openEvoAPP(this.getModel().getProperty(sPath), oNavLinks[sProp].ApplicationId);
+					}.bind(this)
+				});
+				oPopover.insertContent(oButton);
+				oPopover.openBy(oSource);
+			}
+		},
+
+		/**
+		 * get respective navigation details
+		 * @param sAppID
+		 */
+		_getAppInfoById: function (sAppID) {
+			var aNavLinks = this.getModel("templateProperties").getProperty("/navLinks");
+			for (var i in aNavLinks) {
+				if (aNavLinks.hasOwnProperty(i)) {
+					if (aNavLinks[i].ApplicationId === sAppID) {
+						return aNavLinks[i];
+					}
+				}
+			}
+			return null;
+		},
+
+		/**
+		 *	Navigates to evoOrder detail page with static url.
+		 * @param sParamValue
+		 * @param sAppID
+		 */
+		openEvoAPP: function (sParamValue, sAppID) {
+			var sUri, sSemanticObject, sParameter,
+				sAction,
+				sAdditionInfo,
+				sLaunchMode = this.getModel("viewModel").getProperty("/launchMode"),
+				oAppInfo = this._getAppInfoById(sAppID);
+			// if there is no configuration maintained in the backend
+			if (oAppInfo === null) {
+				return;
+			}
+
+			if (sLaunchMode === Constants.LAUNCH_MODE.FIORI) {
+				sAdditionInfo = oAppInfo.Value1 || "";
+				sSemanticObject = sAdditionInfo.split("\\\\_\\\\")[0];
+				sAction = sAdditionInfo.split("\\\\_\\\\")[1] || "Display";
+				sParameter = sAdditionInfo.split("\\\\_\\\\")[2];
+				if (sSemanticObject && sAction) {
+					this._navToApp(sSemanticObject, sAction, sParameter, sParamValue);
+				}
+			} else {
+				sAdditionInfo = oAppInfo.Value1;
+				sUri = sAdditionInfo.replace("\\\\place_h1\\\\", sParamValue);
+				window.open(sUri, "_blank");
+			}
+		},
+
 		/* =========================================================== */
 		/* Private methods                                              */
 		/* =========================================================== */
@@ -749,6 +839,28 @@ sap.ui.define([
 				this.getView().getModel("viewModel").setProperty("/busy", bIsInProgress);
 			}
 		},
+
+		/**
+		 * In Fiori Launchpad navigate to another app
+		 * @param sSemanticObject
+		 * @param sAction
+		 * @param sParameter
+		 * @param sParamValue
+		 * @private
+		 */
+		_navToApp: function (sSemanticObject, sAction, sParameter, sParamValue) {
+			var oCrossAppNavigator = sap.ushell.Container.getService("CrossApplicationNavigation"),
+				mParams = {};
+
+			mParams[sParameter] = [sParamValue];
+			oCrossAppNavigator.toExternal({
+				target: {
+					semanticObject: sSemanticObject,
+					action: sAction
+				},
+				params: mParams
+			});
+		}
 
 	});
 });

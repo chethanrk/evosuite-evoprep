@@ -93,8 +93,8 @@ sap.ui.define([
 		showOperationAddEdit: function (bUpdate, bFinal) {
 			return Boolean(bUpdate && bFinal);
 		},
-        
-        /**
+
+		/**
 		 * format visibility of row action based on nav links
 		 * @param aNavLinks
 		 * @returns {boolean}
@@ -106,6 +106,23 @@ sap.ui.define([
 				}
 			}
 			return false;
+		},
+		
+		/**
+		 * Formatter to display Relationship Type in Gantt
+		 * @param sRelationshipType
+		 * @returns {string}
+		 */
+		showRelationshipType: function (sRelationshipType) {
+			if (sRelationshipType === "FS") {
+				return "FinishToStart";
+			} else if (sRelationshipType === "FF") {
+				return "FinishToFinish";
+			} else if (sRelationshipType === "SF") {
+				return "StartToFinish";
+			} else {
+				return "StartToStart";
+			}
 		}
 	};
 

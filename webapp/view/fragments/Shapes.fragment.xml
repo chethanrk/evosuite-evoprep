@@ -1,0 +1,12 @@
+<core:FragmentDefinition xmlns="sap.ui.table" xmlns:core="sap.ui.core" xmlns:gnt2="sap.gantt.simple">
+	<gnt2:BaseConditionalShape activeShape="{ganttModel>HIERARCHY_LEVEL}">
+		<gnt2:shapes>
+			<gnt2:BaseChevron shapeId="{ganttModel>ObjectKey}" countInBirdEye="true" hoverable="true" time="{ganttModel>START_DATE}" height="19"
+				resizable="false" selectable="false" endTime="{ganttModel>END_DATE}" title="{ganttModel>DESCRIPTION}" showTitle="true"
+				tooltip="{ganttModel>DESCRIPTION}" fill="{ganttModel>COLOR}"/>
+			<gnt2:BaseRectangle shapeId="{ganttModel>ObjectKey}" countInBirdEye="true" hoverable="true" time="{ganttModel>START_DATE}" height="19"
+				selectable="true" resizable="true" endTime="{ganttModel>END_DATE}" title="{ganttModel>DESCRIPTION}" showTitle="true"
+				tooltip="{ganttModel>DESCRIPTION}" fill="{ganttModel>COLOR}"/>
+		</gnt2:shapes>
+	</gnt2:BaseConditionalShape>
+</core:FragmentDefinition>

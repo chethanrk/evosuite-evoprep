@@ -6,7 +6,7 @@
 		persistencyKey="com.evorait.evosuite.evoprep.DetailDemandTable" enableAutoBinding="true" demandPopin="true" customData:useSmartField="true"
 		customData:useSmartToggle="true"
 		editTogglable="{parts: [{path:'user>/ENABLE_ITEM_UPDATE'}, {path:'ALLOW_FINAL'} ], formatter:'.formatter.showOperationAddEdit'}"
-		editToggled="onPressEdit" tableBindingPath="PlanHeaderToPlanItems">
+		editToggled="onPressEdit" tableBindingPath="PlanHeaderToPlanItems" requestAtLeastFields="ObjectKey">
 		<!--layout data used to make the table growing but the filter bar fixed-->
 		<smartTable:layoutData>
 			<FlexItemData growFactor="1" baseSize="0%"/>

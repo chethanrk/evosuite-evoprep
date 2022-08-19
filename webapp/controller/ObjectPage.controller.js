@@ -99,11 +99,11 @@ sap.ui.define([
 				};
 
 			if (oArgs.plan) {
-				sViewName = "com.evorait.evosuite.evoprep.view.templates.PrePlanDetail#Plan_" + oArgs.plan;
+				sViewName = "com.evorait.evosuite.evoprep.view.templates.PrePlanDetail#Plan";
 				this.getModel("templateProperties").setProperty("/annotationPath", {
 					entitySet: "PlanHeaderSet",
-					path: "com.sap.vocabularies.UI.v1.Facets#PrePlanDetailTabs_" + oArgs.plan,
-					headerPath: "com.sap.vocabularies.UI.v1.HeaderFacets#PrePlanDetailHeader_" + oArgs.plan
+					path: "com.sap.vocabularies.UI.v1.Facets#PrePlanDetailTabs",
+					headerPath: "com.sap.vocabularies.UI.v1.HeaderFacets#PrePlanDetailHeader"
 				});
 			}
 			//wait for backend request

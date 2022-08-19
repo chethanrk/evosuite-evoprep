@@ -23,6 +23,7 @@ sap.ui.define([
 		oTemplatePropsProm: null,
 		oSystemInfoProm: null,
 		oFunctionSetProm: null,
+		aAllowedLinks: ['EVOPLAN', 'EVOORDER'],
 
 		/**
 		 * The component is initialized by UI5 automatically during the startup of the app and calls the init method once.
@@ -202,6 +203,7 @@ sap.ui.define([
 							mProps[oItem.Property] = oItem;
 						}
 					});
+					this._navLinksVisibility(mProps);
 					this.getModel("templateProperties").setProperty("/navLinks/", mProps);
 				}.bind(this));
 		},
@@ -254,6 +256,15 @@ sap.ui.define([
 				sLayout = library.LayoutType.OneColumn;
 			}
 			oModel.setProperty("/layout", sLayout);
+		},
+
+		/**
+		 * Handle nav link button visibility in Navigation action sheet
+		 */
+		_navLinksVisibility: function (mProps) {
+			for (var n in mProps) {
+				mProps[n].btnVisibility = this.aAllowedLinks.indexOf(mProps[n].ApplicationId) !== -1 ? true : false;
+			}
 		}
 
 	});

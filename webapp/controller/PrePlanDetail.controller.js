@@ -317,17 +317,24 @@ sap.ui.define([
 		*/
 		_validateDates: function () {
 			var sPath = this.getView().getBindingContext().getPath(),
-				sStartDate = this.getModel().getProperty(sPath + "/START_DATE"),
-				sEndDate = this.getModel().getProperty(sPath + "/END_DATE"),
 				oStartDate = this.getFormFieldByName("idSTART_DATE", this.aSmartForms),
-				oEndData = this.getFormFieldByName("idEND_DATE", this.aSmartForms);
+				oEndData = this.getFormFieldByName("idEND_DATE", this.aSmartForms),
+				oParams = {
+					PlanID: this.getModel().getProperty(sPath + "/PLAN_ID"),
+					OrderNumber: "",
+					OperationNumber: ""
+				};
 
-			if (oStartDate) {
-				oStartDate.getContent().setMaxDate(sStartDate);
-			}
-			if (oEndData) {
-				oEndData.getContent().setMinDate(sEndDate);
-			}
+			var callbackfunction = function (oImportedData) {
+				if (oStartDate) {
+					oStartDate.getContent().setMaxDate(oImportedData.ACT_START_DATE);
+				}
+				if (oEndData) {
+					oEndData.getContent().setMinDate(oImportedData.ACT_END_DATE);
+				}
+			}.bind(this);
+
+			this.callFunctionImport(oParams, "CalculateDate", "GET", callbackfunction);
 
 		},
 		/**

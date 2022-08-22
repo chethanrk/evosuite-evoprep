@@ -52,6 +52,10 @@ sap.ui.define([], function () {
 				color: "#00ff00",
 				state: "Success"
 			}
+		},
+		ALLOWED_LINKS: {
+			EVOPLAN: "EVOPLAN",
+			EVOORDER: "EVOORDER"
 		}
 	};
 

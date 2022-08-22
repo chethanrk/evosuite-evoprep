@@ -23,7 +23,6 @@ sap.ui.define([
 		oTemplatePropsProm: null,
 		oSystemInfoProm: null,
 		oFunctionSetProm: null,
-		aAllowedLinks: ['EVOPLAN', 'EVOORDER'],
 
 		/**
 		 * The component is initialized by UI5 automatically during the startup of the app and calls the init method once.
@@ -263,7 +262,7 @@ sap.ui.define([
 		 */
 		_navLinksVisibility: function (mProps) {
 			for (var n in mProps) {
-				mProps[n].btnVisibility = this.aAllowedLinks.indexOf(mProps[n].ApplicationId) !== -1 ? true : false;
+				mProps[n].btnVisibility = Object.values(Constants.ALLOWED_LINKS).indexOf(mProps[n].ApplicationId) !== -1 ? true : false;
 			}
 		}
 

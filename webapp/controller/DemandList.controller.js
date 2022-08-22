@@ -67,7 +67,6 @@ sap.ui.define([
 		},
 
 		oSmartTable: null,
-		aAllowedLinks: ['EVOPLAN', 'EVOORDER'],
 
 		/* =========================================================== */
 		/* Lifecycle methods                                           */
@@ -83,7 +82,6 @@ sap.ui.define([
 
 			this.oViewModel = this.getModel("viewModel");
 			this.oCreateModel = this.getModel("CreateModel");
-			this._navLinksVisibility();
 		},
 
 		/* =========================================================== */
@@ -283,15 +281,6 @@ sap.ui.define([
 			this.getModel("viewModel").setProperty("/allowPrePlanCreate", false);
 		},
 
-		/**
-		 * Handle nav link button visibility in Navigation action sheet
-		 */
-		_navLinksVisibility: function () {
-			var oNavModel = this.getModel("templateProperties").getProperty("/navLinks");
-			for (var n in oNavModel) {
-				oNavModel[n].btnVisibility = this.aAllowedLinks.indexOf(oNavModel[n].ApplicationId) !== -1 ? true : false;
-			}
-		}
 	});
 
 });

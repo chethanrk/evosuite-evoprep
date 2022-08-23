@@ -5,8 +5,9 @@
 				resizable="false" selectable="false" endTime="{ganttModel>END_DATE}" title="{ganttModel>DESCRIPTION}" showTitle="true"
 				tooltip="{ganttModel>DESCRIPTION}" fill="{ganttModel>COLOR}"/>
 			<gnt2:BaseRectangle shapeId="{ganttModel>ObjectKey}" countInBirdEye="true" hoverable="true" time="{ganttModel>START_DATE}" height="19"
-				selectable="true" resizable="true" endTime="{ganttModel>END_DATE}" title="{ganttModel>DESCRIPTION}" showTitle="true"
-				tooltip="{ganttModel>DESCRIPTION}" fill="{ganttModel>COLOR}"/>
+				selectable="true" draggable="{= ${user>/ENABLE_PREPLAN_UPDATE} === 'X' &amp;&amp; ${ganttModel>READ_ONLY} === false}"
+				resizable="{= ${user>/ENABLE_PREPLAN_UPDATE} === 'X' &amp;&amp; ${ganttModel>READ_ONLY} === false}" endTime="{ganttModel>END_DATE}"
+				title="{ganttModel>DESCRIPTION}" showTitle="true" tooltip="{ganttModel>DESCRIPTION}" fill="{ganttModel>COLOR}"/>
 		</gnt2:shapes>
 	</gnt2:BaseConditionalShape>
 </core:FragmentDefinition>

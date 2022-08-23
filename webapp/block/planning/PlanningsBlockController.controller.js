@@ -131,17 +131,11 @@ sap.ui.define([
 				sPath = "/GanttHierarchySet('" + oDraggedData.ObjectKey + "')";
 				sDateDifference = moment(oDraggedData.START_DATE).diff(oDraggedData.END_DATE);
 				sNewEndDate = new Date(moment(sNewStartDate).add(sDateDifference));
-				oPayload = {
-					"ObjectKey": oDraggedData.ObjectKey,
-					"HIERARCHY_LEVEL": oDraggedData.HIERARCHY_LEVEL,
-					"READ_ONLY": oDraggedData.READ_ONLY,
-					"START_DATE": sNewStartDate,
-					"START_TIME": oDraggedData.START_TIME,
-					"END_DATE": sNewEndDate,
-					"END_TIME": oDraggedData.END_TIME,
-					"COLOR": oDraggedData.COLOR
-				};
-				this._proceedToGanttOperationUpdate(sPath, oPayload);
+				this.getModel("ganttModel").setProperty(sSourcePath + "/START_DATE", sNewStartDate);
+				this.getModel("ganttModel").setProperty(sSourcePath + "/END_DATE", sNewEndDate);
+				this._prepareGanttOpeartionPayload(oDraggedData).then(function (oPayload) {
+					this._proceedToGanttOperationUpdate(sPath, oPayload);
+				}.bind(this));
 			}
 		},
 
@@ -154,18 +148,35 @@ sap.ui.define([
 			var oParams = oEvent.getParameters(),
 				oRowContext = oParams.shape.getBindingContext("ganttModel"),
 				oData = this.getModel("ganttModel").getProperty(oRowContext.getPath()),
-				sPath = "/GanttHierarchySet('" + oData.ObjectKey + "')",
-				oPayload = {
-					"ObjectKey": oData.ObjectKey,
-					"HIERARCHY_LEVEL": oData.HIERARCHY_LEVEL,
-					"READ_ONLY": oData.READ_ONLY,
-					"START_DATE": oParams.newTime[0],
-					"START_TIME": oData.START_TIME,
-					"END_DATE": oParams.newTime[1],
-					"END_TIME": oData.END_TIME,
-					"COLOR": oData.COLOR
-				};
-			this._proceedToGanttOperationUpdate(sPath, oPayload);
+				sPath = "/GanttHierarchySet('" + oData.ObjectKey + "')";
+			this.getModel("ganttModel").setProperty(oRowContext.getPath() + "/START_DATE", oParams.newTime[0]);
+			this.getModel("ganttModel").setProperty(oRowContext.getPath() + "/END_DATE", oParams.newTime[1]);
+			this._prepareGanttOpeartionPayload(oData).then(function (oPayload) {
+				this._proceedToGanttOperationUpdate(sPath, oPayload);
+			}.bind(this));
+		},
+
+		/**
+		 * Create Gantt Operation Payload 
+		 * @{param} oPayloadData - Shape Data
+		 */
+		_prepareGanttOpeartionPayload: function (oPayloadData) {
+			return new Promise(function (resolve) {
+				var obj = {};
+				//collect all assignment properties who allowed for create
+				this.getModel().getMetaModel().loaded().then(function () {
+					var oMetaModel = this.getModel().getMetaModel(),
+						oEntitySet = oMetaModel.getODataEntitySet("GanttHierarchySet"),
+						oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
+						aProperty = oEntityType ? oEntityType.property : [];
+					aProperty.forEach(function (property) {
+						if (oPayloadData[property.name]) {
+							obj[property.name] = oPayloadData[property.name];
+						}
+					});
+					resolve(obj);
+				}.bind(this));
+			}.bind(this));
 		},
 
 		/**

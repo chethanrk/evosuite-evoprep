@@ -255,6 +255,7 @@ sap.ui.define([
 				this.getView().setBindingContext(oContext);
 				this.getModel("CreateModel").getData().results = [];
 				this.getModel("CreateModel").refresh();
+				this.getModel().resetChanges();
 
 				// defaulting values
 				this._initializeView();

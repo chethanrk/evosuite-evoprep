@@ -65,8 +65,14 @@ sap.ui.define([
 				editMode: true,
 				loadMaster: false,
 				launchMode: Constants.LAUNCH_MODE.BSP,
-				bEnableSave:false,
-                orderListEditMode: false
+				bEnableSave: false,
+				orderListEditMode: false,
+				bShowDependencies: true,
+				ganttSettings: {
+					busy: true,
+					sStartDate: null,
+					sEndDate: null
+				}
 			};
 
 			//GetSystemInformation Call
@@ -78,6 +84,9 @@ sap.ui.define([
 			this.MessageManager = new MessageManager();
 
 			this.setModel(oMessageManager.getMessageModel(), "message");
+
+			//Creating the Global Gantt Model for PlanningGanttChart
+			this.setModel(models.createHelperModel(), "ganttModel");
 
 			this._getTemplateProps();
 
@@ -193,6 +202,7 @@ sap.ui.define([
 							mProps[oItem.Property] = oItem;
 						}
 					});
+					this._navLinksVisibility(mProps);
 					this.getModel("templateProperties").setProperty("/navLinks/", mProps);
 				}.bind(this));
 		},
@@ -245,6 +255,15 @@ sap.ui.define([
 				sLayout = library.LayoutType.OneColumn;
 			}
 			oModel.setProperty("/layout", sLayout);
+		},
+
+		/**
+		 * Handle nav link button visibility in Navigation action sheet
+		 */
+		_navLinksVisibility: function (mProps) {
+			for (var n in mProps) {
+				mProps[n].btnVisibility = Object.values(Constants.ALLOWED_LINKS).indexOf(mProps[n].ApplicationId) !== -1 ? true : false;
+			}
 		}
 
 	});

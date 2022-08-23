@@ -46,7 +46,7 @@ sap.ui.define([
 		},
 
 		/* =========================================================== */
-		/* Public methods                                           */
+		/* Public methods                                              */
 		/* =========================================================== */
 
 		/**
@@ -86,15 +86,39 @@ sap.ui.define([
 		onPressEdit: function (oEvent) {
 			var bEdit = oEvent.getParameter("editable");
 			if (!bEdit && !isEmptyObject(this.getModel().getPendingChanges())) {
-				this.saveChanges(this._oSmartTable);
+				this.saveChangesMain({
+					state: "success",
+					isCreate: false
+				}, this._afterEditSuccess.bind(this), this._afterEditError.bind(this), this._oSmartTable);
 			}
 		},
 
 		/* =========================================================== */
-		/* Private methods                                             */
+		/* Private methods                                              */
 		/* =========================================================== */
 
 		/**
+		 * After operation edit success callback
+		 */
+		_afterEditSuccess: function () {
+			this.showMessageToast(this.getResourceBundle().getText("msg.saveSuccess"));
+			if (this._oSmartTable) {
+				this._oSmartTable.rebindTable(true);
+			}
+			this.getModel().resetChanges();
+		},
+
+		/**
+		 * After operation edit error callback
+		 */
+		_afterEditError: function () {
+			if (this._oSmartTable) {
+				this._oSmartTable.rebindTable(true);
+			}
+			this.getModel().resetChanges();
+		},
+        
+        /**
 		 * Prepare function import parameter ready
 		 * check for the order number and operation number 
 		 * @[param] - aItems - operationlist items

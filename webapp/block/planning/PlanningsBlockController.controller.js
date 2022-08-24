@@ -32,6 +32,11 @@ sap.ui.define([
 					public: true,
 					final: true,
 					overrideExecution: OverrideExecution.Instead
+				},
+				onPressShapesEdit: {
+					public: true,
+					final: true,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
@@ -129,7 +134,7 @@ sap.ui.define([
 				}
 				oDraggedData = this.getModel("ganttModel").getProperty(sSourcePath);
 				sPath = "/GanttHierarchySet('" + oDraggedData.ObjectKey + "')";
-				sDateDifference = moment(oDraggedData.START_DATE).diff(oDraggedData.END_DATE);
+				sDateDifference = moment(oDraggedData.END_DATE).diff(oDraggedData.START_DATE);
 				sNewEndDate = new Date(moment(sNewStartDate).add(sDateDifference));
 				this.getModel("ganttModel").setProperty(sSourcePath + "/START_DATE", sNewStartDate);
 				this.getModel("ganttModel").setProperty(sSourcePath + "/END_DATE", sNewEndDate);
@@ -154,6 +159,22 @@ sap.ui.define([
 			this._prepareGanttOpeartionPayload(oData).then(function (oPayload) {
 				this._proceedToGanttOperationUpdate(sPath, oPayload);
 			}.bind(this));
+		},
+
+		/**
+		 * On click on Edid button on Gantt
+		 * Function to enable/disable Operation Shapes
+		 * @param oEvent
+		 */
+		onPressShapesEdit: function (oEvent) {
+			var oSource = oEvent.getSource();
+			if (oSource.getIcon() === "sap-icon://edit") {
+				oSource.setIcon("sap-icon://display");
+				this.getModel("viewModel").setProperty("/bEnableGanttShapesEdit", false);
+			} else {
+				oSource.setIcon("sap-icon://edit");
+				this.getModel("viewModel").setProperty("/bEnableGanttShapesEdit", true);
+			}
 		},
 
 		/**

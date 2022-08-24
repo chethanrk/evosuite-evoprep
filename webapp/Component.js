@@ -68,6 +68,7 @@ sap.ui.define([
 				bEnableSave: false,
 				orderListEditMode: false,
 				bShowDependencies: true,
+				bEnableGanttShapesEdit:true,
 				ganttSettings: {
 					busy: true,
 					sStartDate: null,

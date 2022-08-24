@@ -133,6 +133,10 @@ sap.ui.define([
 					public: true,
 					final: true
 				},
+				showSaveErrorPrompt: {
+					public: true,
+					final: true
+				},
 				checkDuplicate: {
 					public: true,
 					final: true
@@ -568,6 +572,36 @@ sap.ui.define([
 		},
 
 		/**
+		 * save error dialog
+		 */
+		showSaveErrorPrompt: function (message) {
+			var oBundle = this.getModel("i18n").getResourceBundle();
+			var sTitle = oBundle.getText("errorTitle");
+			var sMsg = oBundle.getText("errorText");
+			var sBtn = oBundle.getText("close");
+
+			var dialog = new Dialog({
+				title: sTitle,
+				type: "Message",
+				state: "Error",
+				content: new Text({
+					text: sMsg + "\n\n" + message
+				}),
+				beginButton: new Button({
+					text: sBtn,
+					press: function () {
+						dialog.close();
+					}
+				}),
+				afterClose: function () {
+					dialog.destroy();
+				}
+			});
+			dialog.addStyleClass(this.getModel("viewModel").getProperty("/densityClass"));
+			dialog.open();
+		},
+
+		/**
 		 * Method to call Function Import
 		 * @param oParams {object} parameter to be passed to function import
 		 * @param sFuncName {string} function import name
@@ -591,7 +625,7 @@ sap.ui.define([
 				error: function (oError) {
 					//Handle Error
 					oViewModel.setProperty("/busy", false);
-					this.showMessageToast(oResourceBundle.getText("errorText"));
+					this.showSaveErrorPrompt(this._extractError(oError));
 				}.bind(this)
 			});
 
@@ -814,6 +848,49 @@ sap.ui.define([
 			}
 		},
 
+		/**
+		 * Opens popup to add operation in demand list
+		 */
+		onPressAddOperations: function (oEvent) {
+			// create popover
+			if (!this._addOperationsDetail) {
+				Fragment.load({
+					name: "com.evorait.evosuite.evoprep.view.fragments.OperationList",
+					controller: this
+				}).then(function (oDialog) {
+					this._addOperationsDetail = oDialog;
+					this.getView().addDependent(oDialog);
+					this.open(oDialog);
+					this._addOperationsDetail.attachAfterOpen(function () {
+						var oOpSmartTable = sap.ui.getCore().byId("idOperationListFragSmartTable");
+						oOpSmartTable.getTable().removeSelections();
+						oOpSmartTable.rebindTable();
+					}.bind(this));
+				}.bind(this));
+			} else {
+				this.open(this._addOperationsDetail);
+			}
+		},
+
+		/**
+		 * Close operation list frgament
+		 * Before close it will remove table selection
+		 */
+		onPressOperationSelectCancel: function (oEvent) {
+			this._addOperationsDetail.close();
+		},
+
+		/**
+		 * destroy the created fragment on exit
+		 * @param oEvent
+		 */
+		destroyOperationListFragment: function () {
+			if (this._addOperationsDetail) {
+				this._addOperationsDetail.destroy(true);
+				this._addOperationsDetail = null;
+			}
+		},
+
 		/* =========================================================== */
 		/* Private methods                                              */
 		/* =========================================================== */
@@ -880,7 +957,7 @@ sap.ui.define([
 				params: mParams
 			});
 		},
-		
+
 		/**
 		 * loop trough all nested array of children
 		 * When max level for search was reached execute callbackFn
@@ -925,6 +1002,52 @@ sap.ui.define([
 			}.bind(this));
 			return aChildren;
 		},
+
+		/**
+		 * Extract errors from a backend message class
+		 * either messages from the backend message class or return the initial error object
+		 * @param oResponse
+		 * @returns {{responseText}|*|string|string|{responseText}|*}
+		 * @private
+		 */
+		_extractError: function (oResponse) {
+			if (!oResponse) {
+				return this._oResourceBundle.getText("errorText");
+			}
+			if (oResponse.responseText) {
+				var parsedJSError = null;
+				try {
+					parsedJSError = jQuery.sap.parseJS(oResponse.responseText);
+				} catch (err) {
+					return oResponse;
+				}
+				if (parsedJSError && parsedJSError.error && parsedJSError.error.code) {
+					var strError = "";
+					//check if the error is from our backend error class
+					if (parsedJSError.error.innererror && parsedJSError.error.innererror.errordetails) {
+						var aInnerDetails = parsedJSError.error.innererror.errordetails;
+						if (aInnerDetails.length > 0) {
+							for (var i = 0; i < aInnerDetails.length; i++) {
+								if (aInnerDetails[i].severity === "warning") {
+									this._addWarningMessageToMessageManager(aInnerDetails[i].message);
+								} else {
+									strError += String.fromCharCode("8226") + " " + aInnerDetails[i].message + "\n\n";
+								}
+							}
+						} else {
+							strError = parsedJSError.error.code + ": " + parsedJSError.error.message.value;
+						}
+					} else {
+						//if there is no message class found
+						return oResponse;
+					}
+					return strError;
+				}
+			} else if (oResponse.body) {
+				return oResponse.body;
+			}
+			return oResponse;
+		}
 
 	});
 });

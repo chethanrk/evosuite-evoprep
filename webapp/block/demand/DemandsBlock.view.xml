@@ -14,11 +14,12 @@
 		<smartTable:customToolbar>
 			<Toolbar>
 				<ToolbarSpacer/>
-				<Button icon="sap-icon://add" press="addOperations" tooltip="{i18n>btn.addOper}"
+				<Button icon="sap-icon://add" press="onPressAddOperations" tooltip="{i18n>btn.addOper}"
 					visible="{parts: [{path:'user>/ENABLE_ITEM_UPDATE'}, {path:'ALLOW_FINAL'} ], formatter:'.formatter.showOperationAddEdit'}"/>
+				<Button icon="sap-icon://delete" press="onPressDeleteOperations" tooltip="{i18n>btn.remove}"/>
 				<core:ExtensionPoint name="TableExtP|PrePlanDetail|PlanItemsSet|CustomToolbar"/>
 			</Toolbar>
 		</smartTable:customToolbar>
-		<!--<Table mode="SingleSelectMaster" growingThreshold="100" growing="true"></Table>-->
+		<Table mode="SingleSelectLeft" selectionChange="handleSelectionChangeOperation"></Table>
 	</smartTable:SmartTable>
 </mvc:View>

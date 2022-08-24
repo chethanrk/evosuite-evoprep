@@ -116,7 +116,8 @@ sap.ui.define([
 			var successFn = function () {
 				this._clearData();
 			};
-			this.showConfirmDialog("Confirm", this.getResourceBundle().getText("msg.leaveWithoutSave"), successFn.bind(this));
+			this.showConfirmDialog(this.getResourceBundle().getText("xtit.confirm"), this.getResourceBundle().getText("msg.leaveWithoutSave"),
+				successFn.bind(this));
 		},
 
 		/*

@@ -2,8 +2,9 @@ sap.ui.define([
 	"com/evorait/evosuite/evoprep/controller/BaseController",
 	"sap/ui/core/mvc/Controller",
 	"sap/base/util/isEmptyObject",
-	"sap/ui/core/Fragment"
-], function (BaseController, Controller, isEmptyObject, Fragment) {
+	"sap/ui/core/Fragment",
+	"sap/ui/core/mvc/OverrideExecution"
+], function (BaseController, Controller, isEmptyObject, Fragment, OverrideExecution) {
 	"use strict";
 
 	return BaseController.extend("com.evorait.evosuite.evoprep.block.demand.DemandsBlockController", {
@@ -12,17 +13,22 @@ sap.ui.define([
 			// extension can declare the public methods
 			// in general methods that start with "_" are private
 			methods: {
-				addOperations: {
-					public: true,
-					final: true
-				},
 				onPressEdit: {
 					public: true,
-					final: true
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onPressAdd: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
 
+		_oSmartTable: null,
+		_oTable: null,
+		_oOperationContext: null,
 		/* =========================================================== */
 		/* Lifecycle methods                                           */
 		/* =========================================================== */
@@ -34,6 +40,7 @@ sap.ui.define([
 		 */
 		onInit: function () {
 			this._oSmartTable = this.getView().byId("idDemandBlockSmartTable");
+			this._oTable = this._oSmartTable.getTable();
 		},
 
 		/**
@@ -48,15 +55,6 @@ sap.ui.define([
 		/* =========================================================== */
 		/* Public methods                                              */
 		/* =========================================================== */
-
-		/**
-		 * Close operation list frgament
-		 * Before close it will remove table selection
-		 */
-		onPressOperationListCancel: function (oEvent) {
-			this.onPressOperationSelectCancel();
-			this.destroyOperationListFragment();
-		},
 
 		/**
 		 * On press add operation button inside operation list fragmnet
@@ -81,6 +79,15 @@ sap.ui.define([
 		},
 
 		/**
+		 * Close operation list frgament
+		 * Before close it will remove table selection
+		 */
+		onPressOperationListCancel: function (oEvent) {
+			this.onPressOperationSelectCancel();
+			this.destroyOperationListFragment();
+		},
+
+		/**
 		 * Sends the changed data to backend
 		 */
 		onPressEdit: function (oEvent) {
@@ -89,7 +96,45 @@ sap.ui.define([
 				this.saveChangesMain({
 					state: "success",
 					isCreate: false
-				}, this._afterEditSuccess.bind(this), this._afterEditError.bind(this), this._oSmartTable);
+				}, this._afterSuccess.bind(this), this._afterError.bind(this), this._oSmartTable);
+			}
+		},
+
+		/**
+		 *  Selection Change event on table 
+		 */
+		handleSelectionChangeOperation: function (oEvent) {
+			this._oOperationContext = oEvent.getParameter("listItem").getBindingContext();
+		},
+
+		/**
+		 * Handle Object list delete operation
+		 */
+		onPressDeleteOperations: function () {
+			var sTitle = this.getResourceBundle().getText("tit.confirmDelete"),
+				sMsg = this.getResourceBundle().getText("msg.confirmDeletePrepLan");
+
+			if (this._oOperationContext) {
+				if (this._oTable.getItems().length === 1) {
+					var msg = this.getResourceBundle().getText("msg.operationDeleteRestriction");
+					this.showMessageToast(msg);
+					this._oTable.removeSelections();
+					return;
+				}
+				this.getModel().setProperty(this._oOperationContext.getPath() + "/DELETE_ENTRY", "X");
+
+				var successFn = function () {
+					this.saveChangesMain({
+						state: "success",
+						isCreate: false
+					}, this._afterSuccess.bind(this), this._afterError.bind(this), this.getView());
+					this._oTable.removeSelections();
+					this._oOperationContext = null;
+				};
+				this.showConfirmDialog(sTitle, sMsg, successFn.bind(this));
+			} else {
+				var msgs = this.getView().getModel("i18n").getResourceBundle().getText("msg.selectAtleast");
+				this.showMessageToast(msgs);
 			}
 		},
 
@@ -100,25 +145,20 @@ sap.ui.define([
 		/**
 		 * After operation edit success callback
 		 */
-		_afterEditSuccess: function () {
+		_afterSuccess: function () {
 			this.showMessageToast(this.getResourceBundle().getText("msg.saveSuccess"));
-			if (this._oSmartTable) {
-				this._oSmartTable.rebindTable(true);
-			}
 			this.getModel().resetChanges();
+			this.getModel().refresh();
 		},
 
 		/**
 		 * After operation edit error callback
 		 */
-		_afterEditError: function () {
-			if (this._oSmartTable) {
-				this._oSmartTable.rebindTable(true);
-			}
+		_afterError: function () {
 			this.getModel().resetChanges();
 		},
-        
-        /**
+
+		/**
 		 * Prepare function import parameter ready
 		 * check for the order number and operation number 
 		 * @[param] - aItems - operationlist items
@@ -152,6 +192,7 @@ sap.ui.define([
 		/**
 		 * Trigger function import with url parameters
 		 * @{param} oParam - Url parameter
+		 * @{param} -aSelectedItems - Selected operations from the operation list 
 		 */
 		_triggerFunctionImport: function (oParam, aSelectedItems) {
 			var oParams = {
@@ -162,14 +203,29 @@ sap.ui.define([
 				sFunctionName = "CalculateDate";
 
 			var callbackfunction = function (oImportedData) {
-				this._triggerItemMergerequest(aSelectedItems, this._saveSuccess.bind(this), this._saveFailed.bind(this));
+				this._confirmDateChange(aSelectedItems);
 			}.bind(this);
 
 			this.callFunctionImport(oParams, sFunctionName, "GET", callbackfunction);
 		},
 
 		/**
+		 * Confirm before add operations to table
+		 * @{param} -aSelectedItems - Selected operations from the operation list 
+		 */
+		_confirmDateChange: function (aSelectedItems) {
+			var sTitle = this.getResourceBundle().getText("xtit.confirm"),
+				sMsg = this.getResourceBundle().getText("msg.operationUpdateConfirm");
+
+			var successFn = function () {
+				this._triggerItemMergerequest(aSelectedItems, this._afterSuccess.bind(this), this._afterError.bind(this));
+			};
+			this.showConfirmDialog(sTitle, sMsg, successFn.bind(this));
+		},
+
+		/**
 		 * Prepare the payload for the merge call with selected operation for the add operation
+		 * @{param} -aSelectedItems - Selected operations from the operation list 
 		 */
 		_triggerItemMergerequest: function (aSelectedItems, oSuccessCallback, oErrorCallback) {
 			var mParameters = {
@@ -179,7 +235,10 @@ sap.ui.define([
 			};
 			this._preparePayload(mParameters, aSelectedItems).then(function (oData) {
 				if (oData.length > 0) {
-					this.getModel().submitChanges(mParameters);
+					this.saveChangesMain({
+						state: "success",
+						isCreate: true
+					}, this._afterSuccess.bind(this), this._afterError.bind(this), this.getView());
 				}
 			}.bind(this));
 		},
@@ -189,6 +248,7 @@ sap.ui.define([
 		 * Create changeset
 		 * used deferredgroups
 		 * @Param {mParameters} - details to odata model
+		 * @{param} -aSelectedItems - Selected operations from the operation list 
 		 */
 		_preparePayload: function (mParameters, aSelectedItems) {
 			return new Promise(function (resolve) {
@@ -219,16 +279,6 @@ sap.ui.define([
 				}.bind(this));
 				resolve(aSelectedItems);
 			}.bind(this));
-		},
-
-		_saveSuccess: function () {
-			this.getView().getModel().refresh();
-		},
-
-		_saveFailed: function () {
-			sap.m.MessageToast.show("Failed");
 		}
-
 	});
-
 });

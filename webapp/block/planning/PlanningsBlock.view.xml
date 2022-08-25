@@ -9,6 +9,7 @@
 				class="gantt_toolbar">
 				<gnt2:content>
 					<Button text="{i18n>xbut.hideDependencies}" visible="{= ${user>/ENABLE_HIDE_DEPENDENCY} === 'X'}" press="onShowDependencies"/>
+					<Button icon="sap-icon://edit" tooltip="{i18n>xbut.edit}" visible="{= ${user>/ENABLE_PREPLAN_UPDATE} === 'X'}" press="onPressShapesEdit"/>
 				</gnt2:content>
 				<gnt2:legendContainer>
 					<gnt2:LegendContainer></gnt2:LegendContainer>
@@ -16,8 +17,8 @@
 			</gnt2:ContainerToolbar>
 		</gnt2:toolbar>
 		<gnt2:GanttChartWithTable id="idPlanningGanttChartTable" shapeSelectionMode="Single" shapePress="onShapePress" ghostAlignment="Start"
-			adhocLineLayer="Bottom" nowLineInUTC="false" dragStart="onShapeDragStart" shapeDrop="onShapeDrop" shapeMouseEnter="onShapeMouseEnter" shapeResize="onShapeResize"
-			shapeSelectionSettings="{color: '#808080', strokeWidth: 1, strokeDasharray: '5,2'}">
+			adhocLineLayer="Bottom" nowLineInUTC="false" dragStart="onShapeDragStart" shapeDrop="onShapeDrop" shapeMouseEnter="onShapeMouseEnter"
+			shapeResize="onShapeResize" shapeSelectionSettings="{color: '#808080', strokeWidth: 1, strokeDasharray: '5,2'}">
 			<gnt2:axisTimeStrategy>
 				<axistime:StepwiseZoomStrategy id="idPlanningGanttZoom" zoomLevels="3">
 					<axistime:totalHorizon>

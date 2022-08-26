@@ -77,7 +77,7 @@
 									<template:elseif
 										test="{:= ${detailTabs>Core.Description/String} === 'Table' || ${detailTabs>Org.OData.Core.V1.Description/String} === 'Table'}">
 										<core:ExtensionPoint name="SectionExtP|PrePlanDetail|{:= ${detailTabs>Core.LongDescription/String} }|Before"/>
-										<uxap:ObjectPageSection title="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}">
+										<uxap:ObjectPageSection title="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}" visible="{viewModel>/editMode}">
 											<uxap:subSections>
 												<template:if
 													test="{:= ${parts: [{value:'PlanningTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameInDescription'} }">
@@ -89,7 +89,7 @@
 														</uxap:ObjectPageSubSection>
 													</template:then>
 													<template:else>
-														<uxap:ObjectPageSubSection>
+														<uxap:ObjectPageSubSection visible="{viewModel>/editMode}">
 															<uxap:blocks>
 																<template:if
 																	test="{:= ${parts: [{value:'CapacityTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameInDescription'} }">

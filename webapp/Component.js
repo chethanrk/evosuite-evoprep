@@ -68,7 +68,7 @@ sap.ui.define([
 				bEnableSave: false,
 				orderListEditMode: false,
 				bShowDependencies: true,
-				bEnableGanttShapesEdit:true,
+				bEnableGanttShapesEdit: true,
 				ganttSettings: {
 					busy: true,
 					sStartDate: null,
@@ -169,12 +169,11 @@ sap.ui.define([
 		 */
 		_getFunctionSets: function () {
 			this.oFunctionSetProm = new Promise(function (resolve) {
-				var oFilter = new Filter("ObjectCategory", FilterOperator.EQ, "GOB"),
-					oFilter1 = new Filter("FunctionType", FilterOperator.EQ, "U"),
+				var oFilter = new Filter("FunctionType", FilterOperator.EQ, "I"),
 					oFunctionSet = {
 						userStatus: []
 					};
-				this.readData("/FunctionsSet", [oFilter, oFilter1])
+				this.readData("/PlanHeaderFunctionsSet", [oFilter])
 					.then(function (data) {
 						data.results.forEach(function (oItem) {
 							oFunctionSet.userStatus.push(oItem);

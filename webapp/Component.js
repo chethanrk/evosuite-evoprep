@@ -8,8 +8,10 @@ sap.ui.define([
 	"sap/f/library",
 	"sap/ui/model/json/JSONModel",
 	"sap/ui/model/Filter",
-	"sap/ui/model/FilterOperator"
-], function (UIComponent, Device, models, ErrorHandler, MessageManager, Constants, library, JSONModel, Filter, FilterOperator) {
+	"sap/ui/model/FilterOperator",
+	"com/evorait/evosuite/evoprep/controller/GanttActions"
+], function (UIComponent, Device, models, ErrorHandler, MessageManager, Constants, library, JSONModel, Filter, FilterOperator,
+	GanttActions) {
 	"use strict";
 
 	var oMessageManager = sap.ui.getCore().getMessageManager();
@@ -99,7 +101,9 @@ sap.ui.define([
 				this.getRouter().attachBeforeRouteMatched(this._onBeforeRouteMatched, this);
 				this.getRouter().initialize();
 			}.bind(this));
-
+			
+			//initialize GanttActions.js with component
+			this.GanttActions = new GanttActions();
 		},
 
 		/**

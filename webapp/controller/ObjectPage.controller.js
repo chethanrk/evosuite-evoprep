@@ -96,7 +96,8 @@ sap.ui.define([
 			var sViewName = "com.evorait.evosuite.evoprep.view.templates.PrePlanDetail#Plan",
 				mParams = {
 					ObjectKey: oArgs.plan
-				};
+				},
+				sEntitySet = "GanttHierarchySet";
 
 			if (oArgs.plan) {
 				sViewName = "com.evorait.evosuite.evoprep.view.templates.PrePlanDetail#Plan";
@@ -109,6 +110,7 @@ sap.ui.define([
 			//wait for backend request
 			this.getOwnerComponent().oSystemInfoProm.then(function () {
 				this._onRouteMatched(sViewName, "PlanHeaderSet", mParams);
+				this._getGanttLineItems(sEntitySet);
 			}.bind(this));
 		},
 
@@ -178,6 +180,28 @@ sap.ui.define([
 					}.bind(this));
 				}.bind(this));
 				resolve();
+			}.bind(this));
+		},
+		
+		/* get line item from Gantt entityset 
+		 * @private
+		 */
+		_getGanttLineItems: function (sEntitySet) {
+			var oTempModel = this.getModel("templateProperties"),
+				oModel = this.getModel();
+
+			oTempModel.setProperty("/ganttConfigs", {});
+			oTempModel.setProperty("/ganttConfigs/entitySet", sEntitySet);
+
+			//collect all tab IDs
+			oModel.getMetaModel().loaded().then(function () {
+				var oMetaModel = oModel.getMetaModel(),
+					oEntitySet = oMetaModel.getODataEntitySet(sEntitySet),
+					oEntityType = oMetaModel.getODataEntityType(oEntitySet.entityType),
+					aLineItems = oEntityType["com.sap.vocabularies.UI.v1.LineItem"];
+				if (aLineItems) {
+					oTempModel.setProperty("/ganttConfigs/lineItems", aLineItems);
+				}
 			}.bind(this));
 		}
 	});

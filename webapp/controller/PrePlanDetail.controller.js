@@ -6,8 +6,9 @@ sap.ui.define([
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
 	"sap/base/util/deepClone",
-	"com/evorait/evosuite/evoprep/model/formatter"
-], function (BaseController, Fragment, OverrideExecution, library, Filter, FilterOperator, deepClone, formatter) {
+	"com/evorait/evosuite/evoprep/model/formatter",
+	"sap/gantt/misc/Utility"
+], function (BaseController, Fragment, OverrideExecution, library, Filter, FilterOperator, deepClone, formatter, Utility) {
 	"use strict";
 
 	return BaseController.extend("com.evorait.evosuite.evoprep.controller.PrePlanDetail", {
@@ -52,6 +53,31 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
+				},
+				onClickExpandCollapse: {
+					public: true,
+					final: true,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onShowDependencies: {
+					public: true,
+					final: true,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onShapeDrop: {
+					public: true,
+					final: true,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onShapeResize: {
+					public: true,
+					final: true,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onPressShapesEdit: {
+					public: true,
+					final: true,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
@@ -70,6 +96,13 @@ sap.ui.define([
 			//Binnding has changed in TemplateRenderController.js
 			eventBus.subscribe("TemplateRendererEvoPrep", "changedBinding", this._changedBinding, this);
 			eventBus.subscribe("BaseController", "refreshFullGantt", this._loadGanttData, this);
+
+			//Initializing GanttActions.js
+			this.GanttActions = this.getOwnerComponent().GanttActions;
+			this.GanttActions.init(this.getView());
+
+			this._treeTable = this.getView().byId("idPlanningGanttTreeTable");
+			this._axisTime = this.getView().byId("idPlanningGanttZoom");
 		},
 		/**
 		 * Called when the View has been rendered (so its HTML is part of the document). Post-rendering manipulations of the HTML could be done here.
@@ -191,6 +224,104 @@ sap.ui.define([
 			this.sFunctionKey = oItem ? oItem.data("key") : oSource.data("key");
 
 			this._updateStatus();
+		},
+
+		/**
+		 * On click on expand the tree nodes gets expand to level 1
+		 * On click on collapse all the tree nodes will be collapsed to root.
+		 * @param oEvent
+		 */
+		onClickExpandCollapse: function (oEvent) {
+			var oButton = oEvent.getSource(),
+				oCustomData = oButton.getCustomData();
+			if (oCustomData[0].getValue() === "EXPAND" && this._treeTable) {
+				this._treeTable.expandToLevel(1);
+			} else {
+				this._treeTable.collapseAll();
+			}
+		},
+
+		/**
+		 * On click on Hide/Show Dependencies, Relationships will be hidden and shown
+		 * @param oEvent
+		 */
+		onShowDependencies: function (oEvent) {
+			var oSource = oEvent.getSource(),
+				sButtonText = oSource.getText(),
+				oResourceBundle = this.getResourceBundle();
+			if (sButtonText === oResourceBundle.getText("xbut.hideDependencies")) {
+				this.getModel("viewModel").setProperty("/bShowDependencies", false);
+				oSource.setText(oResourceBundle.getText("xbut.showDependencies"));
+			} else {
+				this.getModel("viewModel").setProperty("/bShowDependencies", true);
+				oSource.setText(oResourceBundle.getText("xbut.hideDependencies"));
+			}
+		},
+
+		/**
+		 * Triggered when a Operatio shape is dragged inside Gantt
+		 * and dropped to same row
+		 * @param oEvent
+		 */
+		onShapeDrop: function (oEvent) {
+			var oParams = oEvent.getParameters(),
+				aDraggedShapes = oParams.draggedShapeDates,
+				oTargetContext = oParams.targetRow ? oParams.targetRow.getBindingContext("ganttModel") : null,
+				sNewStartDate = oParams.newDateTime,
+				sNewEndDate, sDateDifference, oDraggedData, sPath, oPayload;
+			if (!oTargetContext) {
+				oTargetContext = oParams.targetShape.getParent().getParent().getBindingContext("ganttModel");
+			}
+			for (var i in aDraggedShapes) {
+				var sSourcePath = Utility.parseUid(i).shapeDataName,
+					sTargetPath = oTargetContext.getPath();
+				if (sSourcePath !== sTargetPath) {
+					return;
+				}
+				oDraggedData = this.getModel("ganttModel").getProperty(sSourcePath);
+				sPath = "/GanttHierarchySet('" + oDraggedData.ObjectKey + "')";
+				sDateDifference = moment(oDraggedData.END_DATE).diff(oDraggedData.START_DATE);
+				sNewEndDate = new Date(moment(sNewStartDate).add(sDateDifference));
+				this.getModel("ganttModel").setProperty(sSourcePath + "/START_DATE", sNewStartDate);
+				this.getModel("ganttModel").setProperty(sSourcePath + "/END_DATE", sNewEndDate);
+
+				this.GanttActions._prepareGanttOpeartionPayload(oDraggedData).then(function (oPayload) {
+					this.GanttActions._proceedToGanttOperationUpdate(sPath, oPayload);
+				}.bind(this));
+			}
+		},
+
+		/**
+		 * Triggered when Operation shape are resized 
+		 * validate shape new dates and if change is allowed
+		 * @param oEvent
+		 */
+		onShapeResize: function (oEvent) {
+			var oParams = oEvent.getParameters(),
+				oRowContext = oParams.shape.getBindingContext("ganttModel"),
+				oData = this.getModel("ganttModel").getProperty(oRowContext.getPath()),
+				sPath = "/GanttHierarchySet('" + oData.ObjectKey + "')";
+			this.getModel("ganttModel").setProperty(oRowContext.getPath() + "/START_DATE", oParams.newTime[0]);
+			this.getModel("ganttModel").setProperty(oRowContext.getPath() + "/END_DATE", oParams.newTime[1]);
+			this.GanttActions._prepareGanttOpeartionPayload(oData).then(function (oPayload) {
+				this.GanttActions._proceedToGanttOperationUpdate(sPath, oPayload);
+			}.bind(this));
+		},
+
+		/**
+		 * On click on Edid button on Gantt
+		 * Function to enable/disable Operation Shapes
+		 * @param oEvent
+		 */
+		onPressShapesEdit: function (oEvent) {
+			var oSource = oEvent.getSource();
+			if (oSource.getIcon() === "sap-icon://edit") {
+				oSource.setIcon("sap-icon://display");
+				this.getModel("viewModel").setProperty("/bEnableGanttShapesEdit", false);
+			} else {
+				oSource.setIcon("sap-icon://edit");
+				this.getModel("viewModel").setProperty("/bEnableGanttShapesEdit", true);
+			}
 		},
 
 		/* =========================================================== */
@@ -383,6 +514,7 @@ sap.ui.define([
 		 **/
 		_loadGanttData: function () {
 			this._initialiseGanttModel();
+			this.GanttActions._createGanttHorizon(this._axisTime);
 			this._getGanttData(0)
 				.then(this._getGanttData.bind(this))
 				.then(function () {

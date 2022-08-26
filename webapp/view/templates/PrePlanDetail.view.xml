@@ -77,30 +77,36 @@
 									<template:elseif
 										test="{:= ${detailTabs>Core.Description/String} === 'Table' || ${detailTabs>Org.OData.Core.V1.Description/String} === 'Table'}">
 										<core:ExtensionPoint name="SectionExtP|PrePlanDetail|{:= ${detailTabs>Core.LongDescription/String} }|Before"/>
-										<uxap:ObjectPageSection title="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}"
-											visible="{viewModel>/editMode}">
+										<uxap:ObjectPageSection title="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}">
 											<uxap:subSections>
-												<uxap:ObjectPageSubSection>
-													<uxap:blocks>
-														<template:if
-															test="{:= ${parts: [{value:'CapacityTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameInDescription'} }">
-															<template:then>
-																<blocks:capacity.CapacityBlock
-																	id="block--{:= ${path:'detailTabs>Core.LongDescription/String'} || ${detailTabs>Org.OData.Core.V1.LongDescription/String}}"/>
-															</template:then>
-															<template:elseif
-																test="{:= ${parts: [{value:'PlanningTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameInDescription'} }">
-																<blocks:planning.PlanningsBlock
-																	id="block--{:= ${path:'detailTabs>Core.LongDescription/String'} || ${detailTabs>Org.OData.Core.V1.LongDescription/String}}"/>
-															</template:elseif>
-															<template:elseif
-																test="{:= ${parts: [{value:'DemandsTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameInDescription'} }">
-																<blocks:demand.DemandsBlock
-																	id="block--{:= ${path:'detailTabs>Core.LongDescription/String'} || ${detailTabs>Org.OData.Core.V1.LongDescription/String}}"/>
-															</template:elseif>
-														</template:if>
-													</uxap:blocks>
-												</uxap:ObjectPageSubSection>
+												<template:if
+													test="{:= ${parts: [{value:'PlanningTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameInDescription'} }">
+													<template:then>
+														<uxap:ObjectPageSubSection title="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}">
+															<uxap:blocks>
+																<core:Fragment fragmentName="com.evorait.evosuite.evoprep.view.templates.PlanningGanttChart" type="XML"/>
+															</uxap:blocks>
+														</uxap:ObjectPageSubSection>
+													</template:then>
+													<template:else>
+														<uxap:ObjectPageSubSection>
+															<uxap:blocks>
+																<template:if
+																	test="{:= ${parts: [{value:'CapacityTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameInDescription'} }">
+																	<template:then>
+																		<blocks:capacity.CapacityBlock
+																			id="block--{:= ${path:'detailTabs>Core.LongDescription/String'} || ${detailTabs>Org.OData.Core.V1.LongDescription/String}}"/>
+																	</template:then>
+																	<template:elseif
+																		test="{:= ${parts: [{value:'DemandsTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameInDescription'} }">
+																		<blocks:demand.DemandsBlock
+																			id="block--{:= ${path:'detailTabs>Core.LongDescription/String'} || ${detailTabs>Org.OData.Core.V1.LongDescription/String}}"/>
+																	</template:elseif>
+																</template:if>
+															</uxap:blocks>
+														</uxap:ObjectPageSubSection>
+													</template:else>
+												</template:if>
 											</uxap:subSections>
 										</uxap:ObjectPageSection>
 										<core:ExtensionPoint name="SectionExtP|PrePlanDetail|{:= ${contentTabs>Core.LongDescription/String} }|After"/>

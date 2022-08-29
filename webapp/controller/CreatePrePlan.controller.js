@@ -81,7 +81,7 @@ sap.ui.define([
 		onAfterRendering: function () {
 			this._initializeView();
 		},
-		
+
 		/**
 		 * Called when the View has been destroyed (so its HTML is part of the document). Post-rendering manipulations of the HTML could be done here.
 		 * This hook is the same one that SAPUI5 controls get after being rendered.
@@ -256,6 +256,8 @@ sap.ui.define([
 				this.getModel("CreateModel").getData().results = [];
 				this.getModel("CreateModel").refresh();
 				this.getModel().resetChanges();
+				var aData = this.getModel().getData("/");
+				delete aData["PlanHeaderSet('" + oResponse.ObjectKey + "')"];
 
 				// defaulting values
 				this._initializeView();

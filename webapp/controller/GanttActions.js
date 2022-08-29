@@ -57,9 +57,9 @@ sap.ui.define([
 				.then(function (oData) {
 					MessageToast.show(this._oView.getModel('i18n').getResourceBundle().getText("msg.OperationSaveSuccess"));
 					this._oView.getModel("viewModel").setProperty("/ganttSettings/busy", false);
+					this._oView.getModel().refresh();
 					var oEventBus = sap.ui.getCore().getEventBus();
 					oEventBus.publish("BaseController", "refreshFullGantt", this._loadGanttData, this);
-					this._oView.getModel().refresh();
 				}.bind(this));
 		},
 
@@ -81,17 +81,19 @@ sap.ui.define([
 				});
 			}.bind(this));
 		},
-		
+
 		/**
 		 * Creating Gantt Horizon for Gantt 
 		 * @param oAxisTimeStrategy - Gantt AxisTimeStrategy
 		 */
-		_createGanttHorizon: function (oAxisTimeStrategy) {
-			var sPath = this._oView.getBindingContext();
-			oAxisTimeStrategy.setTotalHorizon(new sap.gantt.config.TimeHorizon({
-				startTime: this._oView.getModel().getProperty(sPath + "/START_DATE"),
-				endTime: this._oView.getModel().getProperty(sPath + "/END_DATE")
-			}));
+		_createGanttHorizon: function (oAxisTimeStrategy, oContext) {
+			var sPath = oContext.getPath();
+			if (oAxisTimeStrategy) {
+				oAxisTimeStrategy.setTotalHorizon(new sap.gantt.config.TimeHorizon({
+					startTime: this._oView.getModel().getProperty(sPath + "/START_DATE"),
+					endTime: this._oView.getModel().getProperty(sPath + "/END_DATE")
+				}));
+			}
 		},
 	});
 

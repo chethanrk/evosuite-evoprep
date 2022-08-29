@@ -514,7 +514,7 @@ sap.ui.define([
 		 **/
 		_loadGanttData: function () {
 			this._initialiseGanttModel();
-			this.GanttActions._createGanttHorizon(this._axisTime);
+			this.GanttActions._createGanttHorizon(this._axisTime, this._oContext);
 			this._getGanttData(0)
 				.then(this._getGanttData.bind(this))
 				.then(function () {

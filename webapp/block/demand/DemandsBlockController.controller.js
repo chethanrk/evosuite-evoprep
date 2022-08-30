@@ -147,10 +147,9 @@ sap.ui.define([
 		 */
 		_afterSuccess: function () {
 			this.showMessageToast(this.getResourceBundle().getText("msg.saveSuccess"));
-			this.getModel().resetChanges();
+			this.getModel().refresh();
 			var oEventBus = sap.ui.getCore().getEventBus();
 			oEventBus.publish("BaseController", "refreshFullGantt", this._loadGanttData, this);
-			this.getModel().refresh();
 		},
 
 		/**

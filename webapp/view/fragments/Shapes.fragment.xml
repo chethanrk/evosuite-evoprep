@@ -7,8 +7,8 @@
 			<gnt2:BaseRectangle shapeId="{ganttModel>ObjectKey}" countInBirdEye="true" hoverable="true" time="{ganttModel>START_DATE}" height="19"
 				endTime="{ganttModel>END_DATE}" selectable="true" fill="{ganttModel>COLOR}" title="{ganttModel>DESCRIPTION}" showTitle="true"
 				tooltip="{ganttModel>DESCRIPTION}"
-				draggable="{= ${user>/ENABLE_PREPLAN_UPDATE} === 'X' &amp;&amp; ${ganttModel>READ_ONLY} === false &amp;&amp; ${viewModel>/bEnableGanttShapesEdit} === true}"
-				resizable="{= ${user>/ENABLE_PREPLAN_UPDATE} === 'X' &amp;&amp; ${ganttModel>READ_ONLY} === false &amp;&amp; ${viewModel>/bEnableGanttShapesEdit} === true}"/>
+				draggable="{= ${user>/ENABLE_PREPLAN_UPDATE} === 'X' &amp;&amp; ${ganttModel>READ_ONLY} === false &amp;&amp; ${viewModel>/bEnableGanttShapesEdit} === true &amp;&amp; ${ALLOW_FINAL} === true}"
+				resizable="{= ${user>/ENABLE_PREPLAN_UPDATE} === 'X' &amp;&amp; ${ganttModel>READ_ONLY} === false &amp;&amp; ${viewModel>/bEnableGanttShapesEdit} === true &amp;&amp; ${ALLOW_FINAL} === true}"/>
 		</gnt2:shapes>
 	</gnt2:BaseConditionalShape>
 </core:FragmentDefinition>

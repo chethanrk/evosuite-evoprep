@@ -18,6 +18,16 @@ sap.ui.define([
 			}
 			return "sap-icon://full-screen";
 		},
+		
+		/**
+		 * Handle visibility of gantt  full screen and exit full screen 
+		 */
+		fullScreenGanttVisibility: function (fullScreen) {
+			if (!fullScreen) {
+				return "sap-icon://exit-full-screen";
+			}
+			return "sap-icon://full-screen";
+		},
 
 		formatStatusState: function (sValue, isInNavLinks) {
 			if (mCriticallyStates.hasOwnProperty(sValue)) {

@@ -7,9 +7,9 @@
 		<template:alias name=".evoAH" value="com.evorait.evosuite.evoprep.model.AnnotationHelper">
 			<template:with path="templateProperties>/" var="tempProps">
 				<uxap:ObjectPageLayout id="prePlanDetailPage" class="sapUiNoContentPadding" useIconTabBar="false" enableLazyLoading="true"
-					isChildPage="true" showFooter="true" busy="{viewModel>/busy}" busyIndicatorDelay="{viewModel>/delay}">
+					isChildPage="true" showFooter="true" busy="{viewModel>/busy}" busyIndicatorDelay="{viewModel>/delay}" showHeaderContent="{viewModel>/ganttFullMode}">
 					<uxap:headerTitle>
-						<uxap:ObjectPageHeader objectTitle="{PLAN_NAME}" objectSubtitle="{PLAN_ID}">
+						<uxap:ObjectPageHeader objectTitle="{PLAN_NAME}" objectSubtitle="{PLAN_ID}" visible="{viewModel>/ganttFullMode}">
 							<uxap:actions>
 								<uxap:ObjectPageHeaderActionButton id="idStatusChangeMenu" hideText="false" type="Default" text="{i18n>xbut.status}"
 									tooltip="{i18n>xbut.status}"
@@ -32,7 +32,7 @@
 							</uxap:actions>
 							<uxap:sideContentButton></uxap:sideContentButton>
 							<uxap:navigationBar>
-								<Bar class="sapUiTinyMarginTop">
+								<Bar class="sapUiTinyMarginTop" visible="{viewModel>/ganttFullMode}">
 									<contentLeft>
 										<core:ExtensionPoint name="PageExtP|PrePlanDetail|PlanHeaderSet|NavigationBar|Left"/>
 									</contentLeft>
@@ -62,7 +62,7 @@
 							<template:repeat list="{detailTabs>}">
 								<template:if test="{:= ${detailTabs>Core.Description/String} === 'Form' || ${detailTabs>Org.OData.Core.V1.Description/String} === 'Form'}">
 									<template:then>
-										<uxap:ObjectPageSection title="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}">
+										<uxap:ObjectPageSection title="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}" visible="{viewModel>/ganttFullMode}">
 											<uxap:subSections>
 												<uxap:ObjectPageSubSection>
 													<uxap:blocks>
@@ -82,14 +82,14 @@
 												<template:if
 													test="{:= ${parts: [{value:'PlanningTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameInDescription'} }">
 													<template:then>
-														<uxap:ObjectPageSubSection title="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}">
+														<uxap:ObjectPageSubSection title="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}" >
 															<uxap:blocks>
 																<core:Fragment fragmentName="com.evorait.evosuite.evoprep.view.templates.PlanningGanttChart" type="XML"/>
 															</uxap:blocks>
 														</uxap:ObjectPageSubSection>
 													</template:then>
 													<template:else>
-														<uxap:ObjectPageSubSection visible="{viewModel>/editMode}">
+														<uxap:ObjectPageSubSection visible="{viewModel>/ganttFullMode}">
 															<uxap:blocks>
 																<template:if
 																	test="{:= ${parts: [{value:'CapacityTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameInDescription'} }">

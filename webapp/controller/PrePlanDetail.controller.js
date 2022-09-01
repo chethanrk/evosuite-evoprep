@@ -29,6 +29,11 @@ sap.ui.define([
 					final: true,
 					overrideExecution: OverrideExecution.Instead
 				},
+				onPressGanttFullScreen: {
+					public: true,
+					final: true,
+					overrideExecution: OverrideExecution.Instead
+				},
 				onPressCancelPrePlanHeader: {
 					public: true,
 					final: true,
@@ -140,6 +145,29 @@ sap.ui.define([
 			this.oViewModel.setProperty("/editMode", false);
 			this.oViewModel.setProperty("/layout", library.LayoutType.MidColumnFullScreen);
 			this.oViewModel.setProperty("/fullscreen", false);
+		},
+
+		/*On Press of Header Edit Button
+		 * @param oEvent
+		 */
+		onPressGanttFullScreen: function (oEvent) {
+			var oSource = oEvent.getSource(),
+				oViewModel = this.getModel("viewModel");
+			if (oSource.getIcon() === "sap-icon://full-screen") {
+				oViewModel.setProperty("/layout", library.LayoutType.MidColumnFullScreen);
+				oViewModel.setProperty("/ganttFullMode", false);
+				this.oViewModel.setProperty("/fullscreenGantt", false);
+				oSource.setType("Emphasized");
+			} else {
+				if (oViewModel.getProperty("/fullscreen")) {
+					oViewModel.setProperty("/layout", library.LayoutType.TwoColumnsMidExpanded);
+				} else {
+					oViewModel.setProperty("/layout", library.LayoutType.MidColumnFullScreen);
+				}
+				oViewModel.setProperty("/ganttFullMode", true);
+				this.oViewModel.setProperty("/fullscreenGantt", true);
+				oSource.setType("Default");
+			}
 		},
 
 		/**

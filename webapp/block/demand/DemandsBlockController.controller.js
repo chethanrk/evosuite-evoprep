@@ -114,24 +114,28 @@ sap.ui.define([
 			var sTitle = this.getResourceBundle().getText("tit.confirmDelete"),
 				sMsg = this.getResourceBundle().getText("msg.confirmDeletePrepLan");
 
+			var successFn = function () {
+				this.getModel().setProperty(this._oOperationContext.getPath() + "/DELETE_ENTRY", "X");
+				this.saveChangesMain({
+					state: "success",
+					isCreate: false
+				}, this._afterSuccess.bind(this), this._afterError.bind(this), this.getView());
+				this._oTable.removeSelections();
+				this._oOperationContext = null;
+			};
+
+			var declineFn = function () {
+				this._oTable.removeSelections();
+				this._oOperationContext = null;
+			};
+
 			if (this._oOperationContext) {
 				if (this._oTable.getItems().length === 1) {
-					var msg = this.getResourceBundle().getText("msg.operationDeleteRestriction");
-					this.showMessageToast(msg);
-					this._oTable.removeSelections();
-					return;
+					sTitle = this.getResourceBundle().getText("tit.confirmDelete");
+					sMsg = this.getResourceBundle().getText("msg.confirmDeleteLastOperation");
 				}
-				this.getModel().setProperty(this._oOperationContext.getPath() + "/DELETE_ENTRY", "X");
 
-				var successFn = function () {
-					this.saveChangesMain({
-						state: "success",
-						isCreate: false
-					}, this._afterSuccess.bind(this), this._afterError.bind(this), this.getView());
-					this._oTable.removeSelections();
-					this._oOperationContext = null;
-				};
-				this.showConfirmDialog(sTitle, sMsg, successFn.bind(this));
+				this.showConfirmDialog(sTitle, sMsg, successFn.bind(this), declineFn.bind(this));
 			} else {
 				var msgs = this.getView().getModel("i18n").getResourceBundle().getText("msg.selectAtleast");
 				this.showMessageToast(msgs);

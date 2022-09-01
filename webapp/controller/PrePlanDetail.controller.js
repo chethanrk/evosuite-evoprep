@@ -29,6 +29,11 @@ sap.ui.define([
 					final: true,
 					overrideExecution: OverrideExecution.Instead
 				},
+				onPressGanttFullScreen: {
+					public: true,
+					final: true,
+					overrideExecution: OverrideExecution.Instead
+				},
 				onPressCancelPrePlanHeader: {
 					public: true,
 					final: true,
@@ -140,6 +145,29 @@ sap.ui.define([
 			this.oViewModel.setProperty("/editMode", false);
 			this.oViewModel.setProperty("/layout", library.LayoutType.MidColumnFullScreen);
 			this.oViewModel.setProperty("/fullscreen", false);
+		},
+
+		/*On Press of Header Edit Button
+		 * @param oEvent
+		 */
+		onPressGanttFullScreen: function (oEvent) {
+			var oSource = oEvent.getSource(),
+				oViewModel = this.getModel("viewModel");
+			if (oSource.getIcon() === "sap-icon://full-screen") {
+				oViewModel.setProperty("/layout", library.LayoutType.MidColumnFullScreen);
+				oViewModel.setProperty("/ganttFullMode", false);
+				this.oViewModel.setProperty("/fullscreenGantt", false);
+				oSource.setType("Emphasized");
+			} else {
+				if (oViewModel.getProperty("/fullscreen")) {
+					oViewModel.setProperty("/layout", library.LayoutType.TwoColumnsMidExpanded);
+				} else {
+					oViewModel.setProperty("/layout", library.LayoutType.MidColumnFullScreen);
+				}
+				oViewModel.setProperty("/ganttFullMode", true);
+				this.oViewModel.setProperty("/fullscreenGantt", true);
+				oSource.setType("Default");
+			}
 		},
 
 		/**
@@ -268,7 +296,7 @@ sap.ui.define([
 				aDraggedShapes = oParams.draggedShapeDates,
 				oTargetContext = oParams.targetRow ? oParams.targetRow.getBindingContext("ganttModel") : null,
 				sNewStartDate = oParams.newDateTime,
-				sNewEndDate, sDateDifference, oDraggedData, sPath, oPayload;
+				sNewEndDate, sDateDifference, oDraggedData, sPath, oPayload, sStartDateTime, sEndDateTime;
 			if (!oTargetContext) {
 				oTargetContext = oParams.targetShape.getParent().getParent().getBindingContext("ganttModel");
 			}
@@ -280,8 +308,16 @@ sap.ui.define([
 				}
 				oDraggedData = this.getModel("ganttModel").getProperty(sSourcePath);
 				sPath = "/GanttHierarchySet('" + oDraggedData.ObjectKey + "')";
-				sDateDifference = moment(oDraggedData.END_DATE).diff(oDraggedData.START_DATE);
+				sStartDateTime = formatter.mergeDateTime(oDraggedData.START_DATE, oDraggedData.START_TIME);
+				sEndDateTime = formatter.mergeDateTime(oDraggedData.END_DATE, oDraggedData.END_TIME);
+				sDateDifference = moment(sEndDateTime).diff(sStartDateTime);
+				if (sDateDifference < 0) {
+					sDateDifference = sDateDifference * -1;
+				}
 				sNewEndDate = new Date(moment(sNewStartDate).add(sDateDifference));
+				oDraggedData.START_TIME.ms = sNewStartDate.getTime();
+				oDraggedData.END_TIME.ms = sNewEndDate.getTime();
+
 				this.getModel("ganttModel").setProperty(sSourcePath + "/START_DATE", sNewStartDate);
 				this.getModel("ganttModel").setProperty(sSourcePath + "/END_DATE", sNewEndDate);
 
@@ -301,6 +337,8 @@ sap.ui.define([
 				oRowContext = oParams.shape.getBindingContext("ganttModel"),
 				oData = this.getModel("ganttModel").getProperty(oRowContext.getPath()),
 				sPath = "/GanttHierarchySet('" + oData.ObjectKey + "')";
+			oData.START_TIME.ms = oParams.newTime[0].getTime();
+			oData.END_TIME.ms = oParams.newTime[1].getTime();
 			this.getModel("ganttModel").setProperty(oRowContext.getPath() + "/START_DATE", oParams.newTime[0]);
 			this.getModel("ganttModel").setProperty(oRowContext.getPath() + "/END_DATE", oParams.newTime[1]);
 			this.GanttActions._prepareGanttOpeartionPayload(oData).then(function (oPayload) {

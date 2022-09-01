@@ -1,12 +1,15 @@
 <core:FragmentDefinition xmlns="sap.ui.table" xmlns:core="sap.ui.core" xmlns:gnt2="sap.gantt.simple">
 	<gnt2:BaseConditionalShape activeShape="{ganttModel>HIERARCHY_LEVEL}">
 		<gnt2:shapes>
-			<gnt2:BaseChevron shapeId="{ganttModel>ObjectKey}" countInBirdEye="true" hoverable="true" time="{ganttModel>START_DATE}" height="19"
-				resizable="false" selectable="false" endTime="{ganttModel>END_DATE}" title="{ganttModel>DESCRIPTION}" showTitle="true"
-				tooltip="{ganttModel>DESCRIPTION}" fill="{ganttModel>COLOR}"/>
-			<gnt2:BaseRectangle shapeId="{ganttModel>ObjectKey}" countInBirdEye="true" hoverable="true" time="{ganttModel>START_DATE}" height="19"
-				endTime="{ganttModel>END_DATE}" selectable="true" fill="{ganttModel>COLOR}" title="{ganttModel>DESCRIPTION}" showTitle="true"
-				tooltip="{ganttModel>DESCRIPTION}"
+			<gnt2:BaseChevron shapeId="{ganttModel>ObjectKey}" countInBirdEye="true" hoverable="true"
+				time="{parts:['ganttModel>START_DATE','ganttModel>EARLIEST_START_TIME'],formatter:'.formatter.mergeDateTime'}" height="19" resizable="false"
+				selectable="false" endTime="{parts:['ganttModel>END_DATE','ganttModel>END_TIME'],formatter:'.formatter.mergeDateTime'}"
+				title="{ganttModel>DESCRIPTION}" showTitle="true" tooltip="{ganttModel>DESCRIPTION}" fill="{ganttModel>COLOR}"/>
+			<gnt2:BaseRectangle shapeId="{ganttModel>ObjectKey}" countInBirdEye="true" hoverable="true"
+				time="{parts:['ganttModel>START_DATE','ganttModel>EARLIEST_START_TIME'],formatter:'.formatter.mergeDateTime'}" height="19"
+				endTime="{parts:['ganttModel>END_DATE','ganttModel>END_TIME'],formatter:'.formatter.mergeDateTime'}"
+				fill="{ganttModel>COLOR}" title="{ganttModel>DESCRIPTION}" showTitle="true" tooltip="{ganttModel>DESCRIPTION}"
+				selectable="{= ${user>/ENABLE_PREPLAN_UPDATE} === 'X' &amp;&amp; ${ganttModel>READ_ONLY} === false &amp;&amp; ${viewModel>/bEnableGanttShapesEdit} === true &amp;&amp; ${ALLOW_FINAL} === true}"
 				draggable="{= ${user>/ENABLE_PREPLAN_UPDATE} === 'X' &amp;&amp; ${ganttModel>READ_ONLY} === false &amp;&amp; ${viewModel>/bEnableGanttShapesEdit} === true &amp;&amp; ${ALLOW_FINAL} === true}"
 				resizable="{= ${user>/ENABLE_PREPLAN_UPDATE} === 'X' &amp;&amp; ${ganttModel>READ_ONLY} === false &amp;&amp; ${viewModel>/bEnableGanttShapesEdit} === true &amp;&amp; ${ALLOW_FINAL} === true}"/>
 		</gnt2:shapes>

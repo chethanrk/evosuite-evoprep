@@ -18,6 +18,16 @@ sap.ui.define([
 			}
 			return "sap-icon://full-screen";
 		},
+		
+		/**
+		 * Handle visibility of gantt  full screen and exit full screen 
+		 */
+		fullScreenGanttVisibility: function (fullScreen) {
+			if (!fullScreen) {
+				return "sap-icon://exit-full-screen";
+			}
+			return "sap-icon://full-screen";
+		},
 
 		formatStatusState: function (sValue, isInNavLinks) {
 			if (mCriticallyStates.hasOwnProperty(sValue)) {
@@ -127,6 +137,29 @@ sap.ui.define([
 		},
 
 		/**
+		 * Merging given date and time to DateTime format
+		 * @param sDate
+		 * @param sTime
+		 */
+		mergeDateTime: function (sDate, sTime) {
+			var oDatebject = null,
+				sOffsetMs = new Date(0).getTimezoneOffset() * 60 * 1000,
+				oDateFormat = sap.ui.core.format.DateFormat.getDateInstance({
+					pattern: "yyyy-MM-dd"
+				}),
+				oTimeFormat = sap.ui.core.format.DateFormat.getTimeInstance({
+					pattern: "HH:mm:ss"
+				}),
+				sDateStr, sTimeStr;
+			if (sDate && sTime) {
+				sDateStr = oDateFormat.format(new Date(sDate.getTime() + sOffsetMs));
+				sTimeStr = oTimeFormat.format(new Date(sTime.ms + sOffsetMs));
+				oDatebject = new Date(sDateStr + "T" + sTimeStr);
+			}
+			return oDatebject;
+		},
+        
+        /**
 		 * format visibility of delete operation button in PrePlan Detail
 		 * @param bFinal
 		 * @param bAllowOper

@@ -71,6 +71,8 @@ sap.ui.define([
 				orderListEditMode: false,
 				bShowDependencies: true,
 				bEnableGanttShapesEdit: true,
+				ganttFullMode: true,
+				fullscreenGantt: true,
 				ganttSettings: {
 					busy: true,
 					sStartDate: null,

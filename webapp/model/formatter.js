@@ -85,13 +85,14 @@ sap.ui.define([
 		},
 
 		/**
-		 * format visibility of status change button in PrePlan Detail
+		 * format visibility of add operation button in PrePlan Detail
 		 * @param bUpdate
 		 * @param bFinal
+		 * @param bAllowOper
 		 * @returns {boolean}
 		 */
-		showOperationAddEdit: function (bUpdate, bFinal) {
-			return Boolean(bUpdate && bFinal);
+		showOperationAdd: function (bUpdate, bFinal, bAllowOper) {
+			return Boolean(bUpdate && bFinal && bAllowOper);
 		},
 
 		/**
@@ -107,7 +108,7 @@ sap.ui.define([
 			}
 			return false;
 		},
-		
+
 		/**
 		 * Formatter to display Relationship Type in Gantt
 		 * @param sRelationshipType
@@ -123,7 +124,17 @@ sap.ui.define([
 			} else {
 				return "StartToStart";
 			}
-		}
+		},
+
+		/**
+		 * format visibility of delete operation button in PrePlan Detail
+		 * @param bFinal
+		 * @param bAllowOper
+		 * @returns {boolean}
+		 */
+		showOperationEditDel: function (bFinal, bAllowOper) {
+			return Boolean(bFinal && bAllowOper);
+		},
 	};
 
 });

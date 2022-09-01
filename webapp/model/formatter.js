@@ -117,7 +117,7 @@ sap.ui.define([
 			}
 			return false;
 		},
-		
+
 		/**
 		 * Formatter to display Relationship Type in Gantt
 		 * @param sRelationshipType
@@ -133,7 +133,30 @@ sap.ui.define([
 			} else {
 				return "StartToStart";
 			}
-		}
+		},
+
+		/**
+		 * Merging given date and time to DateTime format
+		 * @param sDate
+		 * @param sTime
+		 */
+		mergeDateTime: function (sDate, sTime) {
+			var oDatebject = null,
+				sOffsetMs = new Date(0).getTimezoneOffset() * 60 * 1000,
+				oDateFormat = sap.ui.core.format.DateFormat.getDateInstance({
+					pattern: "yyyy-MM-dd"
+				}),
+				oTimeFormat = sap.ui.core.format.DateFormat.getTimeInstance({
+					pattern: "HH:mm:ss"
+				}),
+				sDateStr, sTimeStr;
+			if (sDate && sTime) {
+				sDateStr = oDateFormat.format(new Date(sDate.getTime() + sOffsetMs));
+				sTimeStr = oTimeFormat.format(new Date(sTime.ms + sOffsetMs));
+				oDatebject = new Date(sDateStr + "T" + sTimeStr);
+			}
+			return oDatebject;
+		},
 	};
 
 });

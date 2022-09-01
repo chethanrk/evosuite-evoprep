@@ -256,8 +256,10 @@ sap.ui.define([
 				this.getModel("CreateModel").getData().results = [];
 				this.getModel("CreateModel").refresh();
 				this.getModel().resetChanges();
-				var aData = this.getModel().getData("/");
-				delete aData["PlanHeaderSet('" + oResponse.ObjectKey + "')"];
+
+				var oNewEntryContext = new sap.ui.model.Context(this.getModel(), "/PlanHeaderSet('" + oResponse.ObjectKey +
+					"')");
+				this.getView().getModel().deleteCreatedEntry(oNewEntryContext);
 
 				// defaulting values
 				this._initializeView();

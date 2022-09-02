@@ -25,7 +25,7 @@
 							<columns>
 								<template:repeat list="{path:'tabItem>lineItems/'}" var="lineItem">
 									<Column>
-										<Text text="{= '{/' + ${tabItem>entitySet} + '/' + ${lineItem>Value/Path} + '/##com.sap.vocabularies.Common.v1.Label/String}' }"/>
+										<Text text="{:= '{/' + ${tabItem>entitySet} + '/' + ${lineItem>Value/Path} + '/##com.sap.vocabularies.Common.v1.Label/String}' }"/>
 									</Column>
 								</template:repeat>
 								<Column hAlign="End">
@@ -38,8 +38,7 @@
 										<template:repeat list="{path:'tabItem>lineItems/'}" var="lineItem">
 											<template:if test="{:= ${path: 'lineItem>EdmType'} === 'Edm.Date'}">
 												<template:then>
-													<Text text="{= '{CreateModel>' + ${path : 'lineItem>Value/Path'} + '}' }"/>
-													<!--,formatter:'.formatter.getOperationDate'-->
+													<Text text="{path:'lineItem>Value/Path', formatter:'.evoAH.getOperationDate'}"/>
 												</template:then>
 												<template:else>
 													<Text text="{= '{CreateModel>' + ${path : 'lineItem>Value/Path'} + '}' }"/>

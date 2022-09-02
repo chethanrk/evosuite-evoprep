@@ -23,7 +23,7 @@ sap.ui.define([
 					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
-				onFieldChange {
+				onFieldChange: {
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead

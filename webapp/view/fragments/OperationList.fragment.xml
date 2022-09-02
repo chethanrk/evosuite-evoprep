@@ -15,6 +15,12 @@
 									<smartFilterBar:layoutData>
 										<FlexItemData shrinkFactor="0"/>
 									</smartFilterBar:layoutData>
+									<smartFilterBar:controlConfiguration>
+										<core:ExtensionPoint name="FilterExtP|OperationList|PlanItemsSet|ControlConfiguration"/>
+									</smartFilterBar:controlConfiguration>
+									<smartFilterBar:groupConfiguration>
+										<core:ExtensionPoint name="FilterExtP|OperationList|PlanItemsSet|GroupConfiguration"/>
+									</smartFilterBar:groupConfiguration>
 								</smartFilterBar:SmartFilterBar>
 							</f:content>
 						</f:DynamicPageHeader>

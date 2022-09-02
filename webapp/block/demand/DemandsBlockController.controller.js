@@ -22,6 +22,11 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
+				},
+				onFieldChange {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
@@ -139,6 +144,31 @@ sap.ui.define([
 			} else {
 				var msgs = this.getView().getModel("i18n").getResourceBundle().getText("msg.selectAtleast");
 				this.showMessageToast(msgs);
+			}
+		},
+
+		/**
+		 * Handle operation dates edit validation
+		 * @param oEvent
+		 */
+		onFieldChange: function (oEvent) {
+			var oSource = oEvent.getParameter("changeEvent").getSource(),
+				oBinding = oSource.getBindingInfo("value")["binding"],
+				newDate = new Date(oEvent.getParameter("changeEvent").getParameter("newValue")),
+				sMsg = this.getView().getModel("i18n").getResourceBundle().getText("msg.StartGTEnd"),
+				oOrigData = this.getModel().getData(oBinding.getContext().getPath()),
+				sPath = oBinding.getPath(),
+				compareDate, result;
+			if (sPath === 'EARLIEST_START_DATE') {
+				compareDate = oOrigData.EARLIEST_END_DATE;
+				result = Boolean(newDate > compareDate);
+			} else if (sPath === 'EARLIEST_END_DATE') {
+				compareDate = oOrigData.EARLIEST_START_DATE;
+				result = Boolean(newDate < compareDate);
+			}
+			if (result) {
+				this.showMessageToast(sMsg);
+				this.getModel().resetChanges();
 			}
 		},
 

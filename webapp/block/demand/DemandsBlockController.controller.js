@@ -155,7 +155,7 @@ sap.ui.define([
 			var oSource = oEvent.getParameter("changeEvent").getSource(),
 				oBinding = oSource.getBindingInfo("value")["binding"],
 				newDate = new Date(oEvent.getParameter("changeEvent").getParameter("newValue")),
-				sMsg = this.getView().getModel("i18n").getResourceBundle().getText("msg.StartGTEnd"),
+				sMsg = this.getView().getModel("i18n").getResourceBundle().getText("msg.oprDateValidation"),
 				oOrigData = this.getModel().getData(oBinding.getContext().getPath()),
 				sPath = oBinding.getPath(),
 				compareDate, result;

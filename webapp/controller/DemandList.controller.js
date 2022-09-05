@@ -23,11 +23,6 @@ sap.ui.define([
 					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
-				onNavLinkVisibilty: {
-					public: true,
-					final: false,
-					overrideExecution: OverrideExecution.Instead
-				},
 				goBackToPrePlans: {
 					public: true,
 					final: false,
@@ -59,6 +54,11 @@ sap.ui.define([
 					overrideExecution: OverrideExecution.Instead
 				},
 				onPressEdit: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onListNetworkItemPress: {
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
@@ -279,7 +279,7 @@ sap.ui.define([
 		_removeOprTableSelection: function () {
 			this.oSmartTable.getTable().clearSelection(true);
 			this.getModel("viewModel").setProperty("/allowPrePlanCreate", false);
-		},
+		}
 
 	});
 

@@ -5,6 +5,14 @@ sap.ui.define([
 
 	return BaseController.extend("com.evorait.evosuite.evoprep.controller.PrePlanCompare", {
 
+		metadata: {
+			// extension can declare the public methods
+			// in general methods that start with "_" are private
+			methods: {
+
+			}
+		},
+
 		/**
 		 * Called when a controller is instantiated and its View controls (if available) are already created.
 		 * Can be used to modify the View before it is displayed, to bind event handlers and do other one-time initialization.

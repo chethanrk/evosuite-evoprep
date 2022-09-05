@@ -18,12 +18,6 @@ sap.ui.define([
 					overrideExecution: OverrideExecution.Instead
 				},
 
-				onPressAddOperations: {
-					public: true,
-					final: false,
-					overrideExecution: OverrideExecution.Instead
-				},
-
 				onPressOperationListCancel: {
 					public: true,
 					final: false,
@@ -81,7 +75,7 @@ sap.ui.define([
 		onAfterRendering: function () {
 			this._initializeView();
 		},
-		
+
 		/**
 		 * Called when the View has been destroyed (so its HTML is part of the document). Post-rendering manipulations of the HTML could be done here.
 		 * This hook is the same one that SAPUI5 controls get after being rendered.

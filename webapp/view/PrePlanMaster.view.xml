@@ -6,12 +6,19 @@
 		<f:header>
 			<f:DynamicPageHeader pinnable="true">
 				<f:content>
+					<core:ExtensionPoint name="PageExtP|PrePlanMaster|PlanHeaderSet|Head"/>
 					<smartFilterBar:SmartFilterBar id="idPagePrePlanSmartFilterBar" entitySet="PlanHeaderSet" useDateRangeType="true"
 						persistencyKey="com.evorait.evosuite.evoprep.PrePlanFilterbar" initialized="onInitializedSmartVariant">
 						<!-- layout data used to make the table growing but the filter bar fixed -->
 						<smartFilterBar:layoutData>
 							<FlexItemData shrinkFactor="0"/>
 						</smartFilterBar:layoutData>
+						<smartFilterBar:controlConfiguration>
+							<core:ExtensionPoint name="FilterExtP|PrePlanMaster|PlanHeaderSet|ControlConfiguration"/>
+						</smartFilterBar:controlConfiguration>
+						<smartFilterBar:groupConfiguration>
+							<core:ExtensionPoint name="FilterExtP|PrePlanMaster|PlanHeaderSet|GroupConfiguration"/>
+						</smartFilterBar:groupConfiguration>
 					</smartFilterBar:SmartFilterBar>
 				</f:content>
 			</f:DynamicPageHeader>
@@ -35,10 +42,12 @@
 						<Button id="idBtnDeletePrePlan" text="{i18n>xbut.delete}" press="onDeletePrePlanPress" enabled="{viewModel>/isPrePlanSelected}"
 							visible="{parts:[{path:'user>/ENABLE_PLAN_DELETE'},{path:'viewModel>/layout'}],formatter:'.formatter.showDeleteMasterList'}"/>
 					</OverflowToolbar>
+					<core:ExtensionPoint name="TableExtP|PrePlanMaster|PlanHeaderSet|CustomToolbar"/>
 				</smartTable:customToolbar>
 				<Table id="idPageMasterPageSmartTableTable" growing="true" mode="MultiSelect" sticky="ColumnHeaders,HeaderToolbar,InfoToolbar"
 					selectionChange="onWPrePlanListSelectionChange">
 					<columns>
+						<core:ExtensionPoint name="TableExtP|PrePlanMaster|PlanHeaderSet|CustomColumn"/>
 						<Column width="6rem">
 							<customData>
 								<core:CustomData key="p13nData" value='\{"columnKey": "NOTES", "columnIndex":"6"}'/>
@@ -48,6 +57,7 @@
 					</columns>
 					<ColumnListItem type="Navigation" press="onClickTableRow">
 						<cells>
+							<core:ExtensionPoint name="TableExtP|PrePlanMaster|PlanHeaderSet|CustomCell"/>
 							<Button icon="sap-icon://show-edit" type="Default" press="showLongText" visible="{= ${NOTES} !== '' }"/>
 						</cells>
 					</ColumnListItem>

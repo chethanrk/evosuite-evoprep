@@ -168,6 +168,22 @@ sap.ui.define([
 				openEvoAPP: {
 					public: true,
 					final: true
+				},
+				callFunctionImport: {
+					public: true,
+					final: true
+				},
+				onPressAddOperations: {
+					public: true,
+					final: true
+				},
+				onPressOperationSelectCancel: {
+					public: true,
+					final: true
+				},
+				destroyOperationListFragment: {
+					public: true,
+					final: true
 				}
 			}
 		},
@@ -802,22 +818,6 @@ sap.ui.define([
 		},
 
 		/**
-		 * get respective navigation details
-		 * @param sAppID
-		 */
-		_getAppInfoById: function (sAppID) {
-			var aNavLinks = this.getModel("templateProperties").getProperty("/navLinks");
-			for (var i in aNavLinks) {
-				if (aNavLinks.hasOwnProperty(i)) {
-					if (aNavLinks[i].ApplicationId === sAppID) {
-						return aNavLinks[i];
-					}
-				}
-			}
-			return null;
-		},
-
-		/**
 		 *	Navigates to evoOrder detail page with static url.
 		 * @param sParamValue
 		 * @param sAppID
@@ -894,6 +894,22 @@ sap.ui.define([
 		/* =========================================================== */
 		/* Private methods                                              */
 		/* =========================================================== */
+
+		/**
+		 * get respective navigation details
+		 * @param sAppID
+		 */
+		_getAppInfoById: function (sAppID) {
+			var aNavLinks = this.getModel("templateProperties").getProperty("/navLinks");
+			for (var i in aNavLinks) {
+				if (aNavLinks.hasOwnProperty(i)) {
+					if (aNavLinks[i].ApplicationId === sAppID) {
+						return aNavLinks[i];
+					}
+				}
+			}
+			return null;
+		},
 
 		/*
 		 * function to deleted recent created context if exist

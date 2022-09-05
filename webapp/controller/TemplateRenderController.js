@@ -47,6 +47,11 @@ sap.ui.define([
 				bindView: {
 					public: true,
 					final: true
+				},
+
+				onExit: {
+					public: true,
+					final: true
 				}
 			}
 		},

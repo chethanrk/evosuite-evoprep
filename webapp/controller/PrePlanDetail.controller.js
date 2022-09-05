@@ -24,22 +24,12 @@ sap.ui.define([
 					final: true,
 					overrideExecution: OverrideExecution.Instead
 				},
-				onPressSavePrePlanHeaderEdit: {
-					public: true,
-					final: true,
-					overrideExecution: OverrideExecution.Instead
-				},
 				onPressGanttFullScreen: {
 					public: true,
 					final: true,
 					overrideExecution: OverrideExecution.Instead
 				},
 				onPressCancelPrePlanHeader: {
-					public: true,
-					final: true,
-					overrideExecution: OverrideExecution.Instead
-				},
-				submitPrePlanHeaderEditChanges: {
 					public: true,
 					final: true,
 					overrideExecution: OverrideExecution.Instead
@@ -80,6 +70,11 @@ sap.ui.define([
 					overrideExecution: OverrideExecution.Instead
 				},
 				onPressShapesEdit: {
+					public: true,
+					final: true,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onPressSavePrePlanHeader: {
 					public: true,
 					final: true,
 					overrideExecution: OverrideExecution.Instead

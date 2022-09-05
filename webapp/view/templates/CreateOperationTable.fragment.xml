@@ -17,12 +17,14 @@
 										value="{:= ${path:'createTabs>Core.LongDescription/String'} || ${createTabs>Org.OData.Core.V1.LongDescription/String} }"/>
 								</customData>
 							</OverflowToolbarButton>
+							<core:ExtensionPoint name="TableExtP|CreateOperationTable|PlanItemsSet|CustomToolbar"/>
 						</OverflowToolbar>
 					</headerToolbar>
 					<template:repeat list="{path:'tempProps>/Configs/Tabs/'}" var="tabItem">
 						<template:if
 							test="{:= ${tabItem>tab} === ${createTabs>Core.LongDescription/String} || ${tabItem>tab} === ${createTabs>Org.OData.Core.V1.LongDescription/String} }">
 							<columns>
+								<core:ExtensionPoint name="TableExtP|CreateOperationTable|PlanItemsSet|CustomColumn"/>
 								<template:repeat list="{path:'tabItem>lineItems/'}" var="lineItem">
 									<Column>
 										<Text text="{:= '{/' + ${tabItem>entitySet} + '/' + ${lineItem>Value/Path} + '/##com.sap.vocabularies.Common.v1.Label/String}' }"/>
@@ -35,6 +37,7 @@
 							<items>
 								<ColumnListItem>
 									<cells>
+										<core:ExtensionPoint name="TableExtP|CreateOperationTable|PlanItemsSet|CustomCell"/>
 										<template:repeat list="{path:'tabItem>lineItems/'}" var="lineItem">
 											<template:if test="{:= ${path: 'lineItem>EdmType'} === 'Edm.Date'}">
 												<template:then>

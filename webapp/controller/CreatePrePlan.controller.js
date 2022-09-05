@@ -18,12 +18,6 @@ sap.ui.define([
 					overrideExecution: OverrideExecution.Instead
 				},
 
-				onPressAddOperations: {
-					public: true,
-					final: false,
-					overrideExecution: OverrideExecution.Instead
-				},
-
 				onPressOperationListCancel: {
 					public: true,
 					final: false,

@@ -157,7 +157,6 @@ sap.ui.define([],
 			return false;
 		};
 
-
 		/**
 		 * get extension point name for field group before and after
 		 * in SmartFormTemplate fragment
@@ -242,6 +241,10 @@ sap.ui.define([],
 			return false;
 		};
 
+		var getOperationDate = function (sProp) {
+			return "{path:'CreateModel>" + sProp + "'" + "," + "formatter:'.formatter.formatDate'" + "}";
+		};
+
 		return {
 			resolveModelPath: resolveModelPath,
 			resolveObjectHeaderPath: resolveObjectHeaderPath,
@@ -256,7 +259,8 @@ sap.ui.define([],
 			isFieldCreatableAndSetMetaData: isFieldCreatableAndSetMetaData,
 			getFieldExtPoint: getFieldExtPoint,
 			getFieldGroupExtPoint: getFieldGroupExtPoint,
-			getExtPoint: getExtPoint
+			getExtPoint: getExtPoint,
+			getOperationDate: getOperationDate
 		};
 
 	},

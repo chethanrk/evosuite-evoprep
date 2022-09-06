@@ -20,7 +20,7 @@
 				<f:content>
 					<core:ExtensionPoint name="PageExtP|DemandList|PlanItemsSet|Head"/>
 					<smartFilterBar:SmartFilterBar id="demandListSmartFilterBar" entitySet="PlanItemsSet" useDateRangeType="true"
-						persistencyKey="com.evorait.evosuite.evoorder.demandListsFilterbar" initialized="onInitializedSmartVariant">
+						persistencyKey="com.evorait.evosuite.evoprep.demandListsFilterbar" initialized="onInitializedSmartVariant">
 						<!-- layout data used to make the table growing but the filter bar fixed -->
 						<smartFilterBar:layoutData>
 							<FlexItemData shrinkFactor="0"/>

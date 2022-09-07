@@ -489,14 +489,25 @@ sap.ui.define([
 					PlanID: this.getModel().getProperty(sPath + "/PLAN_ID"),
 					OrderNumber: "",
 					OperationNumber: ""
-				};
+				},
+				sStartDate = this.getModel().getProperty(sPath + "/START_DATE"),
+				sEndDate = this.getModel().getProperty(sPath + "/END_DATE"),
+				sMaxDate, sMinDate;
 
 			var callbackfunction = function (oImportedData) {
 				if (oStartDate) {
-					oStartDate.getContent().setMaxDate(oImportedData.ACT_START_DATE);
+					sMaxDate = oImportedData.ACT_START_DATE;
+					if (sStartDate > sMaxDate) {
+						sMaxDate = sStartDate;
+					}
+					oStartDate.getContent().setMaxDate(sMaxDate);
 				}
 				if (oEndData) {
-					oEndData.getContent().setMinDate(oImportedData.ACT_END_DATE);
+					sMinDate = oImportedData.ACT_END_DATE;
+					if (sEndDate < sMinDate) {
+						sMinDate = sEndDate;
+					}
+					oEndData.getContent().setMinDate(sMinDate);
 				}
 			}.bind(this);
 

@@ -210,12 +210,12 @@ sap.ui.define([
 		_showMsgByStatusText: function (oBatchResponse, bShowSuccessPopup) {
 			if (oBatchResponse.response.statusCode >= 200 && oBatchResponse.response.statusCode < 300) {
 				// on success no content are coming from backend so fetch details from oDataModel
-				/*if (oBatchResponse.response.headers['location']) {
+				if (oBatchResponse.response.headers['location']) {
 					var sLoc = oBatchResponse.response.headers['location'],
 						aLoc = sLoc.split("/");
 					oBatchResponse.url = aLoc[aLoc.length - 1];
 
-				}*/
+				}
 				var oData = this._oModel.getProperty("/" + oBatchResponse.url),
 					sNumber = oData ? oData.PLAN_ID : "",
 					msg = this._oResourceBundle.getText("msg.saveSuccess");

@@ -114,7 +114,6 @@ sap.ui.define([
 		onCreatePrePlanPress: function () {
 			//unselect all the selected rows
 			this._removeTableSelection();
-			/*this.getRouter().navTo("CreatePrePlan");*/
 			this.getRouter().navTo("CreatePrePlan", {
 				layout: library.LayoutType.MidColumnFullScreen
 			});

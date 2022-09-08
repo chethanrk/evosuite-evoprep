@@ -132,7 +132,7 @@
 				]
 			}, {
 				"name": "CreatePrePlan",
-				"pattern": "CreatePrePlan/new",
+				"pattern": "CreatePrePlan/{layout}/new",
 				"target": [
 					"CreatePrePlan"
 				]
@@ -165,7 +165,8 @@
 				"CreatePrePlan": {
 					"viewName": "ObjectPage",
 					"viewId": "EvoPrepObjectPage",
-					"controlId": "idNavContainer"
+					"controlAggregation": "midColumnPages",
+					"parent": "prePlan"
 				},
 				"demandList": {
 					"viewName": "DemandList",

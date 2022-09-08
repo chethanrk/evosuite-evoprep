@@ -93,14 +93,14 @@ sap.ui.define([
 		 */
 		_setPrePlanDetailPageInfo: function (sRouteName, oArgs) {
 			this.getModel("viewModel").setProperty("/layout", oArgs.layout);
-			var sViewName = "com.evorait.evosuite.evoprep.view.templates.PrePlanDetail#Plan",
+			var sViewName = "com.evorait.evosuite.evoprep.view.templates.PrePlanDetail#Plan_" + oArgs.plan,
 				mParams = {
 					ObjectKey: oArgs.plan
 				},
 				sEntitySet = "GanttHierarchySet";
 
 			if (oArgs.plan) {
-				sViewName = "com.evorait.evosuite.evoprep.view.templates.PrePlanDetail#Plan";
+				sViewName = "com.evorait.evosuite.evoprep.view.templates.PrePlanDetail#Plan_" + oArgs.plan;
 				this.getModel("templateProperties").setProperty("/annotationPath", {
 					entitySet: "PlanHeaderSet",
 					path: "com.sap.vocabularies.UI.v1.Facets#PrePlanDetailTabs",
@@ -143,6 +143,7 @@ sap.ui.define([
 		 * create pre plan page
 		 */
 		_setCreatePrePlanPageInfo: function (sRouteName, oArgs) {
+			this.getModel("viewModel").setProperty("/layout", oArgs.layout);
 			this._getCretaeOpAnnotations().then(function () {
 				var sViewName = "com.evorait.evosuite.evoprep.view.templates.CreatePrePlan#CreatePrePlan";
 				this.getModel("templateProperties").setProperty("/annotationPath", {

@@ -73,6 +73,7 @@ sap.ui.define([
 				bEnableGanttShapesEdit: true,
 				ganttFullMode: true,
 				fullscreenGantt: true,
+				isCreatePage: false,
 				ganttSettings: {
 					busy: true,
 					sStartDate: null,
@@ -103,7 +104,7 @@ sap.ui.define([
 				this.getRouter().attachBeforeRouteMatched(this._onBeforeRouteMatched, this);
 				this.getRouter().initialize();
 			}.bind(this));
-			
+
 			//initialize GanttActions.js with component
 			this.GanttActions = new GanttActions();
 		},

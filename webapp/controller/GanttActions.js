@@ -85,15 +85,44 @@ sap.ui.define([
 		/**
 		 * Creating Gantt Horizon for Gantt 
 		 * @param oAxisTimeStrategy - Gantt AxisTimeStrategy
+		 * @param oContext - Detail Page BindingContext
 		 */
 		_createGanttHorizon: function (oAxisTimeStrategy, oContext) {
-			var sPath = oContext.getPath();
+			var sPath = oContext.getPath(),
+				oHorizonDates;
 			if (oAxisTimeStrategy) {
+				oHorizonDates = this._getHorizonDates(sPath);
 				oAxisTimeStrategy.setTotalHorizon(new sap.gantt.config.TimeHorizon({
-					startTime: this._oView.getModel().getProperty(sPath + "/START_DATE"),
-					endTime: this._oView.getModel().getProperty(sPath + "/END_DATE")
+					startTime: oHorizonDates.totalHorizon.startDate,
+					endTime: oHorizonDates.totalHorizon.endDate
 				}));
+				oAxisTimeStrategy.setVisibleHorizon(new sap.gantt.config.TimeHorizon({
+					startTime: oHorizonDates.visibleHorizon.startDate,
+					endTime: oHorizonDates.visibleHorizon.endDate
+				}));
+				oAxisTimeStrategy.setZoomLevel(6);
 			}
+		},
+		
+		/**
+		 * Function to Calcualate Gantt Horizon Dates  
+		 * @param sPath 
+		 */
+		_getHorizonDates: function (sPath) {
+			var sStartDate = this._oView.getModel().getProperty(sPath + "/START_DATE"),
+				sEndDate = this._oView.getModel().getProperty(sPath + "/END_DATE"),
+				sMidDate = new Date(sEndDate - (sEndDate - sStartDate) / 2),
+				oHorizonDates = {
+					visibleHorizon: {
+						startDate: new Date(sMidDate.setDate(sMidDate.getDate() - 2)),
+						endDate: new Date(sMidDate.setDate(sMidDate.getDate() + 1))
+					},
+					totalHorizon: {
+						startDate: new Date(sStartDate.setDate(sStartDate.getDate() - 30)),
+						endDate: new Date(sEndDate.setDate(sEndDate.getDate() + 30))
+					}
+				};
+			return oHorizonDates;
 		},
 	});
 

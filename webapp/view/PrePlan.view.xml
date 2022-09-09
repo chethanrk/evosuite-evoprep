@@ -7,10 +7,12 @@
 				<contentLeft>
 					<Image src="{viewModel>/logoUrl}" densityAware="false" height="30px" alt="EvoResource" id="idEvoPrepImageLogo"/>
 				</contentLeft>
-				<contentMiddle></contentMiddle>
+				<contentMiddle>
+					<Title text="{i18n>tit.createPrePlan}" visible="{viewModel>/isCreatePage}"/>
+				</contentMiddle>
 				<contentRight>
 					<Button id="idBtnShowDemands" text="{i18n>xbut.ShowDemands}" type="Emphasized" press="onShowDemandsPress"
-						visible="{= ${user>/ENABLE_SHOW_ALL_DEMANDS} === 'X' &amp;&amp; ${viewModel>/editMode} === true &amp;&amp; ${viewModel>/fullscreenGantt} === true}"/>
+						visible="{= ${user>/ENABLE_SHOW_ALL_DEMANDS} === 'X' &amp;&amp; ${viewModel>/editMode} === true &amp;&amp; ${viewModel>/fullscreenGantt} === true &amp;&amp; ${viewModel>/isCreatePage} === false}"/>
 					<core:Fragment fragmentName="com.evorait.evosuite.evoprep.view.fragments.HeaderAction" type="XML"/>
 				</contentRight>
 			</Bar>

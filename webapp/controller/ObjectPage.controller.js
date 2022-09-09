@@ -126,7 +126,7 @@ sap.ui.define([
 				};
 
 			if (oArgs.plan) {
-				sViewName = "com.evorait.evosuite.evoprep.view.templates.PrePlanCompare#Plans_" + oArgs.plan;
+				sViewName = "com.evorait.evosuite.evoprep.view.templates.PrePlanCompare#Plans" + oArgs.plan;
 				this.getModel("templateProperties").setProperty("/annotationPath", {
 					entitySet: "PlanHeaderSet",
 					path: "com.sap.vocabularies.UI.v1.Facets#PrePlanCompareTabs_" + oArgs.plan,
@@ -143,6 +143,7 @@ sap.ui.define([
 		 * create pre plan page
 		 */
 		_setCreatePrePlanPageInfo: function (sRouteName, oArgs) {
+			this.getModel("viewModel").setProperty("/layout", oArgs.layout);
 			this._getCretaeOpAnnotations().then(function () {
 				var sViewName = "com.evorait.evosuite.evoprep.view.templates.CreatePrePlan#CreatePrePlan";
 				this.getModel("templateProperties").setProperty("/annotationPath", {
@@ -182,7 +183,7 @@ sap.ui.define([
 				resolve();
 			}.bind(this));
 		},
-		
+
 		/* get line item from Gantt entityset 
 		 * @private
 		 */

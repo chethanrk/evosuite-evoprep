@@ -74,6 +74,7 @@ sap.ui.define([
 				ganttFullMode: true,
 				fullscreenGantt: true,
 				isCreatePage: false,
+				ganttSelectionPane:"30%",
 				ganttSettings: {
 					busy: true,
 					sStartDate: null,

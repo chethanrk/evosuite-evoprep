@@ -291,7 +291,7 @@ sap.ui.define([
 				aDraggedShapes = oParams.draggedShapeDates,
 				oTargetContext = oParams.targetRow ? oParams.targetRow.getBindingContext("ganttModel") : null,
 				sNewStartDate = oParams.newDateTime,
-				sNewEndDate, sDateDifference, oDraggedData, sPath, oPayload, sStartDateTime, sEndDateTime;
+				sNewEndDate, sDateDifference, oDraggedData, sPath, sStartDateTime, sEndDateTime;
 			if (!oTargetContext) {
 				oTargetContext = oParams.targetShape.getParent().getParent().getBindingContext("ganttModel");
 			}
@@ -337,7 +337,7 @@ sap.ui.define([
 				this.getModel("ganttModel").setProperty(oRowContext.getPath() + "/START_DATE", oData.START_DATE);
 				this.getModel("ganttModel").setProperty(oRowContext.getPath() + "/START_TIME", oData.START_TIME);
 				this.getModel("ganttModel").setProperty(oRowContext.getPath() + "/END_DATE", oParams.newTime[1]);
-				oData.END_TIME.ms = oParams.newTime[1].getTime();
+				oData.END_TIME.ms = formatter.formatTimeZone(oParams.newTime[1]);
 				this.getModel("ganttModel").setProperty(oRowContext.getPath() + "/END_TIME", oData.END_TIME);
 			}
 			//Adjusting Start Date and Time after resize
@@ -345,7 +345,7 @@ sap.ui.define([
 				this.getModel("ganttModel").setProperty(oRowContext.getPath() + "/END_DATE", oData.END_DATE);
 				this.getModel("ganttModel").setProperty(oRowContext.getPath() + "/END_TIME", oData.END_TIME);
 				this.getModel("ganttModel").setProperty(oRowContext.getPath() + "/START_DATE", oParams.newTime[0]);
-				oData.START_TIME.ms = oParams.newTime[0].getTime();
+				oData.START_TIME.ms = formatter.formatTimeZone(oParams.newTime[0]);
 				this.getModel("ganttModel").setProperty(oRowContext.getPath() + "/START_TIME", oData.START_TIME);
 			}
 			this.GanttActions._prepareGanttOpeartionPayload(oData).then(function (oPayload) {

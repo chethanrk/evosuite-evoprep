@@ -18,7 +18,7 @@ sap.ui.define([
 			}
 			return "sap-icon://full-screen";
 		},
-		
+
 		/**
 		 * Handle visibility of gantt  full screen and exit full screen 
 		 */
@@ -158,8 +158,8 @@ sap.ui.define([
 			}
 			return oDatebject;
 		},
-        
-        /**
+
+		/**
 		 * format visibility of delete operation button in PrePlan Detail
 		 * @param bFinal
 		 * @param bAllowOper
@@ -167,6 +167,15 @@ sap.ui.define([
 		 */
 		showOperationEditDel: function (bFinal, bAllowOper) {
 			return Boolean(bFinal && bAllowOper);
+		},
+		
+		/**
+		 * Formatting TimeZone for Gantt Shape Dates
+		 * @param oDate
+		 */
+		formatTimeZone: function (oDate) {
+			var sOffsetMs = new Date(0).getTimezoneOffset() * 60 * 1000;
+			return oDate.getTime() - sOffsetMs;
 		},
 	};
 

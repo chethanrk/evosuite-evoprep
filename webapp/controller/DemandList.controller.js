@@ -3,8 +3,9 @@ sap.ui.define([
 	"com/evorait/evosuite/evoprep/controller/BaseController",
 	"sap/ui/core/Fragment",
 	"sap/ui/core/mvc/OverrideExecution",
-	"sap/base/util/isEmptyObject"
-], function (BaseController, Fragment, OverrideExecution, isEmptyObject) {
+	"sap/base/util/isEmptyObject",
+	"sap/f/library"
+], function (BaseController, Fragment, OverrideExecution, isEmptyObject, library) {
 	"use strict";
 
 	return BaseController.extend("com.evorait.evosuite.evoprep.controller.DemandList", {
@@ -168,7 +169,9 @@ sap.ui.define([
 			}.bind(this));
 			this.oCreateModel.refresh();
 			this._removeOprTableSelection();
-			this.getRouter().navTo("CreatePrePlan");
+			this.getRouter().navTo("CreatePrePlan", {
+				layout: library.LayoutType.MidColumnFullScreen
+			});
 		},
 
 		/**

@@ -33,7 +33,7 @@
 							<smartTable:layoutData>
 								<FlexItemData growFactor="1" baseSize="0%"/>
 							</smartTable:layoutData>
-							<Table growing="true" mode="MultiSelect" sticky="ColumnHeaders,HeaderToolbar,InfoToolbar"/>
+							<Table growing="true" mode="MultiSelect" sticky="ColumnHeaders,HeaderToolbar,InfoToolbar" selectionChange="onOprListSelectionChange"/>
 						</smartTable:SmartTable>
 					</f:content>
 				</f:DynamicPage>

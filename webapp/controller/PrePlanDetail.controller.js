@@ -339,6 +339,7 @@ sap.ui.define([
 				this.getModel("ganttModel").setProperty(oRowContext.getPath() + "/END_DATE", oParams.newTime[1]);
 				oData.END_TIME.ms = formatter.formatTimeZone(oParams.newTime[1]);
 				this.getModel("ganttModel").setProperty(oRowContext.getPath() + "/END_TIME", oData.END_TIME);
+				oData.END_DATE = moment(oData.END_DATE).endOf('day').subtract(999, 'milliseconds').toDate();
 			}
 			//Adjusting Start Date and Time after resize
 			if (oParams.newTime[1] === oParams.oldTime[1]) {
@@ -347,6 +348,7 @@ sap.ui.define([
 				this.getModel("ganttModel").setProperty(oRowContext.getPath() + "/START_DATE", oParams.newTime[0]);
 				oData.START_TIME.ms = formatter.formatTimeZone(oParams.newTime[0]);
 				this.getModel("ganttModel").setProperty(oRowContext.getPath() + "/START_TIME", oData.START_TIME);
+				oData.START_DATE = moment(oData.START_DATE).endOf('day').subtract(999, 'milliseconds').toDate();
 			}
 			this.GanttActions._prepareGanttOpeartionPayload(oData).then(function (oPayload) {
 				this.GanttActions._proceedToGanttOperationUpdate(sPath, oPayload);

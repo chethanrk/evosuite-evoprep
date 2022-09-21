@@ -135,6 +135,7 @@ sap.ui.define([
 		 * @param oEvent
 		 */
 		onPressHeaderEdit: function (oEvent) {
+			this.getView().getModel().refresh();
 			this.setFormsEditable(this.aSmartForms, true);
 			this._validateDates();
 			this.oViewModel.setProperty("/editMode", false);

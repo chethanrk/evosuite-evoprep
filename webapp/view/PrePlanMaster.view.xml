@@ -1,0 +1,68 @@
+<mvc:View xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core" xmlns:smartFilterBar="sap.ui.comp.smartfilterbar"
+	xmlns:smartTable="sap.ui.comp.smarttable" xmlns:f="sap.f"
+	xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+	controllerName="com.evorait.evosuite.evoprep.controller.PrePlanMaster" xmlns:html="http://www.w3.org/1999/xhtml">
+	<f:DynamicPage id="idPageMaster" headerExpanded="true" preserveHeaderStateOnScroll="true" showFooter="true" class="sapUiNoContentPadding">
+		<f:header>
+			<f:DynamicPageHeader pinnable="true">
+				<f:content>
+					<core:ExtensionPoint name="PageExtP|PrePlanMaster|PlanHeaderSet|Head"/>
+					<smartFilterBar:SmartFilterBar id="idPagePrePlanSmartFilterBar" entitySet="PlanHeaderSet" useDateRangeType="true"
+						persistencyKey="com.evorait.evosuite.evoprep.PrePlanFilterbar" initialized="onInitializedSmartVariant">
+						<!-- layout data used to make the table growing but the filter bar fixed -->
+						<smartFilterBar:layoutData>
+							<FlexItemData shrinkFactor="0"/>
+						</smartFilterBar:layoutData>
+						<smartFilterBar:controlConfiguration>
+							<core:ExtensionPoint name="FilterExtP|PrePlanMaster|PlanHeaderSet|ControlConfiguration"/>
+						</smartFilterBar:controlConfiguration>
+						<smartFilterBar:groupConfiguration>
+							<core:ExtensionPoint name="FilterExtP|PrePlanMaster|PlanHeaderSet|GroupConfiguration"/>
+						</smartFilterBar:groupConfiguration>
+					</smartFilterBar:SmartFilterBar>
+				</f:content>
+			</f:DynamicPageHeader>
+		</f:header>
+		<f:content>
+			<smartTable:SmartTable id="idPagePrePlanSmartTable" height="100%" width="100%" entitySet="PlanHeaderSet" header="{i18n>tit.plan}"
+				smartFilterId="idPagePrePlanSmartFilterBar" tableType="ResponsiveTable" useExportToExcel="true" useVariantManagement="true"
+				useTablePersonalisation="true" showRowCount="true" persistencyKey="com.evorait.evosuite.evoprep.PrePlanTable" enableAutoBinding="false"
+				demandPopin="true" customData:useSmartField="true" customData:useSmartToggle="true" fieldChange="onFieldChange"
+				beforeRebindTable="onBeforeRebindTable" afterVariantInitialise="onInitializedSmartVariant" requestAtLeastFields="NOTES,ObjectKey,FUNCTION">
+				<!-- layout data used to make the table growing but the filter bar fixed -->
+				<smartTable:layoutData>
+					<FlexItemData growFactor="1" baseSize="0%"/>
+				</smartTable:layoutData>
+				<smartTable:customToolbar>
+					<OverflowToolbar class="prePlanListToolbar">
+						<ToolbarSpacer/>
+						<Button id="idBtnComaprePrePlan" text="{i18n>xbut.comapre}" press="onPressComapre" visible="false"/>
+						<Button id="idBtnCreatePrePlan" text="{i18n>xbut.create}" press="onCreatePrePlanPress" visible="{= ${user>/ENABLE_PREPLAN_CREATE} === 'X'}"/>
+						<Button id="idBtnCopyPrePlan" text="{i18n>xbut.copy}" visible="false"/>
+						<Button id="idBtnDeletePrePlan" text="{i18n>xbut.delete}" press="onDeletePrePlanPress" enabled="{viewModel>/isPrePlanSelected}"
+							visible="{parts:[{path:'user>/ENABLE_PLAN_DELETE'},{path:'viewModel>/layout'}],formatter:'.formatter.showDeleteMasterList'}"/>
+					</OverflowToolbar>
+					<core:ExtensionPoint name="TableExtP|PrePlanMaster|PlanHeaderSet|CustomToolbar"/>
+				</smartTable:customToolbar>
+				<Table id="idPageMasterPageSmartTableTable" growing="true" mode="MultiSelect" sticky="ColumnHeaders,HeaderToolbar,InfoToolbar"
+					selectionChange="onWPrePlanListSelectionChange">
+					<columns>
+						<core:ExtensionPoint name="TableExtP|PrePlanMaster|PlanHeaderSet|CustomColumn"/>
+						<Column width="6rem">
+							<customData>
+								<core:CustomData key="p13nData" value='\{"columnKey": "NOTES", "columnIndex":"6"}'/>
+							</customData>
+							<Text text="{i18n>tit.showLongText}"></Text>
+						</Column>
+					</columns>
+					<ColumnListItem type="Navigation" press="onClickTableRow">
+						<cells>
+							<core:ExtensionPoint name="TableExtP|PrePlanMaster|PlanHeaderSet|CustomCell"/>
+							<Button icon="sap-icon://show-edit" type="Default" press="showLongText" visible="{= ${NOTES} !== '' }"/>
+						</cells>
+					</ColumnListItem>
+				</Table>
+			</smartTable:SmartTable>
+		</f:content>
+	</f:DynamicPage>
+</mvc:View>

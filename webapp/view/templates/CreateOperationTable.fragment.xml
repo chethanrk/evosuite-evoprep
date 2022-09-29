@@ -1,0 +1,61 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:layout="sap.ui.layout" xmlns:u="sap.ui.unified"
+	xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+	xmlns:template="http://schemas.sap.com/sapui5/extension/sap.ui.core.template/1">
+	<template:alias name=".AH" value="sap.ui.model.odata.AnnotationHelper">
+		<template:alias name=".evoAH" value="com.evorait.evosuite.evoprep.model.AnnotationHelper">
+			<template:with path="templateProperties>/" var="tempProps">
+				<Table id="idTable--{:= ${path:'createTabs>Core.LongDescription/String'} || ${createTabs>Org.OData.Core.V1.LongDescription/String} }"
+					items="{path:'CreateModel>/results'}" growing="true" updateFinished="onUpdateFinished">
+					<headerToolbar>
+						<OverflowToolbar design="Transparent">
+							<Title text="{viewModel>/operationTableCount}" level="H2"/>
+							<ToolbarSpacer/>
+							<OverflowToolbarButton icon="sap-icon://add" text="{i18n>xbtn.add}" tooltip="{i18n>xbtn.add}" press="onPressAddOperations"
+								visible="{= ${user>/ENABLE_ITEM_ADD} === 'X'}">
+								<customData>
+									<core:CustomData key="tab"
+										value="{:= ${path:'createTabs>Core.LongDescription/String'} || ${createTabs>Org.OData.Core.V1.LongDescription/String} }"/>
+								</customData>
+							</OverflowToolbarButton>
+							<core:ExtensionPoint name="TableExtP|CreateOperationTable|PlanItemsSet|CustomToolbar"/>
+						</OverflowToolbar>
+					</headerToolbar>
+					<template:repeat list="{path:'tempProps>/Configs/Tabs/'}" var="tabItem">
+						<template:if
+							test="{:= ${tabItem>tab} === ${createTabs>Core.LongDescription/String} || ${tabItem>tab} === ${createTabs>Org.OData.Core.V1.LongDescription/String} }">
+							<columns>
+								<core:ExtensionPoint name="TableExtP|CreateOperationTable|PlanItemsSet|CustomColumn"/>
+								<template:repeat list="{path:'tabItem>lineItems/'}" var="lineItem">
+									<Column>
+										<Text text="{:= '{/' + ${tabItem>entitySet} + '/' + ${lineItem>Value/Path} + '/##com.sap.vocabularies.Common.v1.Label/String}' }"/>
+									</Column>
+								</template:repeat>
+								<Column hAlign="End">
+									<Text text=""/>
+								</Column>
+							</columns>
+							<items>
+								<ColumnListItem>
+									<cells>
+										<core:ExtensionPoint name="TableExtP|CreateOperationTable|PlanItemsSet|CustomCell"/>
+										<template:repeat list="{path:'tabItem>lineItems/'}" var="lineItem">
+											<template:if test="{:= ${path: 'lineItem>EdmType'} === 'Edm.Date'}">
+												<template:then>
+													<Text text="{path:'lineItem>Value/Path', formatter:'.evoAH.getOperationDate'}"/>
+												</template:then>
+												<template:else>
+													<Text text="{= '{CreateModel>' + ${path : 'lineItem>Value/Path'} + '}' }"/>
+												</template:else>
+											</template:if>
+										</template:repeat>
+										<Button icon="sap-icon://sys-cancel" type="Reject" tooltip="{i18n>btn.remove}" press="removeOperation"/>
+									</cells>
+								</ColumnListItem>
+							</items>
+						</template:if>
+					</template:repeat>
+				</Table>
+			</template:with>
+		</template:alias>
+	</template:alias>
+</core:FragmentDefinition>

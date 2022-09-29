@@ -1,0 +1,93 @@
+<mvc:View xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:f="sap.f"
+	xmlns:smartFilterBar="sap.ui.comp.smartfilterbar" xmlns:smartTable="sap.ui.comp.smarttable" xmlns:table="sap.ui.table"
+	xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+	controllerName="com.evorait.evosuite.evoprep.controller.DemandList" xmlns:html="http://www.w3.org/1999/xhtml">
+	<f:DynamicPage id="demandListPage" headerExpanded="true" preserveHeaderStateOnScroll="true" showFooter="false" class="sapUiNoContentPadding">
+		<f:title>
+			<f:DynamicPageTitle>
+				<f:heading>
+					<Image src="{viewModel>/logoUrl}" densityAware="false" height="30px" alt="EvoPrep" id="idEvoPrepImageLogo"/>
+				</f:heading>
+				<f:navigationActions>
+					<Button text="{i18n>btn.showPrePlan}" type="Emphasized" press="goBackToPrePlans"/>
+					<core:Fragment fragmentName="com.evorait.evosuite.evoprep.view.fragments.HeaderAction" type="XML"/>
+					<core:ExtensionPoint name="PageExtP|DemandList|PlanItemsSet|Title|Actions"/>
+				</f:navigationActions>
+			</f:DynamicPageTitle>
+		</f:title>
+		<f:header>
+			<f:DynamicPageHeader pinnable="true">
+				<f:content>
+					<core:ExtensionPoint name="PageExtP|DemandList|PlanItemsSet|Head"/>
+					<smartFilterBar:SmartFilterBar id="demandListSmartFilterBar" entitySet="PlanItemsSet" useDateRangeType="true"
+						persistencyKey="com.evorait.evosuite.evoprep.demandListsFilterbar" initialized="onInitializedSmartVariant">
+						<!-- layout data used to make the table growing but the filter bar fixed -->
+						<smartFilterBar:layoutData>
+							<FlexItemData shrinkFactor="0"/>
+						</smartFilterBar:layoutData>
+						<smartFilterBar:controlConfiguration>
+							<core:ExtensionPoint name="FilterExtP|DemandList|PlanItemsSet|ControlConfiguration"/>
+						</smartFilterBar:controlConfiguration>
+						<smartFilterBar:groupConfiguration>
+							<core:ExtensionPoint name="FilterExtP|DemandList|PlanItemsSet|GroupConfiguration"/>
+						</smartFilterBar:groupConfiguration>
+					</smartFilterBar:SmartFilterBar>
+				</f:content>
+			</f:DynamicPageHeader>
+		</f:header>
+		<f:content>
+			<smartTable:SmartTable id="demandListSmartTable" height="100%" width="100%" entitySet="PlanItemsSet" header="{i18n>tit.OperationsTable}"
+				tableType="Table" useExportToExcel="true" useVariantManagement="true" persistencyKey="com.evorait.evosuite.evoprep.DemandListTable"
+				useTablePersonalisation="true" showRowCount="true" enableAutoBinding="true" demandPopin="false" smartFilterId="demandListSmartFilterBar"
+				customData:useSmartField="true" customData:useSmartToggle="true" editTogglable="{= ${user>/ENABLE_ITEM_UPDATE} === 'X'}"
+				editToggled="onPressEdit" requestAtLeastFields="ObjectKey,NO_OF_PLAN_ID,NO_OF_NW_KEY">
+				<!-- layout data used to make the table growing but the filter bar fixed -->
+				<smartTable:layoutData>
+					<FlexItemData growFactor="1" baseSize="0%"/>
+				</smartTable:layoutData>
+				<smartTable:customToolbar>
+					<Toolbar>
+						<ToolbarSpacer/>
+						<Button press="onPressCreatePrePlanButton" tooltip="{i18n>tit.createPrePlan}" text="{i18n>tit.createPrePlan}"
+							visible="{= ${user>/ENABLE_PREPLAN_CREATE} === 'X'}" enabled="{viewModel>/allowPrePlanCreate}"/>
+						<core:ExtensionPoint name="TableExtP|DemandList|PlanItemsSet|CustomToolbar"/>
+					</Toolbar>
+				</smartTable:customToolbar>
+				<table:Table id="demandListPageSmartTableTable" rowActionCount="{= ${viewModel>/orderListEditMode} ? 0 : 1}" visibleRowCountMode="Auto"
+					rowSelectionChange="handleDemandSelectionChange" enableSelectAll="false"
+					selectionMode="{= ${viewModel>/orderListEditMode} ? 'None' : 'MultiToggle'}">
+					<table:rowActionTemplate>
+						<table:RowAction visible="{parts: [{path:'templateProperties>/navLinks'}], formatter:'.formatter.showDemandRowAction'}">
+							<table:items>
+								<table:RowActionItem press="onRowActionPress" icon="sap-icon://action"/>
+							</table:items>
+						</table:RowAction>
+					</table:rowActionTemplate>
+					<table:columns>
+						<table:Column hAlign="Center" sortProperty="NO_OF_PLAN_ID" filterProperty="NO_OF_PLAN_ID" width="7rem">
+							<Label text="{/PlanItemsSet/NO_OF_PLAN_ID/##com.sap.vocabularies.Common.v1.Label/String}"/>
+							<table:customData>
+								<core:CustomData key="p13nData"
+									value='\{"columnKey": "NO_OF_PLAN_ID", "leadingProperty":"NO_OF_PLAN_ID", "filterProperty":"NO_OF_PLAN_ID", "sortProperty":"NO_OF_PLAN_ID", "columnIndex":"4"}'/>
+							</table:customData>
+							<table:template>
+								<Link text="{NO_OF_PLAN_ID}" press="onPressPlanNumber"/>
+							</table:template>
+						</table:Column>
+						<table:Column hAlign="Center" sortProperty="NO_OF_NW_KEY" filterProperty="NO_OF_NW_KEY" width="9rem">
+							<Label text="{/PlanItemsSet/NO_OF_NW_KEY/##com.sap.vocabularies.Common.v1.Label/String}"/>
+							<table:customData>
+								<core:CustomData key="p13nData"
+									value='\{"columnKey": "NO_OF_NW_KEY", "leadingProperty":"NO_OF_NW_KEY", "filterProperty":"NO_OF_NW_KEY", "sortProperty":"NO_OF_NW_KEY", "columnIndex":"4"}'/>
+							</table:customData>
+							<table:template>
+								<Link text="{NO_OF_NW_KEY}" press="onPressNetworkKey"/>
+							</table:template>
+						</table:Column>
+						<core:ExtensionPoint name="PageExtP|DemandList|PlanItemsSet|SmartTable|Columns"/>
+					</table:columns>
+				</table:Table>
+			</smartTable:SmartTable>
+		</f:content>
+	</f:DynamicPage>
+</mvc:View>

@@ -1,0 +1,37 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:form="sap.ui.layout.form">
+	<Dialog title="{i18n>tit.infoDialogTitle}" icon="sap-icon://sys-help" contentWidth="50%" resizable="true" type="Message">
+		<content>
+			<core:ExtensionPoint name="DialogExtP|InformationPopover|SystemInformationSet|Content|Before"/>
+			<core:ExtensionPoint name="DialogExtP|InformationPopover|SystemInformationSet|Content|Instead">
+				<form:SimpleForm layout="ResponsiveGridLayout" labelSpanXL="3" labelSpanL="3" labelSpanM="4" labelSpanS="12" emptySpanXL="2" emptySpanL="2"
+					emptySpanM="2" emptySpanS="0" columnsXL="1" columnsL="1" columnsM="1" singleContainerFullSize="false">
+					<form:content>
+						<Label text="{i18n>xfld.username}"></Label>
+						<Text text="{user>/FULLNAME} ({user>/Username})"></Text>
+						<Label text="{i18n>xfld.evoprepVersion}"></Label>
+						<Text text="{InformationModel>/appVersion}"></Text>
+						<Label text="{i18n>xfld.coreVersion}"></Label>
+						<Text text="{user>/CORE_VERSION}"></Text>
+						<Label text="{i18n>xfld.sapui5Version}"></Label>
+						<Text text="{InformationModel>/ui5Version}"></Text>
+						<Label text="{i18n>xfld.serverConnection}"></Label>
+						<Text text="{user>/SERVER_PATH}"></Text>
+						<Label text="{i18n>xfld.logonLanguage}"></Label>
+						<Text text="{InformationModel>/language}"></Text>
+						<Label text="{/#SystemInformationSet/SYSTEMID/@sap:label}"></Label>
+						<Text text="{user>/SYSTEMID}"></Text>
+						<Label text="{/#SystemInformationSet/CLIENT/@sap:label}"></Label>
+						<Text text="{user>/CLIENT}"></Text>
+						<Label text="{/#SystemInformationSet/USER_PROFILE/@sap:label}"></Label>
+						<Text text="{user>/USER_PROFILE}"></Text>
+					</form:content>
+				</form:SimpleForm>
+			</core:ExtensionPoint>
+			<core:ExtensionPoint name="DialogExtP|InformationPopover|SystemInformationSet|Content|After"/>
+		</content>
+		<buttons>
+			<Button text="{i18n>btn.close}" press="onCloseDialog"/>
+			<core:ExtensionPoint name="DialogExtP|InformationPopover|SystemInformationSet|Buttons"/>
+		</buttons>
+	</Dialog>
+</core:FragmentDefinition>

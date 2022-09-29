@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    	<link href="assets/img/favIcon.ico" rel="shortcut icon" type="image/x-icon">
+	    
+		<title>EvoPrep</title>
+		<script id="sap-ui-bootstrap" src="https://sapui5.hana.ondemand.com/1.71.36/resources/sap-ui-core.js" data-sap-ui-theme="sap_fiori_3" data-sap-ui-resourceroots="{&quot;com.evorait.evosuite.evoprep&quot;: &quot;./&quot;}" data-sap-ui-compatversion="edge" data-sap-ui-oninit="module:sap/ui/core/ComponentSupport" data-sap-ui-async="true" data-sap-ui-frameoptions="trusted">
+		</script>
+	
+<script>
+var bRunWithMock = true;
+var sRunWithMock = jQuery.sap.getUriParameters().get('run-with-mock');
+if (sRunWithMock === 'false') {
+bRunWithMock = false;
+}
+if (bRunWithMock) {
+jQuery.sap.require('sap.ui.core.util.MockServer');
+var uri = '/sap/opu/odata/EVORA/EPP_MAIN_SRV/';
+var oMock = new sap.ui.core.util.MockServer({rootUri : uri});
+var _sAppModulePath = "com.evorait.evosuite.evoprep/";
+var sMetadataPath = "localService/metadata.xml";
+var sMetadataUrl = jQuery.sap.getModulePath(_sAppModulePath) + "/" + sMetadataPath;
+oMock.simulate(sMetadataUrl);
+oMock.start();
+	sap.ui.getCore().attachInit(function () {
+		console.log('Running in demo mode with mock data.');
+	});
+new sap.ui.core.util.MockServer({rootUri: "annotations/annotations.xml", requests: [{ method: "GET", path: new RegExp(""),
+response: function(oXhr) { 
+jQuery.sap.require("jquery.sap.xml");
+var oAnnotations = jQuery.sap.sjax({ url: jQuery.sap.getModulePath(_sAppModulePath + "annotations/annotations.xml".replace(".xml", ""), ".xml"),
+dataType: "xml"}).data;
+oXhr.respondXML(200, {}, jQuery.sap.serializeXML(oAnnotations));
+return true;
+}
+}]
+}).start();
+//Fake LREP
+jQuery.sap.require("sap.ui.fl.FakeLrepConnector");
+sap.ui.fl.FakeLrepConnector.enableFakeConnector("fakeLRep.json");
+}
+</script>
+
+
+	</head>
+	<body class="sapUiBody">
+		<div data-sap-ui-component="" data-name="com.evorait.evosuite.evoprep" data-id="container" data-settings="{&quot;id&quot; : &quot;evoprep&quot;}"></div>
+	</body>
+</html>

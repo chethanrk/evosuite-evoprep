@@ -1,0 +1,7 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+	<ActionSheet id="idNavActionSheet" buttons="{ path:'templateProperties>/navLinks/', templateShareable:true }">
+		<buttons>
+			<Button text="{templateProperties>ApplicationName}" visible="{templateProperties>btnVisibility}" press="onClickNavAction"/>
+		</buttons>
+	</ActionSheet>
+</core:FragmentDefinition>

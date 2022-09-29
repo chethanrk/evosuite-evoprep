@@ -1,0 +1,15 @@
+{
+
+	"navLinks": {},
+	"Configs": {
+		"Tabs": [{
+			"tab": "Demands",
+			"entitySet": "PlanItemsSet",
+			"title": "Operations",
+			"annotationPath": "com.sap.vocabularies.UI.v1.Facets#CreatePrePlan",
+			"controllerName": "AddEditOperationTable",
+			"sNavTo": "/PlanHeaderToPlanItems",
+			"mKeys": {}
+		}]
+	}
+}

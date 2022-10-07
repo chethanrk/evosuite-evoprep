@@ -69,7 +69,7 @@ sap.ui.define([
 				launchMode: Constants.LAUNCH_MODE.BSP,
 				bEnableSave: false,
 				orderListEditMode: false,
-				bShowDependencies: true,
+				bShowDependencies: false, //Enabling/Disabling Dependencies in Graphic Planning GanttChart
 				bEnableGanttShapesEdit: true,
 				ganttFullMode: true,
 				fullscreenGantt: true,

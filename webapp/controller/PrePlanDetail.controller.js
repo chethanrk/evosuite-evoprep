@@ -391,6 +391,8 @@ sap.ui.define([
 				}
 
 				if (oData.viewNameId === sViewName) {
+					this.oViewModel.setProperty("/bShowDependencies", false); //Disabling Dependencies in Graphic Planning GanttChart
+					this.getView().byId("idBtnShowDependency").setText(this.getResourceBundle().getText("xbut.showDependencies"));
 					this._oContext = this.getView().getBindingContext();
 					this._rebindPage();
 					this._loadGanttData();

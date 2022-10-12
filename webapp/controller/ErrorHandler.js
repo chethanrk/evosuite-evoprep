@@ -155,7 +155,7 @@
  			// response
  			var oData = this._oModel.getProperty("/" + oBatchResponse.url),
  				sNumber = oData ? oData.PLAN_ID : "",
- 				sObjectKey = oData ? oData.ObjectKey : ""
+ 				sObjectKey = oData ? oData.ObjectKey : "";
  				//if no error message presents, then show information
 
  			if (this.sErrorMessage !== "") {

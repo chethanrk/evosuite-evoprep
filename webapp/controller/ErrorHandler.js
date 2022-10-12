@@ -171,18 +171,18 @@
  					}
  				);
  			} else if (sNumber) {
+ 				
  				MessageBox.confirm(
  					this.sSuccessMessage, {
  						styleClass: this._oComponent.getContentDensityClass(),
- 						actions: ["Back", "Go To Details", MessageBox.Action.CANCEL],
+ 						actions: [this._oResourceBundle.getText("btn.SuccessMsgBxButton1"),this._oResourceBundle.getText("btn.SuccessMsgBxButton2")],
  						onClose: function (oAction) {
- 							if (oAction === "Back") {
+ 							if (oAction === this._oResourceBundle.getText("btn.SuccessMsgBxButton1")) {
  								var oEventBus = sap.ui.getCore().getEventBus();
  								oEventBus.publish("ErrorHandler", "NavBack", {});
- 							} else if (oAction === "Go To Details") {
+ 							} else if (oAction === this._oResourceBundle.getText("btn.SuccessMsgBxButton2")) {
  								var oEventBus2 = sap.ui.getCore().getEventBus();
  								oEventBus2.publish("ErrorHandler", "NavToDetails", {ObjectKey:sObjectKey});
-
  							}
  							this._bMessageOpen = false;
  						}.bind(this)

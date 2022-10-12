@@ -348,7 +348,7 @@ sap.ui.define([
 			 * Its helps user to navigate to detail page once he clicks on plan detail
 			 */
 			this.navToDetail(oData["ObjectKey"]);
-		},
+		}
 
 	});
 

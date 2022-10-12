@@ -151,7 +151,7 @@
  				return;
  			}
  			this._bMessageOpen = true;
- 			// here in the below code we are checking that is there a plan number in the
+ 			// here in the below code we are checking that is there a plan number & object key in the
  			// response
  			var oData = this._oModel.getProperty("/" + oBatchResponse.url),
  				sNumber = oData ? oData.PLAN_ID : "",
@@ -181,9 +181,10 @@
  								oEventBus.publish("ErrorHandler", "NavBack", {});
  							} else if (oAction === "Go To Details") {
  								var oEventBus2 = sap.ui.getCore().getEventBus();
- 								oEventBus2.publish("BaseController", "NavToDetails", {ObjectKey:sObjectKey});
+ 								oEventBus2.publish("ErrorHandler", "NavToDetails", {ObjectKey:sObjectKey});
 
  							}
+ 							this._bMessageOpen = false;
  						}.bind(this)
  					}
  				);

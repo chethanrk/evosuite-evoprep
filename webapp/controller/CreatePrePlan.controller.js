@@ -71,14 +71,12 @@ sap.ui.define([
 			oRouter.getRoute("CreatePrePlan").attachMatched(function (oEvent) {
 				this._initializeView();
 			}, this);
-			console.log("create preplan controller");
 			var oEventBus = sap.ui.getCore().getEventBus();
 			oEventBus.subscribe("ErrorHandler","NavBack",this.onNavBack,this);
 			var oEventBus1 = sap.ui.getCore().getEventBus();
-			oEventBus1.subscribe("BaseController", "NavToDetails", this.navToDetailFromError, this);
+			oEventBus1.subscribe("ErrorHandler", "NavToDetails", this._navToDetailFromError, this);
 		},
-		navToDetailFromError:function(sChannel,sEvent,oData){
-			console.log(oData);
+		_navToDetailFromError:function(sChannel,sEvent,oData){
 			this.navToDetail(oData["ObjectKey"])
 		},
 		/**

@@ -2,8 +2,7 @@
  	"sap/ui/base/Object",
  	"sap/m/MessageBox",
  	"sap/ui/core/message/Message",
- 	"sap/f/library"
- ], function (UI5Object, MessageBox, Message, library) {
+ ], function (UI5Object, MessageBox, Message) {
  	"use strict";
 
  	return UI5Object.extend("com.evorait.evosuite.evoprep.controller.ErrorHandler", {

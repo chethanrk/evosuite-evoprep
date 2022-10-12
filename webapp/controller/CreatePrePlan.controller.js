@@ -343,7 +343,7 @@ sap.ui.define([
 		},
 		_navToDetailFromError: function (sChannel, sEvent, oData) {
 			/**
-			 * This method is used for the even bus trigger that happens
+			 * This method is used for the event bus trigger that happens
 			 * from the error handler js method _showServiceMessage
 			 * Its helps user to navigate to detail page once he clicks on plan detail
 			 */

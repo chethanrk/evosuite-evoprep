@@ -396,7 +396,6 @@ sap.ui.define([
 
 				if (oData.viewNameId === sViewName) {
 					this.oViewModel.setProperty("/bShowDependencies", false); //Disabling Dependencies in Graphic Planning GanttChart
-					this.getView().byId("idBtnShowDependency").setText(this.getResourceBundle().getText("xbut.showDependencies"));
 					this.oViewModel.setProperty("/bDependencyCall", true);
 					this._oContext = this.getView().getBindingContext();
 					this._rebindPage();
@@ -555,6 +554,7 @@ sap.ui.define([
 			this.oViewModel.setProperty("/layout", library.LayoutType.TwoColumnsMidExpanded);
 			this.oViewModel.setProperty("/fullscreen", true);
 			this._loadGanttData();
+				this.oViewModel.setProperty("/bDependencyCall", true);
 		},
 
 		/**

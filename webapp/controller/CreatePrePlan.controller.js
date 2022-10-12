@@ -72,12 +72,8 @@ sap.ui.define([
 				this._initializeView();
 			}, this);
 			var oEventBus = sap.ui.getCore().getEventBus();
-			oEventBus.subscribe("ErrorHandler","NavBack",this.onNavBack,this);
-			var oEventBus1 = sap.ui.getCore().getEventBus();
-			oEventBus1.subscribe("ErrorHandler", "NavToDetails", this._navToDetailFromError, this);
-		},
-		_navToDetailFromError:function(sChannel,sEvent,oData){
-			this.navToDetail(oData["ObjectKey"])
+			oEventBus.subscribe("CreatePrePlan", "NavBack", this.onNavBack, this);
+			oEventBus.subscribe("CreatePrePlan", "NavToDetails", this._navToDetailFromError, this);
 		},
 		/**
 		 * Called when the View has been rendered (so its HTML is part of the document). Post-rendering manipulations of the HTML could be done here.
@@ -344,7 +340,15 @@ sap.ui.define([
 			}.bind(this);
 
 			this.callFunctionImport(oParams, sFunctionName, "GET", callbackfunction);
-		}
+		},
+		_navToDetailFromError: function (sChannel, sEvent, oData) {
+			/**
+			 * This method is used for the even bus trigger that happens
+			 * from the error handler js method _showServiceMessage
+			 * Its helps user to navigate to detail page once he clicks on plan detail
+			 */
+			this.navToDetail(oData["ObjectKey"]);
+		},
 
 	});
 

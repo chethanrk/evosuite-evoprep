@@ -154,7 +154,8 @@
  			// response
  			var oData = this._oModel.getProperty("/" + oBatchResponse.url),
  				sNumber = oData ? oData.PLAN_ID : "",
- 				sObjectKey = oData ? oData.ObjectKey : "";
+ 				sObjectKey = oData ? oData.ObjectKey : "",
+ 				oEventBus = sap.ui.getCore().getEventBus();
  				//if no error message presents, then show information
 
  			if (this.sErrorMessage !== "") {
@@ -174,14 +175,12 @@
  				MessageBox.confirm(
  					this.sSuccessMessage, {
  						styleClass: this._oComponent.getContentDensityClass(),
- 						actions: [this._oResourceBundle.getText("btn.SuccessMsgBxButton1"),this._oResourceBundle.getText("btn.SuccessMsgBxButton2")],
+ 						actions: [this._oResourceBundle.getText("btn.successMsgBxBtnBack"),this._oResourceBundle.getText("btn.successMsgBxBtnPlanDetail")],
  						onClose: function (oAction) {
- 							if (oAction === this._oResourceBundle.getText("btn.SuccessMsgBxButton1")) {
- 								var oEventBus = sap.ui.getCore().getEventBus();
- 								oEventBus.publish("ErrorHandler", "NavBack", {});
- 							} else if (oAction === this._oResourceBundle.getText("btn.SuccessMsgBxButton2")) {
- 								var oEventBus2 = sap.ui.getCore().getEventBus();
- 								oEventBus2.publish("ErrorHandler", "NavToDetails", {ObjectKey:sObjectKey});
+ 							if (oAction === this._oResourceBundle.getText("btn.successMsgBxBtnBack")) {
+ 								oEventBus.publish("CreatePrePlan", "NavBack", {});
+ 							} else if (oAction === this._oResourceBundle.getText("btn.successMsgBxBtnPlanDetail")) {
+ 								oEventBus.publish("CreatePrePlan", "NavToDetails", {ObjectKey:sObjectKey});
  							}
  							this._bMessageOpen = false;
  						}.bind(this)

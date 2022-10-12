@@ -71,8 +71,16 @@ sap.ui.define([
 			oRouter.getRoute("CreatePrePlan").attachMatched(function (oEvent) {
 				this._initializeView();
 			}, this);
+			console.log("create preplan controller");
+			var oEventBus = sap.ui.getCore().getEventBus();
+			oEventBus.subscribe("ErrorHandler","NavBack",this.onNavBack,this);
+			var oEventBus1 = sap.ui.getCore().getEventBus();
+			oEventBus1.subscribe("BaseController", "NavToDetails", this.navToDetailFromError, this);
 		},
-
+		navToDetailFromError:function(sChannel,sEvent,oData){
+			console.log(oData);
+			this.navToDetail(oData["ObjectKey"])
+		},
 		/**
 		 * Called when the View has been rendered (so its HTML is part of the document). Post-rendering manipulations of the HTML could be done here.
 		 * This hook is the same one that SAPUI5 controls get after being rendered.

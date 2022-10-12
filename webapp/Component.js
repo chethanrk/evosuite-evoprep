@@ -79,7 +79,8 @@ sap.ui.define([
 					busy: true,
 					sStartDate: null,
 					sEndDate: null
-				}
+				},
+				bDependencyCall:false //Restricting expand call in Graphic Planning GanttChart
 			};
 
 			//GetSystemInformation Call

@@ -60,6 +60,7 @@ sap.ui.define([
 					this._oView.getModel().refresh();
 					var oEventBus = sap.ui.getCore().getEventBus();
 					oEventBus.publish("BaseController", "refreshFullGantt", this._loadGanttData, this);
+						this._oView.getModel("viewModel").setProperty("/bDependencyCall", true);
 				}.bind(this));
 		},
 

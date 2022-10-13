@@ -65,7 +65,7 @@
  					}
  					//Show success or error message in the message box if it exists
  					if (this.sSuccessMessage !== "" || this.sErrorMessage !== "") {
- 						this._showServiceMessage(aEntry);
+ 						this._showServiceMessage();
  					}
  				}
  			}, this);
@@ -145,13 +145,11 @@
  		 * Only the first error message will be display.
  		 * @private
  		 */
- 		_showServiceMessage: function (oBatchResponse) {
+ 		_showServiceMessage: function () {
  			if (this._bMessageOpen) {
  				return;
  			}
  			this._bMessageOpen = true;
- 			// here in the below code we are checking that is there a plan number & object key in the
- 			// response
  			//if no error message presents, then show information
 
  			if (this.sErrorMessage !== "") {

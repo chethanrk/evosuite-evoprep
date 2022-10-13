@@ -263,8 +263,8 @@ sap.ui.define([
 			if (oResponse) {
 				//Bind new context
 				this.getView().unbindElement();
-				var oContext = this.getView().getModel().createEntry("/PlanHeaderSet");
-				this.getView().setBindingContext(oContext);
+				var oContext = this.getView().getModel().createEntry("/PlanHeaderSet");//only case for cancel
+				this.getView().setBindingContext(oContext);//same
 				this.getModel("CreateModel").getData().results = [];
 				this.getModel("CreateModel").refresh();
 				this.getModel().resetChanges();
@@ -274,7 +274,7 @@ sap.ui.define([
 				this.getView().getModel().deleteCreatedEntry(oNewEntryContext);
 				this._showSuccessMessage(oResponse);
 				// defaulting values
-				this._initializeView();
+				this._initializeView();// only case of cancel.
 			}
 		},
 		_showSuccessMessage: function (oResponce) {
@@ -355,16 +355,7 @@ sap.ui.define([
 			}.bind(this);
 
 			this.callFunctionImport(oParams, sFunctionName, "GET", callbackfunction);
-		},
-		_navToDetailFromError: function (sChannel, sEvent, oData) {
-			/**
-			 * This method is used for the event bus trigger that happens
-			 * from the error handler js method _showServiceMessage
-			 * Its helps user to navigate to detail page once he clicks on plan detail
-			 */
-			this.navToDetail(oData["ObjectKey"]);
 		}
-
 	});
 
 });

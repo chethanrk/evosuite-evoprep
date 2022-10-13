@@ -72,9 +72,6 @@ sap.ui.define([
 			oRouter.getRoute("CreatePrePlan").attachMatched(function (oEvent) {
 				this._initializeView();
 			}, this);
-			var oEventBus = sap.ui.getCore().getEventBus();
-			oEventBus.subscribe("CreatePrePlan", "NavBack", this.onNavBack, this);
-			oEventBus.subscribe("CreatePrePlan", "NavToDetails", this._navToDetailFromError, this);
 		},
 		/**
 		 * Called when the View has been rendered (so its HTML is part of the document). Post-rendering manipulations of the HTML could be done here.

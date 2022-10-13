@@ -3,7 +3,7 @@ sap.ui.define([
 	"sap/ui/core/Fragment",
 	"sap/m/MessageBox",
 	"sap/ui/core/mvc/OverrideExecution"
-], function (BaseController, Fragment,MessageBox, OverrideExecution) {
+], function (BaseController, Fragment, MessageBox, OverrideExecution) {
 	"use strict";
 
 	return BaseController.extend("com.evorait.evosuite.evoprep.controller.CreatePrePlan", {
@@ -263,8 +263,7 @@ sap.ui.define([
 			if (oResponse) {
 				//Bind new context
 				this.getView().unbindElement();
-				var oContext = this.getView().getModel().createEntry("/PlanHeaderSet");//only case for cancel
-				this.getView().setBindingContext(oContext);//same
+
 				this.getModel("CreateModel").getData().results = [];
 				this.getModel("CreateModel").refresh();
 				this.getModel().resetChanges();
@@ -274,7 +273,7 @@ sap.ui.define([
 				this.getView().getModel().deleteCreatedEntry(oNewEntryContext);
 				this._showSuccessMessage(oResponse);
 				// defaulting values
-				this._initializeView();// only case of cancel.
+				// only case of cancel.
 			}
 		},
 		_showSuccessMessage: function (oResponce) {
@@ -284,12 +283,18 @@ sap.ui.define([
 			MessageBox.confirm(
 				sMsg, {
 					styleClass: this.getOwnerComponent().getContentDensityClass(),
-					actions: [oResourceBundle.getText("btn.successMsgBxBtnBack"), oResourceBundle.getText("btn.successMsgBxBtnPlanDetail")],
+					actions: [oResourceBundle.getText("btn.successMsgBxBtnBack"), oResourceBundle.getText("btn.successMsgBxBtnPlanDetail"), sap.m.MessageBox
+						.Action.CANCEL
+					],
 					onClose: function (oAction) {
 						if (oAction === oResourceBundle.getText("btn.successMsgBxBtnBack")) {
 							this.onNavBack();
 						} else if (oAction === oResourceBundle.getText("btn.successMsgBxBtnPlanDetail")) {
 							this.navToDetail(oResponce["ObjectKey"]);
+						} else if (oAction === "CANCEL") {
+							var oContext = this.getView().getModel().createEntry("/PlanHeaderSet"); //only case for cancel
+							this.getView().setBindingContext(oContext); //same
+							this._initializeView();
 						}
 					}.bind(othat)
 				});

@@ -1,163 +1,139 @@
 <mvc:View controllerName="com.evorait.evosuite.evoprep.controller.PrePlanDetail" xmlns="sap.m" xmlns:core="sap.ui.core"
-    xmlns:mvc="sap.ui.core.mvc" xmlns:uxap="sap.uxap" xmlns:layout="sap.ui.layout"
-    xmlns:smartField="sap.ui.comp.smartfield" xmlns:smartTable="sap.ui.comp.smarttable"
-    xmlns:blocks="com.evorait.evosuite.evoprep.block"
-    xmlns:template="http://schemas.sap.com/sapui5/extension/sap.ui.core.template/1"
-    xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
-    <template:alias name=".AH" value="sap.ui.model.odata.AnnotationHelper">
-        <template:alias name=".evoAH" value="com.evorait.evosuite.evoprep.model.AnnotationHelper">
-            <template:with path="templateProperties>/" var="tempProps">
-                <uxap:ObjectPageLayout id="prePlanDetailPage" class="sapUiNoContentPadding" useIconTabBar="false"
-                    enableLazyLoading="true" isChildPage="true" showFooter="true" busy="{viewModel>/busy}"
-                    busyIndicatorDelay="{viewModel>/delay}" showHeaderContent="{viewModel>/ganttFullMode}">
-                    <uxap:headerTitle>
-                        <uxap:ObjectPageHeader objectTitle="{PLAN_NAME}" objectSubtitle="{PLAN_ID}"
-                            visible="{viewModel>/ganttFullMode}">
-                            <uxap:actions>
-                                <uxap:ObjectPageHeaderActionButton id="idStatusChangeMenu" hideText="false"
-                                    type="Default" text="{i18n>xbut.status}" tooltip="{i18n>xbut.status}"
-                                    visible="{parts: [{path:'viewModel>/showStatusButton'},{path:'viewModel>/editMode'}, {path:'ALLOW_FINAL'} ], formatter:'.formatter.showDetailStatusEdit'}"
-                                    press="onPressChangeStatus" />
-                                <uxap:ObjectPageHeaderActionButton id="idStatusCopy" hideText="false" type="Default"
-                                    text="{i18n>xbut.copy}" tooltip="{i18n>xbut.copy}" visible="false" />
-                                <uxap:ObjectPageHeaderActionButton id="idStatusDelete" hideText="false" type="Default"
-                                    text="{i18n>xbut.delete}" tooltip="{i18n>xbut.delete}"
-                                    visible="{= ${user>/ENABLE_PLAN_DELETE} === 'X' &amp;&amp; ${viewModel>/editMode} === true}"
-                                    press="oPressDetailDelete" />
-                                <uxap:ObjectPageHeaderActionButton id="idStatusEdit" hideText="false" type="Default"
-                                    enabled="true" icon="sap-icon://edit" tooltip="{i18n>xbut.edit}"
-                                    visible="{parts: [{path:'user>/ENABLE_PREPLAN_UPDATE'},{path:'viewModel>/editMode'}, {path:'ALLOW_FINAL'} ], formatter:'.formatter.showDetailStatusEdit'}"
-                                    press="onPressHeaderEdit" />
-                                <uxap:ObjectPageHeaderActionButton icon="sap-icon://save" type="Emphasized"
-                                    text="{i18n>xbtn.save}" hideText="false" tooltip="{i18n>xbtn.save}"
-                                    press="onPressSavePrePlanHeader" visible="{= !${viewModel>/editMode} === true}" />
-                                <uxap:ObjectPageHeaderActionButton icon="sap-icon://cancel" type="Default"
-                                    press="onPressCancelPrePlanHeader" text="{i18n>xbtn.cancel}"
-                                    visible="{= !${viewModel>/editMode} === true}" hideText="false"
-                                    tooltip="{i18n>xbtn.cancel}" />
-                                <core:ExtensionPoint name="PageExtP|PrePlanDetail|PlanHeaderSet|Title|Action" />
-                            </uxap:actions>
-                            <uxap:breadcrumbs>
-                                <core:ExtensionPoint name="PageExtP|PrePlanDetail|PlanHeaderSet|Breadcrumbs">
-                                    <Breadcrumbs currentLocationText="{i18n>tit.prePlanDetail}">
-                                        <Link text="{i18n>tit.plan}" press="navBack" />
-                                    </Breadcrumbs>
-                                </core:ExtensionPoint>
-                            </uxap:breadcrumbs>
-                            <uxap:sideContentButton></uxap:sideContentButton>
-                            <uxap:navigationBar>
-                                <Bar class="sapUiTinyMarginTop" visible="{viewModel>/ganttFullMode}">
-                                    <contentLeft>
-                                        <core:ExtensionPoint
-                                            name="PageExtP|PrePlanDetail|PlanHeaderSet|NavigationBar|Left" />
-                                    </contentLeft>
-                                    <contentMiddle>
-                                        <Title text="{i18n>tit.prePlanDetail}" />
-                                    </contentMiddle>
-                                    <contentRight>
-                                        <Button
-                                            icon="{path:'viewModel>/fullscreen',formatter:'.formatter.fullScreenVisibility'}"
-                                            visible="{viewModel>/editMode}" tooltip="Full screen"
-                                            press="onPressFullScreen" />
-                                        <Button icon="sap-icon://decline" tooltip="{i18n>btn.close}"
-                                            visible="{viewModel>/editMode}" press="onPressClose" />
-                                        <core:ExtensionPoint
-                                            name="PageExtP|PrePlanDetail|PlanHeaderSet|NavigationBar|Right" />
-                                    </contentRight>
-                                </Bar>
-                            </uxap:navigationBar>
-                        </uxap:ObjectPageHeader>
-                    </uxap:headerTitle>
-                    <uxap:headerContent>
-                        <template:with path="templateProperties>/annotationPath"
-                            helper="com.evorait.evosuite.evoprep.model.AnnotationHelper.resolveObjectHeaderPath"
-                            var="headerDetails">
-                            <core:Fragment fragmentName="com.evorait.evosuite.evoprep.view.templates.ObjectHeadTemplate"
-                                type="XML" />
-                            <core:ExtensionPoint name="PageExtP|PrePlanDetail|PlanHeaderSet|Head" />
-                        </template:with>
-                    </uxap:headerContent>
-                    <uxap:sections>
-                        <template:with path="templateProperties>/annotationPath"
-                            helper="com.evorait.evosuite.evoprep.model.AnnotationHelper.resolveObjectContentPath"
-                            var="detailTabs">
-                            <template:repeat list="{detailTabs>}">
-                                <template:if
-                                    test="{:= ${detailTabs>Core.Description/String} === 'Form' || ${detailTabs>Org.OData.Core.V1.Description/String} === 'Form'}">
-                                    <template:then>
-                                        <uxap:ObjectPageSection
-                                            title="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}"
-                                            visible="{viewModel>/ganttFullMode}">
-                                            <uxap:subSections>
-                                                <uxap:ObjectPageSubSection>
-                                                    <uxap:blocks>
-                                                        <template:with path="detailTabs>Facets" var="facets">
-                                                            <core:Fragment
-                                                                fragmentName="com.evorait.evosuite.evoprep.view.templates.SmartFormTemplate"
-                                                                type="XML" />
-                                                        </template:with>
-                                                    </uxap:blocks>
-                                                </uxap:ObjectPageSubSection>
-                                            </uxap:subSections>
-                                        </uxap:ObjectPageSection>
-                                    </template:then>
-                                    <template:elseif
-                                        test="{:= ${detailTabs>Core.Description/String} === 'Table' || ${detailTabs>Org.OData.Core.V1.Description/String} === 'Table'}">
-                                        <core:ExtensionPoint
-                                            name="SectionExtP|PrePlanDetail|{:= ${detailTabs>Core.LongDescription/String} }|Before" />
-                                        <uxap:ObjectPageSection
-                                            title="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}"
-                                            visible="{viewModel>/editMode}">
-                                            <uxap:subSections>
-                                                <template:if
-                                                    test="{:= ${parts: [{value:'PlanningTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameInDescription'} }">
-                                                    <template:then>
-                                                        <uxap:ObjectPageSubSection
-                                                            title="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}">
-                                                            <uxap:blocks>
-                                                                <core:Fragment
-                                                                    fragmentName="com.evorait.evosuite.evoprep.view.templates.PlanningGanttChart"
-                                                                    type="XML" />
-                                                            </uxap:blocks>
-                                                        </uxap:ObjectPageSubSection>
-                                                    </template:then>
-                                                    <template:else>
-                                                        <uxap:ObjectPageSubSection visible="{viewModel>/ganttFullMode}">
-                                                            <uxap:blocks>
-                                                                <template:if
-                                                                    test="{:= ${parts: [{value:'CapacityTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameInDescription'} }">
-                                                                    <template:then>
-                                                                        <blocks:capacity.CapacityBlock
-                                                                            id="block--{:= ${path:'detailTabs>Core.LongDescription/String'} || ${detailTabs>Org.OData.Core.V1.LongDescription/String}}" />
-                                                                    </template:then>
-                                                                    <template:elseif
-                                                                        test="{:= ${parts: [{value:'DemandsTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameInDescription'} }">
-                                                                        <blocks:demand.DemandsBlock
-                                                                            id="block--{:= ${path:'detailTabs>Core.LongDescription/String'} || ${detailTabs>Org.OData.Core.V1.LongDescription/String}}" />
-                                                                    </template:elseif>
-                                                                </template:if>
-                                                            </uxap:blocks>
-                                                        </uxap:ObjectPageSubSection>
-                                                    </template:else>
-                                                </template:if>
-                                            </uxap:subSections>
-                                        </uxap:ObjectPageSection>
-                                        <core:ExtensionPoint
-                                            name="SectionExtP|PrePlanDetail|{:= ${contentTabs>Core.LongDescription/String} }|After" />
-                                    </template:elseif>
-                                </template:if>
-                            </template:repeat>
-                        </template:with>
-                    </uxap:sections>
-                    <uxap:footer>
-                        <OverflowToolbar id="idPrePlanDetailFooterToolbar" visible="false">
-                            <core:ExtensionPoint name="PageExtP|PrePlanDetail|PlanHeaderSet|Footer|Left" />
-                            <ToolbarSpacer />
-                            <core:ExtensionPoint name="PageExtP|PrePlanDetail|PlanHeaderSet|Footer|Right" />
-                        </OverflowToolbar>
-                    </uxap:footer>
-                </uxap:ObjectPageLayout>
-            </template:with>
-        </template:alias>
-    </template:alias>
+	xmlns:mvc="sap.ui.core.mvc" xmlns:uxap="sap.uxap" xmlns:layout="sap.ui.layout" xmlns:smartField="sap.ui.comp.smartfield"
+	xmlns:smartTable="sap.ui.comp.smarttable" xmlns:blocks="com.evorait.evosuite.evoprep.block"
+	xmlns:template="http://schemas.sap.com/sapui5/extension/sap.ui.core.template/1"
+	xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
+	<template:alias name=".AH" value="sap.ui.model.odata.AnnotationHelper">
+		<template:alias name=".evoAH" value="com.evorait.evosuite.evoprep.model.AnnotationHelper">
+			<template:with path="templateProperties>/" var="tempProps">
+				<uxap:ObjectPageLayout id="prePlanDetailPage" class="sapUiNoContentPadding" useIconTabBar="false" enableLazyLoading="true"
+					isChildPage="true" showFooter="true" busy="{viewModel>/busy}" busyIndicatorDelay="{viewModel>/delay}"
+					showHeaderContent="{viewModel>/ganttFullMode}">
+					<uxap:headerTitle>
+						<uxap:ObjectPageHeader objectTitle="{PLAN_NAME}" objectSubtitle="{PLAN_ID}" visible="{viewModel>/ganttFullMode}">
+							<uxap:actions>
+								<uxap:ObjectPageHeaderActionButton id="idStatusChangeMenu" hideText="false" type="Default" text="{i18n>xbut.status}"
+									tooltip="{i18n>xbut.status}"
+									visible="{parts: [{path:'viewModel>/showStatusButton'},{path:'viewModel>/editMode'}, {path:'ALLOW_FINAL'} ], formatter:'.formatter.showDetailStatusEdit'}"
+									press="onPressChangeStatus"/>
+								<uxap:ObjectPageHeaderActionButton id="idStatusCopy" hideText="false" type="Default" text="{i18n>xbut.copy}" tooltip="{i18n>xbut.copy}"
+									visible="false"/>
+								<uxap:ObjectPageHeaderActionButton id="idStatusDelete" hideText="false" type="Default" text="{i18n>xbut.delete}"
+									tooltip="{i18n>xbut.delete}" visible="{= ${user>/ENABLE_PLAN_DELETE} === 'X' &amp;&amp; ${viewModel>/editMode} === true}"
+									press="oPressDetailDelete"/>
+								<uxap:ObjectPageHeaderActionButton id="idStatusEdit" hideText="false" type="Default" enabled="true" icon="sap-icon://edit"
+									tooltip="{i18n>xbut.edit}"
+									visible="{parts: [{path:'user>/ENABLE_PREPLAN_UPDATE'},{path:'viewModel>/editMode'}, {path:'ALLOW_FINAL'} ], formatter:'.formatter.showDetailStatusEdit'}"
+									press="onPressHeaderEdit"/>
+								<uxap:ObjectPageHeaderActionButton icon="sap-icon://save" type="Emphasized" text="{i18n>xbtn.save}" hideText="false"
+									tooltip="{i18n>xbtn.save}" press="onPressSavePrePlanHeader" visible="{= !${viewModel>/editMode} === true}"/>
+								<uxap:ObjectPageHeaderActionButton icon="sap-icon://cancel" type="Default" press="onPressCancelPrePlanHeader" text="{i18n>xbtn.cancel}"
+									visible="{= !${viewModel>/editMode} === true}" hideText="false" tooltip="{i18n>xbtn.cancel}"/>
+								<core:ExtensionPoint name="PageExtP|PrePlanDetail|PlanHeaderSet|Title|Action"/>
+							</uxap:actions>
+							<uxap:breadcrumbs>
+								<core:ExtensionPoint name="PageExtP|PrePlanDetail|PlanHeaderSet|Breadcrumbs">
+									<Breadcrumbs currentLocationText="{i18n>tit.prePlanDetail}">
+										<Link text="{i18n>tit.plan}" press="navBack"/>
+									</Breadcrumbs>
+								</core:ExtensionPoint>
+							</uxap:breadcrumbs>
+							<uxap:sideContentButton></uxap:sideContentButton>
+							<uxap:navigationBar>
+								<Bar class="sapUiTinyMarginTop" visible="{viewModel>/ganttFullMode}">
+									<contentLeft>
+										<core:ExtensionPoint name="PageExtP|PrePlanDetail|PlanHeaderSet|NavigationBar|Left"/>
+									</contentLeft>
+									<contentMiddle>
+										<Title text="{i18n>tit.prePlanDetail}"/>
+									</contentMiddle>
+									<contentRight>
+										<Button icon="{path:'viewModel>/fullscreen',formatter:'.formatter.fullScreenVisibility'}" visible="{viewModel>/editMode}"
+											tooltip="Full screen" press="onPressFullScreen"/>
+										<Button icon="sap-icon://decline" tooltip="{i18n>btn.close}" visible="{viewModel>/editMode}" press="onPressClose"/>
+										<core:ExtensionPoint name="PageExtP|PrePlanDetail|PlanHeaderSet|NavigationBar|Right"/>
+									</contentRight>
+								</Bar>
+							</uxap:navigationBar>
+						</uxap:ObjectPageHeader>
+					</uxap:headerTitle>
+					<uxap:headerContent>
+						<template:with path="templateProperties>/annotationPath"
+							helper="com.evorait.evosuite.evoprep.model.AnnotationHelper.resolveObjectHeaderPath" var="headerDetails">
+							<core:Fragment fragmentName="com.evorait.evosuite.evoprep.view.templates.ObjectHeadTemplate" type="XML"/>
+							<core:ExtensionPoint name="PageExtP|PrePlanDetail|PlanHeaderSet|Head"/>
+						</template:with>
+					</uxap:headerContent>
+					<uxap:sections>
+						<template:with path="templateProperties>/annotationPath"
+							helper="com.evorait.evosuite.evoprep.model.AnnotationHelper.resolveObjectContentPath" var="detailTabs">
+							<template:repeat list="{detailTabs>}">
+								<template:if test="{:= ${detailTabs>Core.Description/String} === 'Form' || ${detailTabs>Org.OData.Core.V1.Description/String} === 'Form'}">
+									<template:then>
+										<uxap:ObjectPageSection title="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}"
+											visible="{viewModel>/ganttFullMode}">
+											<uxap:subSections>
+												<uxap:ObjectPageSubSection>
+													<uxap:blocks>
+														<template:with path="detailTabs>Facets" var="facets">
+															<core:Fragment fragmentName="com.evorait.evosuite.evoprep.view.templates.SmartFormTemplate" type="XML"/>
+														</template:with>
+													</uxap:blocks>
+												</uxap:ObjectPageSubSection>
+											</uxap:subSections>
+										</uxap:ObjectPageSection>
+									</template:then>
+									<template:elseif
+										test="{:= ${detailTabs>Core.Description/String} === 'Table' || ${detailTabs>Org.OData.Core.V1.Description/String} === 'Table'}">
+										<core:ExtensionPoint name="SectionExtP|PrePlanDetail|{:= ${detailTabs>Core.LongDescription/String} }|Before"/>
+										<uxap:ObjectPageSection title="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}"
+											visible="{viewModel>/editMode}">
+											<uxap:subSections>
+												<template:if
+													test="{:= ${parts: [{value:'PlanningTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameInDescription'} }">
+													<template:then>
+														<uxap:ObjectPageSubSection title="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}">
+															<uxap:blocks>
+																<core:Fragment fragmentName="com.evorait.evosuite.evoprep.view.templates.PlanningGanttChart" type="XML"/>
+															</uxap:blocks>
+														</uxap:ObjectPageSubSection>
+													</template:then>
+													<template:else>
+														<uxap:ObjectPageSubSection visible="{viewModel>/ganttFullMode}">
+															<uxap:blocks>
+																<template:if
+																	test="{:= ${parts: [{value:'CapacityTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameInDescription'} }">
+																	<template:then>
+																		<blocks:capacity.CapacityBlock
+																			id="block--{:= ${path:'detailTabs>Core.LongDescription/String'} || ${detailTabs>Org.OData.Core.V1.LongDescription/String}}"/>
+																	</template:then>
+																	<template:elseif
+																		test="{:= ${parts: [{value:'DemandsTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameInDescription'} }">
+																		<blocks:demand.DemandsBlock
+																			id="block--{:= ${path:'detailTabs>Core.LongDescription/String'} || ${detailTabs>Org.OData.Core.V1.LongDescription/String}}"/>
+																	</template:elseif>
+																</template:if>
+															</uxap:blocks>
+														</uxap:ObjectPageSubSection>
+													</template:else>
+												</template:if>
+											</uxap:subSections>
+										</uxap:ObjectPageSection>
+										<core:ExtensionPoint name="SectionExtP|PrePlanDetail|{:= ${contentTabs>Core.LongDescription/String} }|After"/>
+									</template:elseif>
+								</template:if>
+							</template:repeat>
+						</template:with>
+					</uxap:sections>
+					<uxap:footer>
+						<OverflowToolbar id="idPrePlanDetailFooterToolbar" visible="false">
+							<core:ExtensionPoint name="PageExtP|PrePlanDetail|PlanHeaderSet|Footer|Left"/>
+							<ToolbarSpacer/>
+							<core:ExtensionPoint name="PageExtP|PrePlanDetail|PlanHeaderSet|Footer|Right"/>
+						</OverflowToolbar>
+					</uxap:footer>
+				</uxap:ObjectPageLayout>
+			</template:with>
+		</template:alias>
+	</template:alias>
 </mvc:View>

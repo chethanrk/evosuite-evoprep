@@ -79,7 +79,7 @@ sap.ui.define([
 					final: true,
 					overrideExecution: OverrideExecution.Instead
 				},
-                navBack: {
+				navBack: {
 					public: true,
 					final: true,
 					overrideExecution: OverrideExecution.Instead
@@ -379,13 +379,13 @@ sap.ui.define([
 				this.getModel("viewModel").setProperty("/bEnableGanttShapesEdit", true);
 			}
 		},
-        
-        /**
+
+		/**
 		 * Go back to Plan list from Plan details
 		 */
-        navBack: function(){
-            this.onNavBack();
-        },
+		navBack: function () {
+			this.onNavBack();
+		},
 
 		/* =========================================================== */
 		/* public methods                                              */
@@ -566,7 +566,7 @@ sap.ui.define([
 			this.oViewModel.setProperty("/layout", library.LayoutType.TwoColumnsMidExpanded);
 			this.oViewModel.setProperty("/fullscreen", true);
 			this._loadGanttData();
-				this.oViewModel.setProperty("/bDependencyCall", true);
+			this.oViewModel.setProperty("/bDependencyCall", true);
 		},
 
 		/**

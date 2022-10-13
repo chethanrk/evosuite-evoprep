@@ -19,8 +19,8 @@
 			"ENABLE_PREPLAN_CREATE": "X",
 			"ENABLE_ITEM_ADD": "X",
 			"ENABLE_ITEM_UPDATE": "X",
-            "ENABLE_SHOW_ALL_DEMANDS": "X",
-            "DEFAULT_PLAN_DET_FULLSC":"X"
+			"ENABLE_SHOW_ALL_DEMANDS": "X",
+			"DEFAULT_PLAN_DET_FULLSC": "X"
 		}]
 	}
 }

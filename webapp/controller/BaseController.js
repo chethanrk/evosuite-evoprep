@@ -778,8 +778,12 @@ sap.ui.define([
 		 * Navigate to detail page with selected plan
 		 */
 		navToDetail: function (sPlanObject) {
+            var oLayout = library.LayoutType.TwoColumnsMidExpanded;
+            if(this.getModel("user").getProperty("/DEFAULT_PLAN_DET_FULLSC")){
+                oLayout = library.LayoutType.MidColumnFullScreen
+            }
 			this.getRouter().navTo("PrePlanDetail", {
-				layout: library.LayoutType.TwoColumnsMidExpanded,
+				layout: oLayout,
 				plan: sPlanObject
 			});
 		},

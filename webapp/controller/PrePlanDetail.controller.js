@@ -78,6 +78,11 @@ sap.ui.define([
 					public: true,
 					final: true,
 					overrideExecution: OverrideExecution.Instead
+				},
+                navBack: {
+					public: true,
+					final: true,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
@@ -374,6 +379,13 @@ sap.ui.define([
 				this.getModel("viewModel").setProperty("/bEnableGanttShapesEdit", true);
 			}
 		},
+        
+        /**
+		 * Go back to Plan list from Plan details
+		 */
+        navBack: function(){
+            this.onNavBack();
+        },
 
 		/* =========================================================== */
 		/* public methods                                              */

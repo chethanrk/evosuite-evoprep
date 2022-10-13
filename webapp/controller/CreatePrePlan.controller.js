@@ -272,8 +272,6 @@ sap.ui.define([
 					"')");
 				this.getView().getModel().deleteCreatedEntry(oNewEntryContext);
 				this._showSuccessMessage(oResponse);
-				// defaulting values
-				// only case of cancel.
 			}
 		},
 		_showSuccessMessage: function (oResponce) {
@@ -293,7 +291,8 @@ sap.ui.define([
 						} else if (oAction === oResourceBundle.getText("btn.successMsgBxBtnPlanDetail")) {
 							this.navToDetail(oResponce["ObjectKey"]);
 						} else if (oAction === "CANCEL") {
-							this.getView().setBindingContext(oContext); //same
+							this.getView().setBindingContext(oContext);
+							//defaulting values
 							this._initializeView();
 						}
 					}.bind(othat)

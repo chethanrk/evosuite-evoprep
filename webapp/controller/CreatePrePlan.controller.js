@@ -1,8 +1,9 @@
 sap.ui.define([
 	"com/evorait/evosuite/evoprep/controller/BaseController",
 	"sap/ui/core/Fragment",
+	"sap/m/MessageBox",
 	"sap/ui/core/mvc/OverrideExecution"
-], function (BaseController, Fragment, OverrideExecution) {
+], function (BaseController, Fragment,MessageBox, OverrideExecution) {
 	"use strict";
 
 	return BaseController.extend("com.evorait.evosuite.evoprep.controller.CreatePrePlan", {
@@ -274,10 +275,27 @@ sap.ui.define([
 				var oNewEntryContext = new sap.ui.model.Context(this.getModel(), "/PlanHeaderSet('" + oResponse.ObjectKey +
 					"')");
 				this.getView().getModel().deleteCreatedEntry(oNewEntryContext);
-
+				this._showSuccessMessage(oResponse);
 				// defaulting values
 				this._initializeView();
 			}
+		},
+		_showSuccessMessage: function (oResponce) {
+			var oResourceBundle = this.getResourceBundle();
+			var sMsg = oResourceBundle.getText("msg.prePlanSubmitSuccess", oResponce["PLAN_ID"]);
+			var othat = this;
+			MessageBox.confirm(
+				sMsg, {
+					styleClass: this.getOwnerComponent().getContentDensityClass(),
+					actions: [oResourceBundle.getText("btn.successMsgBxBtnBack"), oResourceBundle.getText("btn.successMsgBxBtnPlanDetail")],
+					onClose: function (oAction) {
+						if (oAction === oResourceBundle.getText("btn.successMsgBxBtnBack")) {
+							this.onNavBack();
+						} else if (oAction === oResourceBundle.getText("btn.successMsgBxBtnPlanDetail")) {
+							this.navToDetail(oResponce["ObjectKey"]);
+						}
+					}.bind(othat)
+				});
 		},
 
 		/**

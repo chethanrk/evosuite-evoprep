@@ -152,11 +152,7 @@
  			this._bMessageOpen = true;
  			// here in the below code we are checking that is there a plan number & object key in the
  			// response
- 			var oData = this._oModel.getProperty("/" + oBatchResponse.url),
- 				sNumber = oData ? oData.PLAN_ID : "",
- 				sObjectKey = oData ? oData.ObjectKey : "",
- 				oEventBus = sap.ui.getCore().getEventBus();
- 				//if no error message presents, then show information
+ 			//if no error message presents, then show information
 
  			if (this.sErrorMessage !== "") {
  				var msg = this._oResourceBundle.getText("msg.prePlanSubmitFail") + "\n\n";
@@ -166,22 +162,6 @@
  						styleClass: this._oComponent.getContentDensityClass(),
  						actions: [MessageBox.Action.CLOSE],
  						onClose: function () {
- 							this._bMessageOpen = false;
- 						}.bind(this)
- 					}
- 				);
- 			} else if (sNumber) {
- 				
- 				MessageBox.confirm(
- 					this.sSuccessMessage, {
- 						styleClass: this._oComponent.getContentDensityClass(),
- 						actions: [this._oResourceBundle.getText("btn.successMsgBxBtnBack"),this._oResourceBundle.getText("btn.successMsgBxBtnPlanDetail")],
- 						onClose: function (oAction) {
- 							if (oAction === this._oResourceBundle.getText("btn.successMsgBxBtnBack")) {
- 								oEventBus.publish("CreatePrePlan", "NavBack", {});
- 							} else if (oAction === this._oResourceBundle.getText("btn.successMsgBxBtnPlanDetail")) {
- 								oEventBus.publish("CreatePrePlan", "NavToDetails", {ObjectKey:sObjectKey});
- 							}
  							this._bMessageOpen = false;
  						}.bind(this)
  					}
@@ -214,7 +194,7 @@
  			}
  		},
 
- 		_aShowMsgNeverSets: [],
+ 		_aShowMsgNeverSets: ["PlanHeaderSet"],
  		_isNotMsgFromSet: function (sUrl, aSet) {
  			for (var i = 0; i < this._aShowMsgNeverSets.length; i++) {
  				if (sUrl.indexOf(this._aShowMsgNeverSets[i]) >= 0) {
@@ -233,18 +213,18 @@
  		_showMsgByStatusText: function (oBatchResponse, bShowSuccessPopup) {
  			if (oBatchResponse.response.statusCode >= 200 && oBatchResponse.response.statusCode < 300) {
  				// on success no content are coming from backend so fetch details from oDataModel
- 				if (oBatchResponse.response.headers['location']) {
- 					var sLoc = oBatchResponse.response.headers['location'],
- 						aLoc = sLoc.split("/");
- 					oBatchResponse.url = aLoc[aLoc.length - 1];
+ 				// if (oBatchResponse.response.headers['location']) {
+ 				// 	var sLoc = oBatchResponse.response.headers['location'],
+ 				// 		aLoc = sLoc.split("/");
+ 				// 	oBatchResponse.url = aLoc[aLoc.length - 1];
 
- 				}
+ 				// }
  				var oData = this._oModel.getProperty("/" + oBatchResponse.url),
  					sNumber = oData ? oData.PLAN_ID : "",
  					msg = this._oResourceBundle.getText("msg.saveSuccess");
 
  				if (sNumber) {
- 					msg = this._oResourceBundle.getText("msg.prePlanSubmitSucessType2", sNumber);
+ 					msg = this._oResourceBundle.getText("msg.prePlanSubmitSucessType", sNumber);
  				}
  				if (bShowSuccessPopup) {
  					if (sNumber) {

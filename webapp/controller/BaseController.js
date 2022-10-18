@@ -696,7 +696,6 @@ sap.ui.define([
 						aContext.push(oContext);
 					}
 				}.bind(this));
-
 				this.saveChangesMain({
 					state: "success",
 					isDelete: true,
@@ -707,7 +706,7 @@ sap.ui.define([
 						oTable.rebindTable();
 					}
 					resolve();
-				}.bind(this), null, oTable);
+				}.bind(this), this._errorCallBackForPlanHeaderSet.bind(this), oTable);
 			}.bind(this));
 		},
 

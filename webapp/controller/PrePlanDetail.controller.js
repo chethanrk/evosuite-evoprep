@@ -189,7 +189,7 @@ sap.ui.define([
 				//if form is valid save created entry
 				if (mErrors.state === "success") {
 					if (oModel.hasPendingChanges()) {
-						this.saveChangesMain(mErrors, this._saveSuccess.bind(this));
+						this.saveChangesMain(mErrors, this._saveSuccess.bind(this),this._errorCallBackForPlanHeaderSet.bind(this));
 					} else {
 						sap.m.MessageToast.show(oResourceBundle.getText("ymsg.noChangesPrePlanHeaderEdit"));
 					}

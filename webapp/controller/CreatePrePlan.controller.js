@@ -171,7 +171,7 @@ sap.ui.define([
 							oPayloadData.PlanHeaderToPlanItems = this.oCreateModel.getProperty("/results");
 							oPayloadData.FUNCTION = this.getModel("user").getProperty("/DEFAULT_FUNCTION");
 
-							this.CreatePrePlan(oPayloadData, this._createSuccess.bind(this), this._createPlanError.bind(this));
+							this.CreatePrePlan(oPayloadData, this._createSuccess.bind(this));
 						}
 					}.bind(this));
 				}
@@ -251,26 +251,6 @@ sap.ui.define([
 					resolve(obj);
 				}.bind(this));
 			}.bind(this));
-		},
-		/**
-		 * Called when create request has error from the backend saved in backend
-		 * @{param} oResponse - response from the backend
-		 */
-		_createPlanError: function (oResponse) {
-			if (oResponse){
-				var sErrorText = this.getResourceBundle().getText("errorText");
-				var sMessage = this._extractError(oResponse.response);
-				MessageBox.error(
-					sErrorText, {
-						details: typeof (sMessage) === "string" ? sMessage.replace(/\n/g, "<br/>") : sMessage,
-						styleClass: this.getOwnerComponent().getContentDensityClass(),
-						actions: [MessageBox.Action.CLOSE],
-						onClose: function () {
-							
-						}.bind(this)
-					}
-				);
-			}
 		},
 		/**
 		 * Called when create request sussessfully saved in backend

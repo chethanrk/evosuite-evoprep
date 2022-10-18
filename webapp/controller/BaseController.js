@@ -1075,7 +1075,7 @@ sap.ui.define([
 				sErrortext = oResourceBundle.getText("errorText"),
 				sMessage = this._extractError(oError.response);
 			MessageBox.error(
-				sErrortext+"manik", {
+				sErrortext, {
 					details: typeof (sMessage) === "string" ? sMessage.replace(/\n/g, "<br/>") : sMessage,
 					styleClass: this.getOwnerComponent().getContentDensityClass(),
 					actions: [MessageBox.Action.CLOSE],

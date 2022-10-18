@@ -171,7 +171,7 @@ sap.ui.define([
 							oPayloadData.PlanHeaderToPlanItems = this.oCreateModel.getProperty("/results");
 							oPayloadData.FUNCTION = this.getModel("user").getProperty("/DEFAULT_FUNCTION");
 
-							this.CreatePrePlan(oPayloadData, this._createSuccess.bind(this));
+							this.CreatePrePlan(oPayloadData, this._createSuccess.bind(this),this._errorCallBackForPlanHeaderSet.bind(this));
 						}
 					}.bind(this));
 				}

@@ -1028,7 +1028,7 @@ sap.ui.define([
 		 */
 		_extractError: function (oResponse) {
 			if (!oResponse) {
-				return this._oResourceBundle.getText("errorText");
+				return this.getResourceBundle().getText("errorText");
 			}
 			if (oResponse.responseText) {
 				var parsedJSError = null;
@@ -1063,6 +1063,27 @@ sap.ui.define([
 				return oResponse.body;
 			}
 			return oResponse;
+		},
+		/**
+		 * Display the error messages from the backend for the
+		 * PlanHeaderSet entity set
+		 * @param oError - This is a error object returned from backend. 
+		 * @private
+		 */
+		_errorCallBackForPlanHeaderSet: function (oError) {
+			var oResourceBundle = this.getResourceBundle(),
+				sErrortext = oResourceBundle.getText("errorText"),
+				sMessage = this._extractError(oError.response);
+			MessageBox.error(
+				sErrortext+"manik", {
+					details: typeof (sMessage) === "string" ? sMessage.replace(/\n/g, "<br/>") : sMessage,
+					styleClass: this.getOwnerComponent().getContentDensityClass(),
+					actions: [MessageBox.Action.CLOSE],
+					onClose: function () {
+
+					}.bind(this)
+				}
+			);
 		}
 
 	});

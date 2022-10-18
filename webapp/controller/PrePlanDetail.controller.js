@@ -688,14 +688,6 @@ sap.ui.define([
 							var sPath = this._oContext.getPath();
 							this.getModel().setProperty(sPath + "/FUNCTION", this.sFunctionKey);
 							this.getModel().setProperty(sPath + "/SKIP_ERROR_ENTRY", "X");
-							/*this.getModel().submitChanges({
-								success: function () {
-									console.log("x")
-								},
-								error: function () {
-									console.log("y")
-								}
-							})*/
 							this.saveChangesMain({
 								state: "success",
 								isCreate: false

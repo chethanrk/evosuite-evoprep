@@ -1,8 +1,9 @@
 sap.ui.define([
 	"com/evorait/evosuite/evoprep/controller/BaseController",
 	"sap/ui/core/Fragment",
+	"sap/m/MessageBox",
 	"sap/ui/core/mvc/OverrideExecution"
-], function (BaseController, Fragment, OverrideExecution) {
+], function (BaseController, Fragment, MessageBox, OverrideExecution) {
 	"use strict";
 
 	return BaseController.extend("com.evorait.evosuite.evoprep.controller.CreatePrePlan", {
@@ -72,7 +73,6 @@ sap.ui.define([
 				this._initializeView();
 			}, this);
 		},
-
 		/**
 		 * Called when the View has been rendered (so its HTML is part of the document). Post-rendering manipulations of the HTML could be done here.
 		 * This hook is the same one that SAPUI5 controls get after being rendered.
@@ -252,19 +252,18 @@ sap.ui.define([
 				}.bind(this));
 			}.bind(this));
 		},
-
 		/**
 		 * Called when create request sussessfully saved in backend
 		 * @{param} oResponse - response from the backend
 		 * unbind old context and bind new context
 		 * Set default values
 		 */
+
 		_createSuccess: function (oResponse) {
 			if (oResponse) {
 				//Bind new context
 				this.getView().unbindElement();
-				var oContext = this.getView().getModel().createEntry("/PlanHeaderSet");
-				this.getView().setBindingContext(oContext);
+
 				this.getModel("CreateModel").getData().results = [];
 				this.getModel("CreateModel").refresh();
 				this.getModel().resetChanges();
@@ -272,10 +271,36 @@ sap.ui.define([
 				var oNewEntryContext = new sap.ui.model.Context(this.getModel(), "/PlanHeaderSet('" + oResponse.ObjectKey +
 					"')");
 				this.getView().getModel().deleteCreatedEntry(oNewEntryContext);
-
-				// defaulting values
-				this._initializeView();
+				this._showSuccessMessage(oResponse);
 			}
+		},
+		/**
+		 * This method is used to show sucess dialog that comes after the
+		 * plan is successfully created.
+		 */
+		_showSuccessMessage: function (oResponce) {
+			var oResourceBundle = this.getResourceBundle();
+			var sMsg = oResourceBundle.getText("msg.prePlanSubmitSuccess", oResponce["PLAN_ID"]);
+			var othat = this;
+			var oContext = this.getView().getModel().createEntry("/PlanHeaderSet");
+			MessageBox.confirm(
+				sMsg, {
+					styleClass: this.getOwnerComponent().getContentDensityClass(),
+					actions: [oResourceBundle.getText("btn.successMsgBxBtnBack"), oResourceBundle.getText("btn.successMsgBxBtnPlanDetail"), sap.m.MessageBox
+						.Action.CANCEL
+					],
+					onClose: function (oAction) {
+						if (oAction === oResourceBundle.getText("btn.successMsgBxBtnBack")) {
+							this.onNavBack();
+						} else if (oAction === oResourceBundle.getText("btn.successMsgBxBtnPlanDetail")) {
+							this.navToDetail(oResponce["ObjectKey"]);
+						} else if (oAction === "CANCEL") {
+							this.getView().setBindingContext(oContext);
+							//defaulting values
+							this._initializeView();
+						}
+					}.bind(othat)
+				});
 		},
 
 		/**
@@ -339,7 +364,6 @@ sap.ui.define([
 
 			this.callFunctionImport(oParams, sFunctionName, "GET", callbackfunction);
 		}
-
 	});
 
 });

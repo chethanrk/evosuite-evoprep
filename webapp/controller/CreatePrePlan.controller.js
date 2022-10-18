@@ -274,6 +274,10 @@ sap.ui.define([
 				this._showSuccessMessage(oResponse);
 			}
 		},
+		/**
+		 * This method is used to show sucess dialog that comes after the
+		 * plan is successfully created.
+		 */
 		_showSuccessMessage: function (oResponce) {
 			var oResourceBundle = this.getResourceBundle();
 			var sMsg = oResourceBundle.getText("msg.prePlanSubmitSuccess", oResponce["PLAN_ID"]);

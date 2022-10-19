@@ -466,8 +466,8 @@ sap.ui.define([
 
 			if (oData["ALLOW_" + this.sFunctionKey]) {
 				this.getModel().setProperty(sPath + "/FUNCTION", this.sFunctionKey);
-				if (this._sFunctonKey === "FINAL") {
-					console.log("Final key Is Pressed");
+				if (this.sFunctionKey === "FINAL") {
+
 					this.saveChangesMain({
 						state: "success",
 						isCreate: false

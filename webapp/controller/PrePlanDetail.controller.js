@@ -467,7 +467,6 @@ sap.ui.define([
 			if (oData["ALLOW_" + this.sFunctionKey]) {
 				this.getModel().setProperty(sPath + "/FUNCTION", this.sFunctionKey);
 				if (this.sFunctionKey === "FINAL") {
-
 					this.saveChangesMain({
 						state: "success",
 						isCreate: false
@@ -700,7 +699,7 @@ sap.ui.define([
 							this.saveChangesMain({
 								state: "success",
 								isCreate: false
-							}, this._afterUpdateStatus.bind(this), this._updatePlanStatusError.bind(this));
+							}, this._afterUpdateStatus.bind(this), this._errorCallBackForPlanHeaderSet.bind(this));
 						}
 
 					}.bind(this)

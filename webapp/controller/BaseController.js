@@ -1070,6 +1070,7 @@ sap.ui.define([
 		 * @private
 		 */
 		_errorCallBackForPlanHeaderSet: function (oError) {
+			console.log(oError);
 			var oResourceBundle = this.getResourceBundle(),
 				sErrortext = oResourceBundle.getText("errorText"),
 				sMessage = this._extractError(oError.response);

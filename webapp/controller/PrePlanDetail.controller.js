@@ -189,7 +189,7 @@ sap.ui.define([
 				//if form is valid save created entry
 				if (mErrors.state === "success") {
 					if (oModel.hasPendingChanges()) {
-						this.saveChangesMain(mErrors, this._saveSuccess.bind(this),this._errorCallBackForPlanHeaderSet.bind(this));
+						this.saveChangesMain(mErrors, this._saveSuccess.bind(this), this._errorCallBackForPlanHeaderSet.bind(this));
 					} else {
 						sap.m.MessageToast.show(oResourceBundle.getText("ymsg.noChangesPrePlanHeaderEdit"));
 					}
@@ -246,7 +246,7 @@ sap.ui.define([
 			var oSource = oEvent.getSource(),
 				oItem = oEvent.getParameter("item");
 			this.sFunctionKey = oItem ? oItem.data("key") : oSource.data("key");
-
+			console.log(this.sFunctionKey);
 			this._updateStatus();
 		},
 
@@ -466,10 +466,19 @@ sap.ui.define([
 
 			if (oData["ALLOW_" + this.sFunctionKey]) {
 				this.getModel().setProperty(sPath + "/FUNCTION", this.sFunctionKey);
-				this.saveChangesMain({
-					state: "success",
-					isCreate: false
-				}, this._afterUpdateStatus.bind(this), this._updatePlanStatusError.bind(this));
+				if (this._sFunctonKey === "FINAL") {
+					console.log("Final key Is Pressed");
+					this.saveChangesMain({
+						state: "success",
+						isCreate: false
+					}, this._afterUpdateStatus.bind(this), this._updatePlanStatusError.bind(this));
+				} else {
+					this.saveChangesMain({
+						state: "success",
+						isCreate: false
+					}, this._afterUpdateStatus.bind(this), this._errorCallBackForPlanHeaderSet.bind(this));
+				}
+
 			} else {
 				message = this.getResourceBundle().getText("msg.workorderSubmitFail", oData.PLAN_ID);
 				this.addMsgToMessageManager(this.mMessageType.Error, message, "/PreplanList");

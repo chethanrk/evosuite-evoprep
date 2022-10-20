@@ -665,7 +665,8 @@ sap.ui.define([
 			var oResourceBundle = this.getResourceBundle(),
 				sFinalMessage,
 				sErrortext = oResourceBundle.getText("errorText"),
-				sMessage = this._extractError(this._extractError(oError.__batchResponses[0].response));
+				sMessage = this._extractError(this._extractError(oError.__batchResponses[0].response)),
+				sMessageDoyouWantToContinue = oResourceBundle.getText("msg.errorHanlderFinalStatusConfmsg"); //errorHanlderFinalStatusConfmsg;
 			if (oError.__batchResponses[0].response.statusCode === "500") {
 				this._errorCallBackForPlanHeaderSet(oError);
 				return;
@@ -685,7 +686,7 @@ sap.ui.define([
 				} else {
 					strError = parsedMessage.error.code + ": " + parsedMessage.error.message.value;
 				}
-				sFinalMessage = strError;
+				sFinalMessage = strError + String.fromCharCode("8226")+"" + sMessageDoyouWantToContinue;
 			} else {
 				sFinalMessage = sMessage;
 			}

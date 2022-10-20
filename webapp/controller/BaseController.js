@@ -724,9 +724,9 @@ sap.ui.define([
 				this.getModel().submitChanges({
 					success: function (oResponse) {
 						this._setBusyWhileSaving(oCtrl, false);
-
-						if (oResponse.__batchResponses && oResponse.__batchResponses[0].response && oResponse.__batchResponses[0].response.statusCode ===
-							"400") {
+						if (oResponse.__batchResponses && oResponse.__batchResponses[0].response && (oResponse.__batchResponses[0].response.statusCode ===
+								"400" || oResponse.__batchResponses[0].response.statusCode ===
+								"500")) {
 							if (oErrorCallback) {
 								oErrorCallback(oResponse);
 							}
@@ -1072,10 +1072,31 @@ sap.ui.define([
 		_errorCallBackForPlanHeaderSet: function (oError) {
 			var oResourceBundle = this.getResourceBundle(),
 				sErrortext = oResourceBundle.getText("errorText"),
-				sMessage = this._extractError(oError.response);
+				sMessage = this._extractError(oError.response),
+				sFinalMessage;
+			if (oError.hasOwnProperty("__batchResponses")) {
+				sMessage = this._extractError(this._extractError(oError.__batchResponses[0].response));
+				var parsedMessage, aInnerDetails, strError = "";
+				parsedMessage = jQuery.sap.parseJS(sMessage);
+				aInnerDetails = parsedMessage.error.innererror.errordetails;
+				if (aInnerDetails.length > 0) {
+					for (var i = 0; i < aInnerDetails.length; i++) {
+						if (aInnerDetails[i].severity === "warning") {
+							this._addWarningMessageToMessageManager(aInnerDetails[i].message);
+						} else {
+							strError += String.fromCharCode("8226") + " " + aInnerDetails[i].message + "\n\n";
+						}
+					}
+				} else {
+					strError = parsedMessage.error.code + ": " + parsedMessage.error.message.value;
+				}
+				sFinalMessage = strError;
+			} else {
+				sFinalMessage = sMessage;
+			}
 			MessageBox.error(
 				sErrortext, {
-					details: typeof (sMessage) === "string" ? sMessage.replace(/\n/g, "<br/>") : sMessage,
+					details: typeof (sFinalMessage) === "string" ? sFinalMessage.replace(/\n/g, "<br/>") : sFinalMessage,
 					styleClass: this.getOwnerComponent().getContentDensityClass(),
 					actions: [MessageBox.Action.CLOSE],
 					onClose: function () {

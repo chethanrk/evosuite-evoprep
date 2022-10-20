@@ -666,6 +666,10 @@ sap.ui.define([
 				sFinalMessage,
 				sErrortext = oResourceBundle.getText("errorText"),
 				sMessage = this._extractError(this._extractError(oError.__batchResponses[0].response));
+			if (oError.__batchResponses[0].response.statusCode === "500") {
+				this._errorCallBackForPlanHeaderSet(oError);
+				return;
+			}
 			if (sMessage !== undefined && sMessage !== null) {
 				var parsedMessage, aInnerDetails, strError = "";
 				parsedMessage = jQuery.sap.parseJS(sMessage);
@@ -686,9 +690,9 @@ sap.ui.define([
 				sFinalMessage = sMessage;
 			}
 
-			MessageBox.error(
-				sErrortext, {
-					details: typeof (sFinalMessage) === "string" ? sFinalMessage.replace(/\n/g, "<br/>") : sFinalMessage,
+			MessageBox.confirm(
+				sFinalMessage, {
+					//details: typeof (sFinalMessage) === "string" ? sFinalMessage.replace(/\n/g, "<br/>") : sFinalMessage,
 					styleClass: this.getOwnerComponent().getContentDensityClass(),
 					actions: [MessageBox.Action.OK, MessageBox.Action.CLOSE],
 					onClose: function (oAction) {

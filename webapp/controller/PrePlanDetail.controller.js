@@ -686,7 +686,7 @@ sap.ui.define([
 				} else {
 					strError = parsedMessage.error.code + ": " + parsedMessage.error.message.value;
 				}
-				sFinalMessage = strError + String.fromCharCode("8226")+"" + sMessageDoyouWantToContinue;
+				sFinalMessage = strError + String.fromCharCode("8226")+ "  " + sMessageDoyouWantToContinue;
 			} else {
 				sFinalMessage = sMessage;
 			}
@@ -695,7 +695,7 @@ sap.ui.define([
 				sFinalMessage, {
 					//details: typeof (sFinalMessage) === "string" ? sFinalMessage.replace(/\n/g, "<br/>") : sFinalMessage,
 					styleClass: this.getOwnerComponent().getContentDensityClass(),
-					actions: [MessageBox.Action.OK, MessageBox.Action.CLOSE],
+					actions: [MessageBox.Action.OK, MessageBox.Action.NO],
 					onClose: function (oAction) {
 						if (oAction === "OK") {
 							var sPath = this._oContext.getPath();

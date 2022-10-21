@@ -286,15 +286,14 @@ sap.ui.define([
 			MessageBox.confirm(
 				sMsg, {
 					styleClass: this.getOwnerComponent().getContentDensityClass(),
-					actions: [oResourceBundle.getText("btn.successMsgBxBtnBack"), oResourceBundle.getText("btn.successMsgBxBtnPlanDetail"), sap.m.MessageBox
-						.Action.CANCEL
+					actions: [oResourceBundle.getText("btn.successMsgBxBtnBack"), oResourceBundle.getText("btn.successMsgBxBtnPlanDetail"), oResourceBundle.getText("btn.successMsgBxBtnContinueEditing")
 					],
 					onClose: function (oAction) {
 						if (oAction === oResourceBundle.getText("btn.successMsgBxBtnBack")) {
 							this.onNavBack();
 						} else if (oAction === oResourceBundle.getText("btn.successMsgBxBtnPlanDetail")) {
 							this.navToDetail(oResponce["ObjectKey"]);
-						} else if (oAction === "CANCEL") {
+						} else if (oAction === oResourceBundle.getText("btn.successMsgBxBtnContinueEditing")) {
 							this.getView().setBindingContext(oContext);
 							//defaulting values
 							this._initializeView();

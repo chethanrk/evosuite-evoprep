@@ -64,6 +64,16 @@
 						</table:RowAction>
 					</table:rowActionTemplate>
 					<table:columns>
+						<table:Column hAlign="Center" sortProperty="ALLOW_REPROCESS" filterProperty="ALLOW_REPROCESS" width="5rem">
+							<Label text="{/PlanItemsSet/ALLOW_REPROCESS/##com.sap.vocabularies.Common.v1.Label/String}" tooltip="{/PlanItemsSet/ALLOW_REPROCESS/##com.sap.vocabularies.Common.v1.Label/String}"/>
+							<table:customData>
+								<core:CustomData key="p13nData"
+									value='\{"columnKey": "ALLOW_REPROCESS", "leadingProperty":"ALLOW_REPROCESS", "filterProperty":"ALLOW_REPROCESS", "sortProperty":"ALLOW_REPROCESS", "columnIndex":"3"}'/>
+							</table:customData>
+							<table:template>
+								<core:Icon src="sap-icon://alert" visible="{= ${ALLOW_REPROCESS} === 'X' }"/>
+							</table:template>
+						</table:Column>
 						<table:Column hAlign="Center" sortProperty="NO_OF_PLAN_ID" filterProperty="NO_OF_PLAN_ID" width="7rem">
 							<Label text="{/PlanItemsSet/NO_OF_PLAN_ID/##com.sap.vocabularies.Common.v1.Label/String}"/>
 							<table:customData>

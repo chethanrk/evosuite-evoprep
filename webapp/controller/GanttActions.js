@@ -60,6 +60,7 @@ sap.ui.define([
 					this._oView.getModel().refresh();
 					var oEventBus = sap.ui.getCore().getEventBus();
 					oEventBus.publish("BaseController", "refreshFullGantt", this._loadGanttData, this);
+						this._oView.getModel("viewModel").setProperty("/bDependencyCall", true);
 				}.bind(this));
 		},
 
@@ -103,7 +104,7 @@ sap.ui.define([
 				oAxisTimeStrategy.setZoomLevel(6);
 			}
 		},
-		
+
 		/**
 		 * Function to Calcualate Gantt Horizon Dates  
 		 * @param sPath 
@@ -114,12 +115,12 @@ sap.ui.define([
 				sMidDate = new Date(sEndDate - (sEndDate - sStartDate) / 2),
 				oHorizonDates = {
 					visibleHorizon: {
-						startDate: new Date(sMidDate.setDate(sMidDate.getDate() - 2)),
-						endDate: new Date(sMidDate.setDate(sMidDate.getDate() + 1))
+						startDate: moment(sMidDate).startOf("day").subtract(2, "day").toDate(),
+						endDate: moment(sMidDate).endOf("day").add(1, "day").toDate() 
 					},
 					totalHorizon: {
-						startDate: new Date(sStartDate.setDate(sStartDate.getDate() - 30)),
-						endDate: new Date(sEndDate.setDate(sEndDate.getDate() + 30))
+						startDate: moment(sStartDate).startOf("day").subtract(30, "day").toDate(), 
+						endDate: moment(sEndDate).endOf("day").add(30, "day").toDate() 
 					}
 				};
 			return oHorizonDates;

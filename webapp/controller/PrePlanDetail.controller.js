@@ -272,6 +272,10 @@ sap.ui.define([
 			var oSource = oEvent.getSource(),
 				sButtonText = oSource.getText(),
 				oResourceBundle = this.getResourceBundle();
+			//Service Call while clicking on Show Dependencies Button for First Time
+			if (this.oViewModel.getProperty("/bDependencyCall")) {
+				this._loadGanttData();
+			}
 			if (sButtonText === oResourceBundle.getText("xbut.hideDependencies")) {
 				this.getModel("viewModel").setProperty("/bShowDependencies", false);
 				oSource.setText(oResourceBundle.getText("xbut.showDependencies"));
@@ -391,6 +395,8 @@ sap.ui.define([
 				}
 
 				if (oData.viewNameId === sViewName) {
+					this.oViewModel.setProperty("/bShowDependencies", false); //Disabling Dependencies in Graphic Planning GanttChart
+					this.oViewModel.setProperty("/bDependencyCall", true);
 					this._oContext = this.getView().getBindingContext();
 					this._rebindPage();
 					this._loadGanttData();
@@ -548,6 +554,7 @@ sap.ui.define([
 			this.oViewModel.setProperty("/layout", library.LayoutType.TwoColumnsMidExpanded);
 			this.oViewModel.setProperty("/fullscreen", true);
 			this._loadGanttData();
+				this.oViewModel.setProperty("/bDependencyCall", true);
 		},
 
 		/**
@@ -593,10 +600,15 @@ sap.ui.define([
 			return new Promise(function (resolve) {
 				var sEntitySet = "/GanttHierarchySet",
 					aFilters = [],
+					mParams = "",
+					sPath = this._oContext.getPath();
+				//Passing Expand Call Only while Clicking on Show Dependecies for First Time
+				if (this.oViewModel.getProperty("/bDependencyCall") && this.oViewModel.getProperty("/bShowDependencies")) {
 					mParams = {
 						"$expand": "GanttHierarchyToDependency"
-					},
-					sPath = this._oContext.getPath();
+					};
+					this.oViewModel.setProperty("/bDependencyCall", false);
+				}
 				var sHeaderKey = this.getModel().getProperty(sPath + "/ObjectKey");
 				aFilters.push(new Filter("HIERARCHY_LEVEL", FilterOperator.EQ, iLevel));
 				aFilters.push(new Filter("HeaderObjectKey", FilterOperator.EQ, sHeaderKey));

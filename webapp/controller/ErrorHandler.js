@@ -113,6 +113,20 @@
  			sap.ui.getCore().getMessageManager().addMessages(oMessage);
  		},
 
+ 		/***
+ 		 * Adds Information Message from Batch response to Message Manager
+ 		 * @param message information to be shown in message manager
+ 		 */
+ 		_addInformationMessageToMessageManager: function (sMessage) {
+ 			var oMessage = new Message({
+ 				message: sMessage,
+ 				type: sap.ui.core.MessageType.Information,
+ 				processor: this._oMessageModel,
+ 				technical: true
+ 			});
+ 			sap.ui.getCore().getMessageManager().addMessages(oMessage);
+ 		},
+
  		/**
  		 * Shows a {@link sap.m.MessageBox} when a service call has failed.
  		 * Only the first error message will be display.
@@ -187,6 +201,8 @@
  		_extractBatchResponseMessage: function (oDetails, bShowSuccessPopup) {
  			if (oDetails.response.headers["return-message"]) {
  				this._showMsgByType(oDetails, bShowSuccessPopup);
+ 			} else if (oDetails.response.headers["sap-message"]) {
+ 				this._showInformationMsg(oDetails);
  			} else {
  				this._showMsgByStatusText(oDetails, bShowSuccessPopup);
  			}
@@ -311,6 +327,15 @@
  				return oResponse.body;
  			}
  			return oResponse;
+ 		},
+ 		/**
+ 		 * Shows response message in MessagePopever.
+ 		 * @private
+ 		 * @param oDetails
+ 		 */
+ 		_showInformationMsg: function (oDetails) {
+ 			var newMSg = JSON.parse(oDetails.response.headers["sap-message"]).message;
+ 			this._addInformationMessageToMessageManager(newMSg);
  		}
  	});
  });

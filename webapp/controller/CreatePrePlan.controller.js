@@ -282,7 +282,6 @@ sap.ui.define([
 			var oResourceBundle = this.getResourceBundle();
 			var sMsg = oResourceBundle.getText("msg.prePlanSubmitSuccess", oResponce["PLAN_ID"]);
 			var othat = this;
-			var oContext = this.getView().getModel().createEntry("/PlanHeaderSet");
 			MessageBox.confirm(
 				sMsg, {
 					styleClass: this.getOwnerComponent().getContentDensityClass(),
@@ -294,6 +293,7 @@ sap.ui.define([
 						} else if (oAction === oResourceBundle.getText("btn.successMsgBxBtnPlanDetail")) {
 							this.navToDetail(oResponce["ObjectKey"]);
 						} else if (oAction === oResourceBundle.getText("btn.successMsgBxBtnContinueEditing")) {
+							var oContext = this.getView().getModel().createEntry("/PlanHeaderSet");
 							this.getView().setBindingContext(oContext);
 							//defaulting values
 							this._initializeView();

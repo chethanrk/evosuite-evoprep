@@ -97,6 +97,8 @@ sap.ui.define([
 		 */
 		onPressEdit: function (oEvent) {
 			var bEdit = oEvent.getParameter("editable");
+			this.getModel("viewModel").setProperty("/bOperationTableMode", bEdit);
+			this.getModel("viewModel").setProperty("/bEnableOperationDelete", false);
 			if (!bEdit && !isEmptyObject(this.getModel().getPendingChanges())) {
 				this.saveChangesMain({
 					state: "success",
@@ -109,7 +111,13 @@ sap.ui.define([
 		 *  Selection Change event on table 
 		 */
 		handleSelectionChangeOperation: function (oEvent) {
-			this._oOperationContext = oEvent.getParameter("listItem").getBindingContext();
+			var oSource = oEvent.getSource(),
+				aSelectedItems = oSource.getSelectedItems();
+			if (aSelectedItems.length > 0) {
+				this.getModel("viewModel").setProperty("/bEnableOperationDelete", true);
+			} else {
+				this.getModel("viewModel").setProperty("/bEnableOperationDelete", false);
+			}
 		},
 
 		/**
@@ -117,29 +125,42 @@ sap.ui.define([
 		 */
 		onPressDeleteOperations: function () {
 			var sTitle = this.getResourceBundle().getText("tit.confirmDelete"),
-				sMsg = this.getResourceBundle().getText("msg.confirmDeletePrepLan");
+				aSelectedItems = this._oTable.getSelectedItems(),
+				sMsg;
 
 			var successFn = function () {
-				this.getModel().setProperty(this._oOperationContext.getPath() + "/DELETE_ENTRY", "X");
+				var aContext = [];
+				aSelectedItems.forEach(function (oItem) {
+					var oContext = oItem.getPath ? oItem : oItem.getBindingContext();
+					if (oContext) {
+						this.getModel().setProperty(oContext.getPath() + "/DELETE_ENTRY", "X");
+						aContext.push(oContext);
+					}
+				}.bind(this));
 				this.saveChangesMain({
 					state: "success",
-					isCreate: false
+					isDelete: true,
+					aContext: aContext
 				}, this._afterSuccess.bind(this), this._afterError.bind(this), this.getView());
 				this._oTable.removeSelections();
-				this._oOperationContext = null;
+				this.getModel("viewModel").setProperty("/bEnableOperationDelete", false);
 			};
 
 			var declineFn = function () {
 				this._oTable.removeSelections();
-				this._oOperationContext = null;
+				this.getModel("viewModel").setProperty("/bEnableOperationDelete", false);
 			};
 
-			if (this._oOperationContext) {
+			if (aSelectedItems.length > 0) {
 				if (this._oTable.getItems().length === 1) {
-					sTitle = this.getResourceBundle().getText("tit.confirmDelete");
 					sMsg = this.getResourceBundle().getText("msg.confirmDeleteLastOperation");
+				} else if (this._oTable.getItems().length === aSelectedItems.length) {
+					sMsg = this.getResourceBundle().getText("msg.confirmDeleteAllOperation");
+				} else if (aSelectedItems.length === 1) {
+					sMsg = this.getResourceBundle().getText("msg.confirmDeleteSelectedOperation");
+				} else {
+					sMsg = this.getResourceBundle().getText("msg.confirmDeleteSelectedOperations");
 				}
-
 				this.showConfirmDialog(sTitle, sMsg, successFn.bind(this), declineFn.bind(this));
 			} else {
 				var msgs = this.getView().getModel("i18n").getResourceBundle().getText("msg.selectAtleast");

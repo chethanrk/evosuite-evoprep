@@ -201,7 +201,7 @@
  		_extractBatchResponseMessage: function (oDetails, bShowSuccessPopup) {
  			if (oDetails.response.headers["return-message"]) {
  				this._showMsgByType(oDetails, bShowSuccessPopup);
- 			} else if (oDetails.response.headers["sap-message"]) {
+ 			} else if (oDetails.response.headers["sap-message"] && oDetails.method === "MERGE") {
  				this._showInformationMsg(oDetails);
  			} else {
  				this._showMsgByStatusText(oDetails, bShowSuccessPopup);
@@ -232,8 +232,8 @@
  					sNumber = oData ? oData.PLAN_ID : "",
  					msg = this._oResourceBundle.getText("msg.saveSuccess");
 
- 				if (sNumber) {
- 					msg = this._oResourceBundle.getText("msg.prePlanSubmitSucessType", sNumber);
+ 				if (sNumber && oBatchResponse.method !== "MERGE") {
+ 					msg = this._oResourceBundle.getText("msg.prePlanSubmitSucess", sNumber);
  				}
  				if (bShowSuccessPopup) {
  					if (sNumber) {

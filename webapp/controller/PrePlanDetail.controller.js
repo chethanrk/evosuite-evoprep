@@ -246,7 +246,6 @@ sap.ui.define([
 			var oSource = oEvent.getSource(),
 				oItem = oEvent.getParameter("item");
 			this.sFunctionKey = oItem ? oItem.data("key") : oSource.data("key");
-			console.log(this.sFunctionKey);
 			this._updateStatus();
 		},
 
@@ -657,7 +656,9 @@ sap.ui.define([
 		},
 		/**
 		 * Display the error messages from the backend for the
-		 * PlanHeaderSet entity set
+		 * PlanHeaderSet entity set specific in case we change
+		 * the status to final as this method helps to display the 
+		 * confirmation dialog box
 		 * @param oError - This is a error object returned from backend. 
 		 * @private
 		 */

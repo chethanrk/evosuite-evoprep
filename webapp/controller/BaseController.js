@@ -1065,7 +1065,8 @@ sap.ui.define([
 		},
 		/**
 		 * Display the error messages from the backend for the
-		 * PlanHeaderSet entity set
+		 * PlanHeaderSet entity set incase some error is returned
+		 * from backend
 		 * @param oError - This is a error object returned from backend. 
 		 * @private
 		 */

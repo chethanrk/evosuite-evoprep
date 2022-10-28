@@ -17,3 +17,8 @@
 .sapMObjectStatusLarge .sapMObjStatusIcon {
     font-size: 1.25rem;
 }
+
+.sapUxAPObjectPageSection .sapUxAPObjectPageSectionContainer .sapUxAPObjectPageSubSection .sapUxAPBlockContainer {
+    padding-bottom: 0;
+    padding-top: 0;
+}

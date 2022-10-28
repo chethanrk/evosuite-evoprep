@@ -7,7 +7,8 @@
 		<template:alias name=".evoAH" value="com.evorait.evosuite.evoprep.model.AnnotationHelper">
 			<template:with path="templateProperties>/" var="tempProps">
 				<uxap:ObjectPageLayout id="prePlanDetailPage" class="sapUiNoContentPadding" useIconTabBar="false" enableLazyLoading="true"
-					isChildPage="true" showFooter="true" busy="{viewModel>/busy}" busyIndicatorDelay="{viewModel>/delay}" showHeaderContent="{viewModel>/ganttFullMode}">
+					isChildPage="true"  showFooter="false" busy="{viewModel>/busy}" busyIndicatorDelay="{viewModel>/delay}"
+					showHeaderContent="{viewModel>/ganttFullMode}">
 					<uxap:headerTitle>
 						<uxap:ObjectPageHeader objectTitle="{PLAN_NAME}" objectSubtitle="{PLAN_ID}" visible="{viewModel>/ganttFullMode}">
 							<uxap:actions>
@@ -82,7 +83,7 @@
 												<template:if
 													test="{:= ${parts: [{value:'PlanningTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameInDescription'} }">
 													<template:then>
-														<uxap:ObjectPageSubSection title="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}" >
+														<uxap:ObjectPageSubSection title="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}" class="sapUxAPObjectPageSubSectionFitContainer">
 															<uxap:blocks>
 																<core:Fragment fragmentName="com.evorait.evosuite.evoprep.view.templates.PlanningGanttChart" type="XML"/>
 															</uxap:blocks>

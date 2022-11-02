@@ -221,6 +221,14 @@ sap.ui.define([
 				this.showConfirmDialog(sTitle, sMsg, successFn.bind(this));
 			}
 		},
+		
+		/**
+		 * Copy the opened plan
+		 * */
+		 onPressCopyPrePlanHeader: function(){
+		 	var GUID = this._oContext.getObject().ObjectKey;
+			this.copySelectedPlan(GUID);	
+		 },
 
 		/**
 		 * show ActionSheet of status buttons

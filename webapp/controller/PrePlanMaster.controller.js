@@ -22,7 +22,7 @@ sap.ui.define([
 					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
-
+				
 				onCreatePrePlanPress: {
 					public: true,
 					final: false,
@@ -45,6 +45,12 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
+				},
+				
+				onCopyPrePlanPress: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
@@ -62,6 +68,8 @@ sap.ui.define([
 			//route for page create new order
 			oRouter.getRoute("PrePlanMaster").attachMatched(this._routeMatchedMaster, this);
 			oRouter.getRoute("PrePlanDetail").attachMatched(this._routeMatchedDetail, this);
+			//disable the copy button by default
+			this.getModel("viewModel").setProperty("/isCopyEnabled", false);
 		},
 
 		/* =========================================================== */
@@ -107,6 +115,17 @@ sap.ui.define([
 				plans: "01"
 			});
 		},
+		
+		/** 
+		 * Sending a call to backend for copy with the selected Plan's GuID on click of copy. 
+		 * */
+		 onCopyPrePlanPress: function(){
+		 	var oSelectedItem = this.oSmartTable._oTable.getSelectedItem(),
+				GUID = oSelectedItem.getBindingContext().getObject().ObjectKey;
+		 	this.copySelectedPlan(GUID, this.oSmartTable._oTable);
+		 	this._removeTableSelection();
+		 },
+		
 
 		/**
 		 * Navigating to Create PrePlan View on Click of Create PrePlan Button
@@ -126,10 +145,23 @@ sap.ui.define([
 		onWPrePlanListSelectionChange: function (oEvent) {
 			var isPreplanDeletEnabled = false;
 			this.selectedFunction = "";
+			var oCopyButton = this.getView().byId("idBtnCopyPrePlan");
 			var oSelectedPrePlanContext = this.oSmartTable.getTable().getSelectedContexts();
 			if (oSelectedPrePlanContext.length > 0) {
 				isPreplanDeletEnabled = true;
 			}
+			
+			if(oSelectedPrePlanContext.length === 1){
+				//enable the copy button only for New & In Progress Status
+				var oSelectedItem = this.oSmartTable._oTable.getSelectedItem(),
+					sStatus = oSelectedItem.getBindingContext().getObject().STATUS_SHORT;
+				if(sStatus === "INPR" || sStatus === "NEW")
+					this.getModel("viewModel").setProperty("/isCopyEnabled", true);
+			} else {
+				//disable the copy button
+				this.getModel("viewModel").setProperty("/isCopyEnabled", false);
+			}
+			
 			this.getModel("viewModel").setProperty("/isPrePlanSelected", isPreplanDeletEnabled);
 		},
 

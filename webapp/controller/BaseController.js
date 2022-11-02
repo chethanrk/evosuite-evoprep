@@ -184,6 +184,10 @@ sap.ui.define([
 				destroyOperationListFragment: {
 					public: true,
 					final: true
+				},
+				copySelectedPlan: {
+					public: true,
+					final: true
 				}
 			}
 		},
@@ -1063,7 +1067,42 @@ sap.ui.define([
 				return oResponse.body;
 			}
 			return oResponse;
-		}
+		},
+		
+		/**
+		 * Used in both master and detail for copying the selected plan
+		 * @Params GUID - Old GUID used for copying it
+		 * */
+
+		copySelectedPlan: function (GUID, oCtrl) {
+			//getting the GUID of selected Plan
+			var oResourceBundle = this.getModel("i18n").getResourceBundle(),
+				sFunctionName = "CopyPlan",
+				oParams = {
+					OldPlanGuid: GUID
+				};
+			this._setBusyWhileSaving(oCtrl, true);
+			var callBackFunction = function (oData) {
+				this._setBusyWhileSaving(oCtrl, false);
+				MessageBox.confirm(
+					oData.Messagebap, {
+						styleClass: this.getOwnerComponent().getContentDensityClass(),
+						actions: [oResourceBundle.getText("btn.successMsgBxBtnContinueEditing"), 
+								  oResourceBundle.getText("btn.successMsgBxBtnPlanDetail")
+						],
+						onClose: function (oAction) {
+							if (oAction === oResourceBundle.getText("btn.successMsgBxBtnContinueEditing")) {
+								//do nothing
+							} else if (oAction === oResourceBundle.getText("btn.successMsgBxBtnPlanDetail")) {
+								this.navToDetail(oData.NewPlanGuid);
+							} 
+						}.bind(this)
+					});
+			}.bind(this);
+
+			this.callFunctionImport(oParams, sFunctionName, "GET", callBackFunction);
+
+		},
 
 	});
 });

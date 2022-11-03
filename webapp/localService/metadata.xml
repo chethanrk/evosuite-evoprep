@@ -44,6 +44,8 @@
 				<Property Name="ENABLE_ITEM_UPDATE" Type="Edm.String" MaxLength="1" sap:label="Enable Item Update" sap:is-extension-field="true"/>
 				<Property Name="ENABLE_PLAN_DELETE" Type="Edm.String" MaxLength="1" sap:label="Delete Plan" sap:is-extension-field="true"/>
 				<Property Name="ENABLE_SHOW_ALL_DEMANDS" Type="Edm.String" MaxLength="1" sap:label="Demand" sap:is-extension-field="true"/>
+				<Property Name="DEFAULT_PLAN_DET_FULLSC" Type="Edm.String" MaxLength="1" sap:label="Plan Detail in Full Screen"
+					sap:is-extension-field="true"/>
 			</EntityType>
 			<EntityType Name="PlanItems" sap:content-version="1">
 				<Key>

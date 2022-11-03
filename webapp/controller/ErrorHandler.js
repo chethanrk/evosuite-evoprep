@@ -231,7 +231,10 @@
  			} else {
  				var errorMessage = this._extractError(oBatchResponse.response);
  				this._addFailureMessageToMessageManager(errorMessage);
- 				this._showServiceError(errorMessage);
+ 				if (this._isNotMsgFromSet(oBatchResponse.url)) {
+ 					this._showServiceError(errorMessage);
+ 				}
+
  			}
  		},
 

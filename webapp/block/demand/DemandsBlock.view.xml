@@ -17,10 +17,11 @@
 				<Button icon="sap-icon://add" press="onPressAddOperations" tooltip="{i18n>btn.addOper}"
 					visible="{parts: [{path:'user>/ENABLE_ITEM_UPDATE'}, {path:'ALLOW_FINAL'}, {path:'user>/ENABLE_ITEM_ADD'} ], formatter:'.formatter.showOperationAdd'}"/>
 				<Button icon="sap-icon://delete" press="onPressDeleteOperations" tooltip="{i18n>btn.remove}"
-					visible="{parts: [{path:'ALLOW_FINAL'}, {path:'user>/ENABLE_ITEM_DELETE'} ], formatter:'.formatter.showOperationEditDel'}"/>
+					visible="{parts: [{path:'ALLOW_FINAL'}, {path:'user>/ENABLE_ITEM_DELETE'} ], formatter:'.formatter.showOperationEditDel'}"
+					enabled="{viewModel>/bEnableOperationDelete}"/>
 				<core:ExtensionPoint name="TableExtP|PrePlanDetail|PlanItemsSet|CustomToolbar"/>
 			</Toolbar>
 		</smartTable:customToolbar>
-		<Table mode="SingleSelectLeft" selectionChange="handleSelectionChangeOperation"></Table>
+		<Table mode="{= ${viewModel>/bOperationTableMode} ? 'None' : 'MultiSelect'}" selectionChange="handleSelectionChangeOperation" growingThreshold="100"></Table>
 	</smartTable:SmartTable>
 </mvc:View>

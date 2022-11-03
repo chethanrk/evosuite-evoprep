@@ -700,7 +700,6 @@ sap.ui.define([
 						aContext.push(oContext);
 					}
 				}.bind(this));
-
 				this.saveChangesMain({
 					state: "success",
 					isDelete: true,
@@ -711,7 +710,7 @@ sap.ui.define([
 						oTable.rebindTable();
 					}
 					resolve();
-				}.bind(this), null, oTable);
+				}.bind(this), this._errorCallBackForPlanHeaderSet.bind(this), oTable);
 			}.bind(this));
 		},
 
@@ -729,9 +728,9 @@ sap.ui.define([
 				this.getModel().submitChanges({
 					success: function (oResponse) {
 						this._setBusyWhileSaving(oCtrl, false);
-
-						if (oResponse.__batchResponses && oResponse.__batchResponses[0].response && oResponse.__batchResponses[0].response.statusCode ===
-							"400") {
+						if (oResponse.__batchResponses && oResponse.__batchResponses[0].response && (oResponse.__batchResponses[0].response.statusCode ===
+								"400" || oResponse.__batchResponses[0].response.statusCode ===
+								"500")) {
 							if (oErrorCallback) {
 								oErrorCallback(oResponse);
 							}
@@ -782,8 +781,12 @@ sap.ui.define([
 		 * Navigate to detail page with selected plan
 		 */
 		navToDetail: function (sPlanObject) {
+			var sLayout = library.LayoutType.TwoColumnsMidExpanded;
+			if (this.getModel("user").getProperty("/DEFAULT_PLAN_DET_FULLSC")) {
+				sLayout = library.LayoutType.MidColumnFullScreen
+			}
 			this.getRouter().navTo("PrePlanDetail", {
-				layout: library.LayoutType.TwoColumnsMidExpanded,
+				layout: sLayout,
 				plan: sPlanObject
 			});
 		},
@@ -1032,7 +1035,7 @@ sap.ui.define([
 		 */
 		_extractError: function (oResponse) {
 			if (!oResponse) {
-				return this._oResourceBundle.getText("errorText");
+				return this.getResourceBundle().getText("errorText");
 			}
 			if (oResponse.responseText) {
 				var parsedJSError = null;
@@ -1068,8 +1071,51 @@ sap.ui.define([
 			}
 			return oResponse;
 		},
-		
 		/**
+		 * Display the error messages from the backend for the
+		 * PlanHeaderSet entity set incase some error is returned
+		 * from backend
+		 * @param oError - This is a error object returned from backend. 
+		 * @private
+		 */
+		_errorCallBackForPlanHeaderSet: function (oError) {
+			var oResourceBundle = this.getResourceBundle(),
+				sErrortext = oResourceBundle.getText("errorText"),
+				sMessage = this._extractError(oError.response),
+				sFinalMessage;
+			if (oError.hasOwnProperty("__batchResponses")) {
+				sMessage = this._extractError(this._extractError(oError.__batchResponses[0].response));
+				var parsedMessage, aInnerDetails, strError = "";
+				parsedMessage = jQuery.sap.parseJS(sMessage);
+				aInnerDetails = parsedMessage.error.innererror.errordetails;
+				if (aInnerDetails.length > 0) {
+					for (var i = 0; i < aInnerDetails.length; i++) {
+						if (aInnerDetails[i].severity === "warning") {
+							this._addWarningMessageToMessageManager(aInnerDetails[i].message);
+						} else {
+							strError += String.fromCharCode("8226") + " " + aInnerDetails[i].message + "\n\n";
+						}
+					}
+				} else {
+					strError = parsedMessage.error.code + ": " + parsedMessage.error.message.value;
+				}
+				sFinalMessage = strError;
+			} else {
+				sFinalMessage = sMessage;
+			}
+			MessageBox.error(
+				sErrortext, {
+					details: typeof (sFinalMessage) === "string" ? sFinalMessage.replace(/\n/g, "<br/>") : sFinalMessage,
+					styleClass: this.getOwnerComponent().getContentDensityClass(),
+					actions: [MessageBox.Action.CLOSE],
+					onClose: function () {
+
+					}.bind(this)
+				}
+			);
+		},
+        
+        /**
 		 * Used in both master and detail for copying the selected plan
 		 * @Params GUID - Old GUID used for copying it
 		 * */
@@ -1102,7 +1148,7 @@ sap.ui.define([
 
 			this.callFunctionImport(oParams, sFunctionName, "GET", callBackFunction);
 
-		},
+		}
 
 	});
 });

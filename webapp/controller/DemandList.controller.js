@@ -147,6 +147,46 @@ sap.ui.define([
 				isEnabledPrePlanreate = true;
 			}
 			this.getModel("viewModel").setProperty("/allowPrePlanCreate", isEnabledPrePlanreate);
+			// check enable or disable the materials status and material information button
+			if(this._returnMaterialContext().length>0){
+				this.byId("materialInfo").setEnabled(true);
+				this.byId("idOverallStatusButton").setEnabled(true);
+			}else {
+				this.byId("materialInfo").setEnabled(false);
+				this.byId("idOverallStatusButton").setEnabled(false);
+			}
+
+		},
+		_returnMaterialContext: function () {
+			var sDemandPath, bComponentExist,aArrayMaterialContext=[],aContext;
+			var aSelecteOperationIndice = this.oSmartTable.getTable().getSelectedIndices();
+			for (var i = 0; i < aSelecteOperationIndice.length; i++) {
+				aContext = this.oSmartTable.getTable().getContextByIndex(aSelecteOperationIndice[i]);
+				sDemandPath = aContext.getPath();
+				bComponentExist = this.getModel().getProperty(sDemandPath + "/COMPONENT_EXISTS");
+				if (bComponentExist) {
+					aArrayMaterialContext.push(aContext);
+				} 
+			}
+			return aArrayMaterialContext;
+		},
+		/**
+		 * On Refresh Status Button press in Demand Table 
+		 * 
+		 */
+		onMaterialStatusPress: function (oEvent) {
+			var oSelectedIndices = this._returnMaterialContext(),
+				oViewModel = this.getModel("viewModel"),
+				sDemandPath;
+			oViewModel.setProperty("/busy", true);
+			for (var i = 0; i < oSelectedIndices.length; i++) {
+				sDemandPath = oSelectedIndices[i].getPath();
+				console.log(sDemandPath);
+				this.getOwnerComponent().readData(sDemandPath).then(function (result) {
+					console.log(result)
+					oViewModel.setProperty("/busy", false);
+				}.bind(this));
+			}
 		},
 
 		/**

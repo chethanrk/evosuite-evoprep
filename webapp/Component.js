@@ -74,15 +74,16 @@ sap.ui.define([
 				ganttFullMode: true,
 				fullscreenGantt: true,
 				isCreatePage: false,
-				ganttSelectionPane:"30%", //Setting Gantt Pane Adjustment Percentage
+				ganttSelectionPane: "30%", //Setting Gantt Pane Adjustment Percentage
 				ganttSettings: {
 					busy: true,
 					sStartDate: null,
 					sEndDate: null
 				},
-				bDependencyCall:false, //Restricting expand call in Graphic Planning GanttChart
-				bEnableOperationDelete:false, //Enabling/Disabling Delete Button in Plan Detail Operation Tab
-				bOperationTableMode:false //Plan Detail Operation Table Selection Mode
+				bDependencyCall: false, //Restricting expand call in Graphic Planning GanttChart
+				bEnableOperationDelete: false, //Enabling/Disabling Delete Button in Plan Detail Operation Tab
+				bOperationTableMode: false, //Plan Detail Operation Table Selection Mode
+				authorizeCheck: false // SAP standard check 
 			};
 
 			//GetSystemInformation Call
@@ -153,6 +154,7 @@ sap.ui.define([
 			this.oSystemInfoProm = new Promise(function (resolve) {
 				this.readData("/SystemInformationSet", []).then(function (oData) {
 					this.getModel("user").setData(oData.results[0]);
+					this.getModel("viewModel").setProperty("/authorizeCheck", oData.results[0].ENABLE_PM_AUTH_CHECK);
 					resolve(oData.results[0]);
 				}.bind(this));
 			}.bind(this));

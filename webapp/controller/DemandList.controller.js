@@ -143,7 +143,9 @@ sap.ui.define([
 		handleDemandSelectionChange: function (oEvent) {
 			var isEnabledPrePlanreate = false;
 			var aSelecteOperationIndice = this.oSmartTable.getTable().getSelectedIndices();
-			if (aSelecteOperationIndice.length > 0) {
+			if (aSelecteOperationIndice.length > 0 && this.getModel("viewModel").getProperty("/authorizeCheck")) {
+				isEnabledPrePlanreate = Boolean(this.getModel("user").getProperty("/ENABLE_IW32_AUTH_CHECK"));
+			} else if (aSelecteOperationIndice.length > 0) {
 				isEnabledPrePlanreate = true;
 			}
 			this.getModel("viewModel").setProperty("/allowPrePlanCreate", isEnabledPrePlanreate);

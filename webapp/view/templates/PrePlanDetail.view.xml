@@ -15,16 +15,17 @@
 								<uxap:ObjectPageHeaderActionButton id="idStatusChangeMenu" hideText="false" type="Default" text="{i18n>xbut.status}"
 									tooltip="{i18n>xbut.status}"
 									visible="{parts: [{path:'viewModel>/showStatusButton'},{path:'viewModel>/editMode'}, {path:'ALLOW_FINAL'} ], formatter:'.formatter.showDetailStatusEdit'}"
+									enabled="{parts: ['viewModel>/authorizeCheck', 'user>/ENABLE_IW32_AUTH_CHECK'], formatter:'.formatter.enableBtn'}"
 									press="onPressChangeStatus"/>
 								<uxap:ObjectPageHeaderActionButton id="idStatusCopy" hideText="false" type="Default" text="{i18n>xbut.copy}" tooltip="{i18n>xbut.copy}"
 									visible="false"/>
 								<uxap:ObjectPageHeaderActionButton id="idStatusDelete" hideText="false" type="Default" text="{i18n>xbut.delete}"
 									tooltip="{i18n>xbut.delete}" visible="{= ${user>/ENABLE_PLAN_DELETE} === 'X' &amp;&amp; ${viewModel>/editMode} === true}"
+									enabled="{parts: ['viewModel>/authorizeCheck', 'user>/ENABLE_IW32_AUTH_CHECK'], formatter:'.formatter.enableBtn'}"
 									press="oPressDetailDelete"/>
-								<uxap:ObjectPageHeaderActionButton id="idStatusEdit" hideText="false" type="Default" enabled="true" icon="sap-icon://edit"
-									tooltip="{i18n>xbut.edit}"
+								<uxap:ObjectPageHeaderActionButton id="idStatusEdit" hideText="false" type="Default" icon="sap-icon://edit" tooltip="{i18n>xbut.edit}"
 									visible="{parts: [{path:'user>/ENABLE_PREPLAN_UPDATE'},{path:'viewModel>/editMode'}, {path:'ALLOW_FINAL'} ], formatter:'.formatter.showDetailStatusEdit'}"
-									press="onPressHeaderEdit"/>
+									enabled="{parts: ['viewModel>/authorizeCheck', 'user>/ENABLE_IW32_AUTH_CHECK'], formatter:'.formatter.enableBtn'}" press="onPressHeaderEdit"/>
 								<uxap:ObjectPageHeaderActionButton icon="sap-icon://save" type="Emphasized" text="{i18n>xbtn.save}" hideText="false"
 									tooltip="{i18n>xbtn.save}" press="onPressSavePrePlanHeader" visible="{= !${viewModel>/editMode} === true}"/>
 								<uxap:ObjectPageHeaderActionButton icon="sap-icon://cancel" type="Default" press="onPressCancelPrePlanHeader" text="{i18n>xbtn.cancel}"
@@ -92,7 +93,8 @@
 												<template:if
 													test="{:= ${parts: [{value:'PlanningTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameInDescription'} }">
 													<template:then>
-														<uxap:ObjectPageSubSection title="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}" class="sapUxAPObjectPageSubSectionFitContainer">
+														<uxap:ObjectPageSubSection title="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}"
+															class="sapUxAPObjectPageSubSectionFitContainer">
 															<uxap:blocks>
 																<core:Fragment fragmentName="com.evorait.evosuite.evoprep.view.templates.PlanningGanttChart" type="XML"/>
 															</uxap:blocks>

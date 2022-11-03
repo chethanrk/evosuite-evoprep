@@ -82,7 +82,11 @@ sap.ui.define([
 			this.oSmartTable = this.getView().byId("demandListSmartTable");
 
 			this.oViewModel = this.getModel("viewModel");
+			console.log(this.oViewModel);
 			this.oCreateModel = this.getModel("CreateModel");
+			this.oViewModel.setProperty("/delay", 0);
+			this.oViewModel.setProperty("/busy", true);
+
 		},
 
 		/* =========================================================== */
@@ -148,17 +152,18 @@ sap.ui.define([
 			}
 			this.getModel("viewModel").setProperty("/allowPrePlanCreate", isEnabledPrePlanreate);
 			// check enable or disable the materials status and material information button
-			if(this._returnMaterialContext().length>0){
+			if (this._returnMaterialContext().length > 0) {
 				this.byId("materialInfo").setEnabled(true);
 				this.byId("idOverallStatusButton").setEnabled(true);
-			}else {
+			} else {
 				this.byId("materialInfo").setEnabled(false);
 				this.byId("idOverallStatusButton").setEnabled(false);
 			}
 
 		},
 		_returnMaterialContext: function () {
-			var sDemandPath, bComponentExist,aArrayMaterialContext=[],aContext;
+			var sDemandPath, bComponentExist, aArrayMaterialContext = [],
+				aContext;
 			var aSelecteOperationIndice = this.oSmartTable.getTable().getSelectedIndices();
 			for (var i = 0; i < aSelecteOperationIndice.length; i++) {
 				aContext = this.oSmartTable.getTable().getContextByIndex(aSelecteOperationIndice[i]);
@@ -166,7 +171,7 @@ sap.ui.define([
 				bComponentExist = this.getModel().getProperty(sDemandPath + "/COMPONENT_EXISTS");
 				if (bComponentExist) {
 					aArrayMaterialContext.push(aContext);
-				} 
+				}
 			}
 			return aArrayMaterialContext;
 		},
@@ -178,7 +183,7 @@ sap.ui.define([
 			var oSelectedIndices = this._returnMaterialContext(),
 				oViewModel = this.getModel("viewModel"),
 				sDemandPath;
-			oViewModel.setProperty("/busy", true);
+			console.log(oViewModel);
 			for (var i = 0; i < oSelectedIndices.length; i++) {
 				sDemandPath = oSelectedIndices[i].getPath();
 				console.log(sDemandPath);
@@ -187,6 +192,37 @@ sap.ui.define([
 					oViewModel.setProperty("/busy", false);
 				}.bind(this));
 			}
+		},
+		/**
+		 * On Material Info Button press event 
+		 * 
+		 */
+		onMaterialInfoButtonPress: function () {
+			var oTable = this.oSmartTable.getTable()
+			var aSelectedRowsIdx = oTable.getSelectedIndices();
+			if (aSelectedRowsIdx.length > 100) {
+				aSelectedRowsIdx.length = 100;
+			}
+			var oSelectedPaths = this._getSelectedRowPathsForMaterials();
+			//var iMaxSelcRow = this.getModel("user").getProperty("/DEFAULT_MAX_DEM_SEL_MAT_LIST");
+			if (oSelectedPaths.length > 0) {
+				console.log(oSelectedPaths);
+				this.getOwnerComponent().materialInfoDialog.open(this.getView(), false, oSelectedPaths);
+			} else {
+				var msg = this.getResourceBundle().getText("ymsg.selectMaxItemMaterialInfo");
+				//MessageToast.show(msg + " " + iMaxSelcRow);
+			}
+		},
+		_getSelectedRowPathsForMaterials:function(){
+			var aArray = [],selectMaxItemMaterialInfo=this._returnMaterialContext(),oBj;
+			for (var i=0;i<selectMaxItemMaterialInfo.length;i++){
+				oBj={
+					sPath:selectMaxItemMaterialInfo[i].getPath()
+				};
+				aArray.push(oBj);
+			}
+
+			return aArray;
 		},
 
 		/**

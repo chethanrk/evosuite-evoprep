@@ -121,8 +121,8 @@ sap.ui.define([
 		 * */
 		 onCopyPrePlanPress: function(){
 		 	var oSelectedItem = this.oSmartTable._oTable.getSelectedItem(),
-				GUID = oSelectedItem.getBindingContext().getObject().ObjectKey;
-		 	this.copySelectedPlan(GUID, this.oSmartTable._oTable);
+				sGUID = oSelectedItem.getBindingContext().getObject().ObjectKey;
+		 	this.copySelectedPlan(sGUID, this.oSmartTable._oTable);
 		 	this._removeTableSelection();
 		 },
 		
@@ -146,15 +146,17 @@ sap.ui.define([
 			var isPreplanDeletEnabled = false;
 			this.selectedFunction = "";
 			var oCopyButton = this.getView().byId("idBtnCopyPrePlan");
-			var oSelectedPrePlanContext = this.oSmartTable.getTable().getSelectedContexts();
+			var oSelectedPrePlanContext = this.oSmartTable.getTable().getSelectedContexts(),
+			oSelectedItem,
+			sStatus;
 			if (oSelectedPrePlanContext.length > 0) {
 				isPreplanDeletEnabled = true;
 			}
 			
 			if(oSelectedPrePlanContext.length === 1){
 				//enable the copy button only for New & In Progress Status
-				var oSelectedItem = this.oSmartTable._oTable.getSelectedItem(),
-					sStatus = oSelectedItem.getBindingContext().getObject().STATUS_SHORT;
+				oSelectedItem = this.oSmartTable._oTable.getSelectedItem();
+				sStatus = oSelectedItem.getBindingContext().getObject().STATUS_SHORT;
 				if(sStatus === "INPR" || sStatus === "NEW")
 					this.getModel("viewModel").setProperty("/isCopyEnabled", true);
 			} else {

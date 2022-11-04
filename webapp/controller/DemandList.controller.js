@@ -1,6 +1,6 @@
 sap.ui.define([
 	//	"sap/ui/core/mvc/Controller"
-	"com/evorait/evosuite/evoprep/controller/BaseController",
+	"com/evorait/evosuite/evoprep/controller/AddOperation",
 	"sap/ui/core/Fragment",
 	"sap/ui/core/mvc/OverrideExecution",
 	"sap/base/util/isEmptyObject",
@@ -83,8 +83,8 @@ sap.ui.define([
 			}
 		},
 
-		oSmartTable: null,
-		selectedPlanObject: null,
+		/*oSmartTable: null,
+		selectedPlanObject: null,*/
 
 		/* =========================================================== */
 		/* Lifecycle methods                                           */
@@ -335,9 +335,17 @@ sap.ui.define([
 		onPressOprPlanSave: function (oEvent) {
 			var oSmartTable = this.getView().byId("demandListSmartTable"),
 				oTable = oSmartTable.getTable(),
-				aSelectedItems = oTable.getSelectedIndices();
+				aSelectedItems = oTable.getSelectedIndices(),
+				planlist = sap.ui.getCore().byId("idPlanListFragSmartTable").getTable(),
+				oSelPlan = planlist.getSelectedItem();
 
-			this._triggerItemMergerequest(aSelectedItems, this._addExistingSuccess.bind(this), this._addExistingError.bind(this));
+			//this._triggerItemMergerequest(aSelectedItems, this._addExistingSuccess.bind(this), this._addExistingError.bind(this));
+			this.getValidationParameters(aSelectedItems).then(function (oPreparedData) {
+				if (oPreparedData && oPreparedData.sOrder && oPreparedData.sOpr) {
+					oPreparedData.sPrepPlan = oSelPlan.getBindingContext().getProperty("PLAN_ID");
+					this.triggerFunctionImport(oPreparedData, aSelectedItems);
+				}
+			}.bind(this));
 
 			this.onPressPlanListCancel();
 			this._removeOprTableSelection();
@@ -376,75 +384,13 @@ sap.ui.define([
 		},
 
 		/**
-		 * Prepare the payload for the merge call with selected operation for the add operation
-		 * @{param} -aSelectedItems - Selected operations from the operation list 
-		 */
-		_triggerItemMergerequest: function (aSelectedItems, oSuccessCallback, oErrorCallback) {
-			var mParameters = {
-				groupId: "batchSave",
-				success: oSuccessCallback,
-				error: oErrorCallback
-			};
-
-			this._preparePayload(mParameters, aSelectedItems).then(function (oData) {
-				if (oData.length > 0) {
-					this.saveChangesMain({
-						state: "success",
-						isCreate: true
-					}, this._addExistingSuccess.bind(this), this._addExistingError.bind(this), this.getView());
-				}
-			}.bind(this));
-		},
-
-		/**
-		 * Preapre payload for the add operation to existing plan 
-		 * Create changeset
-		 * used deferredgroups
-		 * @Param {mParameters} - details to odata model
-		 * @{param} -aSelectedItems - Selected operations from the operation list 
-		 */
-		_preparePayload: function (mParameters, aSelectedItems) {
-			return new Promise(function (resolve) {
-				this.getModel().setDeferredGroups(["batchSave"]);
-				aSelectedItems.forEach(function (iIndex) {
-					var oTable = this.oSmartTable.getTable(),
-						oItem = oTable.getContextByIndex(iIndex),
-						oRowData = oItem.getObject(),
-						planlist = sap.ui.getCore().byId("idPlanListFragSmartTable").getTable(),
-						oSelPlan = planlist.getSelectedItem(),
-						singleentry = {
-							groupId: "batchSave"
-						},
-						obj = {},
-						entitySet = "PlanItemsSet";
-					//collect all assignment properties who allowed for create
-					this.getModel().getMetaModel().loaded().then(function () {
-						var oMetaModel = this.getModel().getMetaModel(),
-							oEntitySet = oMetaModel.getODataEntitySet(entitySet),
-							oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
-							aProperty = oEntityType ? oEntityType.property : [];
-
-						aProperty.forEach(function (property) {
-							if (oRowData.hasOwnProperty(property.name) && oRowData[property.name]) {
-								obj[property.name] = oRowData[property.name];
-							}
-						});
-						obj.PLAN_ID = oSelPlan.getBindingContext().getProperty("PLAN_ID");
-						this.selectedPlanObject = oSelPlan.getBindingContext().getProperty("ObjectKey");
-						singleentry.properties = obj;
-						this.getModel().createEntry("/" + entitySet, singleentry);
-					}.bind(this));
-				}.bind(this));
-				resolve(aSelectedItems);
-			}.bind(this));
-		},
-
-		/**
 		 * Save success callback for the add operation to the existing plan
 		 */
-		_addExistingSuccess: function () {
+		_addExistingSuccess: function (oResponse) {
+			var oResData = this.getBatchChangeResponse(oResponse);
 			var sTitle = this.getResourceBundle().getText("xtit.confirm"),
-				sMsg = "wants to navigate to detail page of plan";
+				sMsg = this.getResourceBundle().getText("msg.prePlanSubmitSuccess", oResData.PLAN_ID) + "\n\n" +
+				"Do you wants to navigate to detail page of plan?";
 
 			var successcallback = function () {
 				this.navToDetail(this.selectedPlanObject);

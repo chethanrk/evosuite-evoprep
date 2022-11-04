@@ -90,12 +90,12 @@ sap.ui.define([
 
 			for (var i = 0; i < aSelectedPaths.length; i++) {
 				var sPath = aSelectedPaths[i].sPath,
-					sOrderId = this._oView.getModel().getProperty(sPath).ORDERID,
-					sOperationId = this._oView.getModel().getProperty(sPath).OPERATIONID;
-				aDemandGuid.push(new Filter("Orderid", FilterOperator.EQ, sOrderId));
-				aDemandGuid.push(new Filter("Operationid", FilterOperator.EQ, sOperationId));
+					sOrderId = this._oView.getModel().getProperty(sPath).ORDER_NUMBER,
+					sOperationId = this._oView.getModel().getProperty(sPath).OPERATION_NUMBER;
+				aDemandGuid.push(new Filter("ORDER_NUMBER", FilterOperator.EQ, sOrderId));
+				aDemandGuid.push(new Filter("OPERATION_NUMBER", FilterOperator.EQ, sOperationId));
 			}
-			console.log(aDemandGuid);
+
 			if (aDemandGuid.length > 0) {
 				aFilters.push(new Filter({
 					filters: aDemandGuid,

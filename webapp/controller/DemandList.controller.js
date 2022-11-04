@@ -7,7 +7,7 @@ sap.ui.define([
 	"sap/f/library",
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator"
-], function (BaseController, Fragment, OverrideExecution, isEmptyObject, library,Filter,FilterOperator) {
+], function (BaseController, Fragment, OverrideExecution, isEmptyObject, library, Filter, FilterOperator) {
 	"use strict";
 
 	return BaseController.extend("com.evorait.evosuite.evoprep.controller.DemandList", {
@@ -395,10 +395,11 @@ sap.ui.define([
 		 * Save success callback for the add operation to the existing plan
 		 */
 		_addExistingSuccess: function (oResponse) {
-			var oResData = this.getBatchChangeResponse(oResponse);
-			var sTitle = this.getResourceBundle().getText("xtit.confirm"),
-				sMsg = this.getResourceBundle().getText("msg.prePlanUpdateSuccess", oResData.PLAN_ID) + "\n\n" +
-				"Do you want to navigate to plan detail page?";
+			var oResData = this.getBatchChangeResponse(oResponse),
+				oResourceBundle = this.getResourceBundle(),
+				sTitle = oResourceBundle.getText("xtit.confirm"),
+				sMsg = oResourceBundle.getText("msg.prePlanUpdateSuccess", oResData.PLAN_ID) + "\n\n" +
+				oResourceBundle.getText("msg.navigateToDetail");
 
 			var successcallback = function () {
 				this.navToDetail(this.selectedPlanObject);

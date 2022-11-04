@@ -223,7 +223,7 @@
  					if (sNumber) {
  						this.sSuccessMessage += msg;
  					} else if (this._isNotMsgFromSet(oBatchResponse.url)) {
- 						//this.sSuccessMessage = msg;
+ 						//this.sSuccessMessage = msg; //Commented to test other scenario will remove it later once end to end testing is done
  					}
  				}
 

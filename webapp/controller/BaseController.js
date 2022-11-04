@@ -626,8 +626,7 @@ sap.ui.define([
 		 */
 		callFunctionImport: function (oParams, sFuncName, sMethod, fCallback) {
 			var oModel = this.getModel(),
-				oViewModel = this.getModel("viewModel"),
-				oResourceBundle = this.getResourceBundle();
+				oViewModel = this.getModel("viewModel");
 			oViewModel.setProperty("/busy", true);
 			oModel.callFunction("/" + sFuncName, {
 				method: sMethod || "POST",
@@ -741,6 +740,7 @@ sap.ui.define([
 						if (mParams.isDelete) {
 							this._deleteCreatedLocalDeleteEntry(mParams);
 						}
+						this.getModel().resetChanges();
 					}.bind(this),
 					error: function (oError) {
 						this.getModel().resetChanges();

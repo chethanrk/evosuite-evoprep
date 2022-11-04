@@ -5,8 +5,9 @@ sap.ui.define([
 	"sap/ui/core/mvc/OverrideExecution",
 	"sap/base/util/isEmptyObject",
 	"sap/f/library",
-	"sap/m/MessageBox"
-], function (BaseController, Fragment, OverrideExecution, isEmptyObject, library, MessageBox) {
+	"sap/ui/model/Filter",
+	"sap/ui/model/FilterOperator"
+], function (BaseController, Fragment, OverrideExecution, isEmptyObject, library,Filter,FilterOperator) {
 	"use strict";
 
 	return BaseController.extend("com.evorait.evosuite.evoprep.controller.DemandList", {
@@ -83,9 +84,6 @@ sap.ui.define([
 			}
 		},
 
-		/*oSmartTable: null,
-		selectedPlanObject: null,*/
-
 		/* =========================================================== */
 		/* Lifecycle methods                                           */
 		/* =========================================================== */
@@ -100,6 +98,7 @@ sap.ui.define([
 
 			this.oViewModel = this.getModel("viewModel");
 			this.oCreateModel = this.getModel("CreateModel");
+			this.oViewModel.setProperty("/busy", false);
 		},
 
 		/* =========================================================== */
@@ -290,6 +289,16 @@ sap.ui.define([
 		},
 
 		/**
+		 * Called before plan list table render
+		 * Pass final filter to avaoid to fetch final plans in the list
+		 */
+		onBeforeRebindTablePlanList: function (oEvent) {
+			var mBindingParams = oEvent.getParameter("bindingParams");
+			var aFilters = [new Filter("STATUS_SHORT", FilterOperator.NE, "FINL")];
+			mBindingParams.filters = mBindingParams.filters.concat(aFilters);
+		},
+
+		/**
 		 * Called when add to exsting plan button pressed
 		 * Validate the final opetaions to exclude
 		 */
@@ -319,7 +328,6 @@ sap.ui.define([
 			} else {
 				this.open(this._addExistingPlan);
 			}
-			//this._removeOprTableSelection();
 		},
 
 		/**
@@ -343,7 +351,7 @@ sap.ui.define([
 			this.getValidationParameters(aSelectedItems).then(function (oPreparedData) {
 				if (oPreparedData && oPreparedData.sOrder && oPreparedData.sOpr) {
 					oPreparedData.sPrepPlan = oSelPlan.getBindingContext().getProperty("PLAN_ID");
-					this.triggerFunctionImport(oPreparedData, aSelectedItems);
+					this.triggerFunctionImport(oPreparedData, aSelectedItems, this._addExistingSuccess.bind(this), this._addExistingError.bind(this));
 				}
 			}.bind(this));
 
@@ -389,8 +397,8 @@ sap.ui.define([
 		_addExistingSuccess: function (oResponse) {
 			var oResData = this.getBatchChangeResponse(oResponse);
 			var sTitle = this.getResourceBundle().getText("xtit.confirm"),
-				sMsg = this.getResourceBundle().getText("msg.prePlanSubmitSuccess", oResData.PLAN_ID) + "\n\n" +
-				"Do you wants to navigate to detail page of plan?";
+				sMsg = this.getResourceBundle().getText("msg.prePlanUpdateSuccess", oResData.PLAN_ID) + "\n\n" +
+				"Do you want to navigate to plan detail page?";
 
 			var successcallback = function () {
 				this.navToDetail(this.selectedPlanObject);

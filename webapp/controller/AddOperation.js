@@ -58,9 +58,15 @@ sap.ui.define([
 						"sOpr": undefined
 					},
 					oTable = this.oSmartTable.getTable();
-				aItems.forEach(function (iIndex) {
-					var oContext = oTable.getContextByIndex(iIndex),
-						sordnum = oContext.getProperty("ORDER_NUMBER"),
+				aItems.forEach(function (oItem) {
+					var oContext = null;
+					if (typeof (oItem) === "number") {
+						oContext = oTable.getContextByIndex(oItem);
+					} else {
+						oContext = oItem.getBindingContext();
+					}
+
+					var sordnum = oContext.getProperty("ORDER_NUMBER"),
 						soprnum = oContext.getProperty("OPERATION_NUMBER");
 
 					if (typeof oPrepData.sOrder === "undefined") {
@@ -83,7 +89,7 @@ sap.ui.define([
 		 * @{param} oParam - Url parameter
 		 * @{param} -aSelectedItems - Selected operations from the operation list 
 		 */
-		triggerFunctionImport: function (oParam, aSelectedItems) {
+		triggerFunctionImport: function (oParam, aSelectedItems, oSuccessCallback, oErrorCallback) {
 			var oParams = {
 					PlanID: oParam.sPrepPlan,
 					OrderNumber: oParam.sOrder,
@@ -92,7 +98,7 @@ sap.ui.define([
 				sFunctionName = "CalculateDate";
 
 			var callbackfunction = function (oImportedData) {
-				this.confirmDateChange(aSelectedItems);
+				this.confirmDateChange(aSelectedItems, oSuccessCallback, oErrorCallback);
 			}.bind(this);
 
 			this.callFunctionImport(oParams, sFunctionName, "GET", callbackfunction);
@@ -102,12 +108,12 @@ sap.ui.define([
 		 * Confirm before add operations to table
 		 * @{param} -aSelectedItems - Selected operations from the operation list 
 		 */
-		confirmDateChange: function (aSelectedItems) {
+		confirmDateChange: function (aSelectedItems, oSuccessCallback, oErrorCallback) {
 			var sTitle = this.getResourceBundle().getText("xtit.confirm"),
 				sMsg = this.getResourceBundle().getText("msg.operationUpdateConfirm");
 
 			var successFn = function () {
-				this.triggerItemMergerequest(aSelectedItems, this._addExistingSuccess.bind(this), this._addExistingError.bind(this));
+				this.triggerItemMergerequest(aSelectedItems, oSuccessCallback, oErrorCallback);
 			};
 			this.showConfirmDialog(sTitle, sMsg, successFn.bind(this));
 		},
@@ -128,7 +134,7 @@ sap.ui.define([
 					this.saveChangesMain({
 						state: "success",
 						isCreate: true
-					}, this._addExistingSuccess.bind(this), this._addExistingError.bind(this), this.getView());
+					}, oSuccessCallback, oErrorCallback, this.getView());
 				}
 			}.bind(this));
 		},
@@ -144,16 +150,24 @@ sap.ui.define([
 			return new Promise(function (resolve) {
 				this.getModel().setDeferredGroups(["batchSave"]);
 				aSelectedItems.forEach(function (iIndex) {
-					var oTable = this.oSmartTable.getTable(),
-						oItem = oTable.getContextByIndex(iIndex),
-						oRowData = oItem.getObject(),
-						planlist = sap.ui.getCore().byId("idPlanListFragSmartTable").getTable(),
-						oSelPlan = planlist.getSelectedItem(),
+					var oRowData = null,
+						oParentSource = null,
 						singleentry = {
 							groupId: "batchSave"
 						},
 						obj = {},
 						entitySet = "PlanItemsSet";
+					if (typeof (iIndex) === "number") {
+						var oTable = this.oSmartTable.getTable(),
+							oItem = oTable.getContextByIndex(iIndex);
+						oRowData = oItem.getObject();
+						var planlist = sap.ui.getCore().byId("idPlanListFragSmartTable").getTable();
+						oParentSource = planlist.getSelectedItem();
+					} else {
+						oRowData = iIndex.getBindingContext().getObject();
+						oParentSource = this.getView();
+					}
+
 					//collect all assignment properties who allowed for create
 					this.getModel().getMetaModel().loaded().then(function () {
 						var oMetaModel = this.getModel().getMetaModel(),
@@ -166,8 +180,8 @@ sap.ui.define([
 								obj[property.name] = oRowData[property.name];
 							}
 						});
-						obj.PLAN_ID = oSelPlan.getBindingContext().getProperty("PLAN_ID");
-						this.selectedPlanObject = oSelPlan.getBindingContext().getProperty("ObjectKey");
+						obj.PLAN_ID = oParentSource.getBindingContext().getProperty("PLAN_ID");
+						this.selectedPlanObject = oParentSource.getBindingContext().getProperty("ObjectKey");
 						singleentry.properties = obj;
 						this.getModel().createEntry("/" + entitySet, singleentry);
 					}.bind(this));
@@ -175,7 +189,6 @@ sap.ui.define([
 				resolve(aSelectedItems);
 			}.bind(this));
 		}
-
 	});
 
 });

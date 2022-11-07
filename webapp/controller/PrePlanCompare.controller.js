@@ -19,7 +19,7 @@ sap.ui.define([
 		 * @memberOf com.evorait.evosuite.evoprep.view.PrePlanCompare
 		 */
 		onInit: function () {
-
+	this.getModel("viewModel").setProperty("/busy", false);
 		},
 
 		/**

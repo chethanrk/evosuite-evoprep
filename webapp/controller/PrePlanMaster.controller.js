@@ -57,6 +57,7 @@ sap.ui.define([
 		 * @memberOf com.evorait.evosuite.evoprep.view.PrePlanMaster
 		 */
 		onInit: function () {
+			this.getModel("viewModel").setProperty("/busy", false);
 			this.oSmartTable = this.getView().byId("idPagePrePlanSmartTable");
 			var oRouter = this.getRouter();
 			//route for page create new order
@@ -100,12 +101,28 @@ sap.ui.define([
 		 * simulate to reouting 
 		 */
 		onPressComapre: function (oEvent) {
-			//unselect all the selected rows
-			this._removeTableSelection();
-			this.getRouter().navTo("PrePlanCompare", {
-				layout: library.LayoutType.TwoColumnsMidExpanded,
-				plans: "01"
-			});
+			var oTable = this.oSmartTable.getTable(),
+				aListItems = oTable.getSelectedItems(),
+				oPlans = {};
+
+			oPlans.plans = [];
+			if (aListItems.length === 0 || aListItems.length === 1) {
+				this.showMessageToast("Select atleast 2 plans");
+			} else if (aListItems.length > 1 && aListItems.length < 4) {
+				aListItems.forEach(function (oItem) {
+					oPlans["plans"].push(oItem.getBindingContext().getObject().PLAN_ID);
+				});
+
+				//unselect all the selected rows
+				this._removeTableSelection();
+				this.getModel("viewModel").setProperty("/fullscreenGantt", false);
+				this.getRouter().navTo("PrePlanCompare", {
+					layout: library.LayoutType.MidColumnFullScreen,
+					plans: JSON.stringify(oPlans.plans)
+				});
+			} else {
+				this.showMessageToast("Max 3 plans are allowed to compare");
+			}
 		},
 
 		/**

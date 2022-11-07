@@ -94,6 +94,7 @@ sap.ui.define([
 
 			//Creating the Global Gantt Model for PlanningGanttChart
 			this.setModel(models.createHelperModel(), "ganttModel");
+			this.setModel(models.createHelperModel(), "compareModel");
 
 			this._getTemplateProps();
 

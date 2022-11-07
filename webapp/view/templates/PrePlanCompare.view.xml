@@ -1,46 +1,200 @@
 <mvc:View controllerName="com.evorait.evosuite.evoprep.controller.PrePlanCompare" xmlns="sap.m" xmlns:core="sap.ui.core"
-	xmlns:mvc="sap.ui.core.mvc" xmlns:uxap="sap.uxap" xmlns:layout="sap.ui.layout" xmlns:smartField="sap.ui.comp.smartfield"
-	xmlns:smartTable="sap.ui.comp.smarttable" xmlns:blocks="com.evorait.evosuite.evoprep.block"
+	xmlns:mvc="sap.ui.core.mvc" xmlns:uxap="sap.uxap" xmlns:layout="sap.ui.layout" xmlns:f="sap.f"
 	xmlns:template="http://schemas.sap.com/sapui5/extension/sap.ui.core.template/1"
 	xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
 	<template:alias name=".AH" value="sap.ui.model.odata.AnnotationHelper">
 		<template:alias name=".evoAH" value="com.evorait.evosuite.evoprep.model.AnnotationHelper">
 			<template:with path="templateProperties>/" var="tempProps">
-				<uxap:ObjectPageLayout id="prePlanComparePage" class="sapUiNoContentPadding" useIconTabBar="false" enableLazyLoading="true"
-					isChildPage="true" showFooter="false" busy="{viewModel>/busy}" busyIndicatorDelay="{viewModel>/delay}">
-					<uxap:headerTitle>
-						<uxap:ObjectPageHeader objectTitle="Compare" objectSubtitle="Compare">
-							<uxap:actions>
-								<core:ExtensionPoint name="PageExtP|PrePlanCompare|PlanHeaderSet|Title|Action"/>
-							</uxap:actions>
-							<uxap:sideContentButton></uxap:sideContentButton>
-							<uxap:navigationBar>
-								<Bar class="sapUiTinyMarginTop">
-									<contentLeft>
-										<core:ExtensionPoint name="PageExtP|PrePlanCompare|PlanHeaderSet|NavigationBar|Left"/>
-									</contentLeft>
-									<contentMiddle>
-										<Title text="PrePlan Compare"/>
-									</contentMiddle>
-									<contentRight>
-										<Button icon="{path:'viewModel>/fullscreen',formatter:'.formatter.fullScreenVisibility'}" tooltip="Full screen" press="onPressFullScreen"/>
-										<Button icon="sap-icon://decline" tooltip="close" press="onPressClose"/>
-										<core:ExtensionPoint name="PageExtP|PrePlanCompare|PlanHeaderSet|NavigationBar|Right"/>
-									</contentRight>
-								</Bar>
-							</uxap:navigationBar>
-						</uxap:ObjectPageHeader>
-					</uxap:headerTitle>
-					<uxap:headerContent></uxap:headerContent>
-					<uxap:sections></uxap:sections>
-					<uxap:footer>
-						<OverflowToolbar id="idPrePlanDetailFooterToolbar" visible="false">
-							<core:ExtensionPoint name="PageExtP|PrePlanCompare|PlanHeaderSet|Footer|Left"/>
-							<ToolbarSpacer/>
-							<core:ExtensionPoint name="PageExtP|PrePlanCompare|PlanHeaderSet|Footer|Right"/>
-						</OverflowToolbar>
-					</uxap:footer>
-				</uxap:ObjectPageLayout>
+				<f:DynamicPage id="idPlanComaprePage" headerExpanded="true" preserveHeaderStateOnScroll="false" showFooter="false"
+					class="sapUiNoContentPadding" stickySubheaderProvider="" busy="{viewModel>/busy}">
+					<f:title>
+						<f:DynamicPageTitle>
+							<f:heading>
+								<Title text="Compare Plans"/>
+							</f:heading>
+							<f:navigationActions>
+								<Button icon="sap-icon://decline" tooltip="close" press="onPressClose"/>
+							</f:navigationActions>
+						</f:DynamicPageTitle>
+					</f:title>
+					<f:content>
+						<HBox width="100%">
+							<HBox width="25%">
+								<f:GridList id="idComapreGridProperty" items="{path:'compareModel>/compare0',templateShareable: true}" class="sapUiResponsiveContentPadding">
+									<f:GridListItem>
+										<VBox height="100%">
+											<VBox justifyContent="SpaceBetween">
+												<layoutData>
+													<FlexItemData growFactor="1" shrinkFactor="0"/>
+												</layoutData>
+												<template:with path="templateProperties>/annotationPath"
+													helper="com.evorait.evosuite.evoprep.model.AnnotationHelper.resolveObjectContentPath" var="detailTabs">
+													<template:repeat list="{detailTabs>}">
+														<template:if test="{:= ${detailTabs>Core.Description/String} === 'Form' || ${detailTabs>Org.OData.Core.V1.Description/String} === 'Form'}">
+															<template:then>
+																<!--<VBox>-->
+																<Panel expanded="true" width="auto" class="sapUiResponsiveMargin">
+																	<headerToolbar>
+																		<Toolbar>
+																			<Title text="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}"/>
+																		</Toolbar>
+																	</headerToolbar>
+																	<template:with path="detailTabs>Facets" var="facets">
+																		<template:repeat list="{facets>}">
+																			<template:with path="facets>Target" helper=".AH.resolvePath" var="target">
+																				<template:with path="target>Data" var="data">
+																					<template:repeat list="{data>}">
+																						<VBox alignItems="Start" class="sapUiSmallMargin">
+																							<Title text="{:= '{/' + 'PlanHeaderSet' + '/' + ${path : 'data>Value/Path'} + '/##com.sap.vocabularies.Common.v1.Label/String}' }"
+																								wrapping="false"/>
+																						</VBox>
+																					</template:repeat>
+																				</template:with>
+																			</template:with>
+																		</template:repeat>
+																	</template:with>
+																</Panel>
+																<!--</VBox>-->
+															</template:then>
+															<template:elseif
+																test="{:= ${detailTabs>Core.Description/String} === 'Table' || ${detailTabs>Org.OData.Core.V1.Description/String} === 'Table'}">
+																<VBox class="sapUiSmallMargin">
+																	<Table growing="true" items="{path:'compareModel>/compare',templateShareable: true}"
+																		headerText="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}">
+																		<columns>
+																			<template:repeat list="{path:'tempProps>/CompareConfigs/lineItems'}" var="lineItem">
+																				<Column demandPopin="true">
+																					<Text
+																						text="{:= '{/' + ${tempProps>/CompareConfigs/entitySet} + '/' + ${lineItem>Value/Path} + '/##com.sap.vocabularies.Common.v1.Label/String}' }"
+																						wrapping="false"/>
+																				</Column>
+																			</template:repeat>
+																		</columns>
+																		<items>
+																			<ColumnListItem>
+																				<cells>
+																					<template:repeat list="{path:'tempProps>/CompareConfigs/lineItems/'}" var="lineItem">
+																						<template:if test="{:= ${path: 'lineItem>EdmType'} === 'Edm.Date'}">
+																							<template:then>
+																								<Text text="{path:'lineItem>Value/Path', formatter:'.evoAH.getOperationDate'}" wrapping="false"/>
+																							</template:then>
+																							<template:else>
+																								<Text text="{= '{compareModel>' + ${path : 'lineItem>Value/Path'} + '}' }" wrapping="false"/>
+																							</template:else>
+																						</template:if>
+																					</template:repeat>
+																				</cells>
+																			</ColumnListItem>
+																		</items>
+																	</Table>
+																</VBox>
+															</template:elseif>
+														</template:if>
+													</template:repeat>
+												</template:with>
+											</VBox>
+										</VBox>
+									</f:GridListItem>
+								</f:GridList>
+							</HBox>
+							<HBox width="75%">
+								<f:GridList id="idComapreGrid" items="{path:'compareModel>/compare',templateShareable: true}" class="sapUiResponsiveContentPadding">
+									<f:GridListItem>
+										<VBox height="100%">
+											<VBox justifyContent="SpaceBetween">
+												<layoutData>
+													<FlexItemData growFactor="1" shrinkFactor="0"/>
+												</layoutData>
+												<template:with path="templateProperties>/annotationPath"
+													helper="com.evorait.evosuite.evoprep.model.AnnotationHelper.resolveObjectContentPath" var="detailTabs">
+													<template:repeat list="{detailTabs>}">
+														<template:if test="{:= ${detailTabs>Core.Description/String} === 'Form' || ${detailTabs>Org.OData.Core.V1.Description/String} === 'Form'}">
+															<template:then>
+																<!--<VBox>-->
+																<Panel expanded="true" width="auto" class="sapUiResponsiveMargin">
+																	<headerToolbar>
+																		<Toolbar>
+																			<Title text="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}"/>
+																		</Toolbar>
+																	</headerToolbar>
+																	<template:with path="detailTabs>Facets" var="facets">
+																		<template:repeat list="{facets>}">
+																			<template:with path="facets>Target" helper=".AH.resolvePath" var="target">
+																				<template:with path="target>Data" var="data">
+																					<template:repeat list="{data>}">
+																						<VBox alignItems="Start" class="sapUiSmallMargin">
+																							<template:if test="{:= ${path: 'data>EdmType'} === 'Edm.Date'}">
+																								<template:then>
+																									<Title text="{path:'data>Value/Path', formatter:'.evoAH.getCompareDate'}"/>
+																								</template:then>
+																								<template:elseif test="{:= (${data>Org.OData.Core.V1.Description/String} === 'Progress' || ${data>Core.Description/String} === 'Progress')}">
+																									<ProgressIndicator percentValue="60%" displayValue="{= '{compareModel>' + ${path : 'data>Value/Path'} + '}' }" showValue="true"
+																										state="Success"/>
+																								</template:elseif>
+																								<template:else>
+																									<Title text="{= '{compareModel>' + ${path : 'data>Value/Path'} + '}' }" wrapping="false" level="H6"/>
+																								</template:else>
+																							</template:if>
+																						</VBox>
+																					</template:repeat>
+																				</template:with>
+																			</template:with>
+																		</template:repeat>
+																	</template:with>
+																</Panel>
+																<!--</VBox>-->
+															</template:then>
+															<template:elseif
+																test="{:= ${detailTabs>Core.Description/String} === 'Table' || ${detailTabs>Org.OData.Core.V1.Description/String} === 'Table'}">
+																<VBox class="sapUiSmallMargin">
+																	<Table growing="true" items="{path:'compareModel>/compare',templateShareable: true}"
+																		headerText="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}">
+																		<columns>
+																			<template:if
+																				test="{:= ${parts: [{value:'UtilizationTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameMatch'} }">
+																				<template:then>
+																					<Column demandPopin="true">
+																						<Text text="Utilization"/>
+																					</Column>
+																				</template:then>
+																				<template:elseif
+																					test="{:= ${parts: [{value:'DurationTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameMatch'} }">
+																					<Column demandPopin="true">
+																						<Text text="Duration"/>
+																					</Column>
+																				</template:elseif>
+																			</template:if>
+																		</columns>
+																		<items>
+																			<ColumnListItem>
+																				<cells>
+																					<template:if
+																						test="{:= ${parts: [{value:'UtilizationTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameMatch'} }">
+																						<template:then>
+																							<Link text="20%"/>
+																						</template:then>
+																						<template:elseif
+																							test="{:= ${parts: [{value:'DurationTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameMatch'} }">
+																							<Link text="10"/>
+																						</template:elseif>
+																					</template:if>
+																				</cells>
+																			</ColumnListItem>
+																		</items>
+																	</Table>
+																</VBox>
+															</template:elseif>
+														</template:if>
+													</template:repeat>
+												</template:with>
+											</VBox>
+										</VBox>
+									</f:GridListItem>
+								</f:GridList>
+							</HBox>
+						</HBox>
+					</f:content>
+				</f:DynamicPage>
 			</template:with>
 		</template:alias>
 	</template:alias>

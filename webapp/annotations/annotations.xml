@@ -21,6 +21,78 @@
 		<edmx:Include Alias="UI" Namespace="com.sap.vocabularies.UI.v1"/>
 	</edmx:Reference>
 	<edmx:DataServices>
-		<Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="com.evorait.evoprep"></Schema>
+		<Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="com.evorait.evoprep">
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoprep.PlanHeader">
+				<Annotation Term="com.sap.vocabularies.UI.v1.LineItem">
+					<Collection>
+						<Record Type="com.sap.vocabularies.UI.v1.DataField">
+							<PropertyValue Property="Value" Path="PLAN_ID"/>
+							<PropertyValue Property="Position" Int="1"/>
+						</Record>
+						<Record Type="com.sap.vocabularies.UI.v1.DataField">
+							<PropertyValue Property="Value" Path="PLAN_NAME"/>
+							<PropertyValue Property="Position" Int="2"/>
+						</Record>
+						<Record Type="com.sap.vocabularies.UI.v1.DataField">
+							<PropertyValue Property="Value" Path="STATUS_TEXT"/>
+							<PropertyValue Property="Position" Int="3"/>
+						</Record>
+					</Collection>
+				</Annotation>
+				<Annotation Term="UI.Facets" Qualifier="PrePlanDetailTabs">
+					<Collection>
+						<Record Type="UI.CollectionFacet">
+							<PropertyValue Property="Facets">
+								<Collection>
+									<Record Type="UI.ReferenceFacet">
+										<PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#PrePlanDetailGeneral"/>
+									</Record>
+								</Collection>
+							</PropertyValue>
+							<PropertyValue Property="com.sap.vocabularies.Common.v1.Label" String="General"/>
+							<Annotation Term="Core.Description" String="Form"/>
+						</Record>
+						<Record Type="UI.ReferenceFacet">
+							<PropertyValue Property="Target" AnnotationPath="@UI.LineItem"/>
+							<PropertyValue Property="com.sap.vocabularies.Common.v1.Label" String="WorkCenter Utilization"/>
+							<Annotation Term="Core.Description" String="Table"/>
+							<Annotation Term="Core.LongDescription" String="UtilizationTab"/>
+						</Record>
+						<Record Type="UI.ReferenceFacet">
+							<PropertyValue Property="Target" AnnotationPath="@UI.LineItem"/>
+							<PropertyValue Property="com.sap.vocabularies.Common.v1.Label" String="Sum of operation duration"/>
+							<Annotation Term="Core.Description" String="Table"/>
+							<Annotation Term="Core.LongDescription" String="DurationTab"/>
+						</Record>
+					</Collection>
+				</Annotation>
+				<Annotation Term="UI.FieldGroup" Qualifier="PrePlanDetailGeneral">
+					<Record Type="UI.FieldGroupType">
+						<PropertyValue Property="Label" String="General"/>
+						<PropertyValue Property="Data">
+							<Collection>
+								<Record Type="UI.DataField">
+									<PropertyValue Property="Value" Path="PLAN_ID"/>
+								</Record>
+								<Record Type="UI.DataField">
+									<PropertyValue Property="Value" Path="PLAN_NAME"/>
+								</Record>
+								<Record Type="UI.DataField">
+									<PropertyValue Property="Value" Path="STATUS_TEXT"/>
+									<Annotation Term="Org.OData.Core.V1.Description" String="Progress"/>
+								</Record>
+								<Record Type="UI.DataField">
+									<PropertyValue Property="Value" Path="START_DATE"/>
+								</Record>
+								<Record Type="UI.DataField">
+									<PropertyValue Property="Value" Path="END_DATE"/>
+								</Record>
+							</Collection>
+						</PropertyValue>
+						<PropertyValue Property="com.sap.vocabularies.Common.v1.Label" String="General"/>
+					</Record>
+				</Annotation>
+			</Annotations>
+		</Schema>
 	</edmx:DataServices>
 </edmx:Edmx>

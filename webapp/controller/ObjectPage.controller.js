@@ -1,7 +1,9 @@
 sap.ui.define([
 	"com/evorait/evosuite/evoprep/controller/TemplateRenderController",
-	"sap/ui/core/mvc/OverrideExecution"
-], function (TemplateRenderController, OverrideExecution) {
+	"sap/ui/core/mvc/OverrideExecution",
+	"sap/ui/model/Filter",
+	"sap/ui/model/FilterOperator", "sap/base/util/deepClone"
+], function (TemplateRenderController, OverrideExecution, Filter, FilterOperator, deepClone) {
 	"use strict";
 
 	return TemplateRenderController.extend("com.evorait.evosuite.evoprep.controller.ObjectPage", {
@@ -118,25 +120,37 @@ sap.ui.define([
 		 * pre plan compare page
 		 */
 		_setPrePlanComparePageInfo: function (sRouteName, oArgs) {
-			oArgs.plan = "00000000000000000005";
+			var aPlans = JSON.parse(oArgs.plans),
+				sViewName = "";
 			this.getModel("viewModel").setProperty("/layout", oArgs.layout);
-			var sViewName = "com.evorait.evosuite.evoprep.view.templates.PrePlanCompare#Plans",
-				mParams = {
-					ObjectKey: oArgs.plan
-				};
+			sViewName = "com.evorait.evosuite.evoprep.view.templates.PrePlanCompare#Plans" + new Date().getTime();
 
-			if (oArgs.plan) {
-				sViewName = "com.evorait.evosuite.evoprep.view.templates.PrePlanCompare#Plans" + oArgs.plan;
-				this.getModel("templateProperties").setProperty("/annotationPath", {
-					entitySet: "PlanHeaderSet",
-					path: "com.sap.vocabularies.UI.v1.Facets#PrePlanCompareTabs_" + oArgs.plan,
-					headerPath: "com.sap.vocabularies.UI.v1.HeaderFacets#PrePlanCompareHeader_" + oArgs.plan
-				});
-			}
-			//wait for backend request
-			this.getOwnerComponent().oSystemInfoProm.then(function () {
-				this._onRouteMatched(sViewName, "PlanHeaderSet", mParams);
-			}.bind(this));
+			this.getModel("templateProperties").setProperty("/annotationPath", {
+				entitySet: "PlanHeaderSet",
+				path: "com.sap.vocabularies.UI.v1.Facets#PrePlanDetailTabs"
+			});
+
+			var filters = new Filter("CREATED_BY", FilterOperator.EQ, "SMEGHARAJ");
+
+			this.getOwnerComponent().readData("/PlanHeaderSet", [filters])
+				.then(function (data) {
+					this.formatthecode(data.results);
+					this.getModel("compareModel").setProperty("/compare", data.results);
+					var y = [];
+					y.push(data.results[0]);
+					this.getModel("compareModel").setProperty("/compare0", y);
+					this.getModel("compareModel").setProperty("/entitySet", "PlanHeaderSet");
+					this.getModel("viewModel").setProperty("/fullscreenGantt", false);
+					this._getCompareLineItems("PlanHeaderSet");
+					this._onRouteMatched(sViewName, "PlanHeaderSet");
+				}.bind(this));
+		},
+
+		formatthecode: function (data) {
+			var allData = [];
+			data.forEach(function (oItem) {
+				allData.push();
+			});
 		},
 
 		/**
@@ -202,6 +216,28 @@ sap.ui.define([
 					aLineItems = oEntityType["com.sap.vocabularies.UI.v1.LineItem"];
 				if (aLineItems) {
 					oTempModel.setProperty("/ganttConfigs/lineItems", aLineItems);
+				}
+			}.bind(this));
+		},
+
+		/* get line item from compare entityset 
+		 * @private
+		 */
+		_getCompareLineItems: function (sEntitySet) {
+			var oTempModel = this.getModel("templateProperties"),
+				oModel = this.getModel();
+
+			oTempModel.setProperty("/CompareConfigs", {});
+			oTempModel.setProperty("/CompareConfigs/entitySet", sEntitySet);
+
+			//collect all tab IDs
+			oModel.getMetaModel().loaded().then(function () {
+				var oMetaModel = oModel.getMetaModel(),
+					oEntitySet = oMetaModel.getODataEntitySet(sEntitySet),
+					oEntityType = oMetaModel.getODataEntityType(oEntitySet.entityType),
+					aLineItems = oEntityType["com.sap.vocabularies.UI.v1.LineItem"];
+				if (aLineItems) {
+					oTempModel.setProperty("/CompareConfigs/lineItems", aLineItems);
 				}
 			}.bind(this));
 		}

@@ -69,7 +69,7 @@ sap.ui.define([
 				launchMode: Constants.LAUNCH_MODE.BSP,
 				bEnableSave: false,
 				orderListEditMode: false,
-				bShowDependencies: true,
+				bShowDependencies: false, //Enabling/Disabling Dependencies in Graphic Planning GanttChart
 				bEnableGanttShapesEdit: true,
 				ganttFullMode: true,
 				fullscreenGantt: true,
@@ -79,7 +79,10 @@ sap.ui.define([
 					busy: true,
 					sStartDate: null,
 					sEndDate: null
-				}
+				},
+				bDependencyCall:false, //Restricting expand call in Graphic Planning GanttChart
+				bEnableOperationDelete:false, //Enabling/Disabling Delete Button in Plan Detail Operation Tab
+				bOperationTableMode:false //Plan Detail Operation Table Selection Mode
 			};
 
 			//GetSystemInformation Call

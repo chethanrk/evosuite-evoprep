@@ -6,13 +6,13 @@
 		<template:alias name=".evoAH" value="com.evorait.evosuite.evoprep.model.AnnotationHelper">
 			<template:with path="templateProperties>/" var="tempProps">
 				<gnt2:GanttChartContainer id="idPlanningGanttChartContainer" busy="{viewModel>/ganttSettings/busy}" enableCursorLine="false"
-					enableTimeScrollSync="false" height="400px">
+					enableTimeScrollSync="false" height="100%" class="sapUiNoContentPadding">
 					<gnt2:toolbar>
 						<gnt2:ContainerToolbar id="idGanttChartContainerToolbar" alignCustomContentToRight="true" style="Clear">
 							<gnt2:content>
 								<ToolbarSpacer/>
 								<core:ExtensionPoint name="GanttExtP|PlanningGantt|GanttHierarchySet|ContainerToolbar|Before"/>
-								<Button text="{i18n>xbut.hideDependencies}" visible="{= ${user>/ENABLE_HIDE_DEPENDENCY} === 'X'}" press="onShowDependencies"/>
+								<Button text="{= ${viewModel>/bShowDependencies} === false ? ${i18n>xbut.showDependencies} : ${i18n>xbut.hideDependencies}}" visible="{= ${user>/ENABLE_HIDE_DEPENDENCY} === 'X'}" press="onShowDependencies"/>
 								<Text text="|"/>
 								<Button icon="sap-icon://edit" tooltip="{i18n>xbut.edit}"
 									visible="{= ${user>/ENABLE_PREPLAN_UPDATE} === 'X' &amp;&amp; ${ALLOW_FINAL} === true}" press="onPressShapesEdit"/>

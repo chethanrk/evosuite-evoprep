@@ -7,7 +7,8 @@
 		<template:alias name=".evoAH" value="com.evorait.evosuite.evoprep.model.AnnotationHelper">
 			<template:with path="templateProperties>/" var="tempProps">
 				<uxap:ObjectPageLayout id="prePlanDetailPage" class="sapUiNoContentPadding" useIconTabBar="false" enableLazyLoading="true"
-					isChildPage="true" showFooter="true" busy="{viewModel>/busy}" busyIndicatorDelay="{viewModel>/delay}" showHeaderContent="{viewModel>/ganttFullMode}">
+					isChildPage="true" showFooter="false" busy="{viewModel>/busy}" busyIndicatorDelay="{viewModel>/delay}"
+					showHeaderContent="{viewModel>/ganttFullMode}">
 					<uxap:headerTitle>
 						<uxap:ObjectPageHeader objectTitle="{PLAN_NAME}" objectSubtitle="{PLAN_ID}" visible="{viewModel>/ganttFullMode}">
 							<uxap:actions>
@@ -30,6 +31,13 @@
 									visible="{= !${viewModel>/editMode} === true}" hideText="false" tooltip="{i18n>xbtn.cancel}"/>
 								<core:ExtensionPoint name="PageExtP|PrePlanDetail|PlanHeaderSet|Title|Action"/>
 							</uxap:actions>
+							<uxap:breadcrumbs>
+								<core:ExtensionPoint name="PageExtP|PrePlanDetail|PlanHeaderSet|Breadcrumbs">
+									<Breadcrumbs currentLocationText="{i18n>tit.prePlanDetail}">
+										<Link text="{i18n>tit.plan}" press="navBack"/>
+									</Breadcrumbs>
+								</core:ExtensionPoint>
+							</uxap:breadcrumbs>
 							<uxap:sideContentButton></uxap:sideContentButton>
 							<uxap:navigationBar>
 								<Bar class="sapUiTinyMarginTop" visible="{viewModel>/ganttFullMode}">
@@ -62,7 +70,8 @@
 							<template:repeat list="{detailTabs>}">
 								<template:if test="{:= ${detailTabs>Core.Description/String} === 'Form' || ${detailTabs>Org.OData.Core.V1.Description/String} === 'Form'}">
 									<template:then>
-										<uxap:ObjectPageSection title="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}" visible="{viewModel>/ganttFullMode}">
+										<uxap:ObjectPageSection title="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}"
+											visible="{viewModel>/ganttFullMode}">
 											<uxap:subSections>
 												<uxap:ObjectPageSubSection>
 													<uxap:blocks>
@@ -77,12 +86,13 @@
 									<template:elseif
 										test="{:= ${detailTabs>Core.Description/String} === 'Table' || ${detailTabs>Org.OData.Core.V1.Description/String} === 'Table'}">
 										<core:ExtensionPoint name="SectionExtP|PrePlanDetail|{:= ${detailTabs>Core.LongDescription/String} }|Before"/>
-										<uxap:ObjectPageSection title="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}" visible="{viewModel>/editMode}">
+										<uxap:ObjectPageSection title="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}"
+											visible="{viewModel>/editMode}">
 											<uxap:subSections>
 												<template:if
 													test="{:= ${parts: [{value:'PlanningTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameInDescription'} }">
 													<template:then>
-														<uxap:ObjectPageSubSection title="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}" >
+														<uxap:ObjectPageSubSection title="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}" class="sapUxAPObjectPageSubSectionFitContainer">
 															<uxap:blocks>
 																<core:Fragment fragmentName="com.evorait.evosuite.evoprep.view.templates.PlanningGanttChart" type="XML"/>
 															</uxap:blocks>

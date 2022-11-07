@@ -7,8 +7,9 @@ sap.ui.define([
 	"sap/ui/model/FilterOperator",
 	"sap/base/util/deepClone",
 	"com/evorait/evosuite/evoprep/model/formatter",
-	"sap/gantt/misc/Utility"
-], function (BaseController, Fragment, OverrideExecution, library, Filter, FilterOperator, deepClone, formatter, Utility) {
+	"sap/gantt/misc/Utility",
+	"sap/m/MessageBox"
+], function (BaseController, Fragment, OverrideExecution, library, Filter, FilterOperator, deepClone, formatter, Utility, MessageBox) {
 	"use strict";
 
 	return BaseController.extend("com.evorait.evosuite.evoprep.controller.PrePlanDetail", {
@@ -75,6 +76,11 @@ sap.ui.define([
 					overrideExecution: OverrideExecution.Instead
 				},
 				onPressSavePrePlanHeader: {
+					public: true,
+					final: true,
+					overrideExecution: OverrideExecution.Instead
+				},
+				navBack: {
 					public: true,
 					final: true,
 					overrideExecution: OverrideExecution.Instead
@@ -189,7 +195,7 @@ sap.ui.define([
 				//if form is valid save created entry
 				if (mErrors.state === "success") {
 					if (oModel.hasPendingChanges()) {
-						this.saveChangesMain(mErrors, this._saveSuccess.bind(this));
+						this.saveChangesMain(mErrors, this._saveSuccess.bind(this), this._errorCallBackForPlanHeaderSet.bind(this));
 					} else {
 						sap.m.MessageToast.show(oResourceBundle.getText("ymsg.noChangesPrePlanHeaderEdit"));
 					}
@@ -246,7 +252,6 @@ sap.ui.define([
 			var oSource = oEvent.getSource(),
 				oItem = oEvent.getParameter("item");
 			this.sFunctionKey = oItem ? oItem.data("key") : oSource.data("key");
-
 			this._updateStatus();
 		},
 
@@ -273,6 +278,10 @@ sap.ui.define([
 			var oSource = oEvent.getSource(),
 				sButtonText = oSource.getText(),
 				oResourceBundle = this.getResourceBundle();
+			//Service Call while clicking on Show Dependencies Button for First Time
+			if (this.oViewModel.getProperty("/bDependencyCall")) {
+				this._loadGanttData();
+			}
 			if (sButtonText === oResourceBundle.getText("xbut.hideDependencies")) {
 				this.getModel("viewModel").setProperty("/bShowDependencies", false);
 				oSource.setText(oResourceBundle.getText("xbut.showDependencies"));
@@ -372,6 +381,13 @@ sap.ui.define([
 			}
 		},
 
+		/**
+		 * Go back to Plan list from Plan details
+		 */
+		navBack: function () {
+			this.onNavBack();
+		},
+
 		/* =========================================================== */
 		/* public methods                                              */
 		/* =========================================================== */
@@ -392,6 +408,8 @@ sap.ui.define([
 				}
 
 				if (oData.viewNameId === sViewName) {
+					this.oViewModel.setProperty("/bShowDependencies", false); //Disabling Dependencies in Graphic Planning GanttChart
+					this.oViewModel.setProperty("/bDependencyCall", true);
 					this._oContext = this.getView().getBindingContext();
 					this._rebindPage();
 					this._loadGanttData();
@@ -460,10 +478,18 @@ sap.ui.define([
 
 			if (oData["ALLOW_" + this.sFunctionKey]) {
 				this.getModel().setProperty(sPath + "/FUNCTION", this.sFunctionKey);
-				this.saveChangesMain({
-					state: "success",
-					isCreate: false
-				}, this._afterUpdateStatus.bind(this));
+				if (this.sFunctionKey === "FINAL") {
+					this.saveChangesMain({
+						state: "success",
+						isCreate: false
+					}, this._afterUpdateStatus.bind(this), this._updatePlanStatusError.bind(this));
+				} else {
+					this.saveChangesMain({
+						state: "success",
+						isCreate: false
+					}, this._afterUpdateStatus.bind(this), this._errorCallBackForPlanHeaderSet.bind(this));
+				}
+
 			} else {
 				message = this.getResourceBundle().getText("msg.workorderSubmitFail", oData.PLAN_ID);
 				this.addMsgToMessageManager(this.mMessageType.Error, message, "/PreplanList");
@@ -549,6 +575,7 @@ sap.ui.define([
 			this.oViewModel.setProperty("/layout", library.LayoutType.TwoColumnsMidExpanded);
 			this.oViewModel.setProperty("/fullscreen", true);
 			this._loadGanttData();
+			this.oViewModel.setProperty("/bDependencyCall", true);
 		},
 
 		/**
@@ -594,10 +621,15 @@ sap.ui.define([
 			return new Promise(function (resolve) {
 				var sEntitySet = "/GanttHierarchySet",
 					aFilters = [],
+					mParams = "",
+					sPath = this._oContext.getPath();
+				//Passing Expand Call Only while Clicking on Show Dependecies for First Time
+				if (this.oViewModel.getProperty("/bDependencyCall") && this.oViewModel.getProperty("/bShowDependencies")) {
 					mParams = {
 						"$expand": "GanttHierarchyToDependency"
-					},
-					sPath = this._oContext.getPath();
+					};
+					this.oViewModel.setProperty("/bDependencyCall", false);
+				}
 				var sHeaderKey = this.getModel().getProperty(sPath + "/ObjectKey");
 				aFilters.push(new Filter("HIERARCHY_LEVEL", FilterOperator.EQ, iLevel));
 				aFilters.push(new Filter("HeaderObjectKey", FilterOperator.EQ, sHeaderKey));
@@ -635,6 +667,64 @@ sap.ui.define([
 			aChildren = this._recurseChildren2Level(aChildren, iLevel, callbackFn);
 			this.oGanttModel.setProperty("/data/children", aChildren);
 		},
+		/**
+		 * Display the error messages from the backend for the
+		 * PlanHeaderSet entity set specific in case we change
+		 * the status to final as this method helps to display the 
+		 * confirmation dialog box
+		 * @param oError - This is a error object returned from backend. 
+		 * @private
+		 */
+		_updatePlanStatusError: function (oError) {
+			var oResourceBundle = this.getResourceBundle(),
+				sFinalMessage,
+				sErrortext = oResourceBundle.getText("errorText"),
+				sMessage = this._extractError(this._extractError(oError.__batchResponses[0].response)),
+				sMessageDoyouWantToContinue = oResourceBundle.getText("msg.errorHanlderFinalStatusConfmsg"); //errorHanlderFinalStatusConfmsg;
+			if (oError.__batchResponses[0].response.statusCode === "500") {
+				this._errorCallBackForPlanHeaderSet(oError);
+				return;
+			}
+			if (sMessage !== undefined && sMessage !== null) {
+				var parsedMessage, aInnerDetails, strError = "";
+				parsedMessage = jQuery.sap.parseJS(sMessage);
+				aInnerDetails = parsedMessage.error.innererror.errordetails;
+				if (aInnerDetails.length > 0) {
+					for (var i = 0; i < aInnerDetails.length; i++) {
+						if (aInnerDetails[i].severity === "warning") {
+							this._addWarningMessageToMessageManager(aInnerDetails[i].message);
+						} else {
+							strError += String.fromCharCode("8226") + " " + aInnerDetails[i].message + "\n\n";
+						}
+					}
+				} else {
+					strError = parsedMessage.error.code + ": " + parsedMessage.error.message.value;
+				}
+				sFinalMessage = strError + String.fromCharCode("8226")+ "  " + sMessageDoyouWantToContinue;
+			} else {
+				sFinalMessage = sMessage;
+			}
+
+			MessageBox.confirm(
+				sFinalMessage, {
+					//details: typeof (sFinalMessage) === "string" ? sFinalMessage.replace(/\n/g, "<br/>") : sFinalMessage,
+					styleClass: this.getOwnerComponent().getContentDensityClass(),
+					actions: [MessageBox.Action.OK, MessageBox.Action.NO],
+					onClose: function (oAction) {
+						if (oAction === "OK") {
+							var sPath = this._oContext.getPath();
+							this.getModel().setProperty(sPath + "/FUNCTION", this.sFunctionKey);
+							this.getModel().setProperty(sPath + "/SKIP_ERROR_ENTRY", "X");
+							this.saveChangesMain({
+								state: "success",
+								isCreate: false
+							}, this._afterUpdateStatus.bind(this), this._errorCallBackForPlanHeaderSet.bind(this));
+						}
+
+					}.bind(this)
+				}
+			);
+		}
 	});
 
 });

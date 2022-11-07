@@ -23,7 +23,7 @@
 	<edmx:DataServices>
 		<Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="com.evorait.evoprep">
 			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoprep.PlanHeader">
-				<Annotation Term="com.sap.vocabularies.UI.v1.LineItem">
+				<!--	<Annotation Term="com.sap.vocabularies.UI.v1.LineItem">
 					<Collection>
 						<Record Type="com.sap.vocabularies.UI.v1.DataField">
 							<PropertyValue Property="Value" Path="PLAN_ID"/>
@@ -38,7 +38,7 @@
 							<PropertyValue Property="Position" Int="3"/>
 						</Record>
 					</Collection>
-				</Annotation>
+				</Annotation>-->
 				<Annotation Term="UI.Facets" Qualifier="PrePlanDetailTabs">
 					<Collection>
 						<Record Type="UI.CollectionFacet">
@@ -79,7 +79,7 @@
 								</Record>
 								<Record Type="UI.DataField">
 									<PropertyValue Property="Value" Path="STATUS_TEXT"/>
-									<Annotation Term="Org.OData.Core.V1.Description" String="Progress"/>
+									<!--<Annotation Term="Org.OData.Core.V1.Description" String="Progress"/>-->
 								</Record>
 								<Record Type="UI.DataField">
 									<PropertyValue Property="Value" Path="START_DATE"/>
@@ -91,6 +91,28 @@
 						</PropertyValue>
 						<PropertyValue Property="com.sap.vocabularies.Common.v1.Label" String="General"/>
 					</Record>
+				</Annotation>
+			</Annotations>
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoprep.PlanItems">
+				<Annotation Term="com.sap.vocabularies.UI.v1.LineItem">
+					<Collection>
+						<Record Type="com.sap.vocabularies.UI.v1.DataField">
+							<PropertyValue Property="Value" Path="ORDER_NUMBER"/>
+							<PropertyValue Property="Position" Int="1"/>
+						</Record>
+						<Record Type="com.sap.vocabularies.UI.v1.DataField">
+							<PropertyValue Property="Value" Path="ORDER_NUMBER_DESCRIPTION"/>
+							<PropertyValue Property="Position" Int="2"/>
+						</Record>
+						<Record Type="com.sap.vocabularies.UI.v1.DataField">
+							<PropertyValue Property="Value" Path="OPERATION_NUMBER"/>
+							<PropertyValue Property="Position" Int="5"/>
+						</Record>
+						<Record Type="com.sap.vocabularies.UI.v1.DataField">
+							<PropertyValue Property="Value" Path="OPERATION_DESCRIPTION"/>
+							<PropertyValue Property="Position" Int="6"/>
+						</Record>
+					</Collection>
 				</Annotation>
 			</Annotations>
 		</Schema>

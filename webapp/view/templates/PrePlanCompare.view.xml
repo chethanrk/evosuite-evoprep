@@ -18,8 +18,8 @@
 						</f:DynamicPageTitle>
 					</f:title>
 					<f:content>
-						<HBox width="100%">
-							<HBox width="25%">
+						<HBox width="100%" fitContainer="true" > 
+							<HBox >
 								<f:GridList id="idComapreGridProperty" items="{path:'compareModel>/compare0',templateShareable: true}" class="sapUiResponsiveContentPadding">
 									<f:GridListItem>
 										<VBox height="100%">
@@ -46,7 +46,7 @@
 																					<template:repeat list="{data>}">
 																						<VBox alignItems="Start" class="sapUiSmallMargin">
 																							<Title text="{:= '{/' + 'PlanHeaderSet' + '/' + ${path : 'data>Value/Path'} + '/##com.sap.vocabularies.Common.v1.Label/String}' }"
-																								wrapping="false"/>
+																								wrapping="false"  titleStyle="H3"/>
 																						</VBox>
 																					</template:repeat>
 																				</template:with>
@@ -59,7 +59,7 @@
 															<template:elseif
 																test="{:= ${detailTabs>Core.Description/String} === 'Table' || ${detailTabs>Org.OData.Core.V1.Description/String} === 'Table'}">
 																<VBox class="sapUiSmallMargin">
-																	<Table growing="true" items="{path:'compareModel>/compare',templateShareable: true}"
+																	<Table growing="true" items="{path:'compareModel>PlanHeaderToPlanItems/results',templateShareable: true}"
 																		headerText="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}">
 																		<columns>
 																			<template:repeat list="{path:'tempProps>/CompareConfigs/lineItems'}" var="lineItem">
@@ -97,7 +97,7 @@
 									</f:GridListItem>
 								</f:GridList>
 							</HBox>
-							<HBox width="75%">
+							<HBox>
 								<f:GridList id="idComapreGrid" items="{path:'compareModel>/compare',templateShareable: true}" class="sapUiResponsiveContentPadding">
 									<f:GridListItem>
 										<VBox height="100%">
@@ -114,7 +114,8 @@
 																<Panel expanded="true" width="auto" class="sapUiResponsiveMargin">
 																	<headerToolbar>
 																		<Toolbar>
-																			<Title text="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}"/>
+																			<!--<Title text="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}"/>-->
+																			<Title text="{compareModel>PLAN_ID}-{compareModel>PLAN_NAME}"/>
 																		</Toolbar>
 																	</headerToolbar>
 																	<template:with path="detailTabs>Facets" var="facets">
@@ -125,14 +126,14 @@
 																						<VBox alignItems="Start" class="sapUiSmallMargin">
 																							<template:if test="{:= ${path: 'data>EdmType'} === 'Edm.Date'}">
 																								<template:then>
-																									<Title text="{path:'data>Value/Path', formatter:'.evoAH.getCompareDate'}"/>
+																									<Title text="{path:'data>Value/Path', formatter:'.evoAH.getCompareDate'}" titleStyle="H3"/>
 																								</template:then>
 																								<template:elseif test="{:= (${data>Org.OData.Core.V1.Description/String} === 'Progress' || ${data>Core.Description/String} === 'Progress')}">
 																									<ProgressIndicator percentValue="60%" displayValue="{= '{compareModel>' + ${path : 'data>Value/Path'} + '}' }" showValue="true"
 																										state="Success"/>
 																								</template:elseif>
 																								<template:else>
-																									<Title text="{= '{compareModel>' + ${path : 'data>Value/Path'} + '}' }" wrapping="false" level="H6"/>
+																									<Title text="{= '{compareModel>' + ${path : 'data>Value/Path'} + '}' }" wrapping="false" titleStyle="H3"/>
 																								</template:else>
 																							</template:if>
 																						</VBox>
@@ -147,7 +148,7 @@
 															<template:elseif
 																test="{:= ${detailTabs>Core.Description/String} === 'Table' || ${detailTabs>Org.OData.Core.V1.Description/String} === 'Table'}">
 																<VBox class="sapUiSmallMargin">
-																	<Table growing="true" items="{path:'compareModel>/compare',templateShareable: true}"
+																	<Table growing="true" items="{path:'compareModel>PlanHeaderToPlanItems/results',templateShareable: true, sorter : { path : 'PLAN_ID' }}"
 																		headerText="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}">
 																		<columns>
 																			<template:if
@@ -171,11 +172,11 @@
 																					<template:if
 																						test="{:= ${parts: [{value:'UtilizationTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameMatch'} }">
 																						<template:then>
-																							<Link text="20%"/>
+																							<Link text="{compareModel>OPERATION_WORK}" visible="true"/>
 																						</template:then>
 																						<template:elseif
 																							test="{:= ${parts: [{value:'DurationTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameMatch'} }">
-																							<Link text="10"/>
+																							<Link text="{compareModel>OPERATION_WORK}" visible="true"/>
 																						</template:elseif>
 																					</template:if>
 																				</cells>

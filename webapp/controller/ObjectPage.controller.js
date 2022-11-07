@@ -2,7 +2,8 @@ sap.ui.define([
 	"com/evorait/evosuite/evoprep/controller/TemplateRenderController",
 	"sap/ui/core/mvc/OverrideExecution",
 	"sap/ui/model/Filter",
-	"sap/ui/model/FilterOperator", "sap/base/util/deepClone"
+	"sap/ui/model/FilterOperator",
+	"sap/base/util/deepClone"
 ], function (TemplateRenderController, OverrideExecution, Filter, FilterOperator, deepClone) {
 	"use strict";
 
@@ -132,18 +133,20 @@ sap.ui.define([
 
 			var filters = new Filter("CREATED_BY", FilterOperator.EQ, "SMEGHARAJ");
 
-			this.getOwnerComponent().readData("/PlanHeaderSet", [filters])
-				.then(function (data) {
-					this.formatthecode(data.results);
-					this.getModel("compareModel").setProperty("/compare", data.results);
-					var y = [];
-					y.push(data.results[0]);
-					this.getModel("compareModel").setProperty("/compare0", y);
-					this.getModel("compareModel").setProperty("/entitySet", "PlanHeaderSet");
-					this.getModel("viewModel").setProperty("/fullscreenGantt", false);
-					this._getCompareLineItems("PlanHeaderSet");
-					this._onRouteMatched(sViewName, "PlanHeaderSet");
-				}.bind(this));
+			this.getOwnerComponent().readData("/PlanHeaderSet", [filters], {
+				"$expand": "PlanHeaderToPlanItems"
+			}).then(function (data) {
+				data.results = this.formatTableData(data.results);
+				this.formatthecode(data.results);
+				this.getModel("compareModel").setProperty("/compare", data.results);
+				var y = [];
+				y.push(data.results[0]);
+				this.getModel("compareModel").setProperty("/compare0", y);
+				this.getModel("compareModel").setProperty("/entitySet", "PlanHeaderSet");
+				this.getModel("viewModel").setProperty("/fullscreenGantt", false);
+				this._getCompareLineItems("PlanItemsSet");
+				this._onRouteMatched(sViewName, "PlanHeaderSet");
+			}.bind(this));
 		},
 
 		formatthecode: function (data) {
@@ -151,6 +154,31 @@ sap.ui.define([
 			data.forEach(function (oItem) {
 				allData.push();
 			});
+		},
+
+		formatTableData: function (aData) {
+			var aMain = [];
+			aData.forEach(function (oItem) {
+				var aOpr = [],
+					oItemCopy = deepClone(oItem);
+
+				aOpr = deepClone(oItem.PlanHeaderToPlanItems.results);
+
+				aData.forEach(function (oPlanItem) {
+					if (oItem.ObjectKey !== oPlanItem.ObjectKey) {
+						//aOpr = aOpr.concat(oPlanItem.PlanHeaderToPlanItems.results);
+						var data = deepClone(oPlanItem.PlanHeaderToPlanItems.results);
+						data.forEach(function (oInnerData) {
+							oInnerData.OPERATION_WORK = "";
+							aOpr.push(oInnerData);
+						});
+					}
+				});
+				//console.log(aOpr);
+				oItemCopy.PlanHeaderToPlanItems.results = deepClone(aOpr);
+				aMain.push(oItemCopy);
+			}.bind(this));
+			return aMain;
 		},
 
 		/**

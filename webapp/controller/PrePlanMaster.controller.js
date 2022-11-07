@@ -59,6 +59,8 @@ sap.ui.define([
 		onInit: function () {
 			this.getModel("viewModel").setProperty("/busy", false);
 			this.oSmartTable = this.getView().byId("idPagePrePlanSmartTable");
+			this.oViewModel = this.getModel("viewModel");
+			this.oViewModel.setProperty("/busy", false);
 			var oRouter = this.getRouter();
 			//route for page create new order
 			oRouter.getRoute("PrePlanMaster").attachMatched(this._routeMatchedMaster, this);

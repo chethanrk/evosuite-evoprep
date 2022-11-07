@@ -2,7 +2,8 @@
 	xmlns:smartFilterBar="sap.ui.comp.smartfilterbar" xmlns:smartTable="sap.ui.comp.smarttable" xmlns:table="sap.ui.table"
 	xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
 	controllerName="com.evorait.evosuite.evoprep.controller.DemandList" xmlns:html="http://www.w3.org/1999/xhtml">
-	<f:DynamicPage id="demandListPage" headerExpanded="true" preserveHeaderStateOnScroll="true" showFooter="false" class="sapUiNoContentPadding">
+	<f:DynamicPage id="demandListPage" headerExpanded="true" preserveHeaderStateOnScroll="true" showFooter="false" class="sapUiNoContentPadding"
+		busy="{viewModel>/busy}" busyIndicatorDelay="{viewModel>/delay}">
 		<f:title>
 			<f:DynamicPageTitle>
 				<f:heading>
@@ -40,7 +41,7 @@
 				tableType="Table" useExportToExcel="true" useVariantManagement="true" persistencyKey="com.evorait.evosuite.evoprep.DemandListTable"
 				useTablePersonalisation="true" showRowCount="true" enableAutoBinding="true" demandPopin="false" smartFilterId="demandListSmartFilterBar"
 				customData:useSmartField="true" customData:useSmartToggle="true" editTogglable="{= ${user>/ENABLE_ITEM_UPDATE} === 'X'}"
-				editToggled="onPressEdit" requestAtLeastFields="ObjectKey,NO_OF_PLAN_ID,NO_OF_NW_KEY">
+				editToggled="onPressEdit" requestAtLeastFields="ObjectKey,NO_OF_PLAN_ID,NO_OF_NW_KEY,ALLOW_EDIT">
 				<!-- layout data used to make the table growing but the filter bar fixed -->
 				<smartTable:layoutData>
 					<FlexItemData growFactor="1" baseSize="0%"/>
@@ -50,6 +51,8 @@
 						<ToolbarSpacer/>
 						<Button press="onPressCreatePrePlanButton" tooltip="{i18n>tit.createPrePlan}" text="{i18n>tit.createPrePlan}"
 							visible="{= ${user>/ENABLE_PREPLAN_CREATE} === 'X'}" enabled="{viewModel>/allowPrePlanCreate}"/>
+						<Button press="onPressAddExistingPlan" tooltip="{i18n>tit.addExistingPlan}" text="{i18n>tit.addExistingPlan}"
+							visible="{= ${user>/ENABLE_PREPLAN_ITEM_ADD} === 'X'}" enabled="{viewModel>/allowPrePlanCreate}"/>
 						<core:ExtensionPoint name="TableExtP|DemandList|PlanItemsSet|CustomToolbar"/>
 					</Toolbar>
 				</smartTable:customToolbar>

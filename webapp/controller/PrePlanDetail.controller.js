@@ -88,7 +88,6 @@ sap.ui.define([
 			}
 		},
 
-		oViewModel: null,
 		_oContext: null,
 
 		/**
@@ -100,6 +99,8 @@ sap.ui.define([
 			this.oViewModel = this.getModel("viewModel");
 			this.oViewModel.setProperty("/busy", false);
 			var eventBus = sap.ui.getCore().getEventBus();
+			
+			this.oViewModel.setProperty("/busy", false);
 			//Binnding has changed in TemplateRenderController.js
 			eventBus.subscribe("TemplateRendererEvoPrep", "changedBinding", this._changedBinding, this);
 			eventBus.subscribe("BaseController", "refreshFullGantt", this._loadGanttData, this);

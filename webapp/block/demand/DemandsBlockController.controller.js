@@ -142,6 +142,20 @@ sap.ui.define([
 			}
 			return aArrayMaterialContext;
 		},
+		onMaterialStatusPress: function (oEvent) {
+			var oSelectedIndices = this._returnMaterialContext(),
+				oViewModel = this.getModel("viewModel"),
+				sDemandPath;
+	
+			for (var i = 0; i < oSelectedIndices.length; i++) {
+				sDemandPath = oSelectedIndices[i].getPath();
+				
+				this.getOwnerComponent().readData(sDemandPath).then(function (result) {
+				
+					oViewModel.setProperty("/busy", false);
+				}.bind(this));
+			}
+		},
 		onMaterialInfoButtonPress: function () {
 			var oTable = this._oSmartTable.getTable()
 			var aSelectedItems = oTable.getSelectedItems();
@@ -156,7 +170,7 @@ sap.ui.define([
 			}
 			//var iMaxSelcRow = this.getModel("user").getProperty("/DEFAULT_MAX_DEM_SEL_MAT_LIST");
 			if (aSelectedItemsPath.length > 0) {
-				console.log(aSelectedItemsPath);
+				
 				this.getOwnerComponent().materialInfoDialog.open(this.getView(), false, aSelectedItemsPath);
 			} else {
 				var msg = this.getResourceBundle().getText("ymsg.selectMaxItemMaterialInfo");

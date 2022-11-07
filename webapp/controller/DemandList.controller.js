@@ -82,7 +82,6 @@ sap.ui.define([
 			this.oSmartTable = this.getView().byId("demandListSmartTable");
 
 			this.oViewModel = this.getModel("viewModel");
-			console.log(this.oViewModel);
 			this.oCreateModel = this.getModel("CreateModel");
 			this.oViewModel.setProperty("/delay", 0);
 			this.oViewModel.setProperty("/busy", true);
@@ -183,12 +182,10 @@ sap.ui.define([
 			var oSelectedIndices = this._returnMaterialContext(),
 				oViewModel = this.getModel("viewModel"),
 				sDemandPath;
-			console.log(oViewModel);
 			for (var i = 0; i < oSelectedIndices.length; i++) {
 				sDemandPath = oSelectedIndices[i].getPath();
-				console.log(sDemandPath);
+				
 				this.getOwnerComponent().readData(sDemandPath).then(function (result) {
-					console.log(result)
 					oViewModel.setProperty("/busy", false);
 				}.bind(this));
 			}
@@ -206,7 +203,6 @@ sap.ui.define([
 			var oSelectedPaths = this._getSelectedRowPathsForMaterials();
 			//var iMaxSelcRow = this.getModel("user").getProperty("/DEFAULT_MAX_DEM_SEL_MAT_LIST");
 			if (oSelectedPaths.length > 0) {
-				console.log(oSelectedPaths);
 				this.getOwnerComponent().materialInfoDialog.open(this.getView(), false, oSelectedPaths);
 			} else {
 				var msg = this.getResourceBundle().getText("ymsg.selectMaxItemMaterialInfo");

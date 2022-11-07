@@ -118,8 +118,51 @@ sap.ui.define([
 			} else {
 				this.getModel("viewModel").setProperty("/bEnableOperationDelete", false);
 			}
-		},
+			// check enable or disable the materials status and material information button
+			if (this._returnMaterialContext().length > 0) {
+				this.byId("materialInfo").setEnabled(true);
+				this.byId("idOverallStatusButton").setEnabled(true);
+			} else {
+				this.byId("materialInfo").setEnabled(false);
+				this.byId("idOverallStatusButton").setEnabled(false);
+			}
 
+		},
+		_returnMaterialContext: function () {
+			var sDemandPath, bComponentExist, aArrayMaterialContext = [],
+				aContext;
+			var aSelecteOperationItems = this._oSmartTable.getTable().getSelectedItems();
+			for (var i = 0; i < aSelecteOperationItems.length; i++) {
+				aContext = aSelecteOperationItems[i].getBindingContext();
+				sDemandPath = aContext.getPath();
+				bComponentExist = this.getModel().getProperty(sDemandPath + "/COMPONENT_EXISTS");
+				if (bComponentExist) {
+					aArrayMaterialContext.push(aContext);
+				}
+			}
+			return aArrayMaterialContext;
+		},
+		onMaterialInfoButtonPress: function () {
+			var oTable = this._oSmartTable.getTable()
+			var aSelectedItems = oTable.getSelectedItems();
+			if (aSelectedItems.length > 100) {
+				aSelectedItems.length = 100;
+			}
+			var aSelectedItemsPath = [];
+			for (var i = 0; i < aSelectedItems.length; i++) {
+				aSelectedItemsPath.push({
+					sPath: aSelectedItems[i].getBindingContext().getPath()
+				});
+			}
+			//var iMaxSelcRow = this.getModel("user").getProperty("/DEFAULT_MAX_DEM_SEL_MAT_LIST");
+			if (aSelectedItemsPath.length > 0) {
+				console.log(aSelectedItemsPath);
+				this.getOwnerComponent().materialInfoDialog.open(this.getView(), false, aSelectedItemsPath);
+			} else {
+				var msg = this.getResourceBundle().getText("ymsg.selectMaxItemMaterialInfo");
+				//MessageToast.show(msg + " " + iMaxSelcRow);
+			}
+		},
 		/**
 		 * Handle Object list delete operation
 		 */

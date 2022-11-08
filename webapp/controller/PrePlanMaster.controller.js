@@ -143,11 +143,8 @@ sap.ui.define([
 		 * @param oEvent
 		 */
 		onWPrePlanListSelectionChange: function (oEvent) {
-			var isPreplanDeletEnabled = false;
-			this.selectedFunction = "";
-			var oCopyButton = this.getView().byId("idBtnCopyPrePlan");
-			var oSelectedPrePlanContext = this.oSmartTable.getTable().getSelectedContexts(),
-			oSelectedItem,
+			var isPreplanDeletEnabled = false,
+			oSelectedPrePlanContext = this.oSmartTable.getTable().getSelectedContexts(),
 			sStatus;
 			if (oSelectedPrePlanContext.length > 0) {
 				isPreplanDeletEnabled = true;
@@ -155,8 +152,7 @@ sap.ui.define([
 			
 			if(oSelectedPrePlanContext.length === 1){
 				//enable the copy button only for New & In Progress Status
-				oSelectedItem = this.oSmartTable._oTable.getSelectedItem();
-				sStatus = oSelectedItem.getBindingContext().getObject().STATUS_SHORT;
+				sStatus = oSelectedPrePlanContext[0].getProperty("STATUS_SHORT");
 				if(sStatus === "INPR" || sStatus === "NEW")
 					this.getModel("viewModel").setProperty("/bCopyEnabled", true);
 			} else {

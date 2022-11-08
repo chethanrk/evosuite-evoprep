@@ -897,36 +897,34 @@ sap.ui.define([
 				this._addOperationsDetail = null;
 			}
 		},
-        
-        /**
+
+		/**
 		 * Used in both master and detail for copying the selected plan
 		 * @Params GUID - Old GUID used for copying it
 		 * */
 
-		copySelectedPlan: function (GUID, oCtrl) {
+		copySelectedPlan: function (sGuid, oCtrl) {
 			//getting the GUID of selected Plan
 			var oResourceBundle = this.getModel("i18n").getResourceBundle(),
 				sFunctionName = "CopyPlan",
 				oParams = {
-					OldPlanGuid: GUID
-				};
+					OldPlanGuid: sGuid
+				},
+				newPlanGuid;
+			var sTitle = oResourceBundle.getText("xtit.confirm"),
+				sContinueAction = oResourceBundle.getText("btn.successMsgBxBtnContinueEditing"),
+				sPlanDetailAction = oResourceBundle.getText("btn.successMsgBxBtnPlanDetail"),
+				sMsg;
+
+			var fnPlanDetailCallBack = function (oData) {
+				this.navToDetail(newPlanGuid);
+			};
 			this._setBusyWhileSaving(oCtrl, true);
 			var callBackFunction = function (oData) {
 				this._setBusyWhileSaving(oCtrl, false);
-				MessageBox.confirm(
-					oData.Messagebap, {
-						styleClass: this.getOwnerComponent().getContentDensityClass(),
-						actions: [oResourceBundle.getText("btn.successMsgBxBtnContinueEditing"), 
-								  oResourceBundle.getText("btn.successMsgBxBtnPlanDetail")
-						],
-						onClose: function (oAction) {
-							if (oAction === oResourceBundle.getText("btn.successMsgBxBtnContinueEditing")) {
-								//do nothing
-							} else if (oAction === oResourceBundle.getText("btn.successMsgBxBtnPlanDetail")) {
-								this.navToDetail(oData.NewPlanGuid);
-							} 
-						}.bind(this)
-					});
+				sMsg = oData.Messagebap;
+				newPlanGuid = oData.NewPlanGuid;
+				this.showConfirmDialog(sTitle, sMsg, null, fnPlanDetailCallBack.bind(this), "None", sContinueAction, sPlanDetailAction);
 			}.bind(this);
 
 			this.callFunctionImport(oParams, sFunctionName, "GET", callBackFunction);
@@ -1150,41 +1148,8 @@ sap.ui.define([
 				}
 			);
 <<<<<<< Upstream, based on origin/develop
+<<<<<<< Upstream, based on origin/develop
 =======
-		},
-
-		/**
-		 * Used in both master and detail for copying the selected plan
-		 * @Params GUID - Old GUID used for copying it
-		 * */
-
-		copySelectedPlan: function (sGuid, oCtrl) {
-			//getting the GUID of selected Plan
-			var oResourceBundle = this.getModel("i18n").getResourceBundle(),
-				sFunctionName = "CopyPlan",
-				oParams = {
-					OldPlanGuid: sGuid
-				},
-				newPlanGuid;
-			var sTitle = oResourceBundle.getText("xtit.confirm"),
-				sContinueAction = oResourceBundle.getText("btn.successMsgBxBtnContinueEditing"),
-				sPlanDetailAction = oResourceBundle.getText("btn.successMsgBxBtnPlanDetail"),
-				sMsg;
-
-			var fnPlanDetailCallBack = function (oData) {
-				this.navToDetail(newPlanGuid);
-			};
-			this._setBusyWhileSaving(oCtrl, true);
-			var callBackFunction = function (oData) {
-				this._setBusyWhileSaving(oCtrl, false);
-				sMsg = oData.Messagebap;
-				newPlanGuid = oData.NewPlanGuid;
-				this.showConfirmDialog(sTitle, sMsg, null, fnPlanDetailCallBack.bind(this), "None", sContinueAction, sPlanDetailAction);
-			}.bind(this);
-
-			this.callFunctionImport(oParams, sFunctionName, "GET", callBackFunction);
-
->>>>>>> 749311a Code review comments resolved
 		}
 
 	});

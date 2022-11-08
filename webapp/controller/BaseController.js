@@ -1147,9 +1147,6 @@ sap.ui.define([
 					}.bind(this)
 				}
 			);
-<<<<<<< Upstream, based on origin/develop
-<<<<<<< Upstream, based on origin/develop
-=======
 		}
 
 	});

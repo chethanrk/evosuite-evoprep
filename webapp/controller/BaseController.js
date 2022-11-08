@@ -187,7 +187,8 @@ sap.ui.define([
 				},
 				copySelectedPlan: {
 					public: true,
-					final: true
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
@@ -314,8 +315,7 @@ sap.ui.define([
 				this.getModel("CreateModel").refresh();
 			};
 
-			var cancelCallback = function () {};
-			this.showConfirmDialog(sTitle, sMsg, successcallback.bind(this), cancelCallback.bind(this));
+			this.showConfirmDialog(sTitle, sMsg, successcallback.bind(this));
 		},
 
 		/**
@@ -541,7 +541,7 @@ sap.ui.define([
 		 * @param successCallback
 		 * @param cancelCallback
 		 */
-		showConfirmDialog: function (sTitle, sMsg, successCallback, cancelCallback, sState) {
+		showConfirmDialog: function (sTitle, sMsg, successCallback, cancelCallback, sState, beginAction, endAction) {
 			var dialog = new sap.m.Dialog({
 				title: sTitle,
 				type: "Message",
@@ -550,7 +550,7 @@ sap.ui.define([
 					text: sMsg
 				}),
 				beginButton: new sap.m.Button({
-					text: this.getResourceBundle().getText("btn.confirm"),
+					text: beginAction || this.getResourceBundle().getText("btn.confirm"),
 					press: function () {
 						dialog.close();
 						if (successCallback) {
@@ -559,7 +559,7 @@ sap.ui.define([
 					}.bind(this)
 				}),
 				endButton: new sap.m.Button({
-					text: this.getResourceBundle().getText("btn.no"),
+					text: endAction || this.getResourceBundle().getText("btn.no"),
 					press: function () {
 						if (cancelCallback) {
 							cancelCallback();
@@ -1149,6 +1149,42 @@ sap.ui.define([
 					}.bind(this)
 				}
 			);
+<<<<<<< Upstream, based on origin/develop
+=======
+		},
+
+		/**
+		 * Used in both master and detail for copying the selected plan
+		 * @Params GUID - Old GUID used for copying it
+		 * */
+
+		copySelectedPlan: function (sGuid, oCtrl) {
+			//getting the GUID of selected Plan
+			var oResourceBundle = this.getModel("i18n").getResourceBundle(),
+				sFunctionName = "CopyPlan",
+				oParams = {
+					OldPlanGuid: sGuid
+				},
+				newPlanGuid;
+			var sTitle = oResourceBundle.getText("xtit.confirm"),
+				sContinueAction = oResourceBundle.getText("btn.successMsgBxBtnContinueEditing"),
+				sPlanDetailAction = oResourceBundle.getText("btn.successMsgBxBtnPlanDetail"),
+				sMsg;
+
+			var fnPlanDetailCallBack = function (oData) {
+				this.navToDetail(newPlanGuid);
+			};
+			this._setBusyWhileSaving(oCtrl, true);
+			var callBackFunction = function (oData) {
+				this._setBusyWhileSaving(oCtrl, false);
+				sMsg = oData.Messagebap;
+				newPlanGuid = oData.NewPlanGuid;
+				this.showConfirmDialog(sTitle, sMsg, null, fnPlanDetailCallBack.bind(this), "None", sContinueAction, sPlanDetailAction);
+			}.bind(this);
+
+			this.callFunctionImport(oParams, sFunctionName, "GET", callBackFunction);
+
+>>>>>>> 749311a Code review comments resolved
 		}
 
 	});

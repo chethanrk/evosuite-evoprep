@@ -225,7 +225,7 @@ sap.ui.define([
 		 * Copy the opened plan
 		 * */
 		 onPressCopyPrePlanHeader: function(){
-		 	var sGuid = this._oContext.getObject().ObjectKey;
+		 	var sGuid = this._oContext.getProperty("ObjectKey");
 			this.copySelectedPlan(sGuid);	
 		 },
 

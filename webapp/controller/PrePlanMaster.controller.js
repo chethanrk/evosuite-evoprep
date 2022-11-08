@@ -118,9 +118,9 @@ sap.ui.define([
 		 * Sending a call to backend for copy with the selected Plan's GuID on click of copy. 
 		 * */
 		 onCopyPrePlanPress: function(){
-		 	var oSelectedItem = this.oSmartTable._oTable.getSelectedItem(),
-				sGuid = oSelectedItem.getBindingContext().getObject().ObjectKey;
-		 	this.copySelectedPlan(sGuid, this.oSmartTable._oTable);
+		 	var oSelectedItem = this.oSmartTable.getTable().getSelectedItem(),
+				sGuid = oSelectedItem.getBindingContext().getProperty("ObjectKey");
+		 	this.copySelectedPlan(sGuid, this.oSmartTable.getTable());
 		 	this._removeTableSelection();
 		 },
 		

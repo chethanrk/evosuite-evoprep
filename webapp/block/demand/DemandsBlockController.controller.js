@@ -126,8 +126,6 @@ sap.ui.define([
 		onPressDeleteOperations: function () {
 			var sTitle = this.getResourceBundle().getText("tit.confirmDelete"),
 				aSelectedItems = this._oTable.getSelectedItems(),
-				sConfirmAction = this.getResourceBundle().getText("btn.confirm"),
-				sCancelAction = this.getResourceBundle().getText("btn.no"),
 				sMsg;
 
 			var successFn = function () {

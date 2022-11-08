@@ -41,7 +41,8 @@
 				tableType="Table" useExportToExcel="true" useVariantManagement="true" persistencyKey="com.evorait.evosuite.evoprep.DemandListTable"
 				useTablePersonalisation="true" showRowCount="true" enableAutoBinding="true" demandPopin="false" smartFilterId="demandListSmartFilterBar"
 				customData:useSmartField="true" customData:useSmartToggle="true" editTogglable="{= ${user>/ENABLE_ITEM_UPDATE} === 'X'}"
-				editToggled="onPressEdit" requestAtLeastFields="ObjectKey,NO_OF_PLAN_ID,NO_OF_NW_KEY,ALLOW_EDIT">
+				editToggled="onPressEdit" requestAtLeastFields="ObjectKey,NO_OF_PLAN_ID,NO_OF_NW_KEY,ALLOW_EDIT"
+				beforeRebindTable="onOperationListDataReceived">
 				<!-- layout data used to make the table growing but the filter bar fixed -->
 				<smartTable:layoutData>
 					<FlexItemData growFactor="1" baseSize="0%"/>
@@ -49,6 +50,9 @@
 				<smartTable:customToolbar>
 					<Toolbar>
 						<ToolbarSpacer/>
+						<Button text="{i18n>xbut.SelectAll}" tooltip="{i18n>xbut.SelectAll}" press="onPressSelectAll"/>
+						<Button text="{i18n>xbut.DeSelectAll}" tooltip="{i18n>xbut.DeSelectAll}" enabled="{viewModel>/allowPrePlanCreate}"
+							press="onPressDeSelectAll"/>
 						<Button press="onPressCreatePrePlanButton" tooltip="{i18n>tit.createPrePlan}" text="{i18n>tit.createPrePlan}"
 							visible="{= ${user>/ENABLE_PREPLAN_CREATE} === 'X'}" enabled="{viewModel>/allowPrePlanCreate}"/>
 						<Button press="onPressAddExistingPlan" tooltip="{i18n>tit.addExistingPlan}" text="{i18n>tit.addExistingPlan}"
@@ -57,8 +61,8 @@
 					</Toolbar>
 				</smartTable:customToolbar>
 				<table:Table id="demandListPageSmartTableTable" rowActionCount="{= ${viewModel>/orderListEditMode} ? 0 : 1}" visibleRowCountMode="Auto"
-					rowSelectionChange="handleDemandSelectionChange" enableSelectAll="false"
-					selectionMode="{= ${viewModel>/orderListEditMode} ? 'None' : 'MultiToggle'}">
+					rowSelectionChange="handleDemandSelectionChange" enableSelectAll="true"
+					selectionMode="{= ${viewModel>/orderListEditMode} ? 'None' : 'MultiToggle'}" threshold="100">
 					<table:rowActionTemplate>
 						<table:RowAction visible="{parts: [{path:'templateProperties>/navLinks'}], formatter:'.formatter.showDemandRowAction'}">
 							<table:items>

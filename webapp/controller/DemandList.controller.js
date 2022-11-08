@@ -80,10 +80,20 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
+				},
+				onPressSelectAll: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onPressDeSelectAll: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
-
+		bSelectAll: false,
 		/* =========================================================== */
 		/* Lifecycle methods                                           */
 		/* =========================================================== */
@@ -95,7 +105,6 @@ sap.ui.define([
 		 */
 		onInit: function () {
 			this.oSmartTable = this.getView().byId("demandListSmartTable");
-
 			this.oViewModel = this.getModel("viewModel");
 			this.oCreateModel = this.getModel("CreateModel");
 			this.oViewModel.setProperty("/busy", false);
@@ -171,23 +180,39 @@ sap.ui.define([
 		 */
 		onPressCreatePrePlanButton: function (oEvent) {
 			var oTable = this.oSmartTable.getTable(),
-				aSelectedIndices = oTable.getSelectedIndices();
-
-			var oOperationData = this.oCreateModel.getData();
-			aSelectedIndices.forEach(function (iIndex) {
-				var oItem = oTable.getContextByIndex(iIndex),
-					oSelObject = oItem.getObject();
-				delete oSelObject.__metadata;
-				//validate for the duplicate
-				if (this.checkDuplicate(oOperationData.results, oSelObject.ObjectKey)) {
-					oOperationData.results.push(oSelObject);
-				}
-			}.bind(this));
+				aSelectedIndices = oTable.getSelectedIndices(),
+				oOperationData = this.oCreateModel.getData(),
+				aAllOperationsSelected = [];
+			//When Select All Button is Clicked
+			if (this.bSelectAll && aSelectedIndices.length > 100) {
+				aAllOperationsSelected = this.aAllOperations;
+				aAllOperationsSelected.forEach(function (oSelObject) {
+					delete oSelObject.__metadata;
+					//validate for the duplicate
+					if (this.checkDuplicate(oOperationData.results, oSelObject.ObjectKey)) {
+						oOperationData.results.push(oSelObject);
+					}
+				}.bind(this));
+			} else {
+				aSelectedIndices.forEach(function (iIndex) {
+					var oItem = oTable.getContextByIndex(iIndex);
+					if (oItem) {
+						var oSelObject = oItem.getObject();
+						delete oSelObject.__metadata;
+						//validate for the duplicate
+						if (this.checkDuplicate(oOperationData.results, oSelObject.ObjectKey)) {
+							oOperationData.results.push(oSelObject);
+						}
+					}
+				}.bind(this));
+			}
+			this.oViewModel.setProperty("/aAllSelectedOperations", aAllOperationsSelected);
 			this.oCreateModel.refresh();
 			this._removeOprTableSelection();
 			this.getRouter().navTo("CreatePrePlan", {
 				layout: library.LayoutType.MidColumnFullScreen
 			});
+			this.bSelectAll = false; //Clearing Select All Flag
 		},
 
 		/**
@@ -359,6 +384,24 @@ sap.ui.define([
 			this._removeOprTableSelection();
 		},
 
+		/**
+		 * onPress of Select All in Operation List 
+		 * All the rows data is selected from a GET call and Create Plan is allowed  
+		 */
+		onPressSelectAll: function () {
+			this.bSelectAll = true;
+			this.oSmartTable.getTable().selectAll(true);
+		},
+
+		/**
+		 * onPress of De-Select All in Operation List 
+		 * All the selected rows in the table are cleared
+		 */
+		onPressDeSelectAll: function () {
+			this.bSelectAll = false;
+			this._removeOprTableSelection();
+		},
+
 		/* =========================================================== */
 		/* Private methods                                           */
 		/* =========================================================== */
@@ -379,15 +422,16 @@ sap.ui.define([
 		_validateOperationFinalStatus: function (aSelectedIndices, oTable) {
 			var bIndicator = false;
 			aSelectedIndices.forEach(function (iIndex) {
-				var oItem = oTable.getContextByIndex(iIndex),
-					oSelObject = oItem.getObject();
-				//validate for the final operations
-				if (!oSelObject.ALLOW_EDIT) {
-					bIndicator = true;
-					return;
+				var oItem = oTable.getContextByIndex(iIndex);
+				if (oItem) {
+					var oSelObject = oItem.getObject();
+					//validate for the final operations
+					if (!oSelObject.ALLOW_EDIT) {
+						bIndicator = true;
+						return;
+					}
 				}
 			}.bind(this));
-
 			return bIndicator;
 		},
 

@@ -184,6 +184,18 @@ sap.ui.define([
 				destroyOperationListFragment: {
 					public: true,
 					final: true
+				},
+				onOperationListDataReceived: {
+					public: true,
+					final: true
+				},
+				onPressOperationSelectAll: {
+					public: true,
+					final: true
+				},
+				onPressOperationDeSelectAll: {
+					public: true,
+					final: true
 				}
 			}
 		},
@@ -191,6 +203,8 @@ sap.ui.define([
 		formatter: formatter,
 		oViewModel: null,
 		oCreateModel: null,
+		aAllOperations: null,
+		bOperationSelectAll: false,
 
 		onInit: function () {
 			//Bind the message model to the view and register it
@@ -779,7 +793,7 @@ sap.ui.define([
 		navToDetail: function (sPlanObject) {
 			var sLayout = library.LayoutType.TwoColumnsMidExpanded;
 			if (this.getModel("user").getProperty("/DEFAULT_PLAN_DET_FULLSC")) {
-				sLayout = library.LayoutType.MidColumnFullScreen
+				sLayout = library.LayoutType.MidColumnFullScreen;
 			}
 			this.getRouter().navTo("PrePlanDetail", {
 				layout: sLayout,
@@ -873,6 +887,8 @@ sap.ui.define([
 			} else {
 				this.open(this._addOperationsDetail);
 			}
+			this.bOperationSelectAll = false;
+			this.getModel("viewModel").setProperty("/bOperationDeSelectAll", false);
 		},
 
 		/**
@@ -892,6 +908,49 @@ sap.ui.define([
 				this._addOperationsDetail.destroy(true);
 				this._addOperationsDetail = null;
 			}
+		},
+
+		/**
+		 * Operation Table beforeRebindTable event 
+		 * Opertaion Table Data fetching and storing in local
+		 * @param oEvent
+		 */
+		onOperationListDataReceived: function (oEvent) {
+			var oSource = oEvent.getSource(),
+				oParams = oEvent.getParameter("bindingParams"),
+				aFilters = oParams.filters,
+				sId = oSource.getId();
+			this.getOwnerComponent().readData("/PlanItemsSet", aFilters).then(function (oData) {
+				if (sId === "idOperationListFragSmartTable") {
+					this.aOprFrgAllOperations = oData.results;
+				} else {
+					this.aAllOperations = oData.results;
+				}
+			}.bind(this));
+		},
+
+		/**
+		 * onPress of Select All in Operation List Fragment
+		 * All the rows data is selected from a GET call and Create Plan is allowed  
+		 */
+		onPressOperationSelectAll: function () {
+			this.bOperationSelectAll = true;
+			var oSmartTable = sap.ui.getCore().byId("idOperationListFragSmartTable"),
+				oTable = oSmartTable.getTable();
+			oTable.selectAll(true);
+			this.getModel("viewModel").setProperty("/bOperationDeSelectAll", true);
+		},
+
+		/**
+		 * onPress of De-Select All in Operation List Fragment
+		 * All the selected rows in the table are cleared
+		 */
+		onPressOperationDeSelectAll: function () {
+			this.bOperationSelectAll = false;
+			var oSmartTable = sap.ui.getCore().byId("idOperationListFragSmartTable"),
+				oTable = oSmartTable.getTable();
+			oTable.removeSelections();
+			this.getModel("viewModel").setProperty("/bOperationDeSelectAll", false);
 		},
 
 		/* =========================================================== */

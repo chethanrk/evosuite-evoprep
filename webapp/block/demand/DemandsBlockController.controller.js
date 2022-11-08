@@ -126,6 +126,8 @@ sap.ui.define([
 		onPressDeleteOperations: function () {
 			var sTitle = this.getResourceBundle().getText("tit.confirmDelete"),
 				aSelectedItems = this._oTable.getSelectedItems(),
+				sConfirmAction = this.getResourceBundle().getText("btn.confirm"),
+				sCancelAction = this.getResourceBundle().getText("btn.no"),
 				sMsg;
 
 			var successFn = function () {
@@ -277,6 +279,7 @@ sap.ui.define([
 			var successFn = function () {
 				this._triggerItemMergerequest(aSelectedItems, this._afterSuccess.bind(this), this._afterError.bind(this));
 			};
+			
 			this.showConfirmDialog(sTitle, sMsg, successFn.bind(this));
 		},
 

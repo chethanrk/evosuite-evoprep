@@ -68,8 +68,6 @@ sap.ui.define([
 			//route for page create new order
 			oRouter.getRoute("PrePlanMaster").attachMatched(this._routeMatchedMaster, this);
 			oRouter.getRoute("PrePlanDetail").attachMatched(this._routeMatchedDetail, this);
-			//disable the copy button by default
-			this.getModel("viewModel").setProperty("/isCopyEnabled", false);
 		},
 
 		/* =========================================================== */
@@ -121,8 +119,8 @@ sap.ui.define([
 		 * */
 		 onCopyPrePlanPress: function(){
 		 	var oSelectedItem = this.oSmartTable._oTable.getSelectedItem(),
-				sGUID = oSelectedItem.getBindingContext().getObject().ObjectKey;
-		 	this.copySelectedPlan(sGUID, this.oSmartTable._oTable);
+				sGuid = oSelectedItem.getBindingContext().getObject().ObjectKey;
+		 	this.copySelectedPlan(sGuid, this.oSmartTable._oTable);
 		 	this._removeTableSelection();
 		 },
 		
@@ -158,10 +156,10 @@ sap.ui.define([
 				oSelectedItem = this.oSmartTable._oTable.getSelectedItem();
 				sStatus = oSelectedItem.getBindingContext().getObject().STATUS_SHORT;
 				if(sStatus === "INPR" || sStatus === "NEW")
-					this.getModel("viewModel").setProperty("/isCopyEnabled", true);
+					this.getModel("viewModel").setProperty("/bCopyEnabled", true);
 			} else {
 				//disable the copy button
-				this.getModel("viewModel").setProperty("/isCopyEnabled", false);
+				this.getModel("viewModel").setProperty("/bCopyEnabled", false);
 			}
 			
 			this.getModel("viewModel").setProperty("/isPrePlanSelected", isPreplanDeletEnabled);

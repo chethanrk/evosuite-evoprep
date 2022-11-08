@@ -403,6 +403,6 @@ sap.ui.define([
 				}
 			}
 			return aArrayMaterialContext;
-		},
+		}
 	});
 });

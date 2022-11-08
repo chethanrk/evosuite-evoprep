@@ -122,7 +122,7 @@ sap.ui.define([
 		 onCopyPrePlanPress: function(){
 		 	var oSelectedItem = this.oSmartTable.getTable().getSelectedItem(),
 				sGuid = oSelectedItem.getBindingContext().getProperty("ObjectKey");
-		 	this.copySelectedPlan(sGuid, this.oSmartTable.getTable());
+		 	this.copySelectedPlan(sGuid, this.oSmartTable);
 		 	this._removeTableSelection();
 		 },
 		

@@ -903,7 +903,7 @@ sap.ui.define([
 		 * @Params GUID - Old GUID used for copying it
 		 * */
 
-		copySelectedPlan: function (sGuid, oCtrl) {
+		copySelectedPlan: function (sGuid, oTable) {
 			//getting the GUID of selected Plan
 			var oResourceBundle = this.getModel("i18n").getResourceBundle(),
 				sFunctionName = "CopyPlan",
@@ -915,16 +915,22 @@ sap.ui.define([
 				sContinueAction = oResourceBundle.getText("btn.successMsgBxBtnContinueEditing"),
 				sPlanDetailAction = oResourceBundle.getText("btn.successMsgBxBtnPlanDetail"),
 				sMsg;
+			
+			var fnContinueCallBack = function(){
+				if(oTable){
+					oTable.rebindTable();
+				}
+			};
 
 			var fnPlanDetailCallBack = function (oData) {
 				this.navToDetail(newPlanGuid);
 			};
-			this._setBusyWhileSaving(oCtrl, true);
+			this._setBusyWhileSaving(oTable, true);
 			var callBackFunction = function (oData) {
-				this._setBusyWhileSaving(oCtrl, false);
+				this._setBusyWhileSaving(oTable, false);
 				sMsg = oData.Messagebap;
 				newPlanGuid = oData.NewPlanGuid;
-				this.showConfirmDialog(sTitle, sMsg, null, fnPlanDetailCallBack.bind(this), "None", sContinueAction, sPlanDetailAction);
+				this.showConfirmDialog(sTitle, sMsg, fnContinueCallBack.bind(this), fnPlanDetailCallBack.bind(this), "None", sContinueAction, sPlanDetailAction);
 			}.bind(this);
 
 			this.callFunctionImport(oParams, sFunctionName, "GET", callBackFunction);

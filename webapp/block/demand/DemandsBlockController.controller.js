@@ -1,5 +1,5 @@
 sap.ui.define([
-	"com/evorait/evosuite/evoprep/controller/BaseController",
+	"com/evorait/evosuite/evoprep/controller/AddOperation",
 	"sap/ui/core/mvc/Controller",
 	"sap/base/util/isEmptyObject",
 	"sap/ui/core/Fragment",
@@ -30,8 +30,6 @@ sap.ui.define([
 				}
 			}
 		},
-
-		_oSmartTable: null,
 		_oTable: null,
 		_oOperationContext: null,
 		/* =========================================================== */
@@ -44,8 +42,8 @@ sap.ui.define([
 		 * @memberOf com.evorait.evosuite.evoprep.block.demand.DemandsBlock
 		 */
 		onInit: function () {
-			this._oSmartTable = this.getView().byId("idDemandBlockSmartTable");
-			this._oTable = this._oSmartTable.getTable();
+			this.oSmartTable = this.getView().byId("idDemandBlockSmartTable");
+			this._oTable = this.oSmartTable.getTable();
 		},
 
 		/**
@@ -74,10 +72,10 @@ sap.ui.define([
 				this.showMessageToast(this.getResourceBundle().getText("msg.selectAtleast"));
 				return;
 			}
-			this._getValidationParameters(aSelectedItems).then(function (oPreparedData) {
+			this.getValidationParameters(aSelectedItems).then(function (oPreparedData) {
 				if (oPreparedData && oPreparedData.sOrder && oPreparedData.sOpr) {
 					oPreparedData.sPrepPlan = this.getView().getBindingContext().getProperty("PLAN_ID");
-					this._triggerFunctionImport(oPreparedData, aSelectedItems);
+					this.triggerFunctionImport(oPreparedData, aSelectedItems, this._afterSuccess.bind(this), this._afterError.bind(this));
 				}
 			}.bind(this));
 			this.onPressOperationListCancel();
@@ -262,147 +260,6 @@ sap.ui.define([
 		 */
 		_afterError: function () {
 			this.getModel().resetChanges();
-		},
-
-		/**
-		 * Prepare function import parameter ready
-		 * check for the order number and operation number 
-		 * @[param] - aItems - operationlist items
-		 */
-		_getValidationParameters: function (aItems) {
-			return new Promise(function (resolve) {
-				var oPrepData = {
-					"sOrder": undefined,
-					"sOpr": undefined
-				};
-				aItems.forEach(function (oItem) {
-					var oContext = oItem.getBindingContext();
-					var sordnum = oContext.getProperty("ORDER_NUMBER"),
-						soprnum = oContext.getProperty("OPERATION_NUMBER");
-
-					if (typeof oPrepData.sOrder === "undefined") {
-						oPrepData.sOrder = sordnum;
-					} else {
-						oPrepData.sOrder += "|" + sordnum;
-					}
-					if (typeof oPrepData.sOpr === "undefined") {
-						oPrepData.sOpr = soprnum;
-					} else {
-						oPrepData.sOpr += "|" + soprnum;
-					}
-				});
-				resolve(oPrepData);
-			}.bind(this));
-		},
-
-		/**
-		 * Trigger function import with url parameters
-		 * @{param} oParam - Url parameter
-		 * @{param} -aSelectedItems - Selected operations from the operation list 
-		 */
-		_triggerFunctionImport: function (oParam, aSelectedItems) {
-			var oParams = {
-					PlanID: oParam.sPrepPlan,
-					OrderNumber: oParam.sOrder,
-					OperationNumber: oParam.sOpr
-				},
-				sFunctionName = "CalculateDate";
-
-			var callbackfunction = function (oImportedData) {
-				this._confirmDateChange(aSelectedItems);
-			}.bind(this);
-
-			this.callFunctionImport(oParams, sFunctionName, "GET", callbackfunction);
-		},
-
-		/**
-		 * Confirm before add operations to table
-		 * @{param} -aSelectedItems - Selected operations from the operation list 
-		 */
-		_confirmDateChange: function (aSelectedItems) {
-			var sTitle = this.getResourceBundle().getText("xtit.confirm"),
-				sMsg = this.getResourceBundle().getText("msg.operationUpdateConfirm");
-
-			var successFn = function () {
-				this._triggerItemMergerequest(aSelectedItems, this._afterSuccess.bind(this), this._afterError.bind(this));
-			};
-			this.showConfirmDialog(sTitle, sMsg, successFn.bind(this));
-		},
-
-		/**
-		 * Prepare the payload for the merge call with selected operation for the add operation
-		 * @{param} -aSelectedItems - Selected operations from the operation list 
-		 */
-		_triggerItemMergerequest: function (aSelectedItems, oSuccessCallback, oErrorCallback) {
-			var mParameters = {
-				groupId: "batchSave",
-				success: oSuccessCallback,
-				error: oErrorCallback
-			};
-			this._preparePayload(mParameters, aSelectedItems).then(function (oData) {
-				if (oData.length > 0) {
-					this.saveChangesMain({
-						state: "success",
-						isCreate: true
-					}, this._afterSuccess.bind(this), this._afterError.bind(this), this.getView());
-				}
-			}.bind(this));
-		},
-
-		/**
-		 * Preapre payload for the create new assigmentes 
-		 * Create changeset
-		 * used deferredgroups
-		 * @Param {mParameters} - details to odata model
-		 * @{param} -aSelectedItems - Selected operations from the operation list 
-		 */
-		_preparePayload: function (mParameters, aSelectedItems) {
-			return new Promise(function (resolve) {
-				this.getModel().setDeferredGroups(["batchSave"]);
-				aSelectedItems.forEach(function (oItem) {
-					var oRowData = oItem.getBindingContext().getObject(),
-						singleentry = {
-							groupId: "batchSave"
-						},
-						obj = {},
-						entitySet = "PlanItemsSet";
-					//collect all assignment properties who allowed for create
-					this.getModel().getMetaModel().loaded().then(function () {
-						var oMetaModel = this.getModel().getMetaModel(),
-							oEntitySet = oMetaModel.getODataEntitySet(entitySet),
-							oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
-							aProperty = oEntityType ? oEntityType.property : [];
-
-						aProperty.forEach(function (property) {
-							if (oRowData.hasOwnProperty(property.name) && oRowData[property.name]) {
-								obj[property.name] = oRowData[property.name];
-							}
-						});
-						obj.PLAN_ID = this.getView().getBindingContext().getProperty("PLAN_ID");
-						singleentry.properties = obj;
-						this.getModel().createEntry("/" + entitySet, singleentry);
-					}.bind(this));
-				}.bind(this));
-				resolve(aSelectedItems);
-			}.bind(this));
-		},
-		/** Method to get the context of selected items in the 
-		 * demands table which has component_exist true for 
-		 * checking the material information
-		 */
-		_returnMaterialContext: function () {
-			var sDemandPath, bComponentExist, aArrayMaterialContext = [],
-				aContext;
-			var aSelecteOperationItems = this._oSmartTable.getTable().getSelectedItems();
-			for (var i = 0; i < aSelecteOperationItems.length; i++) {
-				aContext = aSelecteOperationItems[i].getBindingContext();
-				sDemandPath = aContext.getPath();
-				bComponentExist = this.getModel().getProperty(sDemandPath + "/COMPONENT_EXISTS");
-				if (bComponentExist) {
-					aArrayMaterialContext.push(aContext);
-				}
-			}
-			return aArrayMaterialContext;
 		}
 	});
 });

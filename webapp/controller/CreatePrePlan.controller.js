@@ -66,6 +66,7 @@ sap.ui.define([
 		onInit: function () {
 			this.oViewModel = this.getModel("viewModel");
 			this.oCreateModel = this.getModel("CreateModel");
+			this.oViewModel.setProperty("/busy", false);
 
 			var oRouter = this.getRouter();
 			//route for page create new preplan

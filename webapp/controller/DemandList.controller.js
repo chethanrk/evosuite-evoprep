@@ -1,11 +1,13 @@
 sap.ui.define([
 	//	"sap/ui/core/mvc/Controller"
-	"com/evorait/evosuite/evoprep/controller/BaseController",
+	"com/evorait/evosuite/evoprep/controller/AddOperation",
 	"sap/ui/core/Fragment",
 	"sap/ui/core/mvc/OverrideExecution",
 	"sap/base/util/isEmptyObject",
-	"sap/f/library"
-], function (BaseController, Fragment, OverrideExecution, isEmptyObject, library) {
+	"sap/f/library",
+	"sap/ui/model/Filter",
+	"sap/ui/model/FilterOperator"
+], function (BaseController, Fragment, OverrideExecution, isEmptyObject, library, Filter, FilterOperator) {
 	"use strict";
 
 	return BaseController.extend("com.evorait.evosuite.evoprep.controller.DemandList", {
@@ -63,11 +65,24 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
+				},
+				onPressAddExistingPlan: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onPressPlanListCancel: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onPressOprPlanSave: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
-
-		oSmartTable: null,
 
 		/* =========================================================== */
 		/* Lifecycle methods                                           */
@@ -83,6 +98,7 @@ sap.ui.define([
 
 			this.oViewModel = this.getModel("viewModel");
 			this.oCreateModel = this.getModel("CreateModel");
+			this.oViewModel.setProperty("/busy", false);
 		},
 
 		/* =========================================================== */
@@ -274,6 +290,77 @@ sap.ui.define([
 
 		},
 
+		/**
+		 * Called before plan list table render
+		 * Pass final filter to avaoid to fetch final plans in the list
+		 */
+		onBeforeRebindTablePlanList: function (oEvent) {
+			var mBindingParams = oEvent.getParameter("bindingParams");
+			var aFilters = [new Filter("STATUS_SHORT", FilterOperator.NE, "FINL")];
+			mBindingParams.filters = mBindingParams.filters.concat(aFilters);
+		},
+
+		/**
+		 * Called when add to exsting plan button pressed
+		 * Validate the final opetaions to exclude
+		 */
+		onPressAddExistingPlan: function (oEvent) {
+			var oTable = this.oSmartTable.getTable(),
+				aSelectedIndices = oTable.getSelectedIndices();
+
+			if (this._validateOperationFinalStatus(aSelectedIndices, oTable)) {
+				this.showMessageToast(this.getResourceBundle().getText("msg.operationFinalValidation"));
+				return;
+			}
+			// create popover
+			if (!this._addExistingPlan) {
+				Fragment.load({
+					name: "com.evorait.evosuite.evoprep.view.fragments.PlanList",
+					controller: this
+				}).then(function (oDialog) {
+					this._addExistingPlan = oDialog;
+					this.getView().addDependent(oDialog);
+					this.open(oDialog);
+					this._addExistingPlan.attachAfterOpen(function () {
+						var oPlanSmartTable = sap.ui.getCore().byId("idPlanListFragSmartTable");
+						oPlanSmartTable.getTable().removeSelections();
+						oPlanSmartTable.rebindTable();
+					}.bind(this));
+				}.bind(this));
+			} else {
+				this.open(this._addExistingPlan);
+			}
+		},
+
+		/**
+		 * Close plan list frgament
+		 * Before close it will remove table selection
+		 */
+		onPressPlanListCancel: function (oEvent) {
+			this._addExistingPlan.close();
+		},
+
+		/*onPressSave for the selected operations to existing plans
+		 */
+		onPressOprPlanSave: function (oEvent) {
+			var oSmartTable = this.getView().byId("demandListSmartTable"),
+				oTable = oSmartTable.getTable(),
+				aSelectedItems = oTable.getSelectedIndices(),
+				planlist = sap.ui.getCore().byId("idPlanListFragSmartTable").getTable(),
+				oSelPlan = planlist.getSelectedItem();
+
+			//this._triggerItemMergerequest(aSelectedItems, this._addExistingSuccess.bind(this), this._addExistingError.bind(this));
+			this.getValidationParameters(aSelectedItems).then(function (oPreparedData) {
+				if (oPreparedData && oPreparedData.sOrder && oPreparedData.sOpr) {
+					oPreparedData.sPrepPlan = oSelPlan.getBindingContext().getProperty("PLAN_ID");
+					this.triggerFunctionImport(oPreparedData, aSelectedItems, this._addExistingSuccess.bind(this), this._addExistingError.bind(this));
+				}
+			}.bind(this));
+
+			this.onPressPlanListCancel();
+			this._removeOprTableSelection();
+		},
+
 		/* =========================================================== */
 		/* Private methods                                           */
 		/* =========================================================== */
@@ -284,6 +371,52 @@ sap.ui.define([
 		_removeOprTableSelection: function () {
 			this.oSmartTable.getTable().clearSelection(true);
 			this.getModel("viewModel").setProperty("/allowPrePlanCreate", false);
+		},
+
+		/**
+		 * Validate the final status selection
+		 * @param [aSelectedIndices] - Selected items indices
+		 * @param {oTable} - operation table
+		 */
+		_validateOperationFinalStatus: function (aSelectedIndices, oTable) {
+			var bIndicator = false;
+			aSelectedIndices.forEach(function (iIndex) {
+				var oItem = oTable.getContextByIndex(iIndex),
+					oSelObject = oItem.getObject();
+				//validate for the final operations
+				if (!oSelObject.ALLOW_EDIT) {
+					bIndicator = true;
+					return;
+				}
+			}.bind(this));
+
+			return bIndicator;
+		},
+
+		/**
+		 * Save success callback for the add operation to the existing plan
+		 */
+		_addExistingSuccess: function (oResponse) {
+			var oResData = this.getBatchChangeResponse(oResponse),
+				oResourceBundle = this.getResourceBundle(),
+				sTitle = oResourceBundle.getText("xtit.confirm"),
+				sMsg = oResourceBundle.getText("msg.prePlanUpdateSuccess", oResData.PLAN_ID) + "\n\n" +
+				oResourceBundle.getText("msg.navigateToDetail");
+
+			var successcallback = function () {
+				this.navToDetail(this.selectedPlanObject);
+				this.selectedPlanObject = null;
+			};
+
+			var cancelCallback = function () {};
+			this.showConfirmDialog(sTitle, sMsg, successcallback.bind(this), cancelCallback.bind(this));
+		},
+
+		/**
+		 * Save error callback for the add operation to the existing plan
+		 */
+		_addExistingError: function () {
+			this.getModel().resetChanges();
 		}
 
 	});

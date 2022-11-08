@@ -98,8 +98,8 @@ sap.ui.define([
 
 			this.oViewModel = this.getModel("viewModel");
 			this.oCreateModel = this.getModel("CreateModel");
-			this.oViewModel.setProperty("/delay", 0);
-			this.oViewModel.setProperty("/busy", true);
+			//this.oViewModel.setProperty("/delay", 0);
+			this.oViewModel.setProperty("/busy", false);
 		},
 
 		/* =========================================================== */
@@ -181,9 +181,9 @@ sap.ui.define([
 			var oSelectedIndices = this._returnMaterialContext(),
 				oViewModel = this.getModel("viewModel"),
 				sDemandPath;
+				oViewModel.setProperty("/busy", true);
 			for (var i = 0; i < oSelectedIndices.length; i++) {
 				sDemandPath = oSelectedIndices[i].getPath();
-
 				this.getOwnerComponent().readData(sDemandPath).then(function (result) {
 					oViewModel.setProperty("/busy", false);
 				}.bind(this));

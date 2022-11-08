@@ -160,23 +160,8 @@ sap.ui.define([
 			}
 
 		},
-		_returnMaterialContext: function () {
-			var sDemandPath, bComponentExist, aArrayMaterialContext = [],
-				aContext;
-			var aSelecteOperationIndice = this.oSmartTable.getTable().getSelectedIndices();
-			for (var i = 0; i < aSelecteOperationIndice.length; i++) {
-				aContext = this.oSmartTable.getTable().getContextByIndex(aSelecteOperationIndice[i]);
-				sDemandPath = aContext.getPath();
-				bComponentExist = this.getModel().getProperty(sDemandPath + "/COMPONENT_EXISTS");
-				if (bComponentExist) {
-					aArrayMaterialContext.push(aContext);
-				}
-			}
-			return aArrayMaterialContext;
-		},
 		/**
-		 * On Refresh Status Button press in Demand Table 
-		 * 
+		 * On Refresh Material Status Button press in Demand/Operations Table
 		 */
 		onMaterialStatusPress: function (oEvent) {
 			var oSelectedIndices = this._returnMaterialContext(),
@@ -184,18 +169,17 @@ sap.ui.define([
 				sDemandPath;
 			for (var i = 0; i < oSelectedIndices.length; i++) {
 				sDemandPath = oSelectedIndices[i].getPath();
-				
+
 				this.getOwnerComponent().readData(sDemandPath).then(function (result) {
 					oViewModel.setProperty("/busy", false);
 				}.bind(this));
 			}
 		},
 		/**
-		 * On Material Info Button press event 
-		 * 
+		 * On Material Info Button press event in Demands/Operations Table
 		 */
 		onMaterialInfoButtonPress: function () {
-			var oTable = this.oSmartTable.getTable()
+			var oTable = this.oSmartTable.getTable();
 			var aSelectedRowsIdx = oTable.getSelectedIndices();
 			if (aSelectedRowsIdx.length > 100) {
 				aSelectedRowsIdx.length = 100;
@@ -209,11 +193,13 @@ sap.ui.define([
 				//MessageToast.show(msg + " " + iMaxSelcRow);
 			}
 		},
-		_getSelectedRowPathsForMaterials:function(){
-			var aArray = [],selectMaxItemMaterialInfo=this._returnMaterialContext(),oBj;
-			for (var i=0;i<selectMaxItemMaterialInfo.length;i++){
-				oBj={
-					sPath:selectMaxItemMaterialInfo[i].getPath()
+		_getSelectedRowPathsForMaterials: function () {
+			var aArray = [],
+				selectMaxItemMaterialInfo = this._returnMaterialContext(),
+				oBj;
+			for (var i = 0; i < selectMaxItemMaterialInfo.length; i++) {
+				oBj = {
+					sPath: selectMaxItemMaterialInfo[i].getPath()
 				};
 				aArray.push(oBj);
 			}
@@ -354,6 +340,24 @@ sap.ui.define([
 		_removeOprTableSelection: function () {
 			this.oSmartTable.getTable().clearSelection(true);
 			this.getModel("viewModel").setProperty("/allowPrePlanCreate", false);
+		},
+		/** Method to get the context of selected items in the 
+		 * demands table which has component_exist true for 
+		 * checking the material information
+		 */
+		_returnMaterialContext: function () {
+			var sDemandPath, bComponentExist, aArrayMaterialContext = [],
+				aContext;
+			var aSelecteOperationIndice = this.oSmartTable.getTable().getSelectedIndices();
+			for (var i = 0; i < aSelecteOperationIndice.length; i++) {
+				aContext = this.oSmartTable.getTable().getContextByIndex(aSelecteOperationIndice[i]);
+				sDemandPath = aContext.getPath();
+				bComponentExist = this.getModel().getProperty(sDemandPath + "/COMPONENT_EXISTS");
+				if (bComponentExist) {
+					aArrayMaterialContext.push(aContext);
+				}
+			}
+			return aArrayMaterialContext;
 		}
 
 	});

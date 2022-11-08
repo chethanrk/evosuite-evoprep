@@ -128,36 +128,28 @@ sap.ui.define([
 			}
 
 		},
-		_returnMaterialContext: function () {
-			var sDemandPath, bComponentExist, aArrayMaterialContext = [],
-				aContext;
-			var aSelecteOperationItems = this._oSmartTable.getTable().getSelectedItems();
-			for (var i = 0; i < aSelecteOperationItems.length; i++) {
-				aContext = aSelecteOperationItems[i].getBindingContext();
-				sDemandPath = aContext.getPath();
-				bComponentExist = this.getModel().getProperty(sDemandPath + "/COMPONENT_EXISTS");
-				if (bComponentExist) {
-					aArrayMaterialContext.push(aContext);
-				}
-			}
-			return aArrayMaterialContext;
-		},
+		/**
+		 * On Refresh Material Status Button press in Demand/Operations Table
+		 */
 		onMaterialStatusPress: function (oEvent) {
 			var oSelectedIndices = this._returnMaterialContext(),
 				oViewModel = this.getModel("viewModel"),
 				sDemandPath;
-	
+
 			for (var i = 0; i < oSelectedIndices.length; i++) {
 				sDemandPath = oSelectedIndices[i].getPath();
-				
+
 				this.getOwnerComponent().readData(sDemandPath).then(function (result) {
-				
+
 					oViewModel.setProperty("/busy", false);
 				}.bind(this));
 			}
 		},
+		/**
+		 * On Material Info Button press event in Demands/Operations Table
+		 */
 		onMaterialInfoButtonPress: function () {
-			var oTable = this._oSmartTable.getTable()
+			var oTable = this._oSmartTable.getTable();
 			var aSelectedItems = oTable.getSelectedItems();
 			if (aSelectedItems.length > 100) {
 				aSelectedItems.length = 100;
@@ -170,7 +162,7 @@ sap.ui.define([
 			}
 			//var iMaxSelcRow = this.getModel("user").getProperty("/DEFAULT_MAX_DEM_SEL_MAT_LIST");
 			if (aSelectedItemsPath.length > 0) {
-				
+
 				this.getOwnerComponent().materialInfoDialog.open(this.getView(), false, aSelectedItemsPath);
 			} else {
 				var msg = this.getResourceBundle().getText("ymsg.selectMaxItemMaterialInfo");
@@ -393,6 +385,24 @@ sap.ui.define([
 				}.bind(this));
 				resolve(aSelectedItems);
 			}.bind(this));
-		}
+		},
+		/** Method to get the context of selected items in the 
+		 * demands table which has component_exist true for 
+		 * checking the material information
+		 */
+		_returnMaterialContext: function () {
+			var sDemandPath, bComponentExist, aArrayMaterialContext = [],
+				aContext;
+			var aSelecteOperationItems = this._oSmartTable.getTable().getSelectedItems();
+			for (var i = 0; i < aSelecteOperationItems.length; i++) {
+				aContext = aSelecteOperationItems[i].getBindingContext();
+				sDemandPath = aContext.getPath();
+				bComponentExist = this.getModel().getProperty(sDemandPath + "/COMPONENT_EXISTS");
+				if (bComponentExist) {
+					aArrayMaterialContext.push(aContext);
+				}
+			}
+			return aArrayMaterialContext;
+		},
 	});
 });

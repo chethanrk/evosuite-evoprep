@@ -177,7 +177,11 @@ sap.ui.define([
 			var sOffsetMs = new Date(0).getTimezoneOffset() * 60 * 1000;
 			return oDate.getTime() - sOffsetMs;
 		},
-
+		/**
+		 * used in the material status table in the Material Table in 
+		 * Material Information Dialog
+		 * @param bComponentExist
+		 */
 		formatComponentExist: function (bComponentExist) {
 			return bComponentExist;
 		},
@@ -190,7 +194,7 @@ sap.ui.define([
 				return sValue;
 			}
 			return "None";
-		},
+		}
 	};
 
 });

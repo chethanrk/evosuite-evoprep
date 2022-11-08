@@ -80,10 +80,11 @@ sap.ui.define([
 					sStartDate: null,
 					sEndDate: null
 				},
-				bDependencyCall: false, //Restricting expand call in Graphic Planning GanttChart
-				bEnableOperationDelete: false, //Enabling/Disabling Delete Button in Plan Detail Operation Tab
-				bOperationTableMode: false, //Plan Detail Operation Table Selection Mode
-				authorizeCheck: false // SAP standard check 
+				bDependencyCall:false, //Restricting expand call in Graphic Planning GanttChart
+				bEnableOperationDelete:false, //Enabling/Disabling Delete Button in Plan Detail Operation Tab
+				bOperationTableMode:false, //Plan Detail Operation Table Selection Mode
+				bCopyEnabled: false, //disable the copy button by default
+                authorizeCheck: false // SAP standard check 
 			};
 
 			//GetSystemInformation Call

@@ -184,6 +184,11 @@ sap.ui.define([
 				destroyOperationListFragment: {
 					public: true,
 					final: true
+				},
+				copySelectedPlan: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
@@ -310,8 +315,7 @@ sap.ui.define([
 				this.getModel("CreateModel").refresh();
 			};
 
-			var cancelCallback = function () {};
-			this.showConfirmDialog(sTitle, sMsg, successcallback.bind(this), cancelCallback.bind(this));
+			this.showConfirmDialog(sTitle, sMsg, successcallback.bind(this));
 		},
 
 		/**
@@ -537,7 +541,7 @@ sap.ui.define([
 		 * @param successCallback
 		 * @param cancelCallback
 		 */
-		showConfirmDialog: function (sTitle, sMsg, successCallback, cancelCallback, sState) {
+		showConfirmDialog: function (sTitle, sMsg, successCallback, cancelCallback, sState, beginAction, endAction) {
 			var dialog = new sap.m.Dialog({
 				title: sTitle,
 				type: "Message",
@@ -546,7 +550,7 @@ sap.ui.define([
 					text: sMsg
 				}),
 				beginButton: new sap.m.Button({
-					text: this.getResourceBundle().getText("btn.confirm"),
+					text: beginAction || this.getResourceBundle().getText("btn.confirm"),
 					press: function () {
 						dialog.close();
 						if (successCallback) {
@@ -555,7 +559,7 @@ sap.ui.define([
 					}.bind(this)
 				}),
 				endButton: new sap.m.Button({
-					text: this.getResourceBundle().getText("btn.no"),
+					text: endAction || this.getResourceBundle().getText("btn.no"),
 					press: function () {
 						if (cancelCallback) {
 							cancelCallback();
@@ -894,6 +898,45 @@ sap.ui.define([
 			}
 		},
 
+		/**
+		 * Used in both master and detail for copying the selected plan
+		 * @Params GUID - Old GUID used for copying it
+		 * */
+
+		copySelectedPlan: function (sGuid, oTable) {
+			//getting the GUID of selected Plan
+			var oResourceBundle = this.getModel("i18n").getResourceBundle(),
+				sFunctionName = "CopyPlan",
+				oParams = {
+					OldPlanGuid: sGuid
+				},
+				newPlanGuid;
+			var sTitle = oResourceBundle.getText("xtit.confirm"),
+				sContinueAction = oResourceBundle.getText("btn.successMsgBxBtnContinueEditing"),
+				sPlanDetailAction = oResourceBundle.getText("btn.successMsgBxBtnPlanDetail"),
+				sMsg;
+			
+			var fnContinueCallBack = function(){
+				if(oTable){
+					oTable.rebindTable();
+				}
+			};
+
+			var fnPlanDetailCallBack = function (oData) {
+				this.navToDetail(newPlanGuid);
+			};
+			this._setBusyWhileSaving(oTable, true);
+			var callBackFunction = function (oData) {
+				this._setBusyWhileSaving(oTable, false);
+				sMsg = oData.Messagebap;
+				newPlanGuid = oData.NewPlanGuid;
+				this.showConfirmDialog(sTitle, sMsg, fnContinueCallBack.bind(this), fnPlanDetailCallBack.bind(this), "None", sContinueAction, sPlanDetailAction);
+			}.bind(this);
+
+			this.callFunctionImport(oParams, sFunctionName, "GET", callBackFunction);
+
+		},
+
 		/* =========================================================== */
 		/* Private methods                                              */
 		/* =========================================================== */
@@ -1067,7 +1110,8 @@ sap.ui.define([
 			}
 			return oResponse;
 		},
-		/**
+        
+        /**
 		 * Display the error messages from the backend for the
 		 * PlanHeaderSet entity set incase some error is returned
 		 * from backend

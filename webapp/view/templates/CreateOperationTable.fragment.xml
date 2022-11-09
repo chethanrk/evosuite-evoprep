@@ -5,7 +5,7 @@
 		<template:alias name=".evoAH" value="com.evorait.evosuite.evoprep.model.AnnotationHelper">
 			<template:with path="templateProperties>/" var="tempProps">
 				<Table id="idTable--{:= ${path:'createTabs>Core.LongDescription/String'} || ${createTabs>Org.OData.Core.V1.LongDescription/String} }"
-					items="{path:'CreateModel>/results'}" growing="true" updateFinished="onUpdateFinished">
+					items="{path:'CreateModel>/results'}" growing="true" growingThreshold="100" updateFinished="onUpdateFinished">
 					<headerToolbar>
 						<OverflowToolbar design="Transparent">
 							<Title text="{viewModel>/operationTableCount}" level="H2"/>

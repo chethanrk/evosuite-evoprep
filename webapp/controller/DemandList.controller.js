@@ -348,7 +348,14 @@ sap.ui.define([
 		 */
 		onBeforeRebindTablePlanList: function (oEvent) {
 			var mBindingParams = oEvent.getParameter("bindingParams");
-			var aFilters = [new Filter("STATUS_SHORT", FilterOperator.NE, "FINL")];
+			var aFilters = new Filter({
+				filters: [
+					new Filter("STATUS_SHORT", FilterOperator.NE, "FINL"),
+					new Filter("STATUS_SHORT", FilterOperator.NE, "ARCH")
+				],
+				and: true
+			});
+
 			mBindingParams.filters = mBindingParams.filters.concat(aFilters);
 		},
 

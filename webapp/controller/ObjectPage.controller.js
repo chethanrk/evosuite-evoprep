@@ -128,7 +128,8 @@ sap.ui.define([
 
 			this.getModel("templateProperties").setProperty("/annotationPath", {
 				entitySet: "PlanHeaderSet",
-				path: "com.sap.vocabularies.UI.v1.Facets#PrePlanDetailTabs"
+				path: "com.sap.vocabularies.UI.v1.Facets#PrePlanDetailTabs",
+				headerPath: "com.sap.vocabularies.UI.v1.HeaderFacets#CompareHeader"
 			});
 
 			var filters = new Filter("CREATED_BY", FilterOperator.EQ, "SMEGHARAJ");

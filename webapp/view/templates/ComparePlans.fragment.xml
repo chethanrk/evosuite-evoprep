@@ -1,0 +1,98 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:layout="sap.ui.layout" xmlns:f="sap.f"
+	xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+	xmlns:template="http://schemas.sap.com/sapui5/extension/sap.ui.core.template/1">
+	<template:alias name=".AH" value="sap.ui.model.odata.AnnotationHelper">
+		<template:alias name=".evoAH" value="com.evorait.evosuite.evoprep.model.AnnotationHelper">
+			<template:with path="templateProperties>/" var="tempProps">
+				<f:GridList items="{path:'compareModel>/compare',templateShareable: true}" class="sapUiResponsiveContentPadding">
+					<f:GridListItem>
+						<VBox height="100%">
+							<VBox justifyContent="SpaceBetween">
+								<layoutData>
+									<FlexItemData growFactor="1" shrinkFactor="0"/>
+								</layoutData>
+								<template:with path="templateProperties>/annotationPath"
+									helper="com.evorait.evosuite.evoprep.model.AnnotationHelper.resolveObjectContentPath" var="detailTabs">
+									<template:repeat list="{detailTabs>}">
+										<template:if test="{:= ${detailTabs>Core.Description/String} === 'Form' || ${detailTabs>Org.OData.Core.V1.Description/String} === 'Form'}">
+											<template:then>
+												<Panel expanded="true" width="auto" class="sapUiResponsiveMargin">
+													<!--<headerToolbar>
+														<Toolbar>
+															<Title text="{compareModel>PLAN_ID}-{compareModel>PLAN_NAME}"/>
+														</Toolbar>
+													</headerToolbar>-->
+													<template:with path="detailTabs>Facets" var="facets">
+														<template:repeat list="{facets>}">
+															<template:with path="facets>Target" helper=".AH.resolvePath" var="target">
+																<template:with path="target>Data" var="data">
+																	<template:repeat list="{data>}">
+																		<VBox alignItems="Start" class="sapUiSmallMargin">
+																			<template:if test="{:= ${path: 'data>EdmType'} === 'Edm.Date'}">
+																				<template:then>
+																					<Title text="{path:'data>Value/Path', formatter:'.evoAH.getCompareDate'}" titleStyle="H5"/>
+																				</template:then>
+																				
+																				<template:else>
+																					<Title text="{= '{compareModel>' + ${path : 'data>Value/Path'} + '}' }" wrapping="false" titleStyle="H5"/>
+																				</template:else>
+																			</template:if>
+																		</VBox>
+																	</template:repeat>
+																</template:with>
+															</template:with>
+														</template:repeat>
+													</template:with>
+												</Panel>
+											</template:then>
+											<template:elseif
+												test="{:= ${detailTabs>Core.Description/String} === 'Table' || ${detailTabs>Org.OData.Core.V1.Description/String} === 'Table'}">
+												<VBox class="sapUiSmallMargin">
+													<Table growing="true" items="{path:'compareModel>PlanHeaderToPlanItems/results',templateShareable: true, sorter : { path : 'PLAN_ID' }}"
+														headerText="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}">
+														<columns>
+															<template:if
+																test="{:= ${parts: [{value:'UtilizationTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameMatch'} }">
+																<template:then>
+																	<Column demandPopin="true">
+																		<Text text="Utilization"/>
+																	</Column>
+																</template:then>
+																<template:elseif
+																	test="{:= ${parts: [{value:'DurationTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameMatch'} }">
+																	<Column demandPopin="true">
+																		<Text text="Duration"/>
+																	</Column>
+																</template:elseif>
+															</template:if>
+														</columns>
+														<items>
+															<ColumnListItem>
+																<cells>
+																	<template:if
+																		test="{:= ${parts: [{value:'UtilizationTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameMatch'} }">
+																		<template:then>
+																			<Link text="{compareModel>OPERATION_WORK}" visible="true"/>
+																		</template:then>
+																		<template:elseif
+																			test="{:= ${parts: [{value:'DurationTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameMatch'} }">
+																			<Link text="{compareModel>OPERATION_WORK}" visible="true"/>
+																		</template:elseif>
+																	</template:if>
+																</cells>
+															</ColumnListItem>
+														</items>
+													</Table>
+												</VBox>
+											</template:elseif>
+										</template:if>
+									</template:repeat>
+								</template:with>
+							</VBox>
+						</VBox>
+					</f:GridListItem>
+				</f:GridList>
+			</template:with>
+		</template:alias>
+	</template:alias>
+</core:FragmentDefinition>

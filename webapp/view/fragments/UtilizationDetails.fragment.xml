@@ -1,0 +1,7 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:smartList="sap.ui.comp.smartlist"
+	xmlns:smartTable="sap.ui.comp.smarttable">
+	<ResponsivePopover title="{i18n>xtit.UtilizationDetails}" class="sapUiContentPadding" showHeader="false" contentWidth="25%"
+		contentHeight="65%" placement="Left">
+		<content></content>
+	</ResponsivePopover>
+</core:FragmentDefinition>

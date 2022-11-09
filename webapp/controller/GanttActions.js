@@ -60,7 +60,7 @@ sap.ui.define([
 					this._oView.getModel().refresh();
 					var oEventBus = sap.ui.getCore().getEventBus();
 					oEventBus.publish("BaseController", "refreshFullGantt", this._loadGanttData, this);
-						this._oView.getModel("viewModel").setProperty("/bDependencyCall", true);
+					this._oView.getModel("viewModel").setProperty("/bDependencyCall", true);
 				}.bind(this));
 		},
 
@@ -116,14 +116,41 @@ sap.ui.define([
 				oHorizonDates = {
 					visibleHorizon: {
 						startDate: moment(sMidDate).startOf("day").subtract(2, "day").toDate(),
-						endDate: moment(sMidDate).endOf("day").add(1, "day").toDate() 
+						endDate: moment(sMidDate).endOf("day").add(1, "day").toDate()
 					},
 					totalHorizon: {
-						startDate: moment(sStartDate).startOf("day").subtract(30, "day").toDate(), 
-						endDate: moment(sEndDate).endOf("day").add(30, "day").toDate() 
+						startDate: moment(sStartDate).startOf("day").subtract(30, "day").toDate(),
+						endDate: moment(sEndDate).endOf("day").add(30, "day").toDate()
 					}
 				};
 			return oHorizonDates;
+		},
+
+		/**
+		 * Creating Gantt Horizon for Utilization Gantt Chart
+		 * @param oAxisTimeStrategy - Gantt AxisTimeStrategy
+		 * @param oContext - Detail Page BindingContext
+		 * @param sKey - View Mode Key
+		 */
+		_createUtilizationGanttHorizon: function (oAxisTimeStrategy, oContext, sKey) {
+			if (oAxisTimeStrategy) {
+				var sPath = oContext.getPath(),
+					sStartDate = this._oView.getModel().getProperty(sPath + "/START_DATE"),
+					sEndDate = this._oView.getModel().getProperty(sPath + "/END_DATE");
+				oAxisTimeStrategy.setTotalHorizon(new sap.gantt.config.TimeHorizon({
+					startTime: moment(sStartDate).startOf('month').toDate(), 
+					endTime: moment(sEndDate).endOf('month').toDate() 
+				}));
+				oAxisTimeStrategy.setVisibleHorizon(new sap.gantt.config.TimeHorizon({
+					startTime: sStartDate,
+					endTime: sEndDate 
+				}));
+				oAxisTimeStrategy.setZoomLevel(6);
+				oAxisTimeStrategy.setTimeLineOption(formatter.getTimeLineOptions(sKey));
+				// if (sKey === "D") {
+				// 	oAxisTimeStrategy.setZoomLevel(6);
+				// }
+			}
 		},
 	});
 

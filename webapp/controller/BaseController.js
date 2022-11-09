@@ -1037,7 +1037,6 @@ sap.ui.define([
 		 * used in the for table in demandsblock and demandslist
 		 */
 		onMaterialInfoButtonPress: function () {
-			this.getModel("viewModel").setProperty("/busy", true);
 			var aSelectedItems = this._returnMaterialContext();
 			var aSelectedItemsPath = [];
 			for (var i = 0; i < aSelectedItems.length; i++) {

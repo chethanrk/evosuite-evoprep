@@ -28,12 +28,22 @@
 					<f:content>
 						<smartTable:SmartTable id="idOperationListFragSmartTable" height="100%" width="100%" entitySet="PlanItemsSet" header="{i18n>tit.operations}"
 							smartFilterId="idOperationListFragSmartFilterBar" tableType="ResponsiveTable" useExportToExcel="true" useVariantManagement="false"
-							useTablePersonalisation="true" showRowCount="true" enableAutoBinding="false" demandPopin="true" requestAtLeastFields="ObjectKey">
+							useTablePersonalisation="true" showRowCount="true" enableAutoBinding="false" demandPopin="true" requestAtLeastFields="ObjectKey"
+							beforeRebindTable="onOperationListDataReceived">
 							<!-- layout data used to make the table growing but the filter bar fixed -->
 							<smartTable:layoutData>
 								<FlexItemData growFactor="1" baseSize="0%"/>
 							</smartTable:layoutData>
-							<Table growing="true" mode="MultiSelect" sticky="ColumnHeaders,HeaderToolbar,InfoToolbar" selectionChange="onOprListSelectionChange"/>
+							<smartTable:customToolbar>
+								<Toolbar>
+									<ToolbarSpacer/>
+									<Button text="{i18n>xbut.SelectAll}" tooltip="{i18n>xbut.SelectAll}" press="onPressOperationSelectAll"></Button>
+									<Button text="{i18n>xbut.DeSelectAll}" tooltip="{i18n>xbut.DeSelectAll}" enabled="{viewModel>/bOperationDeSelectAll}"
+										press="onPressOperationDeSelectAll"></Button>
+								</Toolbar>
+							</smartTable:customToolbar>
+							<Table growing="true" growingThreshold="100" mode="MultiSelect" sticky="ColumnHeaders,HeaderToolbar,InfoToolbar"
+								selectionChange="onOprListSelectionChange"/>
 						</smartTable:SmartTable>
 					</f:content>
 				</f:DynamicPage>

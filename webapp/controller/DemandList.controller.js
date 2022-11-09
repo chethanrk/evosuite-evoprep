@@ -180,14 +180,16 @@ sap.ui.define([
 		onMaterialStatusPress: function (oEvent) {
 			var oSelectedIndices = this._returnMaterialContext(),
 				oViewModel = this.getModel("viewModel"),
-				sDemandPath;
-				oViewModel.setProperty("/busy", true);
+				sDemandPath,
+				aPromises = [];
+			oViewModel.setProperty("/busy", true);
 			for (var i = 0; i < oSelectedIndices.length; i++) {
 				sDemandPath = oSelectedIndices[i].getPath();
-				this.getOwnerComponent().readData(sDemandPath).then(function (result) {
-					oViewModel.setProperty("/busy", false);
-				}.bind(this));
+				aPromises.push(this.getOwnerComponent().readData(sDemandPath));
 			}
+			Promise.all(aPromises).then(function () {
+				oViewModel.setProperty("/busy", false);
+			});
 		},
 		/**
 		 * On Material Info Button press event in Demands/Operations Table
@@ -199,12 +201,8 @@ sap.ui.define([
 				aSelectedRowsIdx.length = 100;
 			}
 			var oSelectedPaths = this._getSelectedRowPathsForMaterials();
-			//var iMaxSelcRow = this.getModel("user").getProperty("/DEFAULT_MAX_DEM_SEL_MAT_LIST");
 			if (oSelectedPaths.length > 0) {
 				this.getOwnerComponent().materialInfoDialog.open(this.getView(), false, oSelectedPaths);
-			} else {
-				var msg = this.getResourceBundle().getText("ymsg.selectMaxItemMaterialInfo");
-				//MessageToast.show(msg + " " + iMaxSelcRow);
 			}
 		},
 		_getSelectedRowPathsForMaterials: function () {
@@ -472,7 +470,7 @@ sap.ui.define([
 		_addExistingError: function () {
 			this.getModel().resetChanges();
 		},
-        	/** Method to get the context of selected items in the 
+		/** Method to get the context of selected items in the 
 		 * demands table which has component_exist true for 
 		 * checking the material information
 		 */

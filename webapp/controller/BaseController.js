@@ -915,9 +915,9 @@ sap.ui.define([
 				sContinueAction = oResourceBundle.getText("btn.successMsgBxBtnContinueEditing"),
 				sPlanDetailAction = oResourceBundle.getText("btn.successMsgBxBtnPlanDetail"),
 				sMsg;
-			
-			var fnContinueCallBack = function(){
-				if(oTable){
+
+			var fnContinueCallBack = function () {
+				if (oTable) {
 					oTable.rebindTable();
 				}
 			};
@@ -930,11 +930,19 @@ sap.ui.define([
 				this._setBusyWhileSaving(oTable, false);
 				sMsg = oData.Messagebap;
 				newPlanGuid = oData.NewPlanGuid;
-				this.showConfirmDialog(sTitle, sMsg, fnContinueCallBack.bind(this), fnPlanDetailCallBack.bind(this), "None", sContinueAction, sPlanDetailAction);
+				this.showConfirmDialog(sTitle, sMsg, fnContinueCallBack.bind(this), fnPlanDetailCallBack.bind(this), "None", sContinueAction,
+					sPlanDetailAction);
 			}.bind(this);
 
 			this.callFunctionImport(oParams, sFunctionName, "GET", callBackFunction);
 
+		},
+
+		navToLogs: function (sObjectKey) {
+			this.getRouter().navTo("ChangeLogs", {
+				layout: library.LayoutType.ThreeColumnsMidExpanded,
+				plan: sObjectKey
+			});
 		},
 
 		/* =========================================================== */
@@ -1110,8 +1118,8 @@ sap.ui.define([
 			}
 			return oResponse;
 		},
-        
-        /**
+
+		/**
 		 * Display the error messages from the backend for the
 		 * PlanHeaderSet entity set incase some error is returned
 		 * from backend

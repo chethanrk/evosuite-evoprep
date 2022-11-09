@@ -151,6 +151,15 @@
 					"target": [
 						"demandList"
 					]
+				},
+				{
+					"name": "ChangeLogs",
+					"pattern": "OperationLog/{layout}/{plan}",
+					"target": [
+						"PrePlanMaster",
+						"PrePlanDetail",
+						"OperationLog"
+					]
 				}
 			],
 			"targets": {
@@ -187,6 +196,12 @@
 					"viewName": "PrePlan",
 					"viewId": "PrePlan",
 					"controlId": "idNavContainer"
+				},
+				"OperationLog": {
+					"viewName": "OperationLog",
+					"viewId": "OperationChangeLog",
+					"controlAggregation": "endColumnPages",
+					"parent": "prePlan"
 				}
 			}
 		}

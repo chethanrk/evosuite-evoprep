@@ -27,6 +27,11 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
+				},
+				fnOperationClick: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
@@ -189,6 +194,15 @@ sap.ui.define([
 				this.showMessageToast(sMsg);
 				this.getModel().resetChanges();
 			}
+		},
+
+		fnOperationClick: function (oEvent) {
+			var oSource = oEvent.getSource(),
+				sObjectKeyId = oSource.getBindingContext().getProperty("ObjectKey");
+			if (sObjectKeyId) {
+				this.navToLogs(sObjectKeyId);
+			}
+
 		},
 
 		/* =========================================================== */

@@ -1,0 +1,18 @@
+<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:commons="sap.suite.ui.commons" xmlns:core="sap.ui.core">
+	<Page title="Change Logs" class="sapUiNoContentPadding">
+		<headerContent>
+			<Button icon="sap-icon://decline" type="Default" tooltip="{i18n>xbtn.close}"/>
+		</headerContent>
+		<content>
+			<commons:Timeline id="idTimeline" sortOldestFirst="true" content="{/ChangeLogsSet}" showHeaderBar="false">
+				<commons:content>
+					<commons:TimelineItem id="idTemplateItem" dateTime="{Date}" title="changed {FieldName}" userName="{UserName}">
+						<commons:embeddedControl>
+							<Text text="Then: {OldValue} &#10; Now: {NewValue}"></Text>
+						</commons:embeddedControl>
+					</commons:TimelineItem>
+				</commons:content>
+			</commons:Timeline>
+		</content>
+	</Page>
+</mvc:View>

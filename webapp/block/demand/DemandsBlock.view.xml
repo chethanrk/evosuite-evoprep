@@ -6,7 +6,7 @@
 		persistencyKey="com.evorait.evosuite.evoprep.DetailDemandTable" enableAutoBinding="true" demandPopin="true" customData:useSmartField="true"
 		customData:useSmartToggle="true" fieldChange="onFieldChange"
 		editTogglable="{parts: [ {path:'ALLOW_FINAL'}, {path:'user>/ENABLE_ITEM_UPDATE'} ], formatter:'.formatter.showOperationEditDel'}"
-		editToggled="onPressEdit" tableBindingPath="PlanHeaderToPlanItems" requestAtLeastFields="ObjectKey">
+		editToggled="onPressEdit" tableBindingPath="PlanHeaderToPlanItems" requestAtLeastFields="ObjectKey,HeaderObjectKey">
 		<!--layout data used to make the table growing but the filter bar fixed-->
 		<smartTable:layoutData>
 			<FlexItemData growFactor="1" baseSize="0%"/>
@@ -22,6 +22,9 @@
 				<core:ExtensionPoint name="TableExtP|PrePlanDetail|PlanItemsSet|CustomToolbar"/>
 			</Toolbar>
 		</smartTable:customToolbar>
-		<Table mode="{= ${viewModel>/bOperationTableMode} ? 'None' : 'MultiSelect'}" selectionChange="handleSelectionChangeOperation" growingThreshold="100"></Table>
+		<Table mode="{= ${viewModel>/bOperationTableMode} ? 'None' : 'MultiSelect'}" selectionChange="handleSelectionChangeOperation"
+			growingThreshold="100" itemPress="fnOperationClick">
+			<ColumnListItem type="Navigation"></ColumnListItem>
+		</Table>
 	</smartTable:SmartTable>
 </mvc:View>

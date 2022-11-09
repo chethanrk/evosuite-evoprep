@@ -915,9 +915,9 @@ sap.ui.define([
 				sContinueAction = oResourceBundle.getText("btn.successMsgBxBtnContinueEditing"),
 				sPlanDetailAction = oResourceBundle.getText("btn.successMsgBxBtnPlanDetail"),
 				sMsg;
-			
-			var fnContinueCallBack = function(){
-				if(oTable){
+
+			var fnContinueCallBack = function () {
+				if (oTable) {
 					oTable.rebindTable();
 				}
 			};
@@ -930,7 +930,8 @@ sap.ui.define([
 				this._setBusyWhileSaving(oTable, false);
 				sMsg = oData.Messagebap;
 				newPlanGuid = oData.NewPlanGuid;
-				this.showConfirmDialog(sTitle, sMsg, fnContinueCallBack.bind(this), fnPlanDetailCallBack.bind(this), "None", sContinueAction, sPlanDetailAction);
+				this.showConfirmDialog(sTitle, sMsg, fnContinueCallBack.bind(this), fnPlanDetailCallBack.bind(this), "None", sContinueAction,
+					sPlanDetailAction);
 			}.bind(this);
 
 			this.callFunctionImport(oParams, sFunctionName, "GET", callBackFunction);
@@ -956,7 +957,39 @@ sap.ui.define([
 			}
 			return null;
 		},
-
+		/**
+		 * On Refresh Material Status Button press in Demand/Operations Table
+		 * used in the for table in demandsblock and demandslist
+		 */
+		onMaterialStatusPress: function (oEvent) {
+			var oSelectedIndices = this._returnMaterialContext(),
+				oViewModel = this.getModel("viewModel"),
+				sDemandPath, aPromises = [];
+			oViewModel.setProperty("/busy", true);
+			for (var i = 0; i < oSelectedIndices.length; i++) {
+				sDemandPath = oSelectedIndices[i].getPath();
+				aPromises.push(this.getOwnerComponent().readData(sDemandPath));
+			}
+			Promise.all(aPromises).then(function () {
+				oViewModel.setProperty("/busy", false);
+			});
+		},
+		/**
+		 * On Material Info Button press event in Demands/Operations Table
+		 * used in the for table in demandsblock and demandslist
+		 */
+		onMaterialInfoButtonPress: function () {
+			var aSelectedItems = this._returnMaterialContext();
+			var aSelectedItemsPath = [];
+			for (var i = 0; i < aSelectedItems.length; i++) {
+				aSelectedItemsPath.push({
+					sPath: aSelectedItems[i].getPath()
+				});
+			}
+			if (aSelectedItemsPath.length > 0) {
+				this.getOwnerComponent().materialInfoDialog.open(this.getView(), false, aSelectedItemsPath);
+			}
+		},
 		/*
 		 * function to deleted recent created context if exist
 		 *
@@ -1110,8 +1143,8 @@ sap.ui.define([
 			}
 			return oResponse;
 		},
-        
-        /**
+
+		/**
 		 * Display the error messages from the backend for the
 		 * PlanHeaderSet entity set incase some error is returned
 		 * from backend

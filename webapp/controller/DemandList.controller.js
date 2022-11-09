@@ -174,37 +174,6 @@ sap.ui.define([
 			}
 
 		},
-		/**
-		 * On Refresh Material Status Button press in Demand/Operations Table
-		 */
-		onMaterialStatusPress: function (oEvent) {
-			var oSelectedIndices = this._returnMaterialContext(),
-				oViewModel = this.getModel("viewModel"),
-				sDemandPath,
-				aPromises = [];
-			oViewModel.setProperty("/busy", true);
-			for (var i = 0; i < oSelectedIndices.length; i++) {
-				sDemandPath = oSelectedIndices[i].getPath();
-				aPromises.push(this.getOwnerComponent().readData(sDemandPath));
-			}
-			Promise.all(aPromises).then(function () {
-				oViewModel.setProperty("/busy", false);
-			});
-		},
-		/**
-		 * On Material Info Button press event in Demands/Operations Table
-		 */
-		onMaterialInfoButtonPress: function () {
-			var oTable = this.oSmartTable.getTable();
-			var aSelectedRowsIdx = oTable.getSelectedIndices();
-			if (aSelectedRowsIdx.length > 100) {
-				aSelectedRowsIdx.length = 100;
-			}
-			var oSelectedPaths = this._getSelectedRowPathsForMaterials();
-			if (oSelectedPaths.length > 0) {
-				this.getOwnerComponent().materialInfoDialog.open(this.getView(), false, oSelectedPaths);
-			}
-		},
 		_getSelectedRowPathsForMaterials: function () {
 			var aArray = [],
 				selectMaxItemMaterialInfo = this._returnMaterialContext(),

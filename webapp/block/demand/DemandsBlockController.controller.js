@@ -127,41 +127,6 @@ sap.ui.define([
 			}
 
 		},
-		/**
-		 * On Refresh Material Status Button press in Demand/Operations Table
-		 */
-		onMaterialStatusPress: function (oEvent) {
-			var oSelectedIndices = this._returnMaterialContext(),
-				oViewModel = this.getModel("viewModel"),
-				sDemandPath, aPromises = [];
-			oViewModel.setProperty("/busy", true);
-			for (var i = 0; i < oSelectedIndices.length; i++) {
-				sDemandPath = oSelectedIndices[i].getPath();
-				aPromises.push(this.getOwnerComponent().readData(sDemandPath));
-			}
-			Promise.all(aPromises).then(function () {
-				oViewModel.setProperty("/busy", false);
-			});
-		},
-		/**
-		 * On Material Info Button press event in Demands/Operations Table
-		 */
-		onMaterialInfoButtonPress: function () {
-			var oTable = this.oSmartTable.getTable();
-			var aSelectedItems = oTable.getSelectedItems();
-			if (aSelectedItems.length > 100) {
-				aSelectedItems.length = 100;
-			}
-			var aSelectedItemsPath = [];
-			for (var i = 0; i < aSelectedItems.length; i++) {
-				aSelectedItemsPath.push({
-					sPath: aSelectedItems[i].getBindingContext().getPath()
-				});
-			}
-			if (aSelectedItemsPath.length > 0) {
-				this.getOwnerComponent().materialInfoDialog.open(this.getView(), false, aSelectedItemsPath);
-			}
-		},
 		/** Method to get the context of selected items in the 
 		 * demands table which has component_exist true for 
 		 * checking the material information

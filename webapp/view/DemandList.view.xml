@@ -56,7 +56,8 @@
 						<Button press="onPressCreatePrePlanButton" tooltip="{i18n>tit.createPrePlan}" text="{i18n>tit.createPrePlan}"
 							visible="{= ${user>/ENABLE_PREPLAN_CREATE} === 'X'}" enabled="{viewModel>/allowPrePlanCreate}"/>
 						<Button press="onPressAddExistingPlan" tooltip="{i18n>tit.addExistingPlan}" text="{i18n>tit.addExistingPlan}"
-							visible="{= ${user>/ENABLE_PREPLAN_ITEM_ADD} === 'X'}" enabled="{viewModel>/allowPrePlanCreate}"/>
+							visible="{= ${user>/ENABLE_PREPLAN_ITEM_ADD} === 'X'}" enabled="{= ${viewModel>/allowPrePlanCreate}  &amp;&amp; ${viewModel>/bEnableAddOperations} }"
+							/>
 						<core:ExtensionPoint name="TableExtP|DemandList|PlanItemsSet|CustomToolbar"/>
 					</Toolbar>
 				</smartTable:customToolbar>

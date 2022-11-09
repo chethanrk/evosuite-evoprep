@@ -172,6 +172,13 @@ sap.ui.define([
 				isEnabledPrePlanreate = true;
 			}
 			this.getModel("viewModel").setProperty("/allowPrePlanCreate", isEnabledPrePlanreate);
+
+			//Condition for Disabling Add Operations when its Select All (Later this has to be removed)
+			var bEnableAddOperations = true;
+			if (this.bSelectAll || oEvent.getParameters().rowIndex === 0) {
+				bEnableAddOperations = false;
+			}
+			this.getModel("viewModel").setProperty("/bEnableAddOperations", bEnableAddOperations);
 		},
 
 		/**

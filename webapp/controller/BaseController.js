@@ -953,7 +953,7 @@ sap.ui.define([
 			this.callFunctionImport(oParams, sFunctionName, "GET", callBackFunction);
 
 		},
-/**
+		/**
 		 * Operation Table beforeRebindTable event 
 		 * Opertaion Table Data fetching and storing in local
 		 * @param oEvent
@@ -995,7 +995,7 @@ sap.ui.define([
 			oTable.removeSelections();
 			this.getModel("viewModel").setProperty("/bOperationDeSelectAll", false);
 		},
-		
+
 		/* =========================================================== */
 		/* Private methods                                              */
 		/* =========================================================== */
@@ -1037,6 +1037,7 @@ sap.ui.define([
 		 * used in the for table in demandsblock and demandslist
 		 */
 		onMaterialInfoButtonPress: function () {
+			this.getModel("viewModel").setProperty("/busy", true);
 			var aSelectedItems = this._returnMaterialContext();
 			var aSelectedItemsPath = [];
 			for (var i = 0; i < aSelectedItems.length; i++) {

@@ -180,7 +180,7 @@ sap.ui.define([
 				bEnableAddOperations = false;
 			}
 			this.getModel("viewModel").setProperty("/bEnableAddOperations", bEnableAddOperations);
-            			// check enable or disable the materials status and material information button
+            // check enable or disable the materials status and material information button
 			if (this._returnMaterialContext().length > 0) {
 				this.byId("materialInfo").setEnabled(true);
 				this.byId("idOverallStatusButton").setEnabled(true);

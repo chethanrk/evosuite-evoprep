@@ -181,7 +181,7 @@ sap.ui.define([
 							}
 						});
 						obj.PLAN_ID = oParentSource.getBindingContext().getProperty("PLAN_ID");
-						this.selectedPlanObject = oParentSource.getBindingContext().getProperty("ObjectKey");
+						this.selectedPlanObject = oParentSource.getBindingContext();
 						singleentry.properties = obj;
 						this.getModel().createEntry("/" + entitySet, singleentry);
 					}.bind(this));

@@ -104,6 +104,11 @@ sap.ui.define([
 					public: true,
 					final: true,
 					overrideExecution: OverrideExecution.Instead
+				},
+				onBeforeRebindUtilizationDetails: {
+					public: true,
+					final: true,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
@@ -460,9 +465,15 @@ sap.ui.define([
 			}
 		},
 
+		/*On Press of Shape Double Click in Utilization Gantt Chart
+		 * Displaying Utilization Details in PopOver
+		 * @param oEvent
+		 */
 		onUtilizationShapeDoubleClick: function (oEvent) {
 			var mParams = oEvent.getParameters(),
-				oShape = mParams.shape;
+				oShape = mParams.shape,
+				oContext = oShape.getBindingContext();
+			this._oUtilizationShape = oContext.getObject();
 			if (!this._oUtilizationPopover) {
 				Fragment.load({
 					name: "com.evorait.evosuite.evoprep.view.fragments.UtilizationDetails",
@@ -475,6 +486,26 @@ sap.ui.define([
 			} else {
 				this._oUtilizationPopover.openBy(oShape);
 			}
+		},
+		
+		/**
+		 * Utilization Details PopOver 
+		 * Passing selected shape filter
+		 */
+		onBeforeRebindUtilizationDetails: function (oEvent) {
+			var sPlanID = this.getModel().getProperty(this._oContext.getPath() + "/PLAN_ID"),
+				sKey = this._UtilizationSelectView.getSelectedKey(),
+				mBindingParams = oEvent.getParameter("bindingParams"),
+				aFilters = new Filter({
+					filters: [
+						new Filter("PLAN_ID", FilterOperator.EQ, sPlanID),
+						new Filter("CELL_START_DATE", FilterOperator.EQ, this._oUtilizationShape.BARSTART_DATE),
+						new Filter("CELL_END_DATE", FilterOperator.EQ, this._oUtilizationShape.BAREND_DATE),
+						new Filter("VIEW_MODE", FilterOperator.EQ, sKey)
+					],
+					and: true
+				});
+			mBindingParams.filters = mBindingParams.filters.concat(aFilters);
 		},
 
 		/* =========================================================== */

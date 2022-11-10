@@ -2,6 +2,29 @@
 	xmlns:smartTable="sap.ui.comp.smarttable">
 	<ResponsivePopover title="{i18n>xtit.UtilizationDetails}" class="sapUiContentPadding" showHeader="false" contentWidth="25%"
 		contentHeight="65%" placement="Left">
-		<content></content>
+		<content>
+			<smartTable:SmartTable height="100%" width="100%" entitySet="WCUtilizationDetailSet" header="" tableType="ResponsiveTable"
+				useExportToExcel="true" useVariantManagement="false" useTablePersonalisation="true" showRowCount="true" enableAutoBinding="true"
+				demandPopin="true" requestAtLeastFields="" beforeRebindTable="onBeforeRebindUtilizationDetails">
+				<!-- layout data used to make the table growing but the filter bar fixed -->
+				<smartTable:layoutData>
+					<FlexItemData growFactor="1" baseSize="0%"/>
+				</smartTable:layoutData>
+				<Table growing="true" sticky="ColumnHeaders,HeaderToolbar,InfoToolbar">
+					<columns>
+						<Column width="5%">
+							<Label text=""/>
+						</Column>
+					</columns>
+					<items>
+						<ColumnListItem>
+							<cells>
+								<core:Icon src="{ICON}" color="{COLOR}"></core:Icon>
+							</cells>
+						</ColumnListItem>
+					</items>
+				</Table>
+			</smartTable:SmartTable>
+		</content>
 	</ResponsivePopover>
 </core:FragmentDefinition>

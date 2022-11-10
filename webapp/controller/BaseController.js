@@ -1020,7 +1020,8 @@ sap.ui.define([
 		 * used in the for table in demandsblock and demandslist
 		 */
 		onMaterialStatusPress: function (oEvent) {
-			var oSelectedIndices = this._returnMaterialContext(),
+			var oTable = this.oSmartTable.getTable();
+			var oSelectedIndices = this._returnMaterialContext(oTable),
 				oViewModel = this.getModel("viewModel"),
 				sDemandPath, aPromises = [];
 			oViewModel.setProperty("/busy", true);
@@ -1037,7 +1038,8 @@ sap.ui.define([
 		 * used in the for table in demandsblock and demandslist
 		 */
 		onMaterialInfoButtonPress: function () {
-			var aSelectedItems = this._returnMaterialContext();
+			var oTable = this.oSmartTable.getTable();
+			var aSelectedItems = this._returnMaterialContext(oTable);
 			var aSelectedItemsPath = [];
 			for (var i = 0; i < aSelectedItems.length; i++) {
 				aSelectedItemsPath.push({
@@ -1244,6 +1246,39 @@ sap.ui.define([
 					}.bind(this)
 				}
 			);
+		},
+		/** Method to get the context of selected items in the 
+		 * demands table which has component_exist true for 
+		 * checking the material information
+		 * This method is used in the DemandsBlock and DemandsList Views
+		 * @param oTable {object} table instance
+		 * @return aArrayMaterialContext {array}
+		 */
+		_returnMaterialContext: function (oTable) {
+			var aSelectections, aContext, sDemandPath, bComponentExist, aArrayMaterialContext = [];
+			if (oTable.getAggregation("items")) {
+				aSelectections = oTable.getSelectedItems();
+				for (var i = 0; i < aSelectections.length; i++) {
+					aContext = aSelectections[i].getBindingContext();
+					sDemandPath = aContext.getPath();
+					bComponentExist = this.getModel().getProperty(sDemandPath + "/COMPONENT_EXISTS");
+					if (bComponentExist) {
+						aArrayMaterialContext.push(aContext);
+					}
+				}
+			} else {
+				aSelectections = this.oSmartTable.getTable().getSelectedIndices();
+				for (var j = 0; j < aSelectections.length; j++) {
+					aContext = this.oSmartTable.getTable().getContextByIndex(aSelectections[j]);
+					sDemandPath = aContext.getPath();
+					bComponentExist = this.getModel().getProperty(sDemandPath + "/COMPONENT_EXISTS");
+					if (bComponentExist) {
+						aArrayMaterialContext.push(aContext);
+					}
+				}
+			}
+
+			return aArrayMaterialContext;
 		}
 
 	});

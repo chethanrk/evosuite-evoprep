@@ -181,7 +181,7 @@ sap.ui.define([
 			}
 			this.getModel("viewModel").setProperty("/bEnableAddOperations", bEnableAddOperations);
 			// check enable or disable the materials status and material information button
-			if (this._returnMaterialContext().length > 0) {
+			if (this._returnMaterialContext(this.oSmartTable.getTable()).length > 0) {
 				this.oViewModel.setProperty("/bMaterialsOperations", true);
 			} else {
 				this.oViewModel.setProperty("/bMaterialsOperations", false);
@@ -480,24 +480,6 @@ sap.ui.define([
 		 */
 		_addExistingError: function () {
 			this.getModel().resetChanges();
-		},
-		/** Method to get the context of selected items in the 
-		 * demands table which has component_exist true for 
-		 * checking the material information
-		 */
-		_returnMaterialContext: function () {
-			var sDemandPath, bComponentExist, aArrayMaterialContext = [],
-				aContext;
-			var aSelecteOperationIndice = this.oSmartTable.getTable().getSelectedIndices();
-			for (var i = 0; i < aSelecteOperationIndice.length; i++) {
-				aContext = this.oSmartTable.getTable().getContextByIndex(aSelecteOperationIndice[i]);
-				sDemandPath = aContext.getPath();
-				bComponentExist = this.getModel().getProperty(sDemandPath + "/COMPONENT_EXISTS");
-				if (bComponentExist) {
-					aArrayMaterialContext.push(aContext);
-				}
-			}
-			return aArrayMaterialContext;
 		}
 
 	});

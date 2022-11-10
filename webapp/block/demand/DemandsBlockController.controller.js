@@ -52,7 +52,7 @@ sap.ui.define([
 		 * @memberOf com.evorait.evosuite.evoprep.block.demand.DemandsBlocks
 		 */
 		onExit: function () {
-			console.log("on exit")
+		
 			this.destroyOperationListFragment();
 		},
 
@@ -126,30 +126,12 @@ sap.ui.define([
 			}
 			// check enable or disable the materials status and material information button
 
-			if (this._returnMaterialContext().length > 0) {
+			if (this._returnMaterialContext(this.oSmartTable.getTable()).length > 0) {
 				this.getModel("viewModel").setProperty("/bMaterialsDemandsBlock", true);
 			} else {
 				this.getModel("viewModel").setProperty("/bMaterialsDemandsBlock", false);
 			}
 
-		},
-		/** Method to get the context of selected items in the 
-		 * demands table which has component_exist true for 
-		 * checking the material information
-		 */
-		_returnMaterialContext: function () {
-			var sDemandPath, bComponentExist, aArrayMaterialContext = [],
-				aContext;
-			var aSelectedItems = this.oSmartTable.getTable().getSelectedItems();
-			for (var i = 0; i < aSelectedItems.length; i++) {
-				aContext = aSelectedItems[i].getBindingContext();
-				sDemandPath = aContext.getPath();
-				bComponentExist = this.getModel().getProperty(sDemandPath + "/COMPONENT_EXISTS");
-				if (bComponentExist) {
-					aArrayMaterialContext.push(aContext);
-				}
-			}
-			return aArrayMaterialContext;
 		},
 		/**
 		 * Handle Object list delete operation

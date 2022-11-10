@@ -57,10 +57,10 @@
 							visible="{= ${user>/ENABLE_PREPLAN_CREATE} === 'X'}" enabled="{viewModel>/allowPrePlanCreate}"/>
 						<Button press="onPressAddExistingPlan" tooltip="{i18n>tit.addExistingPlan}" text="{i18n>tit.addExistingPlan}"
 							visible="{= ${user>/ENABLE_PREPLAN_ITEM_ADD} === 'X'}" enabled="{viewModel>/allowPrePlanCreate}"/>
-                        <Button id="idOverallStatusButton" icon="sap-icon://synchronize" enabled="false" text="{i18n>btn.materialStatus}"
+                        <Button id="idOverallStatusButton" icon="sap-icon://synchronize" enabled="{viewModel>/bMaterialsOperations}" text="{i18n>btn.materialStatus}"
 							tooltip="{i18n>btn.materialStatus}" visible="{user>/ENABLE_MATERIAL_AVAILABILITY}" press="onMaterialStatusPress"/>
 						<Button id="materialInfo" text="{i18n>btn.materialInfoButton}" tooltip="{i18n>btn.materialInfoButton}" icon="sap-icon://message-information"
-							press="onMaterialInfoButtonPress" enabled="false" visible="{user>/ENABLE_MATERIAL_AVAILABILITY}">
+							press="onMaterialInfoButtonPress" visible="{user>/ENABLE_MATERIAL_AVAILABILITY}" enabled="{viewModel>/bMaterialsOperations}" >
 							<layoutData>
 								<ToolbarLayoutData shrinkable="true"/>
 							</layoutData>

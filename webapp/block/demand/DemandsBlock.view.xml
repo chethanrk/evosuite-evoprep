@@ -19,10 +19,10 @@
 				<Button icon="sap-icon://delete" press="onPressDeleteOperations" tooltip="{i18n>btn.remove}"
 					visible="{parts: [{path:'ALLOW_FINAL'}, {path:'user>/ENABLE_ITEM_DELETE'} ], formatter:'.formatter.showOperationEditDel'}"
 					enabled="{viewModel>/bEnableOperationDelete}"/>
-				<Button id="idOverallStatusButton" icon="sap-icon://synchronize" enabled="false" text="{i18n>btn.materialStatus}"
+				<Button id="idOverallStatusButton" icon="sap-icon://synchronize" enabled="{viewModel>/bMaterialsDemandsBlock}" text="{i18n>btn.materialStatus}"
 					tooltip="{i18n>btn.materialStatus}" visible="{user>/ENABLE_MATERIAL_AVAILABILITY}" press="onMaterialStatusPress"/>
 				<Button id="materialInfo" text="{i18n>btn.materialInfoButton}" tooltip="{i18n>btn.materialInfoButton}" icon="sap-icon://message-information"
-					press="onMaterialInfoButtonPress" enabled="false" visible="{user>/ENABLE_MATERIAL_AVAILABILITY}">
+					press="onMaterialInfoButtonPress" enabled="{viewModel>/bMaterialsDemandsBlock}" visible="{user>/ENABLE_MATERIAL_AVAILABILITY}">
 					<layoutData>
 						<ToolbarLayoutData shrinkable="true"/>
 					</layoutData>

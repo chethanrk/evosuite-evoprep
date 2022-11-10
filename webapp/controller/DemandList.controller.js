@@ -107,7 +107,6 @@ sap.ui.define([
 			this.oSmartTable = this.getView().byId("demandListSmartTable");
 			this.oViewModel = this.getModel("viewModel");
 			this.oCreateModel = this.getModel("CreateModel");
-			//this.oViewModel.setProperty("/delay", 0);
 			this.oViewModel.setProperty("/busy", false);
 		},
 
@@ -158,6 +157,7 @@ sap.ui.define([
 		 */
 		goBackToPrePlans: function () {
 			this._removeOprTableSelection();
+			this.oViewModel.setProperty("/bMaterialsOperations", false);
 			this.getOwnerComponent().getRouter().navTo("PrePlanMaster");
 		},
 
@@ -180,13 +180,11 @@ sap.ui.define([
 				bEnableAddOperations = false;
 			}
 			this.getModel("viewModel").setProperty("/bEnableAddOperations", bEnableAddOperations);
-            // check enable or disable the materials status and material information button
+			// check enable or disable the materials status and material information button
 			if (this._returnMaterialContext().length > 0) {
-				this.byId("materialInfo").setEnabled(true);
-				this.byId("idOverallStatusButton").setEnabled(true);
+				this.oViewModel.setProperty("/bMaterialsOperations", true);
 			} else {
-				this.byId("materialInfo").setEnabled(false);
-				this.byId("idOverallStatusButton").setEnabled(false);
+				this.oViewModel.setProperty("/bMaterialsOperations", false);
 			}
 		},
 

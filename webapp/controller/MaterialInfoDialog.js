@@ -20,7 +20,7 @@ sap.ui.define([
 		 * @param oView
 		 * @param sBindPath
 		 */
-		open: function (oView, mParameters, aSelectedPaths) {
+		open: function (oView, aSelectedPaths) {
 			// create dialog lazily
 			if (!this._oDialog) {
 				oView.getModel("viewModel").setProperty("/busy", true);
@@ -30,7 +30,7 @@ sap.ui.define([
 				}).then(function (oDialog) {
 					oView.getModel("viewModel").setProperty("/busy", false);
 					this._oDialog = oDialog;
-					this.onOpen(oDialog, oView, aSelectedPaths, mParameters);
+					this.onOpen(oDialog, oView, aSelectedPaths);
 				}.bind(this));
 			} else {
 				this.onOpen(this._oDialog, oView, aSelectedPaths);
@@ -40,21 +40,16 @@ sap.ui.define([
 			sap.ui.getCore().byId("materialInfoTable").setTableBindingPath();
 		},
 
-		onOpen: function (oDialog, oView, aSelectedPaths, mParameters) {
+		onOpen: function (oDialog, oView, aSelectedPaths) {
 			// connect dialog to view (models, lifecycle)
 			oView.addDependent(oDialog);
-			this._mParameters = mParameters || {
-				bFromHome: true
-			};
 			this._oView = oView;
-			this._selectedFunction = null;
-			this._aSelectedPaths = aSelectedPaths;
-			this._component = this._oView.getController().getOwnerComponent();
+			var oComponent = this._oView.getController().getOwnerComponent();
 			// setting the content density class on dialog
-			oDialog.addStyleClass(this._component.getContentDensityClass());
-
+			oDialog.addStyleClass(oComponent.getContentDensityClass());
 			// open dialog
 			oDialog.open();
+			this._aSelectedPaths=aSelectedPaths;
 			this._componentDetail(this._aSelectedPaths);
 		},
 
@@ -63,13 +58,10 @@ sap.ui.define([
 		 * @param oEvent
 		 */
 		_componentDetail: function (aSelectedPaths) {
-			if (aSelectedPaths.length > 0 && this._bFirstTime) {
+			if (aSelectedPaths.length > 0) {
 				var oSmartTable = sap.ui.getCore().byId("materialInfoTable");
 				oSmartTable.rebindTable();
-
 			}
-			this._bFirstTime = true;
-
 		},
 		onBeforeRebindTable: function (oEvent) {
 			var oParams = oEvent.getParameters(),
@@ -81,11 +73,10 @@ sap.ui.define([
 		 * Return resource filters on selected resources
 		 * @param aSelectedPaths {Array} Selected Demands
 		 * @return aFilters Demand Filters
-		 * @Author: Pranav
+		 * @Author: Manik
 		 */
 		_getDemandFilters: function (aSelectedPaths) {
-			var aDemandGuid = [],
-				oModel = this._oView.getModel();
+			var aDemandGuid = [];
 			var aFilters = [];
 
 			for (var i = 0; i < aSelectedPaths.length; i++) {
@@ -109,7 +100,6 @@ sap.ui.define([
 		 * close dialog
 		 */
 		onCloseDialog: function (oEvent) {
-			sap.ui.getCore().byId("materialInfoTable").setTableBindingPath("DemandToComponents");
 			this._oDialog.close();
 		}
 	});

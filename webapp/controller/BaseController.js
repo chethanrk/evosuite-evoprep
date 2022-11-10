@@ -1045,7 +1045,7 @@ sap.ui.define([
 				});
 			}
 			if (aSelectedItemsPath.length > 0) {
-				this.getOwnerComponent().materialInfoDialog.open(this.getView(), false, aSelectedItemsPath);
+				this.getOwnerComponent().materialInfoDialog.open(this.getView(), aSelectedItemsPath);
 			}
 		},
 		/*

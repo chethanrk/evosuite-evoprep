@@ -4,7 +4,7 @@
 		<content>
 			<smartTable:SmartTable id="materialInfoTable" entitySet="PlanComponentsSet" useExportToExcel="true" useVariantManagement="true"
 				useTablePersonalisation="true" header="{i18n>xtit.materialInfoDialogTitle}" showRowCount="true" beforeRebindTable="onBeforeRebindTable"
-				enableAutoBinding="true" class="sapUiResponsiveContentPadding"
+				enableAutoBinding="true" class="sapUiResponsiveContentPadding"  demandPopin="true"
 				requestAtLeastFields="MATERIAL_STATUS_ICON,MATERIAL_STATUS_DESC,MATERIAL_STATUS,MATERIAL_STATUS_STATE" tableType="ResponsiveTable">
 				<!-- layout data used to make the table growing but the filter bar fixed -->
 				<smartTable:layoutData>

@@ -36,7 +36,7 @@
 				<smartTable:customToolbar>
 					<OverflowToolbar class="prePlanListToolbar">
 						<ToolbarSpacer/>
-						<Button id="idBtnComaprePrePlan" text="{i18n>xbut.comapre}" press="onPressComapre" visible="false"/>
+						<Button id="idBtnComaprePrePlan" text="{i18n>xbut.comapre}" press="onPressComapre" visible="true"/>
 						<Button id="idBtnCopyPrePlan" text="{i18n>xbut.copy}" press="onCopyPrePlanPress" visible="{= ${user>/ENABLE_PLAN_COPY} === 'X'}" 
 							enabled="{viewModel>/bCopyEnabled}"/>
 						<Button id="idBtnCreatePrePlan" text="{i18n>xbut.create}" press="onCreatePrePlanPress" visible="{= ${user>/ENABLE_PREPLAN_CREATE} === 'X'}"/>

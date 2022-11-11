@@ -118,7 +118,7 @@ sap.ui.define([
 				this.showMessageToast("Select atleast 2 plans");
 			} else if (aListItems.length > 1 && aListItems.length < 4) {
 				aListItems.forEach(function (oItem) {
-					oPlans["plans"].push(oItem.getBindingContext().getObject().PLAN_ID);
+					oPlans["plans"].push(oItem.getBindingContext().getObject().ObjectKey);
 				});
 
 				//unselect all the selected rows

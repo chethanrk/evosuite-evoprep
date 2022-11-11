@@ -1,14 +1,14 @@
 <mvc:View controllerName="com.evorait.evosuite.evoprep.controller.PrePlanCompare" xmlns="sap.m" xmlns:core="sap.ui.core"
-	xmlns:mvc="sap.ui.core.mvc" xmlns:uxap="sap.uxap" xmlns:layout="sap.ui.layout" xmlns:f="sap.f" xmlns:cards="sap.f.cards"
+	xmlns:mvc="sap.ui.core.mvc" xmlns:uxap="sap.uxap" xmlns:layout="sap.ui.layout" xmlns:f="sap.f" xmlns:tnt="sap.tnt"
 	xmlns:template="http://schemas.sap.com/sapui5/extension/sap.ui.core.template/1"
 	xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" height="100%">
 	<template:alias name=".AH" value="sap.ui.model.odata.AnnotationHelper">
 		<template:alias name=".evoAH" value="com.evorait.evosuite.evoprep.model.AnnotationHelper">
 			<template:with path="templateProperties>/" var="tempProps">
-				<f:DynamicPage id="idPlanComaprePage" headerExpanded="true" preserveHeaderStateOnScroll="true" fitContent="true" showFooter="false"
-					class="sapUiContentPadding" stickySubheaderProvider="" busy="{viewModel>/busy}" >
+				<f:DynamicPage id="idPlanComaprePage" backgroundDesign="List" headerExpanded="true" preserveHeaderStateOnScroll="true" fitContent="true"
+					showFooter="false" class="sapUiContentPadding" stickySubheaderProvider="" busy="{viewModel>/busy}">
 					<f:title>
-						<f:DynamicPageTitle>
+						<f:DynamicPageTitle backgroundDesign="Transparent">
 							<f:heading>
 								<Title text="Compare Plans"/>
 							</f:heading>
@@ -19,100 +19,100 @@
 					</f:title>
 					<f:header>
 						<f:DynamicPageHeader backgroundDesign="Translucent" class="sapUiContentPadding" pinnable="true">
-							<HBox width="100%" fitContainer="true" >
+							<HBox width="100%" fitContainer="true">
 								<HBox width="40%" direction="Column">
-									<template:with path="templateProperties>/annotationPath" helper="com.evorait.evosuite.evoprep.model.AnnotationHelper.resolveObjectHeaderPath"
-									var="headerDetails">
-									<f:GridList items="{path:'compareModel>/compare0',templateShareable: true}" class="sapUiResponsiveContentPadding">
-										<f:GridListItem>
-											<VBox height="100%">
-												<VBox justifyContent="SpaceBetween">
-													<layoutData>
-														<FlexItemData growFactor="1" shrinkFactor="0"/>
-													</layoutData>
-													<template:repeat list="{headerDetails>}">
-														<template:with path="headerDetails>Facets" var="headerFacets">
-															<template:repeat list="{headerFacets>}">
-																<template:with path="headerFacets>Target" helper=".AH.resolvePath" var="target">
-																	<template:with path="target>Data" var="data">
-																		<layout:VerticalLayout>
-																			<template:repeat list="{data>}">
-																				<VBox alignItems="Start" class="sapUiSmallMargin">
-																					<Title text="{:= '{/' + 'PlanHeaderSet' + '/' + ${path : 'data>Value/Path'} + '/##com.sap.vocabularies.Common.v1.Label/String}' }"
-																						wrapping="false" titleStyle="H4"/>
-																				</VBox>
-																			</template:repeat>
-																		</layout:VerticalLayout>
+									<template:with path="templateProperties>/annotationPath"
+										helper="com.evorait.evosuite.evoprep.model.AnnotationHelper.resolveObjectHeaderPath" var="headerDetails">
+										<f:GridList items="{path:'compareModel>/compareProperty',templateShareable: true}" class="sapUiResponsiveContentPadding">
+											<f:GridListItem>
+												<VBox height="100%">
+													<VBox justifyContent="SpaceBetween">
+														<layoutData>
+															<FlexItemData growFactor="1" shrinkFactor="0"/>
+														</layoutData>
+														<template:repeat list="{headerDetails>}">
+															<template:with path="headerDetails>Facets" var="headerFacets">
+																<template:repeat list="{headerFacets>}">
+																	<template:with path="headerFacets>Target" helper=".AH.resolvePath" var="target">
+																		<template:with path="target>Data" var="data">
+																			<layout:VerticalLayout>
+																				<template:repeat list="{data>}">
+																					<VBox alignItems="Start" class="sapUiSmallMargin">
+																						<Title text="{:= '{/' + 'ComparePlanGeneralSet' + '/' + ${path : 'data>Value/Path'} + '/##com.sap.vocabularies.Common.v1.Label/String}' }"
+																							wrapping="false" titleStyle="H5"/>
+																					</VBox>
+																				</template:repeat>
+																			</layout:VerticalLayout>
+																		</template:with>
 																	</template:with>
-																</template:with>
-															</template:repeat>
-														</template:with>
-													</template:repeat>
+																</template:repeat>
+															</template:with>
+														</template:repeat>
+													</VBox>
 												</VBox>
-											</VBox>
-										</f:GridListItem>
-									</f:GridList>
-								</template:with>
-							</HBox>
-							<HBox width="60%" direction="Column">
-								<template:with path="templateProperties>/annotationPath"
-									helper="com.evorait.evosuite.evoprep.model.AnnotationHelper.resolveObjectHeaderPath" var="headerDetails">
-									<f:GridList items="{path:'compareModel>/compare',templateShareable: true}" class="sapUiResponsiveContentPadding">
-										<f:GridListItem highlight="Success">
-											<VBox height="100%">
-												<VBox justifyContent="SpaceBetween">
-													<layoutData>
-														<FlexItemData growFactor="1" shrinkFactor="0"/>
-													</layoutData>
-													<template:repeat list="{headerDetails>}">
-														<template:with path="headerDetails>Facets" var="headerFacets">
-															<template:repeat list="{headerFacets>}">
-																<template:with path="headerFacets>Target" helper=".AH.resolvePath" var="target">
-																	<template:with path="target>Data" var="data">
-																		<layout:VerticalLayout>
-																			<template:repeat list="{data>}">
-																				<VBox alignItems="Start" class="sapUiSmallMargin">
-																					<template:if test="{:= ${path: 'data>EdmType'} === 'Edm.Date'}">
-																						<template:then>
-																							<Title text="{path:'data>Value/Path', formatter:'.evoAH.getCompareDate'}" titleStyle="H4"/>
-																						</template:then>
-																						<template:elseif test="{:= (${data>Org.OData.Core.V1.Description/String} === 'Progress' || ${data>Core.Description/String} === 'Progress')}">
-																							<ProgressIndicator percentValue="80%" displayValue="{= '{compareModel>' + ${path : 'data>Value/Path'} + '}' }" showValue="true"
-																								state="Success"/>
-																						</template:elseif>
-																						<template:else>
-																							<Title text="{= '{compareModel>' + ${path : 'data>Value/Path'} + '}' }" wrapping="false" titleStyle="H4"/>
-																						</template:else>
-																					</template:if>
-																				</VBox>
-																			</template:repeat>
-																		</layout:VerticalLayout>
+											</f:GridListItem>
+										</f:GridList>
+									</template:with>
+								</HBox>
+								<HBox width="60%" direction="Column">
+									<template:with path="templateProperties>/annotationPath"
+										helper="com.evorait.evosuite.evoprep.model.AnnotationHelper.resolveObjectHeaderPath" var="headerDetails">
+										<f:GridList items="{path:'compareModel>/compare',templateShareable: true}" class="sapUiResponsiveContentPadding">
+											<f:GridListItem highlight="{= ${compareModel>STATUS_SHORT} !== 'INPR' ? 'Success':'Warning'}">
+												<VBox height="100%">
+													<VBox justifyContent="SpaceBetween">
+														<layoutData>
+															<FlexItemData growFactor="1" shrinkFactor="0"/>
+														</layoutData>
+														<template:repeat list="{headerDetails>}">
+															<template:with path="headerDetails>Facets" var="headerFacets">
+																<template:repeat list="{headerFacets>}">
+																	<template:with path="headerFacets>Target" helper=".AH.resolvePath" var="target">
+																		<template:with path="target>Data" var="data">
+																			<layout:VerticalLayout>
+																				<template:repeat list="{data>}">
+																					<VBox alignItems="Start" class="sapUiSmallMargin">
+																						<template:if test="{:= ${path: 'data>EdmType'} === 'Edm.Date'}">
+																							<template:then>
+																								<Title text="{path:'data>Value/Path', formatter:'.evoAH.getCompareDate'}" titleStyle="H5"/>
+																							</template:then>
+																							<template:elseif test="{:= (${data>Org.OData.Core.V1.Description/String} === 'Progress' || ${data>Core.Description/String} === 'Progress')}">
+																								<tnt:InfoLabel text="{= '{compareModel>' + ${path : 'data>Value/Path'} + '}' }" displayOnly="true"
+																									colorScheme="{= ${compareModel>STATUS_SHORT} !== 'INPR' ? 8 : 9 }"/>
+																							</template:elseif>
+																							<template:else>
+																								<Title text="{= '{compareModel>' + ${path : 'data>Value/Path'} + '}' }" wrapping="false" titleStyle="H5"/>
+																							</template:else>
+																						</template:if>
+																					</VBox>
+																				</template:repeat>
+																			</layout:VerticalLayout>
+																		</template:with>
 																	</template:with>
-																</template:with>
-															</template:repeat>
-														</template:with>
-													</template:repeat>
+																</template:repeat>
+															</template:with>
+														</template:repeat>
+													</VBox>
 												</VBox>
-											</VBox>
-										</f:GridListItem>
-									</f:GridList>
-								</template:with>
+											</f:GridListItem>
+										</f:GridList>
+									</template:with>
+								</HBox>
+							</HBox>
+						</f:DynamicPageHeader>
+					</f:header>
+					<f:content>
+						<HBox width="100%" fitContainer="true">
+							<HBox width="40%">
+								<core:Fragment fragmentName="com.evorait.evosuite.evoprep.view.templates.CompareProperties" type="XML"/>
+							</HBox>
+							<HBox width="60%">
+								<core:Fragment fragmentName="com.evorait.evosuite.evoprep.view.templates.ComparePlans" type="XML"/>
 							</HBox>
 						</HBox>
-					</f:DynamicPageHeader>
-				</f:header>
-				<f:content>
-					<HBox width="100%" fitContainer="true">
-						<HBox width="40%">
-							<core:Fragment fragmentName="com.evorait.evosuite.evoprep.view.templates.CompareProperties" type="XML"/>
-						</HBox>
-						<HBox width="60%">
-							<core:Fragment fragmentName="com.evorait.evosuite.evoprep.view.templates.ComparePlans" type="XML"/>
-						</HBox>
-					</HBox>
-				</f:content>
-			</f:DynamicPage>
-		</template:with>
+					</f:content>
+				</f:DynamicPage>
+			</template:with>
+		</template:alias>
 	</template:alias>
-</template:alias>
 </mvc:View>

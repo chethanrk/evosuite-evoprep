@@ -22,7 +22,7 @@
 	</edmx:Reference>
 	<edmx:DataServices>
 		<Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="com.evorait.evoprep">
-			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoprep.PlanHeader">
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoprep.ComparePlanGeneral">
 				<Annotation Term="UI.HeaderFacets" Qualifier="CompareHeader">
 					<Collection>
 						<Record Type="UI.CollectionFacet">
@@ -38,7 +38,7 @@
 				</Annotation>
 				<Annotation Term="UI.FieldGroup" Qualifier="CompareHeader">
 					<Record Type="UI.FieldGroupType">
-						<PropertyValue Property="Label" String="Order Header"/>
+						<PropertyValue Property="Label" String="Compare Header"/>
 						<PropertyValue Property="Data">
 							<Collection>
 								<Record Type="UI.DataField">
@@ -94,30 +94,57 @@
 								<Record Type="UI.DataField">
 									<PropertyValue Property="Value" Path="END_DATE"/>
 								</Record>
+								<Record Type="UI.DataField">
+									<PropertyValue Property="Value" Path="NO_OF_OPRN"/>
+								</Record>
+								<Record Type="UI.DataField">
+									<PropertyValue Property="Value" Path="NO_OF_SAME_OPRN"/>
+								</Record>
+								<Record Type="UI.DataField">
+									<PropertyValue Property="Value" Path="NO_OF_FINL_OPRN"/>
+								</Record>
 							</Collection>
 						</PropertyValue>
 						<PropertyValue Property="com.sap.vocabularies.Common.v1.Label" String="General"/>
 					</Record>
 				</Annotation>
 			</Annotations>
-			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoprep.PlanItems">
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoprep.ComparePlanOperation">
 				<Annotation Term="com.sap.vocabularies.UI.v1.LineItem">
 					<Collection>
 						<Record Type="com.sap.vocabularies.UI.v1.DataField">
-							<PropertyValue Property="Value" Path="ORDER_NUMBER"/>
+							<PropertyValue Property="Value" Path="WORKCENTRE"/>
 							<PropertyValue Property="Position" Int="1"/>
 						</Record>
 						<Record Type="com.sap.vocabularies.UI.v1.DataField">
-							<PropertyValue Property="Value" Path="ORDER_NUMBER_DESCRIPTION"/>
+							<PropertyValue Property="Value" Path="WORKCENTRE_DESCRIPTION"/>
 							<PropertyValue Property="Position" Int="2"/>
 						</Record>
 						<Record Type="com.sap.vocabularies.UI.v1.DataField">
-							<PropertyValue Property="Value" Path="OPERATION_NUMBER"/>
-							<PropertyValue Property="Position" Int="5"/>
+							<PropertyValue Property="Value" Path="PLAN_ID"/>
+							<PropertyValue Property="Position" Int="3"/>
+						</Record>
+					</Collection>
+				</Annotation>
+			</Annotations>
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoprep.ComparePlanWorkcenter">
+				<Annotation Term="com.sap.vocabularies.UI.v1.LineItem">
+					<Collection>
+						<Record Type="com.sap.vocabularies.UI.v1.DataField">
+							<PropertyValue Property="Value" Path="WORKCENTRE"/>
+							<PropertyValue Property="Position" Int="1"/>
 						</Record>
 						<Record Type="com.sap.vocabularies.UI.v1.DataField">
-							<PropertyValue Property="Value" Path="OPERATION_DESCRIPTION"/>
-							<PropertyValue Property="Position" Int="6"/>
+							<PropertyValue Property="Value" Path="WORKCENTRE_DESCRIPTION"/>
+							<PropertyValue Property="Position" Int="2"/>
+						</Record>
+						<Record Type="com.sap.vocabularies.UI.v1.DataField">
+							<PropertyValue Property="Value" Path="PLANT"/>
+							<PropertyValue Property="Position" Int="3"/>
+						</Record>
+						<Record Type="com.sap.vocabularies.UI.v1.DataField">
+							<PropertyValue Property="Value" Path="PLAN_ID"/>
+							<PropertyValue Property="Position" Int="4"/>
 						</Record>
 					</Collection>
 				</Annotation>

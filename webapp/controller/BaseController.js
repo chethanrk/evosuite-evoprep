@@ -103,7 +103,8 @@ sap.ui.define([
 				},
 				onPressClose: {
 					public: true,
-					final: true
+					final: false,
+					overrideExecution: OverrideExecution.after
 				},
 				getAllSmartForms: {
 					public: true,
@@ -414,7 +415,7 @@ sap.ui.define([
 		 * onpress detail page close
 		 */
 		onPressClose: function (oEvent) {
-			this.getView().unbindElement();            
+			this.getView().unbindElement();
 			this.nav2Master();
 		},
 
@@ -916,9 +917,9 @@ sap.ui.define([
 				sContinueAction = oResourceBundle.getText("btn.successMsgBxBtnContinueEditing"),
 				sPlanDetailAction = oResourceBundle.getText("btn.successMsgBxBtnPlanDetail"),
 				sMsg;
-			
-			var fnContinueCallBack = function(){
-				if(oTable){
+
+			var fnContinueCallBack = function () {
+				if (oTable) {
 					oTable.rebindTable();
 				}
 			};
@@ -931,7 +932,8 @@ sap.ui.define([
 				this._setBusyWhileSaving(oTable, false);
 				sMsg = oData.Messagebap;
 				newPlanGuid = oData.NewPlanGuid;
-				this.showConfirmDialog(sTitle, sMsg, fnContinueCallBack.bind(this), fnPlanDetailCallBack.bind(this), "None", sContinueAction, sPlanDetailAction);
+				this.showConfirmDialog(sTitle, sMsg, fnContinueCallBack.bind(this), fnPlanDetailCallBack.bind(this), "None", sContinueAction,
+					sPlanDetailAction);
 			}.bind(this);
 
 			this.callFunctionImport(oParams, sFunctionName, "GET", callBackFunction);
@@ -1111,8 +1113,8 @@ sap.ui.define([
 			}
 			return oResponse;
 		},
-        
-        /**
+
+		/**
 		 * Display the error messages from the backend for the
 		 * PlanHeaderSet entity set incase some error is returned
 		 * from backend

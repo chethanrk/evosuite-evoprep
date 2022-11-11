@@ -123,63 +123,56 @@ sap.ui.define([
 		_setPrePlanComparePageInfo: function (sRouteName, oArgs) {
 			var aPlans = JSON.parse(oArgs.plans),
 				sViewName = "";
+
 			this.getModel("viewModel").setProperty("/layout", oArgs.layout);
 			sViewName = "com.evorait.evosuite.evoprep.view.templates.PrePlanCompare#Plans" + new Date().getTime();
 
 			this.getModel("templateProperties").setProperty("/annotationPath", {
-				entitySet: "PlanHeaderSet",
+				entitySet: "ComparePlanGeneralSet",
 				path: "com.sap.vocabularies.UI.v1.Facets#PrePlanDetailTabs",
 				headerPath: "com.sap.vocabularies.UI.v1.HeaderFacets#CompareHeader"
 			});
 
-			var filters = new Filter("CREATED_BY", FilterOperator.EQ, "SMEGHARAJ");
-
-			this.getOwnerComponent().readData("/PlanHeaderSet", [filters], {
-				"$expand": "PlanHeaderToPlanItems"
-			}).then(function (data) {
-				data.results = this.formatTableData(data.results);
-				this.formatthecode(data.results);
-				this.getModel("compareModel").setProperty("/compare", data.results);
-				var y = [];
-				y.push(data.results[0]);
-				this.getModel("compareModel").setProperty("/compare0", y);
-				this.getModel("compareModel").setProperty("/entitySet", "PlanHeaderSet");
-				this.getModel("viewModel").setProperty("/fullscreenGantt", false);
-				this._getCompareLineItems("PlanItemsSet");
-				this._onRouteMatched(sViewName, "PlanHeaderSet");
-			}.bind(this));
+			this._getCompareData(aPlans, sViewName);
 		},
 
-		formatthecode: function (data) {
-			var allData = [];
-			data.forEach(function (oItem) {
-				allData.push();
+		/**
+		 * Get compare details with filter
+		 * @[param] aPlans - array of selected plan 
+		 * @ sViewName - sViewName view to navigate
+		 */
+		_getCompareData: function (aPlans, sViewName) {
+			var aFilters = [],
+				oFilters;
+
+			aPlans.forEach(function (sPlan) {
+				aFilters.push(new Filter("HeaderObjectKey", FilterOperator.EQ, sPlan));
 			});
-		},
 
-		formatTableData: function (aData) {
-			var aMain = [];
-			aData.forEach(function (oItem) {
-				var aOpr = [],
-					oItemCopy = deepClone(oItem);
+			oFilters = new Filter({
+				filters: aFilters,
+				and: false
+			});
+			this.getModel("viewModel").setProperty("/busy", true);
+			this.getOwnerComponent().readData("/ComparePlanGeneralSet", [oFilters], {
+				"$expand": "PlanCmprGeneralToPlanCmprOperation,PlanCmprGeneralToPlanCmprWorkCenter"
+			}).then(function (data) {
+				if (data && data.results) {
+					data.results = this.formatTableData(data.results);
 
-				aOpr = deepClone(oItem.PlanHeaderToPlanItems.results);
+					this.getModel("compareModel").setProperty("/compare", data.results);
+					this.getModel("compareModel").setProperty("/compareProperty", [data.results[0]]);
 
-				aData.forEach(function (oPlanItem) {
-					if (oItem.ObjectKey !== oPlanItem.ObjectKey) {
-						//aOpr = aOpr.concat(oPlanItem.PlanHeaderToPlanItems.results);
-						var data = deepClone(oPlanItem.PlanHeaderToPlanItems.results);
-						data.forEach(function (oInnerData) {
-							oInnerData.OPERATION_WORK = "";
-							aOpr.push(oInnerData);
-						});
-					}
-				});
-				//console.log(aOpr);
-				oItemCopy.PlanHeaderToPlanItems.results = deepClone(aOpr);
-				aMain.push(oItemCopy);
+					this.getModel("compareModel").setProperty("/entitySet", "ComparePlanGeneralSet");
+					this.getModel("viewModel").setProperty("/fullscreenGantt", false);
+					this.getModel("viewModel").setProperty("/busy", false);
+
+					this._getCompareOPLineItems("ComparePlanOperationSet");
+					this._getCompareWCLineItems("ComparePlanWorkcenterSet");
+				}
+
+				this._onRouteMatched(sViewName, "ComparePlanGeneralSet");
 			}.bind(this));
-			return aMain;
 		},
 
 		/**
@@ -252,12 +245,12 @@ sap.ui.define([
 		/* get line item from compare entityset 
 		 * @private
 		 */
-		_getCompareLineItems: function (sEntitySet) {
+		_getCompareOPLineItems: function (sEntitySet) {
 			var oTempModel = this.getModel("templateProperties"),
 				oModel = this.getModel();
 
-			oTempModel.setProperty("/CompareConfigs", {});
-			oTempModel.setProperty("/CompareConfigs/entitySet", sEntitySet);
+			oTempModel.setProperty("/OperationConfigs", {});
+			oTempModel.setProperty("/OperationConfigs/entitySet", sEntitySet);
 
 			//collect all tab IDs
 			oModel.getMetaModel().loaded().then(function () {
@@ -266,9 +259,68 @@ sap.ui.define([
 					oEntityType = oMetaModel.getODataEntityType(oEntitySet.entityType),
 					aLineItems = oEntityType["com.sap.vocabularies.UI.v1.LineItem"];
 				if (aLineItems) {
-					oTempModel.setProperty("/CompareConfigs/lineItems", aLineItems);
+					oTempModel.setProperty("/OperationConfigs/lineItems", aLineItems);
 				}
 			}.bind(this));
+		},
+
+		/* get line item from compare entityset 
+		 * @private
+		 */
+		_getCompareWCLineItems: function (sEntitySet) {
+			var oTempModel = this.getModel("templateProperties"),
+				oModel = this.getModel();
+
+			oTempModel.setProperty("/WorkcenterConfigs", {});
+			oTempModel.setProperty("/WorkcenterConfigs/entitySet", sEntitySet);
+
+			//collect all tab IDs
+			oModel.getMetaModel().loaded().then(function () {
+				var oMetaModel = oModel.getMetaModel(),
+					oEntitySet = oMetaModel.getODataEntitySet(sEntitySet),
+					oEntityType = oMetaModel.getODataEntityType(oEntitySet.entityType),
+					aLineItems = oEntityType["com.sap.vocabularies.UI.v1.LineItem"];
+				if (aLineItems) {
+					oTempModel.setProperty("/WorkcenterConfigs/lineItems", aLineItems);
+				}
+			}.bind(this));
+		},
+
+		/**
+		 * Format the original data according to compare screen
+		 * @[param] - aData data to be proccess
+		 * @return [aMain] - formatted data
+		 */
+		formatTableData: function (aData) {
+			var aMain = [];
+			aData.forEach(function (oItem) {
+				var aOpr = [],
+					aWctr = [],
+					oItemCopy = deepClone(oItem);
+
+				aOpr = deepClone(oItem.PlanCmprGeneralToPlanCmprOperation.results);
+				aWctr = deepClone(oItem.PlanCmprGeneralToPlanCmprWorkCenter.results);
+
+				aData.forEach(function (oPlanItem) {
+					if (oItem.ObjectKey !== oPlanItem.ObjectKey) {
+						var aOprRes = deepClone(oPlanItem.PlanCmprGeneralToPlanCmprOperation.results);
+						var aWcrRes = deepClone(oPlanItem.PlanCmprGeneralToPlanCmprWorkCenter.results);
+						aOprRes.forEach(function (oInnerData) {
+							oInnerData.SUM_OPR_DURATION = "";
+							aOpr.push(oInnerData);
+						});
+						aWcrRes.forEach(function (oInnerData) {
+							oInnerData.UTILIZATION = "";
+							aWctr.push(oInnerData);
+						});
+					}
+				});
+				//console.log(aOpr);
+				oItemCopy.PlanCmprGeneralToPlanCmprOperation.results = deepClone(aOpr);
+				oItemCopy.PlanCmprGeneralToPlanCmprWorkCenter.results = deepClone(aWctr);
+				aMain.push(oItemCopy);
+			}.bind(this));
+			return aMain;
 		}
 	});
 });

@@ -932,9 +932,9 @@ sap.ui.define([
 				sContinueAction = oResourceBundle.getText("btn.successMsgBxBtnContinueEditing"),
 				sPlanDetailAction = oResourceBundle.getText("btn.successMsgBxBtnPlanDetail"),
 				sMsg;
-			
-			var fnContinueCallBack = function(){
-				if(oTable){
+
+			var fnContinueCallBack = function () {
+				if (oTable) {
 					oTable.rebindTable();
 				}
 			};
@@ -947,13 +947,14 @@ sap.ui.define([
 				this._setBusyWhileSaving(oTable, false);
 				sMsg = oData.Messagebap;
 				newPlanGuid = oData.NewPlanGuid;
-				this.showConfirmDialog(sTitle, sMsg, fnContinueCallBack.bind(this), fnPlanDetailCallBack.bind(this), "None", sContinueAction, sPlanDetailAction);
+				this.showConfirmDialog(sTitle, sMsg, fnContinueCallBack.bind(this), fnPlanDetailCallBack.bind(this), "None", sContinueAction,
+					sPlanDetailAction);
 			}.bind(this);
 
 			this.callFunctionImport(oParams, sFunctionName, "GET", callBackFunction);
 
 		},
-/**
+		/**
 		 * Operation Table beforeRebindTable event 
 		 * Opertaion Table Data fetching and storing in local
 		 * @param oEvent
@@ -995,7 +996,7 @@ sap.ui.define([
 			oTable.removeSelections();
 			this.getModel("viewModel").setProperty("/bOperationDeSelectAll", false);
 		},
-		
+
 		/* =========================================================== */
 		/* Private methods                                              */
 		/* =========================================================== */
@@ -1015,7 +1016,41 @@ sap.ui.define([
 			}
 			return null;
 		},
-
+		/**
+		 * On Refresh Material Status Button press in Demand/Operations Table
+		 * used in the for table in demandsblock and demandslist
+		 */
+		onMaterialStatusPress: function (oEvent) {
+			var oTable = this.oSmartTable.getTable();
+			var oSelectedIndices = this._returnMaterialContext(oTable),
+				oViewModel = this.getModel("viewModel"),
+				sDemandPath, aPromises = [];
+			oViewModel.setProperty("/busy", true);
+			for (var i = 0; i < oSelectedIndices.length; i++) {
+				sDemandPath = oSelectedIndices[i].getPath();
+				aPromises.push(this.getOwnerComponent().readData(sDemandPath));
+			}
+			Promise.all(aPromises).then(function () {
+				oViewModel.setProperty("/busy", false);
+			});
+		},
+		/**
+		 * On Material Info Button press event in Demands/Operations Table
+		 * used in the for table in demandsblock and demandslist
+		 */
+		onMaterialInfoButtonPress: function () {
+			var oTable = this.oSmartTable.getTable();
+			var aSelectedItems = this._returnMaterialContext(oTable);
+			var aSelectedItemsPath = [];
+			for (var i = 0; i < aSelectedItems.length; i++) {
+				aSelectedItemsPath.push({
+					sPath: aSelectedItems[i].getPath()
+				});
+			}
+			if (aSelectedItemsPath.length > 0) {
+				this.getOwnerComponent().materialInfoDialog.open(this.getView(), aSelectedItemsPath);
+			}
+		},
 		/*
 		 * function to deleted recent created context if exist
 		 *
@@ -1169,8 +1204,8 @@ sap.ui.define([
 			}
 			return oResponse;
 		},
-        
-        /**
+
+		/**
 		 * Display the error messages from the backend for the
 		 * PlanHeaderSet entity set incase some error is returned
 		 * from backend
@@ -1212,6 +1247,39 @@ sap.ui.define([
 					}.bind(this)
 				}
 			);
+		},
+		/** Method to get the context of selected items in the 
+		 * demands table which has component_exist true for 
+		 * checking the material information
+		 * This method is used in the DemandsBlock and DemandsList Views
+		 * @param oTable {object} table instance
+		 * @return aArrayMaterialContext {array}
+		 */
+		_returnMaterialContext: function (oTable) {
+			var aSelectections, aContext, sDemandPath, bComponentExist, aArrayMaterialContext = [];
+			if (oTable.getAggregation("items")) {
+				aSelectections = oTable.getSelectedItems();
+				for (var i = 0; i < aSelectections.length; i++) {
+					aContext = aSelectections[i].getBindingContext();
+					sDemandPath = aContext.getPath();
+					bComponentExist = this.getModel().getProperty(sDemandPath + "/COMPONENT_EXISTS");
+					if (bComponentExist) {
+						aArrayMaterialContext.push(aContext);
+					}
+				}
+			} else {
+				aSelectections = this.oSmartTable.getTable().getSelectedIndices();
+				for (var j = 0; j < aSelectections.length; j++) {
+					aContext = this.oSmartTable.getTable().getContextByIndex(aSelectections[j]);
+					sDemandPath = aContext.getPath();
+					bComponentExist = this.getModel().getProperty(sDemandPath + "/COMPONENT_EXISTS");
+					if (bComponentExist) {
+						aArrayMaterialContext.push(aContext);
+					}
+				}
+			}
+
+			return aArrayMaterialContext;
 		}
 
 	});

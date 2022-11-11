@@ -52,6 +52,7 @@ sap.ui.define([
 		 * @memberOf com.evorait.evosuite.evoprep.block.demand.DemandsBlocks
 		 */
 		onExit: function () {
+		
 			this.destroyOperationListFragment();
 		},
 
@@ -123,8 +124,15 @@ sap.ui.define([
 			} else {
 				this.getModel("viewModel").setProperty("/bEnableOperationDelete", false);
 			}
-		},
+			// check enable or disable the materials status and material information button
 
+			if (this._returnMaterialContext(this.oSmartTable.getTable()).length > 0) {
+				this.getModel("viewModel").setProperty("/bMaterialsDemandsBlock", true);
+			} else {
+				this.getModel("viewModel").setProperty("/bMaterialsDemandsBlock", false);
+			}
+
+		},
 		/**
 		 * Handle Object list delete operation
 		 */

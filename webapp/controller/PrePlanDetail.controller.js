@@ -128,6 +128,7 @@ sap.ui.define([
 			//Binnding has changed in TemplateRenderController.js
 			eventBus.subscribe("TemplateRendererEvoPrep", "changedBinding", this._changedBinding, this);
 			eventBus.subscribe("BaseController", "refreshFullGantt", this._loadGanttData, this);
+			eventBus.subscribe("BaseController", "refreshUtilizationGantt", this._loadUtilizationGantt, this);
 
 			//Initializing GanttActions.js
 			this.GanttActions = this.getOwnerComponent().GanttActions;
@@ -471,9 +472,8 @@ sap.ui.define([
 		 */
 		onUtilizationShapeDoubleClick: function (oEvent) {
 			var mParams = oEvent.getParameters(),
-				oShape = mParams.shape,
-				oContext = oShape.getBindingContext();
-			this._oUtilizationShape = oContext.getObject();
+				oShape = mParams.shape;
+				this._oUtilizationShapeContext = oShape.getBindingContext();
 			if (!this._oUtilizationPopover) {
 				Fragment.load({
 					name: "com.evorait.evosuite.evoprep.view.fragments.UtilizationDetails",
@@ -485,9 +485,10 @@ sap.ui.define([
 				}.bind(this));
 			} else {
 				this._oUtilizationPopover.openBy(oShape);
+				sap.ui.getCore().byId("idUtilizationDetailsSmartTable").rebindTable();
 			}
 		},
-		
+
 		/**
 		 * Utilization Details PopOver 
 		 * Passing selected shape filter
@@ -499,9 +500,10 @@ sap.ui.define([
 				aFilters = new Filter({
 					filters: [
 						new Filter("PLAN_ID", FilterOperator.EQ, sPlanID),
-						new Filter("CELL_START_DATE", FilterOperator.EQ, this._oUtilizationShape.BARSTART_DATE),
-						new Filter("CELL_END_DATE", FilterOperator.EQ, this._oUtilizationShape.BAREND_DATE),
-						new Filter("VIEW_MODE", FilterOperator.EQ, sKey)
+						new Filter("CELL_START_DATE", FilterOperator.EQ, this._oUtilizationShapeContext.getProperty("BARSTART_DATE")),
+						new Filter("CELL_END_DATE", FilterOperator.EQ, this._oUtilizationShapeContext.getProperty("BAREND_DATE")),
+						new Filter("VIEW_MODE", FilterOperator.EQ, sKey),
+						new Filter("WORKCENTRE", FilterOperator.EQ, this._oUtilizationShapeContext.getProperty("WORKCENTRE"))
 					],
 					and: true
 				});
@@ -532,7 +534,6 @@ sap.ui.define([
 					this.oViewModel.setProperty("/bDependencyCall", true);
 					this._oContext = this.getView().getBindingContext();
 					this._rebindPage();
-					//this._UtilizationSelectView.setSelectedKey(this.getModel("user").getProperty("/DEFAULT_VIEW_MODE"));
 					this._loadUtilizationGantt();
 					this._loadGanttData();
 				}
@@ -696,6 +697,7 @@ sap.ui.define([
 			this.oViewModel.setProperty("/editMode", true);
 			this.oViewModel.setProperty("/layout", library.LayoutType.TwoColumnsMidExpanded);
 			this.oViewModel.setProperty("/fullscreen", true);
+			this._loadUtilizationGantt();
 			this._loadGanttData();
 			this.oViewModel.setProperty("/bDependencyCall", true);
 		},
@@ -874,8 +876,8 @@ sap.ui.define([
 
 			binding.attachDataReceived(function (aData) {
 				var iCount = 0;
-				if (aData.mParameters.data) {
-					iCount = aData.mParameters.data.results.length;
+				if (aData.getParameters().data) {
+					iCount = aData.getParameters().data.results.length;
 				}
 				this.oViewModel.setProperty("/ganttUtilization/dLastSync", new Date());
 				this.oViewModel.setProperty("/ganttUtilization/busy", false);

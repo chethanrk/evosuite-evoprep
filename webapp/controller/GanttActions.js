@@ -60,6 +60,7 @@ sap.ui.define([
 					this._oView.getModel().refresh();
 					var oEventBus = sap.ui.getCore().getEventBus();
 					oEventBus.publish("BaseController", "refreshFullGantt", this._loadGanttData, this);
+					oEventBus.publish("BaseController", "refreshUtilizationGantt", this._loadUtilizationGantt, this);
 					this._oView.getModel("viewModel").setProperty("/bDependencyCall", true);
 				}.bind(this));
 		},
@@ -137,19 +138,26 @@ sap.ui.define([
 				var sPath = oContext.getPath(),
 					sStartDate = this._oView.getModel().getProperty(sPath + "/START_DATE"),
 					sEndDate = this._oView.getModel().getProperty(sPath + "/END_DATE");
+				if (sKey === "W") {
+					sStartDate = moment(sStartDate).startOf('week').toDate();
+					sEndDate = moment(sEndDate).endOf('week').toDate();
+				} else if (sKey === "M") {
+					sStartDate = moment(sStartDate).startOf('month').toDate();
+					sEndDate = moment(sEndDate).endOf('month').toDate();
+				} else if (sKey === "D") {
+					sStartDate = sStartDate;
+					sEndDate = sEndDate;
+				}
 				oAxisTimeStrategy.setTotalHorizon(new sap.gantt.config.TimeHorizon({
-					startTime: moment(sStartDate).startOf('month').toDate(), 
-					endTime: moment(sEndDate).endOf('month').toDate() 
+					startTime: sStartDate,
+					endTime: sEndDate
 				}));
 				oAxisTimeStrategy.setVisibleHorizon(new sap.gantt.config.TimeHorizon({
 					startTime: sStartDate,
-					endTime: sEndDate 
+					endTime: sEndDate
 				}));
 				oAxisTimeStrategy.setZoomLevel(6);
 				oAxisTimeStrategy.setTimeLineOption(formatter.getTimeLineOptions(sKey));
-				// if (sKey === "D") {
-				// 	oAxisTimeStrategy.setZoomLevel(6);
-				// }
 			}
 		},
 	});

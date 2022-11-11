@@ -460,8 +460,12 @@ sap.ui.define([
 				oResourceBundle.getText("msg.navigateToDetail");
 
 			var successcallback = function () {
-				this.navToDetail(this.selectedPlanObject);
-				this.selectedPlanObject = null;
+				if (this.selectedPlanObject) {
+					//update selected context
+					this.getOwnerComponent().readData(this.selectedPlanObject.getPath());
+					this.navToDetail(this.selectedPlanObject.getProperty("ObjectKey"));
+					this.selectedPlanObject = null;
+				}
 			};
 
 			var cancelCallback = function () {};

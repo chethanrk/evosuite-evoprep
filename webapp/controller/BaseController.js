@@ -428,6 +428,7 @@ sap.ui.define([
 		 * onpress detail page close
 		 */
 		onPressClose: function (oEvent) {
+			this.getView().unbindElement();
 			this.nav2Master();
 		},
 

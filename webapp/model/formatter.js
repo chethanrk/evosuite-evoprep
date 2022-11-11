@@ -178,14 +178,6 @@ sap.ui.define([
 			return oDate.getTime() - sOffsetMs;
 		},
 		/**
-		 * used in the material status table in the Material Table in 
-		 * Material Information Dialog
-		 * @param bComponentExist
-		 */
-		formatComponentExist: function (bComponentExist) {
-			return bComponentExist;
-		},
-		/**
 		 * format the Object Status state acording to Material_Status
 		 * @param sValue
 		 */

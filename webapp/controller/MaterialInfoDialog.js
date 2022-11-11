@@ -32,7 +32,7 @@ sap.ui.define([
 			}
 		},
 		onBeforeOpen: function (oEvent) {
-			sap.ui.getCore().byId("materialInfoTable").setTableBindingPath();
+			//sap.ui.getCore().byId("materialInfoTable").setTableBindingPath();
 		},
 
 		onOpen: function (oDialog, oView, aSelectedPaths) {
@@ -73,7 +73,6 @@ sap.ui.define([
 		_getDemandFilters: function (aSelectedPaths) {
 			var aDemandGuid = [];
 			var aFilters = [];
-
 			for (var i = 0; i < aSelectedPaths.length; i++) {
 				var sPath = aSelectedPaths[i].sPath,
 					sOrderId = this._oView.getModel().getProperty(sPath).ORDER_NUMBER,
@@ -81,7 +80,6 @@ sap.ui.define([
 				aDemandGuid.push(new Filter("ORDER_NUMBER", FilterOperator.EQ, sOrderId));
 				aDemandGuid.push(new Filter("OPERATION_NUMBER", FilterOperator.EQ, sOperationId));
 			}
-
 			if (aDemandGuid.length > 0) {
 				aFilters.push(new Filter({
 					filters: aDemandGuid,

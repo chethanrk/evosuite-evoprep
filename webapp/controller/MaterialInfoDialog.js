@@ -1,19 +1,14 @@
 sap.ui.define([
 	"sap/ui/core/mvc/Controller",
 	"com/evorait/evosuite/evoprep/model/models",
-	"com/evorait/evosuite/evoprep/model/formatter",
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
 	"sap/ui/core/Fragment"
-], function (Controller, models, formatter, Filter, FilterOperator, Fragment) {
+], function (Controller, models, Filter, FilterOperator, Fragment) {
 	"use strict";
 
 	return Controller.extend("com.evorait.evosuite.evoprep.controller.MaterialInfoDialog", {
-
-		formatter: formatter,
-		_bFirstTime: false,
 		init: function () {},
-
 		/**
 		 * open dialog
 		 * get detail data from resource and resource group

@@ -111,7 +111,7 @@
 							<table:template>
 								<HBox>
 									<ObjectStatus class="sapUiTinyMargin" tooltip="{MATERIAL_STATUS_DESC}" text="{MATERIAL_STATUS_DESC}"
-										visible="{ path:'COMPONENT_EXISTS', formatter:'.formatter.formatComponentExist' }" icon="{MATERIAL_STATUS_ICON}"
+										visible="{ path:'COMPONENT_EXISTS' }" icon="{MATERIAL_STATUS_ICON}"
 										state="{path:'MATERIAL_STATUS_STATE',formatter:'.formatter.getDemandState'}" />
 								</HBox>
 							</table:template>

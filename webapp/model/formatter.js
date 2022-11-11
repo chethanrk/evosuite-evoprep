@@ -168,7 +168,7 @@ sap.ui.define([
 		showOperationEditDel: function (bFinal, bAllowOper) {
 			return Boolean(bFinal && bAllowOper);
 		},
-		
+
 		/**
 		 * Formatting TimeZone for Gantt Shape Dates
 		 * @param oDate
@@ -177,6 +177,16 @@ sap.ui.define([
 			var sOffsetMs = new Date(0).getTimezoneOffset() * 60 * 1000;
 			return oDate.getTime() - sOffsetMs;
 		},
+		/**
+		 * format the Object Status state acording to Material_Status
+		 * @param sValue
+		 */
+		getDemandState: function (sValue) {
+			if (sValue) {
+				return sValue;
+			}
+			return "None";
+		}
 	};
 
 });

@@ -52,6 +52,7 @@ sap.ui.define([
 		 * @memberOf com.evorait.evosuite.evoprep.block.demand.DemandsBlocks
 		 */
 		onExit: function () {
+		
 			this.destroyOperationListFragment();
 		},
 
@@ -66,12 +67,19 @@ sap.ui.define([
 		onPressAdd: function (oEvent) {
 			var oSmartTable = sap.ui.getCore().byId("idOperationListFragSmartTable"),
 				oTable = oSmartTable.getTable(),
-				aSelectedItems = oTable.getSelectedItems();
+				aSelectedItems = oTable.getSelectedItems(),
+				aAllOperationsSelected = [];
 
 			if (aSelectedItems.length === 0) {
 				this.showMessageToast(this.getResourceBundle().getText("msg.selectAtleast"));
 				return;
 			}
+			//When All the Operations are Selected
+			if (this.bOperationSelectAll) {
+				aSelectedItems = this.aOprFrgAllOperations;
+				aAllOperationsSelected = this.aOprFrgAllOperations;
+			}
+			this.getModel("viewModel").setProperty("/aAllSelectedOperations", aAllOperationsSelected);
 			this.getValidationParameters(aSelectedItems).then(function (oPreparedData) {
 				if (oPreparedData && oPreparedData.sOrder && oPreparedData.sOpr) {
 					oPreparedData.sPrepPlan = this.getView().getBindingContext().getProperty("PLAN_ID");
@@ -116,8 +124,15 @@ sap.ui.define([
 			} else {
 				this.getModel("viewModel").setProperty("/bEnableOperationDelete", false);
 			}
-		},
+			// check enable or disable the materials status and material information button
 
+			if (this._returnMaterialContext(this.oSmartTable.getTable()).length > 0) {
+				this.getModel("viewModel").setProperty("/bMaterialsDemandsBlock", true);
+			} else {
+				this.getModel("viewModel").setProperty("/bMaterialsDemandsBlock", false);
+			}
+
+		},
 		/**
 		 * Handle Object list delete operation
 		 */

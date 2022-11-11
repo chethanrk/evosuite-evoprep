@@ -190,6 +190,18 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
+				},
+				onOperationListDataReceived: {
+					public: true,
+					final: true
+				},
+				onPressOperationSelectAll: {
+					public: true,
+					final: true
+				},
+				onPressOperationDeSelectAll: {
+					public: true,
+					final: true
 				}
 			}
 		},
@@ -197,6 +209,8 @@ sap.ui.define([
 		formatter: formatter,
 		oViewModel: null,
 		oCreateModel: null,
+		aAllOperations: null,
+		bOperationSelectAll: false,
 
 		onInit: function () {
 			//Bind the message model to the view and register it
@@ -785,7 +799,7 @@ sap.ui.define([
 		navToDetail: function (sPlanObject) {
 			var sLayout = library.LayoutType.TwoColumnsMidExpanded;
 			if (this.getModel("user").getProperty("/DEFAULT_PLAN_DET_FULLSC")) {
-				sLayout = library.LayoutType.MidColumnFullScreen
+				sLayout = library.LayoutType.MidColumnFullScreen;
 			}
 			this.getRouter().navTo("PrePlanDetail", {
 				layout: sLayout,
@@ -879,6 +893,8 @@ sap.ui.define([
 			} else {
 				this.open(this._addOperationsDetail);
 			}
+			this.bOperationSelectAll = false;
+			this.getModel("viewModel").setProperty("/bOperationDeSelectAll", false);
 		},
 
 		/**
@@ -939,6 +955,48 @@ sap.ui.define([
 			this.callFunctionImport(oParams, sFunctionName, "GET", callBackFunction);
 
 		},
+		/**
+		 * Operation Table beforeRebindTable event 
+		 * Opertaion Table Data fetching and storing in local
+		 * @param oEvent
+		 */
+		onOperationListDataReceived: function (oEvent) {
+			var oSource = oEvent.getSource(),
+				oParams = oEvent.getParameter("bindingParams"),
+				aFilters = oParams.filters,
+				sId = oSource.getId();
+			this.getOwnerComponent().readData("/PlanItemsSet", aFilters).then(function (oData) {
+				if (sId === "idOperationListFragSmartTable") {
+					this.aOprFrgAllOperations = oData.results;
+				} else {
+					this.aAllOperations = oData.results;
+				}
+			}.bind(this));
+		},
+
+		/**
+		 * onPress of Select All in Operation List Fragment
+		 * All the rows data is selected from a GET call and Create Plan is allowed  
+		 */
+		onPressOperationSelectAll: function () {
+			this.bOperationSelectAll = true;
+			var oSmartTable = sap.ui.getCore().byId("idOperationListFragSmartTable"),
+				oTable = oSmartTable.getTable();
+			oTable.selectAll(true);
+			this.getModel("viewModel").setProperty("/bOperationDeSelectAll", true);
+		},
+
+		/**
+		 * onPress of De-Select All in Operation List Fragment
+		 * All the selected rows in the table are cleared
+		 */
+		onPressOperationDeSelectAll: function () {
+			this.bOperationSelectAll = false;
+			var oSmartTable = sap.ui.getCore().byId("idOperationListFragSmartTable"),
+				oTable = oSmartTable.getTable();
+			oTable.removeSelections();
+			this.getModel("viewModel").setProperty("/bOperationDeSelectAll", false);
+		},
 
 		/* =========================================================== */
 		/* Private methods                                              */
@@ -959,7 +1017,41 @@ sap.ui.define([
 			}
 			return null;
 		},
-
+		/**
+		 * On Refresh Material Status Button press in Demand/Operations Table
+		 * used in the for table in demandsblock and demandslist
+		 */
+		onMaterialStatusPress: function (oEvent) {
+			var oTable = this.oSmartTable.getTable();
+			var oSelectedIndices = this._returnMaterialContext(oTable),
+				oViewModel = this.getModel("viewModel"),
+				sDemandPath, aPromises = [];
+			oViewModel.setProperty("/busy", true);
+			for (var i = 0; i < oSelectedIndices.length; i++) {
+				sDemandPath = oSelectedIndices[i].getPath();
+				aPromises.push(this.getOwnerComponent().readData(sDemandPath));
+			}
+			Promise.all(aPromises).then(function () {
+				oViewModel.setProperty("/busy", false);
+			});
+		},
+		/**
+		 * On Material Info Button press event in Demands/Operations Table
+		 * used in the for table in demandsblock and demandslist
+		 */
+		onMaterialInfoButtonPress: function () {
+			var oTable = this.oSmartTable.getTable();
+			var aSelectedItems = this._returnMaterialContext(oTable);
+			var aSelectedItemsPath = [];
+			for (var i = 0; i < aSelectedItems.length; i++) {
+				aSelectedItemsPath.push({
+					sPath: aSelectedItems[i].getPath()
+				});
+			}
+			if (aSelectedItemsPath.length > 0) {
+				this.getOwnerComponent().materialInfoDialog.open(this.getView(), aSelectedItemsPath);
+			}
+		},
 		/*
 		 * function to deleted recent created context if exist
 		 *
@@ -1156,6 +1248,39 @@ sap.ui.define([
 					}.bind(this)
 				}
 			);
+		},
+		/** Method to get the context of selected items in the 
+		 * demands table which has component_exist true for 
+		 * checking the material information
+		 * This method is used in the DemandsBlock and DemandsList Views
+		 * @param oTable {object} table instance
+		 * @return aArrayMaterialContext {array}
+		 */
+		_returnMaterialContext: function (oTable) {
+			var aSelectections, aContext, sDemandPath, bComponentExist, aArrayMaterialContext = [];
+			if (oTable.getAggregation("items")) {
+				aSelectections = oTable.getSelectedItems();
+				for (var i = 0; i < aSelectections.length; i++) {
+					aContext = aSelectections[i].getBindingContext();
+					sDemandPath = aContext.getPath();
+					bComponentExist = this.getModel().getProperty(sDemandPath + "/COMPONENT_EXISTS");
+					if (bComponentExist) {
+						aArrayMaterialContext.push(aContext);
+					}
+				}
+			} else {
+				aSelectections = this.oSmartTable.getTable().getSelectedIndices();
+				for (var j = 0; j < aSelectections.length; j++) {
+					aContext = this.oSmartTable.getTable().getContextByIndex(aSelectections[j]);
+					sDemandPath = aContext.getPath();
+					bComponentExist = this.getModel().getProperty(sDemandPath + "/COMPONENT_EXISTS");
+					if (bComponentExist) {
+						aArrayMaterialContext.push(aContext);
+					}
+				}
+			}
+
+			return aArrayMaterialContext;
 		}
 
 	});

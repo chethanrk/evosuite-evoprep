@@ -57,18 +57,29 @@ sap.ui.define([
 						"sOrder": undefined,
 						"sOpr": undefined
 					},
-					oTable = this.oSmartTable.getTable();
+					oTable = this.oSmartTable.getTable(),
+					bCheckSelectAll = false;
+				//When Select All is selected
+				if (this.getView().getModel("viewModel").getProperty("/aAllSelectedOperations").length !== 0) {
+					bCheckSelectAll = true;
+				}
 				aItems.forEach(function (oItem) {
-					var oContext = null;
-					if (typeof (oItem) === "number") {
-						oContext = oTable.getContextByIndex(oItem);
+					var oContext, sordnum, soprnum;
+					//When Select All is selected
+					if (bCheckSelectAll) {
+						sordnum = oItem.ORDER_NUMBER;
+						soprnum = oItem.OPERATION_NUMBER;
 					} else {
-						oContext = oItem.getBindingContext();
-					}
+						oContext = null;
+						if (typeof (oItem) === "number") {
+							oContext = oTable.getContextByIndex(oItem);
+						} else {
+							oContext = oItem.getBindingContext();
+						}
 
-					var sordnum = oContext.getProperty("ORDER_NUMBER"),
+						sordnum = oContext.getProperty("ORDER_NUMBER");
 						soprnum = oContext.getProperty("OPERATION_NUMBER");
-
+					}
 					if (typeof oPrepData.sOrder === "undefined") {
 						oPrepData.sOrder = sordnum;
 					} else {
@@ -147,6 +158,11 @@ sap.ui.define([
 		 * @{param} -aSelectedItems - Selected operations from the operation list 
 		 */
 		preparePayload: function (mParameters, aSelectedItems) {
+			var bCheckSelectAll = false;
+			//When Select All is selected
+			if (this.getView().getModel("viewModel").getProperty("/aAllSelectedOperations").length !== 0) {
+				bCheckSelectAll = true;
+			}
 			return new Promise(function (resolve) {
 				this.getModel().setDeferredGroups(["batchSave"]);
 				aSelectedItems.forEach(function (iIndex) {
@@ -157,15 +173,20 @@ sap.ui.define([
 						},
 						obj = {},
 						entitySet = "PlanItemsSet";
-					if (typeof (iIndex) === "number") {
-						var oTable = this.oSmartTable.getTable(),
-							oItem = oTable.getContextByIndex(iIndex);
-						oRowData = oItem.getObject();
-						var planlist = sap.ui.getCore().byId("idPlanListFragSmartTable").getTable();
-						oParentSource = planlist.getSelectedItem();
-					} else {
-						oRowData = iIndex.getBindingContext().getObject();
+					if (bCheckSelectAll) {
+						oRowData = iIndex;
 						oParentSource = this.getView();
+					} else {
+						if (typeof (iIndex) === "number") {
+							var oTable = this.oSmartTable.getTable(),
+								oItem = oTable.getContextByIndex(iIndex);
+							oRowData = oItem.getObject();
+							var planlist = sap.ui.getCore().byId("idPlanListFragSmartTable").getTable();
+							oParentSource = planlist.getSelectedItem();
+						} else {
+							oRowData = iIndex.getBindingContext().getObject();
+							oParentSource = this.getView();
+						}
 					}
 
 					//collect all assignment properties who allowed for create
@@ -181,7 +202,7 @@ sap.ui.define([
 							}
 						});
 						obj.PLAN_ID = oParentSource.getBindingContext().getProperty("PLAN_ID");
-						this.selectedPlanObject = oParentSource.getBindingContext().getProperty("ObjectKey");
+						this.selectedPlanObject = oParentSource.getBindingContext();
 						singleentry.properties = obj;
 						this.getModel().createEntry("/" + entitySet, singleentry);
 					}.bind(this));

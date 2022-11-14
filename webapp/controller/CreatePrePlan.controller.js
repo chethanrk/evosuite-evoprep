@@ -150,7 +150,7 @@ sap.ui.define([
 			this.oViewModel.setProperty("/aAllSelectedOperations", aAllOperationsSelected);
 			this.oCreateModel.refresh();
 			this.onPressOperationListCancel();
-			this.bOperationSelectAll = false;
+		//	this.bOperationSelectAll = false;
 		},
 
 		/**
@@ -183,7 +183,7 @@ sap.ui.define([
 							oPayloadData.PlanHeaderToPlanItems = [];
 							oPayloadData.PlanHeaderToPlanItems = this.oCreateModel.getProperty("/results");
 							oPayloadData.FUNCTION = this.getModel("user").getProperty("/DEFAULT_FUNCTION");
-						
+
 							this.CreatePrePlan(oPayloadData, this._createSuccess.bind(this), this._errorCallBackForPlanHeaderSet.bind(this));
 						}
 					}.bind(this));
@@ -332,6 +332,7 @@ sap.ui.define([
 				if (this.oViewModel.getProperty("/aAllSelectedOperations").length !== 0) {
 					aItems = this.oViewModel.getProperty("/aAllSelectedOperations");
 					bCheckAllSelected = true;
+					this.oViewModel.setProperty("/operationTableCount", this.getResourceBundle().getText("tit.opr", (aItems.length).toString()));
 				}
 				aItems.forEach(function (oItem) {
 					var sordnum, soprnum;

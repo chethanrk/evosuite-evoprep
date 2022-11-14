@@ -889,7 +889,6 @@ sap.ui.define([
 				this.open(this._addOperationsDetail);
 			}
 			this.bOperationSelectAll = false;
-			this.getModel("viewModel").setProperty("/bSwitchSelectAll", false);
 		},
 
 		/**

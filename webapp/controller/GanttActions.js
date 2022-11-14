@@ -136,30 +136,56 @@ sap.ui.define([
 		_createUtilizationGanttHorizon: function (oAxisTimeStrategy, oContext, sKey) {
 			if (oAxisTimeStrategy) {
 				var sPath = oContext.getPath(),
-					sStartDate = this._oView.getModel().getProperty(sPath + "/START_DATE"),
-					sEndDate = this._oView.getModel().getProperty(sPath + "/END_DATE");
-				if (sKey === "W") {
-					sStartDate = moment(sStartDate).startOf('week').toDate();
-					sEndDate = moment(sEndDate).endOf('week').toDate();
-				} else if (sKey === "M") {
-					sStartDate = moment(sStartDate).startOf('month').toDate();
-					sEndDate = moment(sEndDate).endOf('month').toDate();
-				} else if (sKey === "D") {
-					sStartDate = sStartDate;
-					sEndDate = sEndDate;
-				}
-				oAxisTimeStrategy.setTotalHorizon(new sap.gantt.config.TimeHorizon({
-					startTime: sStartDate,
-					endTime: sEndDate
-				}));
+					oHorizonDates = this._getUtilizationGanttHorizonDates(sPath, sKey);
 				oAxisTimeStrategy.setVisibleHorizon(new sap.gantt.config.TimeHorizon({
-					startTime: sStartDate,
-					endTime: sEndDate
+					startTime: oHorizonDates.visibleHorizon.startDate,
+					endTime: oHorizonDates.visibleHorizon.endDate
 				}));
-				oAxisTimeStrategy.setZoomLevel(6);
+				oAxisTimeStrategy.setTotalHorizon(new sap.gantt.config.TimeHorizon({
+					startTime: oHorizonDates.totalHorizon.startDate,
+					endTime: oHorizonDates.totalHorizon.endDate
+				}));
 				oAxisTimeStrategy.setTimeLineOption(formatter.getTimeLineOptions(sKey));
+				if (sKey === "D") {
+					oAxisTimeStrategy.setZoomLevel(6);
+				}
 			}
 		},
+
+		/**
+		 * Function to Calcualate Utilization Gantt Horizon Dates  
+		 * @param sPath 
+		 */
+		_getUtilizationGanttHorizonDates: function (sPath, sKey) {
+			var sStartDate = this._oView.getModel().getProperty(sPath + "/START_DATE"),
+				sEndDate = this._oView.getModel().getProperty(sPath + "/END_DATE"),
+				sTotalStartDate, sTotalEndDate;
+			if (sKey === "W") {
+				sTotalStartDate = moment(sStartDate).startOf('week').toDate();
+				sTotalEndDate = moment(sEndDate).endOf('week').toDate();
+			} else if (sKey === "M") {
+				sTotalStartDate = moment(sStartDate).startOf('month').toDate();
+				sTotalEndDate = moment(sEndDate).endOf('month').toDate();
+			} else if (sKey === "D") {
+				sTotalStartDate = sStartDate;
+				sTotalEndDate = sEndDate;
+			}
+			sTotalStartDate = moment(sTotalStartDate).startOf("day").subtract(1, "day").toDate();
+			sTotalEndDate = moment(sTotalEndDate).endOf("day").add(1, "day").toDate();
+
+			var oHorizonDates = {
+				visibleHorizon: {
+					startDate: sStartDate,
+					endDate: sEndDate
+				},
+				totalHorizon: {
+					startDate: sTotalStartDate,
+					endDate: sTotalEndDate
+				}
+			};
+			return oHorizonDates;
+		},
+
 	});
 
 });

@@ -464,6 +464,7 @@ sap.ui.define([
 				this.oViewModel.setProperty("/fullscreenGantt", true);
 				oSource.setType("Default");
 			}
+				oViewModel.setProperty("/ganttUtilization/ganttSelectionPane", "30%");
 		},
 
 		/*On Press of Shape Double Click in Utilization Gantt Chart
@@ -882,6 +883,7 @@ sap.ui.define([
 				this.oViewModel.setProperty("/ganttUtilization/dLastSync", new Date());
 				this.oViewModel.setProperty("/ganttUtilization/busy", false);
 				this.oViewModel.setProperty("/ganttUtilization/iCount", iCount);
+				this.oViewModel.setProperty("/ganttUtilization/ganttSelectionPane", "30%");
 			}.bind(this));
 		},
 

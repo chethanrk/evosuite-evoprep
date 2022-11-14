@@ -152,6 +152,7 @@ sap.ui.define([
 		 */
 		goBackToPrePlans: function () {
 			this._removeOprTableSelection();
+			this.oViewModel.setProperty("/bMaterialsOperations", false);
 			this.getOwnerComponent().getRouter().navTo("PrePlanMaster");
 		},
 
@@ -174,6 +175,12 @@ sap.ui.define([
 				bEnableAddOperations = false;
 			}
 			this.getModel("viewModel").setProperty("/bEnableAddOperations", bEnableAddOperations);
+			// check enable or disable the materials status and material information button
+			if (this._returnMaterialContext(this.oSmartTable.getTable()).length > 0) {
+				this.oViewModel.setProperty("/bMaterialsOperations", true);
+			} else {
+				this.oViewModel.setProperty("/bMaterialsOperations", false);
+			}
 		},
 
 		/**
@@ -322,7 +329,14 @@ sap.ui.define([
 		 */
 		onBeforeRebindTablePlanList: function (oEvent) {
 			var mBindingParams = oEvent.getParameter("bindingParams");
-			var aFilters = [new Filter("STATUS_SHORT", FilterOperator.NE, "FINL")];
+			var aFilters = new Filter({
+				filters: [
+					new Filter("STATUS_SHORT", FilterOperator.NE, "FINL"),
+					new Filter("STATUS_SHORT", FilterOperator.NE, "ARCH")
+				],
+				and: true
+			});
+
 			mBindingParams.filters = mBindingParams.filters.concat(aFilters);
 		},
 
@@ -446,8 +460,12 @@ sap.ui.define([
 				oResourceBundle.getText("msg.navigateToDetail");
 
 			var successcallback = function () {
-				this.navToDetail(this.selectedPlanObject);
-				this.selectedPlanObject = null;
+				if (this.selectedPlanObject) {
+					//update selected context
+					this.getOwnerComponent().readData(this.selectedPlanObject.getPath());
+					this.navToDetail(this.selectedPlanObject.getProperty("ObjectKey"));
+					this.selectedPlanObject = null;
+				}
 			};
 
 			var cancelCallback = function () {};

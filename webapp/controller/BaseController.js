@@ -424,6 +424,7 @@ sap.ui.define([
 		 * onpress detail page close
 		 */
 		onPressClose: function (oEvent) {
+			this.getView().unbindElement();
 			this.nav2Master();
 		},
 
@@ -1005,7 +1006,41 @@ sap.ui.define([
 			}
 			return null;
 		},
-
+		/**
+		 * On Refresh Material Status Button press in Demand/Operations Table
+		 * used in the for table in demandsblock and demandslist
+		 */
+		onMaterialStatusPress: function (oEvent) {
+			var oTable = this.oSmartTable.getTable();
+			var oSelectedIndices = this._returnMaterialContext(oTable),
+				oViewModel = this.getModel("viewModel"),
+				sDemandPath, aPromises = [];
+			oViewModel.setProperty("/busy", true);
+			for (var i = 0; i < oSelectedIndices.length; i++) {
+				sDemandPath = oSelectedIndices[i].getPath();
+				aPromises.push(this.getOwnerComponent().readData(sDemandPath));
+			}
+			Promise.all(aPromises).then(function () {
+				oViewModel.setProperty("/busy", false);
+			});
+		},
+		/**
+		 * On Material Info Button press event in Demands/Operations Table
+		 * used in the for table in demandsblock and demandslist
+		 */
+		onMaterialInfoButtonPress: function () {
+			var oTable = this.oSmartTable.getTable();
+			var aSelectedItems = this._returnMaterialContext(oTable);
+			var aSelectedItemsPath = [];
+			for (var i = 0; i < aSelectedItems.length; i++) {
+				aSelectedItemsPath.push({
+					sPath: aSelectedItems[i].getPath()
+				});
+			}
+			if (aSelectedItemsPath.length > 0) {
+				this.getOwnerComponent().materialInfoDialog.open(this.getView(), aSelectedItemsPath);
+			}
+		},
 		/*
 		 * function to deleted recent created context if exist
 		 *
@@ -1202,6 +1237,39 @@ sap.ui.define([
 					}.bind(this)
 				}
 			);
+		},
+		/** Method to get the context of selected items in the 
+		 * demands table which has component_exist true for 
+		 * checking the material information
+		 * This method is used in the DemandsBlock and DemandsList Views
+		 * @param oTable {object} table instance
+		 * @return aArrayMaterialContext {array}
+		 */
+		_returnMaterialContext: function (oTable) {
+			var aSelectections, aContext, sDemandPath, bComponentExist, aArrayMaterialContext = [];
+			if (oTable.getAggregation("items")) {
+				aSelectections = oTable.getSelectedItems();
+				for (var i = 0; i < aSelectections.length; i++) {
+					aContext = aSelectections[i].getBindingContext();
+					sDemandPath = aContext.getPath();
+					bComponentExist = this.getModel().getProperty(sDemandPath + "/COMPONENT_EXISTS");
+					if (bComponentExist) {
+						aArrayMaterialContext.push(aContext);
+					}
+				}
+			} else {
+				aSelectections = this.oSmartTable.getTable().getSelectedIndices();
+				for (var j = 0; j < aSelectections.length; j++) {
+					aContext = this.oSmartTable.getTable().getContextByIndex(aSelectections[j]);
+					sDemandPath = aContext.getPath();
+					bComponentExist = this.getModel().getProperty(sDemandPath + "/COMPONENT_EXISTS");
+					if (bComponentExist) {
+						aArrayMaterialContext.push(aContext);
+					}
+				}
+			}
+
+			return aArrayMaterialContext;
 		}
 
 	});

@@ -9,9 +9,10 @@ sap.ui.define([
 	"sap/ui/model/json/JSONModel",
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
-	"com/evorait/evosuite/evoprep/controller/GanttActions"
+	"com/evorait/evosuite/evoprep/controller/GanttActions",
+	"com/evorait/evosuite/evoprep/controller/MaterialInfoDialog"
 ], function (UIComponent, Device, models, ErrorHandler, MessageManager, Constants, library, JSONModel, Filter, FilterOperator,
-	GanttActions) {
+	GanttActions, MaterialInfoDialog) {
 	"use strict";
 
 	var oMessageManager = sap.ui.getCore().getMessageManager();
@@ -74,16 +75,19 @@ sap.ui.define([
 				ganttFullMode: true,
 				fullscreenGantt: true,
 				isCreatePage: false,
-				ganttSelectionPane:"30%", //Setting Gantt Pane Adjustment Percentage
+				ganttSelectionPane: "30%", //Setting Gantt Pane Adjustment Percentage
 				ganttSettings: {
 					busy: true,
 					sStartDate: null,
 					sEndDate: null
 				},
-				bDependencyCall:false, //Restricting expand call in Graphic Planning GanttChart
-				bEnableOperationDelete:false, //Enabling/Disabling Delete Button in Plan Detail Operation Tab
-				bOperationTableMode:false, //Plan Detail Operation Table Selection Mode
-				bCopyEnabled: false //disable the copy button by default
+				bDependencyCall: false, //Restricting expand call in Graphic Planning GanttChart
+				bEnableOperationDelete: false, //Enabling/Disabling Delete Button in Plan Detail Operation Tab
+				bOperationTableMode: false, //Plan Detail Operation Table Selection Mode
+				bCopyEnabled: false, //disable the copy button by default
+				bMaterialsOperations: false, // used for hiding or displaying materials button in the operations table in demands view
+				bMaterialsDemandsBlock: false, // used for hiding or displaying the materials button in the opertions table in the preplan details view
+				aAllSelectedOperations: [] //handle select all 
 			};
 
 			//GetSystemInformation Call
@@ -112,6 +116,8 @@ sap.ui.define([
 
 			//initialize GanttActions.js with component
 			this.GanttActions = new GanttActions();
+			this.materialInfoDialog = new MaterialInfoDialog();
+			this.materialInfoDialog.init();
 		},
 
 		/**

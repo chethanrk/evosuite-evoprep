@@ -306,7 +306,7 @@ sap.ui.define([
 		showOperationEditDel: function (bFinal, bAllowOper) {
 			return Boolean(bFinal && bAllowOper);
 		},
-		
+
 		/**
 		 * Formatting TimeZone for Gantt Shape Dates
 		 * @param oDate

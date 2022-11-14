@@ -60,7 +60,7 @@ sap.ui.define([
 					oTable = this.oSmartTable.getTable(),
 					bCheckSelectAll = false;
 				//When Select All is selected
-				if (this.getView().getModel("viewModel").getProperty("/aAllSelectedOperations").length !== 0) {
+				if (this.getModel("viewModel").getProperty("/aAllSelectedOperations").length !== 0) {
 					bCheckSelectAll = true;
 				}
 				aItems.forEach(function (oItem) {
@@ -160,7 +160,7 @@ sap.ui.define([
 		preparePayload: function (mParameters, aSelectedItems) {
 			var bCheckSelectAll = false;
 			//When Select All is selected
-			if (this.getView().getModel("viewModel").getProperty("/aAllSelectedOperations").length !== 0) {
+			if (this.getModel("viewModel").getProperty("/aAllSelectedOperations").length !== 0) {
 				bCheckSelectAll = true;
 			}
 			return new Promise(function (resolve) {

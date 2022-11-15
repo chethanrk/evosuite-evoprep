@@ -111,6 +111,7 @@ sap.ui.define([
 			this.getOwnerComponent().oSystemInfoProm.then(function () {
 				this._onRouteMatched(sViewName, "PlanHeaderSet", mParams);
 				this._getGanttLineItems(sEntitySet);
+				this._getUtilizationGanttLineItems();
 			}.bind(this));
 		},
 
@@ -204,6 +205,29 @@ sap.ui.define([
 					oTempModel.setProperty("/ganttConfigs/lineItems", aLineItems);
 				}
 			}.bind(this));
-		}
+		},
+
+		/* get line item from Utilization Gantt entityset 
+		 * @private
+		 */
+		_getUtilizationGanttLineItems: function () {
+			var sEntitySet = "WorkCenterSet",
+				oTempModel = this.getModel("templateProperties"),
+				oModel = this.getModel();
+
+			oTempModel.setProperty("/ganttUtilizationConfigs", {});
+			oTempModel.setProperty("/ganttUtilizationConfigs/entitySet", sEntitySet);
+
+			//collect all tab IDs
+			oModel.getMetaModel().loaded().then(function () {
+				var oMetaModel = oModel.getMetaModel(),
+					oEntitySet = oMetaModel.getODataEntitySet(sEntitySet),
+					oEntityType = oMetaModel.getODataEntityType(oEntitySet.entityType),
+					aLineItems = oEntityType["com.sap.vocabularies.UI.v1.LineItem"];
+				if (aLineItems) {
+					oTempModel.setProperty("/ganttUtilizationConfigs/lineItems", aLineItems);
+				}
+			}.bind(this));
+		},
 	});
 });

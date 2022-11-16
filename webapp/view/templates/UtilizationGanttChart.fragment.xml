@@ -25,7 +25,6 @@
 									press="onPressUtilizationGanttFullScreen"/>
 								<core:ExtensionPoint name="GanttExtP|UtilizationGantt|WorkCenterSet|ContainerToolbar|After"/>
 							</gnt2:content>
-							<!--selectedKey="{user>/DEFAULT_VIEW_MODE}" -->
 							<gnt2:legendContainer>
 								<gnt2:LegendContainer></gnt2:LegendContainer>
 							</gnt2:legendContainer>
@@ -50,7 +49,7 @@
 											<Label
 												text="{:= '{/' + ${tempProps>ganttUtilizationConfigs/entitySet} + '/' + ${lineItem>Value/Path} + '/##com.sap.vocabularies.Common.v1.Label/String}' }"/>
 											<table:template>
-												<Text text="{= '{' + ${path:'lineItem>Value/Path'} + '}' }"/>
+												<Label text="{= '{' + ${path:'lineItem>Value/Path'} + '}' }"/>
 											</table:template>
 										</table:Column>
 									</template:repeat>

@@ -91,6 +91,7 @@ sap.ui.define([
 					iCount : 0,
 					ganttSelectionPane:"30%"
 				},
+				aAllSelectedOperations: [] //handle select all
 			};
 
 			//GetSystemInformation Call

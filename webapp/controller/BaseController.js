@@ -889,7 +889,7 @@ sap.ui.define([
 				this.open(this._addOperationsDetail);
 			}
 			this.bOperationSelectAll = false;
-		//	sap.ui.getCore().byId("idOprSwitchSelectAll").setState(false);
+			sap.ui.getCore().byId("idOprSwitchSelectAll").setState(false);
 		},
 
 		/**

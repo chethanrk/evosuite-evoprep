@@ -328,6 +328,16 @@ sap.ui.define([
 				return oTimeLineOptions;
 			}
 		},
+		/**
+		 * format the Object Status state acording to Material_Status
+		 * @param sValue
+		 */
+		getDemandState: function (sValue) {
+			if (sValue) {
+				return sValue;
+			}
+			return "None";
+		}
 	};
 
 });

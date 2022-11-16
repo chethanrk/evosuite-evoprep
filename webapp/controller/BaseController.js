@@ -889,6 +889,7 @@ sap.ui.define([
 				this.open(this._addOperationsDetail);
 			}
 			this.bOperationSelectAll = false;
+			sap.ui.getCore().byId("idOprSwitchSelectAll").setState(false);
 		},
 
 		/**
@@ -959,7 +960,6 @@ sap.ui.define([
 				oParams = oEvent.getParameter("bindingParams"),
 				aFilters = oParams.filters,
 				sId = oSource.getId();
-				sap.ui.getCore().byId("idOprSwitchSelectAll").setState(false);
 			this.getOwnerComponent().readData("/PlanItemsSet", aFilters).then(function (oData) {
 				if (sId === "idOperationListFragSmartTable") {
 					this.aOprFrgAllOperations = oData.results;

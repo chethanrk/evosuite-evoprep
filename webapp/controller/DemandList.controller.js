@@ -175,11 +175,15 @@ sap.ui.define([
 				bEnableAddOperations = false;
 			}
 			this.getModel("viewModel").setProperty("/bEnableAddOperations", bEnableAddOperations);
-			// check enable or disable the materials status and material information button
-			if (this._returnMaterialContext(this.oSmartTable.getTable()).length > 0) {
-				this.oViewModel.setProperty("/bMaterialsOperations", true);
-			} else {
-				this.oViewModel.setProperty("/bMaterialsOperations", false);
+
+			//When it's not selected from Select All Button
+			if (!this.bSelectAll) {
+				// check enable or disable the materials status and material information button
+				if (this._returnMaterialContext(this.oSmartTable.getTable()).length > 0) {
+					this.oViewModel.setProperty("/bMaterialsOperations", true);
+				} else {
+					this.oViewModel.setProperty("/bMaterialsOperations", false);
+				}
 			}
 		},
 

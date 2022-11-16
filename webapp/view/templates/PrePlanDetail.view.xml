@@ -8,13 +8,13 @@
 			<template:with path="templateProperties>/" var="tempProps">
 				<uxap:ObjectPageLayout id="prePlanDetailPage" class="sapUiNoContentPadding" useIconTabBar="false" enableLazyLoading="true"
 					isChildPage="true" showFooter="false" busy="{viewModel>/busy}" busyIndicatorDelay="{viewModel>/delay}"
-					showHeaderContent="{viewModel>/ganttFullMode}">
+					showHeaderContent="{= ${viewModel>/ganttFullMode}  &amp;&amp; ${viewModel>/ganttUtilizationFullMode}}">
 					<uxap:headerTitle>
-						<uxap:ObjectPageHeader objectTitle="{PLAN_NAME}" objectSubtitle="{PLAN_ID}" visible="{viewModel>/ganttFullMode}">
+						<uxap:ObjectPageHeader objectTitle="{PLAN_NAME}" objectSubtitle="{PLAN_ID}" visible="{= ${viewModel>/ganttFullMode}  &amp;&amp; ${viewModel>/ganttUtilizationFullMode}}">
 							<uxap:actions>
-								<uxap:ObjectPageHeaderActionButton type="Default" press="onPressCopyPrePlanHeader" text="{i18n>xbut.copy}"
-									hideText="false" tooltip="{i18n>xbut.copy}" 
-									visible="{= ${user>/ENABLE_PLAN_COPY} === 'X' &amp;&amp; (${STATUS_SHORT} === 'NEW' || ${STATUS_SHORT} === 'INPR')}" />
+								<uxap:ObjectPageHeaderActionButton type="Default" press="onPressCopyPrePlanHeader" text="{i18n>xbut.copy}" hideText="false"
+									tooltip="{i18n>xbut.copy}"
+									visible="{= ${user>/ENABLE_PLAN_COPY} === 'X' &amp;&amp; (${STATUS_SHORT} === 'NEW' || ${STATUS_SHORT} === 'INPR')}"/>
 								<uxap:ObjectPageHeaderActionButton id="idStatusChangeMenu" hideText="false" type="Default" text="{i18n>xbut.status}"
 									tooltip="{i18n>xbut.status}"
 									visible="{parts: [{path:'viewModel>/showStatusButton'},{path:'viewModel>/editMode'}, {path:'ALLOW_FINAL'} ], formatter:'.formatter.showDetailStatusEdit'}"
@@ -43,7 +43,7 @@
 							</uxap:breadcrumbs>
 							<uxap:sideContentButton></uxap:sideContentButton>
 							<uxap:navigationBar>
-								<Bar class="sapUiTinyMarginTop" visible="{viewModel>/ganttFullMode}">
+								<Bar class="sapUiTinyMarginTop" visible="{= ${viewModel>/ganttFullMode}  &amp;&amp; ${viewModel>/ganttUtilizationFullMode}}">
 									<contentLeft>
 										<core:ExtensionPoint name="PageExtP|PrePlanDetail|PlanHeaderSet|NavigationBar|Left"/>
 									</contentLeft>
@@ -74,7 +74,7 @@
 								<template:if test="{:= ${detailTabs>Core.Description/String} === 'Form' || ${detailTabs>Org.OData.Core.V1.Description/String} === 'Form'}">
 									<template:then>
 										<uxap:ObjectPageSection title="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}"
-											visible="{viewModel>/ganttFullMode}">
+												visible="{= ${viewModel>/ganttFullMode}  &amp;&amp; ${viewModel>/ganttUtilizationFullMode}}">
 											<uxap:subSections>
 												<uxap:ObjectPageSubSection>
 													<uxap:blocks>
@@ -95,30 +95,31 @@
 												<template:if
 													test="{:= ${parts: [{value:'PlanningTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameInDescription'} }">
 													<template:then>
-														<uxap:ObjectPageSubSection title="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}" class="sapUxAPObjectPageSubSectionFitContainer">
+														<uxap:ObjectPageSubSection title="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}"  visible="{viewModel>/ganttFullMode}"
+															class="sapUxAPObjectPageSubSectionFitContainer">
 															<uxap:blocks>
 																<core:Fragment fragmentName="com.evorait.evosuite.evoprep.view.templates.PlanningGanttChart" type="XML"/>
 															</uxap:blocks>
 														</uxap:ObjectPageSubSection>
 													</template:then>
-													<template:else>
-														<uxap:ObjectPageSubSection visible="{viewModel>/ganttFullMode}">
+													<template:elseif
+														test="{:= ${parts: [{value:'CapacityTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameInDescription'} }">
+														<uxap:ObjectPageSubSection title="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}"  visible="{viewModel>/ganttUtilizationFullMode}" class="sapUxAPObjectPageSubSectionFitContainer">
 															<uxap:blocks>
-																<template:if
-																	test="{:= ${parts: [{value:'CapacityTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameInDescription'} }">
-																	<template:then>
-																		<blocks:capacity.CapacityBlock
-																			id="block--{:= ${path:'detailTabs>Core.LongDescription/String'} || ${detailTabs>Org.OData.Core.V1.LongDescription/String}}"/>
-																	</template:then>
-																	<template:elseif
-																		test="{:= ${parts: [{value:'DemandsTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameInDescription'} }">
-																		<blocks:demand.DemandsBlock
-																			id="block--{:= ${path:'detailTabs>Core.LongDescription/String'} || ${detailTabs>Org.OData.Core.V1.LongDescription/String}}"/>
-																	</template:elseif>
-																</template:if>
+																<core:Fragment fragmentName="com.evorait.evosuite.evoprep.view.templates.UtilizationGanttChart" type="XML"/>
 															</uxap:blocks>
 														</uxap:ObjectPageSubSection>
-													</template:else>
+													</template:elseif>
+													<template:elseif
+														test="{:= ${parts: [{value:'DemandsTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameInDescription'} }">
+														<uxap:ObjectPageSubSection title="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}"
+															visible="{= ${viewModel>/ganttFullMode} &amp;&amp; ${viewModel>/ganttUtilizationFullMode}}">
+															<uxap:blocks>
+																<blocks:demand.DemandsBlock
+																	id="block--{:= ${path:'detailTabs>Core.LongDescription/String'} || ${detailTabs>Org.OData.Core.V1.LongDescription/String}}"/>
+															</uxap:blocks>
+														</uxap:ObjectPageSubSection>
+													</template:elseif>
 												</template:if>
 											</uxap:subSections>
 										</uxap:ObjectPageSection>

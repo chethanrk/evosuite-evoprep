@@ -81,12 +81,16 @@ sap.ui.define([
 					sStartDate: null,
 					sEndDate: null
 				},
-				bDependencyCall:false, //Restricting expand call in Graphic Planning GanttChart
-				bEnableOperationDelete:false, //Enabling/Disabling Delete Button in Plan Detail Operation Tab
-				bOperationTableMode:false, //Plan Detail Operation Table Selection Mode
+				bDependencyCall: false, //Restricting expand call in Graphic Planning GanttChart
+				bEnableOperationDelete: false, //Enabling/Disabling Delete Button in Plan Detail Operation Tab
+				bOperationTableMode: false, //Plan Detail Operation Table Selection Mode
 				bCopyEnabled: false, //disable the copy button by default
-				bMaterialsOperations:false, // used for hiding or displaying materials button in the operations table in demands view
-				bMaterialsDemandsBlock:false // used for hiding or displaying the materials button in the opertions table in the preplan details view
+				ganttUtilization: { //Utilization Gantt Chart Parameters
+					busy: true,
+					dLastSync: null,
+					iCount : 0,
+					ganttSelectionPane:"30%"
+				},
 			};
 
 			//GetSystemInformation Call

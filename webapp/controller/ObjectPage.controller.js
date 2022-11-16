@@ -114,6 +114,7 @@ sap.ui.define([
 			this.getOwnerComponent().oSystemInfoProm.then(function () {
 				this._onRouteMatched(sViewName, "PlanHeaderSet", mParams);
 				this._getGanttLineItems(sEntitySet);
+				this._getUtilizationGanttLineItems();
 			}.bind(this));
 		},
 
@@ -248,7 +249,7 @@ sap.ui.define([
 			}.bind(this));
 		},
 
-		/* get line item from compare entityset 
+			/* get line item from compare entityset 
 		 * @private
 		 */
 		_getCompareOPLineItems: function (sEntitySet) {

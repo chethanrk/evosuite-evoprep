@@ -40,7 +40,7 @@
 														test="{:= ${parts: [{value:'UtilizationTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameMatch'} }">
 														<template:then>
 															<Table growing="true"
-																items="{path:'compareModel>PlanCmprGeneralToPlanCmprWorkCenter/results',templateShareable: true,sorter : { path : 'PLAN_ID' }}"
+																items="{path:'compareModel>PlanCmprGeneralToPlanCmprWorkCenter/results',templateShareable: true,sorter : [{ path: 'WORKCENTRE', descending: false },{ path: 'MODE', descending: false }]}"
 																headerText="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}">
 																<columns>
 																	<template:repeat list="{path:'tempProps>/WorkcenterConfigs/lineItems'}" var="lineItem">
@@ -50,6 +50,10 @@
 																				wrapping="false"/>
 																		</Column>
 																	</template:repeat>
+																	<Column demandPopin="true" hAlign="Center">
+																		<Text text="{:= '{/' + ${tempProps>/WorkcenterConfigs/entitySet} + '/' + 'MODE' + '/##com.sap.vocabularies.Common.v1.Label/String}' }"
+																			wrapping="false"/>
+																	</Column>
 																</columns>
 																<items>
 																	<ColumnListItem>
@@ -60,10 +64,11 @@
 																						<Text text="{path:'lineItem>Value/Path', formatter:'.evoAH.getOperationDate'}" wrapping="false"/>
 																					</template:then>
 																					<template:else>
-																						<Text text="{= '{compareModel>' + ${path : 'lineItem>Value/Path'} + '}' }" wrapping="false"/>
+																						<Text text="{= '{compareModel>' + ${path : 'lineItem>Value/Path'} + '}' }" wrapping="false" visible="{= ${compareModel>MODE} === ''}"/>
 																					</template:else>
 																				</template:if>
 																			</template:repeat>
+																			<Text text="W-{compareModel>MODE}" visible="{= ${compareModel>MODE} !== ''}"/>
 																		</cells>
 																	</ColumnListItem>
 																</items>

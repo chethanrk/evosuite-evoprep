@@ -117,11 +117,11 @@
 							<PropertyValue Property="Position" Int="1"/>
 						</Record>
 						<Record Type="com.sap.vocabularies.UI.v1.DataField">
-							<PropertyValue Property="Value" Path="WORKCENTRE_DESCRIPTION"/>
+							<PropertyValue Property="Value" Path="PLANT"/>
 							<PropertyValue Property="Position" Int="2"/>
 						</Record>
 						<Record Type="com.sap.vocabularies.UI.v1.DataField">
-							<PropertyValue Property="Value" Path="PLAN_ID"/>
+							<PropertyValue Property="Value" Path="WORKCENTRE_DESCRIPTION"/>
 							<PropertyValue Property="Position" Int="3"/>
 						</Record>
 					</Collection>
@@ -135,11 +135,11 @@
 							<PropertyValue Property="Position" Int="1"/>
 						</Record>
 						<Record Type="com.sap.vocabularies.UI.v1.DataField">
-							<PropertyValue Property="Value" Path="WORKCENTRE_DESCRIPTION"/>
+							<PropertyValue Property="Value" Path="PLANT"/>
 							<PropertyValue Property="Position" Int="2"/>
 						</Record>
 						<Record Type="com.sap.vocabularies.UI.v1.DataField">
-							<PropertyValue Property="Value" Path="PLANT"/>
+							<PropertyValue Property="Value" Path="WORKCENTRE_DESCRIPTION"/>
 							<PropertyValue Property="Position" Int="3"/>
 						</Record>
 						<Record Type="com.sap.vocabularies.UI.v1.DataField">

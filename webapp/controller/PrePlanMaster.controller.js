@@ -22,7 +22,7 @@ sap.ui.define([
 					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
-				
+
 				onCreatePrePlanPress: {
 					public: true,
 					final: false,
@@ -46,7 +46,7 @@ sap.ui.define([
 					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
-				
+
 				onCopyPrePlanPress: {
 					public: true,
 					final: false,
@@ -111,14 +111,13 @@ sap.ui.define([
 		onPressComapre: function (oEvent) {
 			var oTable = this.oSmartTable.getTable(),
 				aListItems = oTable.getSelectedItems(),
-				oPlans = {};
+				aPlans = [];
 
-			oPlans.plans = [];
 			if (aListItems.length === 0 || aListItems.length === 1) {
-				this.showMessageToast("Select atleast 2 plans");
+				this.showMessageToast("Select atleast 2 plans to comapre");
 			} else if (aListItems.length > 1 && aListItems.length < 4) {
 				aListItems.forEach(function (oItem) {
-					oPlans["plans"].push(oItem.getBindingContext().getObject().ObjectKey);
+					aPlans.push(oItem.getBindingContext().getObject().ObjectKey);
 				});
 
 				//unselect all the selected rows
@@ -126,23 +125,22 @@ sap.ui.define([
 				this.getModel("viewModel").setProperty("/fullscreenGantt", false);
 				this.getRouter().navTo("PrePlanCompare", {
 					layout: library.LayoutType.MidColumnFullScreen,
-					plans: JSON.stringify(oPlans.plans)
+					plans: JSON.stringify(aPlans)
 				});
 			} else {
 				this.showMessageToast("Max 3 plans are allowed to compare");
 			}
 		},
-		
+
 		/** 
 		 * Sending a call to backend for copy with the selected Plan's GuID on click of copy. 
 		 * */
-		 onCopyPrePlanPress: function(){
-		 	var oSelectedItem = this.oSmartTable.getTable().getSelectedItem(),
+		onCopyPrePlanPress: function () {
+			var oSelectedItem = this.oSmartTable.getTable().getSelectedItem(),
 				sGuid = oSelectedItem.getBindingContext().getProperty("ObjectKey");
-		 	this.copySelectedPlan(sGuid, this.oSmartTable);
-		 	this._removeTableSelection();
-		 },
-		
+			this.copySelectedPlan(sGuid, this.oSmartTable);
+			this._removeTableSelection();
+		},
 
 		/**
 		 * Navigating to Create PrePlan View on Click of Create PrePlan Button
@@ -161,24 +159,24 @@ sap.ui.define([
 		 */
 		onWPrePlanListSelectionChange: function (oEvent) {
 			var isPreplanDeletEnabled = false,
-			oSelectedPrePlanContext = this.oSmartTable.getTable().getSelectedContexts(),
-			sStatus;
+				oSelectedPrePlanContext = this.oSmartTable.getTable().getSelectedContexts(),
+				sStatus;
 			if (oSelectedPrePlanContext.length > 0) {
 				isPreplanDeletEnabled = true;
 			}
-			
-			if(oSelectedPrePlanContext.length === 1){
+
+			if (oSelectedPrePlanContext.length === 1) {
 				//enable the copy button only for New & In Progress Status
 				sStatus = oSelectedPrePlanContext[0].getProperty("STATUS_SHORT");
-				if(sStatus === "INPR" || sStatus === "NEW")
+				if (sStatus === "INPR" || sStatus === "NEW")
 					this.getModel("viewModel").setProperty("/bCopyEnabled", true);
 			} else {
 				//disable the copy button
 				this.getModel("viewModel").setProperty("/bCopyEnabled", false);
 			}
-			
+
 			this.getModel("viewModel").setProperty("/isPrePlanSelected", isPreplanDeletEnabled);
-			this.oViewModel.setProperty("/bMaterialsDemandsBlock",false);
+			this.oViewModel.setProperty("/bMaterialsDemandsBlock", false);
 		},
 
 		/**

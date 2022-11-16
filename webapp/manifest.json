@@ -93,16 +93,12 @@
 			}
 		},
 		"resources": {
-			"css": [
-				{
-					"uri": "assets/css/style.css"
-				}
-			],
-			"js": [
-				{
-					"uri": "assets/js/moment-with-locales.min.js"
-				}
-			]
+			"css": [{
+				"uri": "assets/css/style.css"
+			}],
+			"js": [{
+				"uri": "assets/js/moment-with-locales.min.js"
+			}]
 		},
 		"routing": {
 			"config": {
@@ -114,44 +110,38 @@
 				"controlId": "idFlexibleColumnLayout",
 				"clearControlAggregation": false
 			},
-			"routes": [
-				{
-					"name": "PrePlanMaster",
-					"pattern": "",
-					"target": [
-						"PrePlanMaster"
-					]
-				},
-				{
-					"name": "PrePlanDetail",
-					"pattern": "PrePlanDetail/{layout}/{plan}",
-					"target": [
-						"PrePlanMaster",
-						"PrePlanDetail"
-					]
-				},
-				{
-					"name": "PrePlanCompare",
-					"pattern": "PrePlanCompare/{layout}/{plans}",
-					"target": [
-						"PrePlanCompare"
-					]
-				},
-				{
-					"name": "CreatePrePlan",
-					"pattern": "CreatePrePlan/{layout}/new",
-					"target": [
-						"CreatePrePlan"
-					]
-				},
-				{
-					"name": "demandList",
-					"pattern": "demandList",
-					"target": [
-						"demandList"
-					]
-				}
-			],
+			"routes": [{
+				"name": "PrePlanMaster",
+				"pattern": "",
+				"target": [
+					"PrePlanMaster"
+				]
+			}, {
+				"name": "PrePlanDetail",
+				"pattern": "PrePlanDetail/{layout}/{plan}",
+				"target": [
+					"PrePlanMaster",
+					"PrePlanDetail"
+				]
+			}, {
+				"name": "PrePlanCompare",
+				"pattern": "PrePlanCompare/{layout}/{plans}",
+				"target": [
+					"PrePlanCompare"
+				]
+			}, {
+				"name": "CreatePrePlan",
+				"pattern": "CreatePrePlan/{layout}/new",
+				"target": [
+					"CreatePrePlan"
+				]
+			}, {
+				"name": "demandList",
+				"pattern": "demandList",
+				"target": [
+					"demandList"
+				]
+			}],
 			"targets": {
 				"PrePlanMaster": {
 					"viewName": "PrePlanMaster",

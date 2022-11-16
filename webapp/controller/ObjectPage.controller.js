@@ -134,6 +134,7 @@ sap.ui.define([
 			});
 
 			this._getCompareData(aPlans, sViewName);
+
 		},
 
 		/**
@@ -169,8 +170,13 @@ sap.ui.define([
 
 					this._getCompareOPLineItems("ComparePlanOperationSet");
 					this._getCompareWCLineItems("ComparePlanWorkcenterSet");
+
+					this._onRouteMatched(sViewName, "ComparePlanGeneralSet");
 				}
 
+			}.bind(this)).catch(function (oError) {
+				this.getModel("compareModel").setProperty("/compare", []);
+				this.getModel("compareModel").setProperty("/compareProperty", []);
 				this._onRouteMatched(sViewName, "ComparePlanGeneralSet");
 			}.bind(this));
 		},
@@ -306,21 +312,42 @@ sap.ui.define([
 						var aOprRes = deepClone(oPlanItem.PlanCmprGeneralToPlanCmprOperation.results);
 						var aWcrRes = deepClone(oPlanItem.PlanCmprGeneralToPlanCmprWorkCenter.results);
 						aOprRes.forEach(function (oInnerData) {
-							oInnerData.SUM_OPR_DURATION = "";
-							aOpr.push(oInnerData);
-						});
+							if (this._findObjectToInsert(aOpr, oInnerData)) {
+								oInnerData.SUM_OPR_DURATION = "-";
+								aOpr.push(oInnerData);
+							}
+						}.bind(this));
+
 						aWcrRes.forEach(function (oInnerData) {
-							oInnerData.UTILIZATION = "";
-							aWctr.push(oInnerData);
-						});
+							if (this._findObjectToInsert(aWctr, oInnerData)) {
+								oInnerData.UTILIZATION = "-";
+								aWctr.push(oInnerData);
+							}
+						}.bind(this));
 					}
-				});
-				//console.log(aOpr);
+				}.bind(this));
+
 				oItemCopy.PlanCmprGeneralToPlanCmprOperation.results = deepClone(aOpr);
 				oItemCopy.PlanCmprGeneralToPlanCmprWorkCenter.results = deepClone(aWctr);
 				aMain.push(oItemCopy);
 			}.bind(this));
 			return aMain;
+		},
+
+		/**
+		 * find the different objects in the array
+		 * @param[aData] plan specific data
+		 * @param{oItem} other plan items
+		 * @return boolean
+		 */
+		_findObjectToInsert: function (aData, oItem) {
+			var bValidate = true;
+			aData.forEach(function (oDataItem) {
+				if (oDataItem.PLAN_ID !== oItem.PLAN_ID && oDataItem.WORKCENTRE === oItem.WORKCENTRE && bValidate) {
+					bValidate = false;
+				}
+			});
+			return bValidate;
 		}
 	});
 });

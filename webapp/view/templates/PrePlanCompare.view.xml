@@ -103,10 +103,10 @@
 					</f:header>
 					<f:content>
 						<HBox width="100%" fitContainer="true">
-							<HBox width="40%">
+							<HBox width="40%" direction="Column">
 								<core:Fragment fragmentName="com.evorait.evosuite.evoprep.view.templates.CompareProperties" type="XML"/>
 							</HBox>
-							<HBox width="60%">
+							<HBox width="60%" direction="Column">
 								<core:Fragment fragmentName="com.evorait.evosuite.evoprep.view.templates.ComparePlans" type="XML"/>
 							</HBox>
 						</HBox>

@@ -46,7 +46,7 @@
 														test="{:= ${parts: [{value:'UtilizationTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameMatch'} }">
 														<template:then>
 															<Table growing="true"
-																items="{path:'compareModel>PlanCmprGeneralToPlanCmprWorkCenter/results',templateShareable: true, sorter : { path : 'PLAN_ID' }}"
+																items="{path:'compareModel>PlanCmprGeneralToPlanCmprWorkCenter/results',templateShareable: true, sorter : [{ path: 'WORKCENTRE', descending: false },{ path: 'MODE', descending: false }]}"
 																headerText="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}">
 																<columns>
 																	<Column demandPopin="true" hAlign="Center">
@@ -56,7 +56,7 @@
 																<items>
 																	<ColumnListItem>
 																		<cells>
-																			<Link text="{compareModel>UTILIZATION}" visible="true"/>
+																			<Title text="{compareModel>UTILIZATION}" titleStyle="{= ${compareModel>MODE} !== ''? 'H6':'H4'}"/>
 																		</cells>
 																	</ColumnListItem>
 																</items>
@@ -65,7 +65,7 @@
 														<template:elseif
 															test="{:= ${parts: [{value:'DurationTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameMatch'} }">
 															<Table growing="true"
-																items="{path:'compareModel>PlanCmprGeneralToPlanCmprOperation/results',templateShareable: true, sorter : { path : 'PLAN_ID' }}"
+																items="{path:'compareModel>PlanCmprGeneralToPlanCmprOperation/results',templateShareable: true, sorter : { path: 'PLAN_ID', descending: false }}"
 																headerText="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}">
 																<columns>
 																	<Column demandPopin="true" hAlign="Center">
@@ -75,7 +75,7 @@
 																<items>
 																	<ColumnListItem>
 																		<cells>
-																			<Link text="{compareModel>SUM_OPR_DURATION}" visible="true"/>
+																			<Text text="{compareModel>SUM_OPR_DURATION}"/>
 																		</cells>
 																	</ColumnListItem>
 																</items>

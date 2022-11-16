@@ -37,9 +37,8 @@
 							<smartTable:customToolbar>
 								<Toolbar>
 									<ToolbarSpacer/>
-									<Button text="{i18n>xbut.SelectAll}" tooltip="{i18n>xbut.SelectAll}" press="onPressOperationSelectAll"></Button>
-									<Button text="{i18n>xbut.DeSelectAll}" tooltip="{i18n>xbut.DeSelectAll}" enabled="{viewModel>/bOperationDeSelectAll}"
-										press="onPressOperationDeSelectAll"></Button>
+									<Text text="{i18n>xbut.SelectAll}"/>
+									<Switch id="idOprSwitchSelectAll" change="onChangeOperationSelectAll"/>
 								</Toolbar>
 							</smartTable:customToolbar>
 							<Table growing="true" growingThreshold="100" mode="MultiSelect" sticky="ColumnHeaders,HeaderToolbar,InfoToolbar"

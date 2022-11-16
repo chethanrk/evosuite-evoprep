@@ -81,12 +81,7 @@ sap.ui.define([
 					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
-				onPressSelectAll: {
-					public: true,
-					final: false,
-					overrideExecution: OverrideExecution.Instead
-				},
-				onPressDeSelectAll: {
+				onChangeSelectAll: {
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
@@ -220,13 +215,14 @@ sap.ui.define([
 					}
 				}.bind(this));
 			}
+			this.getView().byId("idSwitchSelectAll").setState(false);
 			this.oViewModel.setProperty("/aAllSelectedOperations", aAllOperationsSelected);
 			this.oCreateModel.refresh();
 			this._removeOprTableSelection();
 			this.getRouter().navTo("CreatePrePlan", {
 				layout: library.LayoutType.MidColumnFullScreen
 			});
-			this.bSelectAll = false; //Clearing Select All Flag
+			this.bSelectAll = false; //Clearing Select All Flag	
 		},
 
 		/**
@@ -408,19 +404,16 @@ sap.ui.define([
 		/**
 		 * onPress of Select All in Operation List 
 		 * All the rows data is selected from a GET call and Create Plan is allowed  
+		 * @param oEvent
 		 */
-		onPressSelectAll: function () {
-			this.bSelectAll = true;
-			this.oSmartTable.getTable().selectAll(true);
-		},
-
-		/**
-		 * onPress of De-Select All in Operation List 
-		 * All the selected rows in the table are cleared
-		 */
-		onPressDeSelectAll: function () {
-			this.bSelectAll = false;
-			this._removeOprTableSelection();
+		onChangeSelectAll: function (oEvent) {
+			if (oEvent.getSource().getState()) {
+				this.bSelectAll = true;
+				this.oSmartTable.getTable().selectAll(true);
+			} else {
+				this.bSelectAll = false;
+				this._removeOprTableSelection();
+			}
 		},
 
 		/* =========================================================== */

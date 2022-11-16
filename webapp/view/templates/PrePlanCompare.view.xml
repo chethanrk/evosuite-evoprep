@@ -10,7 +10,7 @@
 					<f:title>
 						<f:DynamicPageTitle backgroundDesign="Transparent">
 							<f:heading>
-								<Title text="Compare Plans"/>
+								<Title text="{i18n>tit.comparePlans}"/>
 							</f:heading>
 							<f:navigationActions>
 								<Button icon="sap-icon://decline" tooltip="close" press="onPressClose"/>

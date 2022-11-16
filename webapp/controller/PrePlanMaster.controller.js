@@ -114,7 +114,7 @@ sap.ui.define([
 				aPlans = [];
 
 			if (aListItems.length === 0 || aListItems.length === 1) {
-				this.showMessageToast("Select atleast 2 plans to comapre");
+				this.showMessageToast(this.getResourceBundle().getText("msg.selectatleastTwoPlans"));
 			} else if (aListItems.length > 1 && aListItems.length < 4) {
 				aListItems.forEach(function (oItem) {
 					aPlans.push(oItem.getBindingContext().getObject().ObjectKey);
@@ -128,7 +128,7 @@ sap.ui.define([
 					plans: JSON.stringify(aPlans)
 				});
 			} else {
-				this.showMessageToast("Max 3 plans are allowed to compare");
+				this.showMessageToast(this.getResourceBundle().getText("msg.maxPlanSelectionToCompare"));
 			}
 		},
 

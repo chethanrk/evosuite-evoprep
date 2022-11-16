@@ -142,10 +142,10 @@
 							<PropertyValue Property="Value" Path="WORKCENTRE_DESCRIPTION"/>
 							<PropertyValue Property="Position" Int="3"/>
 						</Record>
-						<Record Type="com.sap.vocabularies.UI.v1.DataField">
+					<!--	<Record Type="com.sap.vocabularies.UI.v1.DataField">
 							<PropertyValue Property="Value" Path="PLAN_ID"/>
 							<PropertyValue Property="Position" Int="4"/>
-						</Record>
+						</Record>-->
 					</Collection>
 				</Annotation>
 			</Annotations>

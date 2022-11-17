@@ -6,13 +6,14 @@
 		<template:alias name=".evoAH" value="com.evorait.evosuite.evoprep.model.AnnotationHelper">
 			<template:with path="templateProperties>/" var="tempProps">
 				<f:DynamicPage id="idPlanComaprePage" backgroundDesign="List" headerExpanded="true" preserveHeaderStateOnScroll="true" fitContent="true"
-					showFooter="false" class="sapUiContentPadding" stickySubheaderProvider="" busy="{viewModel>/busy}">
+					showFooter="true" class="sapUiContentPadding" stickySubheaderProvider="" busy="{viewModel>/busy}">
 					<f:title>
 						<f:DynamicPageTitle backgroundDesign="Transparent">
 							<f:heading>
 								<Title text="{i18n>tit.comparePlans}"/>
 							</f:heading>
 							<f:navigationActions>
+								<core:ExtensionPoint name="PageExtP|PrePlanCompare|ComparePlanGeneralSet|Title|Action"/>
 								<Button icon="sap-icon://decline" tooltip="close" press="onPressClose"/>
 							</f:navigationActions>
 						</f:DynamicPageTitle>
@@ -111,6 +112,13 @@
 							</HBox>
 						</HBox>
 					</f:content>
+					<f:footer>
+						<OverflowToolbar id="idPrePlanCompareFooterToolbar" visible="false">
+							<core:ExtensionPoint name="PageExtP|PrePlanCompare|ComparePlanGeneralSet|Footer|Left"/>
+							<ToolbarSpacer/>
+							<core:ExtensionPoint name="PageExtP|PrePlanCompare|ComparePlanGeneralSet|Footer|Right"/>
+						</OverflowToolbar>
+					</f:footer>
 				</f:DynamicPage>
 			</template:with>
 		</template:alias>

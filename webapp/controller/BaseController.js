@@ -195,11 +195,7 @@ sap.ui.define([
 					public: true,
 					final: true
 				},
-				onPressOperationSelectAll: {
-					public: true,
-					final: true
-				},
-				onPressOperationDeSelectAll: {
+				onChangeOperationSelectAll: {
 					public: true,
 					final: true
 				}
@@ -894,7 +890,7 @@ sap.ui.define([
 				this.open(this._addOperationsDetail);
 			}
 			this.bOperationSelectAll = false;
-			this.getModel("viewModel").setProperty("/bOperationDeSelectAll", false);
+			sap.ui.getCore().byId("idOprSwitchSelectAll").setState(false);
 		},
 
 		/**
@@ -977,25 +973,18 @@ sap.ui.define([
 		/**
 		 * onPress of Select All in Operation List Fragment
 		 * All the rows data is selected from a GET call and Create Plan is allowed  
+		 * @param oEvent
 		 */
-		onPressOperationSelectAll: function () {
-			this.bOperationSelectAll = true;
+		onChangeOperationSelectAll: function (oEvent) {
 			var oSmartTable = sap.ui.getCore().byId("idOperationListFragSmartTable"),
 				oTable = oSmartTable.getTable();
-			oTable.selectAll(true);
-			this.getModel("viewModel").setProperty("/bOperationDeSelectAll", true);
-		},
-
-		/**
-		 * onPress of De-Select All in Operation List Fragment
-		 * All the selected rows in the table are cleared
-		 */
-		onPressOperationDeSelectAll: function () {
-			this.bOperationSelectAll = false;
-			var oSmartTable = sap.ui.getCore().byId("idOperationListFragSmartTable"),
-				oTable = oSmartTable.getTable();
-			oTable.removeSelections();
-			this.getModel("viewModel").setProperty("/bOperationDeSelectAll", false);
+			if (oEvent.getSource().getState()) {
+				this.bOperationSelectAll = true;
+				oTable.selectAll(true);
+			} else {
+				this.bOperationSelectAll = false;
+				oTable.removeSelections();
+			}
 		},
 
 		/* =========================================================== */

@@ -88,9 +88,10 @@ sap.ui.define([
 				ganttUtilization: { //Utilization Gantt Chart Parameters
 					busy: true,
 					dLastSync: null,
-					iCount: 0,
-					ganttSelectionPane: "30%"
-				}
+					iCount : 0,
+					ganttSelectionPane:"30%"
+				},
+				aAllSelectedOperations: [] //handle select all
 			};
 
 			//GetSystemInformation Call

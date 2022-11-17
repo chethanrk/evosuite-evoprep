@@ -53,16 +53,16 @@
 								</Record>
 							</Collection>
 						</PropertyValue>
-						<PropertyValue Property="com.sap.vocabularies.Common.v1.Label" String="Order Header"/>
+						<PropertyValue Property="com.sap.vocabularies.Common.v1.Label" String="Compare Header"/>
 					</Record>
 				</Annotation>
-				<Annotation Term="UI.Facets" Qualifier="PrePlanDetailTabs">
+				<Annotation Term="UI.Facets" Qualifier="PlanCompareTabs">
 					<Collection>
 						<Record Type="UI.CollectionFacet">
 							<PropertyValue Property="Facets">
 								<Collection>
 									<Record Type="UI.ReferenceFacet">
-										<PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#PrePlanDetailGeneral"/>
+										<PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#PlanCompareGeneral"/>
 									</Record>
 								</Collection>
 							</PropertyValue>
@@ -83,7 +83,7 @@
 						</Record>
 					</Collection>
 				</Annotation>
-				<Annotation Term="UI.FieldGroup" Qualifier="PrePlanDetailGeneral">
+				<Annotation Term="UI.FieldGroup" Qualifier="PlanCompareGeneral">
 					<Record Type="UI.FieldGroupType">
 						<PropertyValue Property="Label" String="General"/>
 						<PropertyValue Property="Data">

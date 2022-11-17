@@ -130,7 +130,7 @@ sap.ui.define([
 
 			this.getModel("templateProperties").setProperty("/annotationPath", {
 				entitySet: "ComparePlanGeneralSet",
-				path: "com.sap.vocabularies.UI.v1.Facets#PrePlanDetailTabs",
+				path: "com.sap.vocabularies.UI.v1.Facets#PlanCompareTabs",
 				headerPath: "com.sap.vocabularies.UI.v1.HeaderFacets#CompareHeader"
 			});
 

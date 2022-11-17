@@ -52,7 +52,7 @@ sap.ui.define([
 		 * @memberOf com.evorait.evosuite.evoprep.block.demand.DemandsBlocks
 		 */
 		onExit: function () {
-		
+
 			this.destroyOperationListFragment();
 		},
 
@@ -143,6 +143,7 @@ sap.ui.define([
 
 			var successFn = function () {
 				var aContext = [];
+				this.getModel().setDeferredGroups(["changes"]);
 				aSelectedItems.forEach(function (oItem) {
 					var oContext = oItem.getPath ? oItem : oItem.getBindingContext();
 					if (oContext) {

@@ -1,6 +1,7 @@
 sap.ui.define([
-	"com/evorait/evosuite/evoprep/controller/BaseController"
-], function (BaseController) {
+	"com/evorait/evosuite/evoprep/controller/BaseController",
+	"sap/ui/core/mvc/OverrideExecution"
+], function (BaseController, OverrideExecution) {
 	"use strict";
 
 	return BaseController.extend("com.evorait.evosuite.evoprep.controller.PrePlanCompare", {
@@ -9,7 +10,11 @@ sap.ui.define([
 			// extension can declare the public methods
 			// in general methods that start with "_" are private
 			methods: {
-
+				onPressClose: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				}
 			}
 		},
 
@@ -21,10 +26,10 @@ sap.ui.define([
 		onInit: function () {
 			this.getModel("viewModel").setProperty("/busy", false);
 		},
-		
+
 		/**
 		 * Called when close comapre page 
-		*/
+		 */
 		onPressClose: function (oEvent) {
 			BaseController.prototype.onPressClose.apply(this, arguments);
 			this.getModel("compareModel").setProperty("/compare", []);

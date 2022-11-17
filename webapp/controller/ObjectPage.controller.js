@@ -304,7 +304,7 @@ sap.ui.define([
 				var aOpr = [],
 					aWctr = [],
 					oItemCopy = deepClone(oItem);
-
+				//copy valid data to the plan
 				aOpr = deepClone(oItem.PlanCmprGeneralToPlanCmprOperation.results);
 				aWctr = deepClone(oItem.PlanCmprGeneralToPlanCmprWorkCenter.results);
 
@@ -312,13 +312,14 @@ sap.ui.define([
 					if (oItem.ObjectKey !== oPlanItem.ObjectKey) {
 						var aOprRes = deepClone(oPlanItem.PlanCmprGeneralToPlanCmprOperation.results);
 						var aWcrRes = deepClone(oPlanItem.PlanCmprGeneralToPlanCmprWorkCenter.results);
+						//copy additional operations data to the plan
 						aOprRes.forEach(function (oInnerData) {
 							if (this._findOperationObjectToInsert(aOpr, oInnerData)) {
 								oInnerData.SUM_OPR_DURATION = "-";
 								aOpr.push(oInnerData);
 							}
 						}.bind(this));
-
+						//copy additional utilization(workcentre and empty week) data to the plan
 						aWcrRes.forEach(function (oInnerData) {
 							if (this._findObjectToInsert(aWctr, oInnerData)) {
 								oInnerData.UTILIZATION = "-";
@@ -327,7 +328,7 @@ sap.ui.define([
 						}.bind(this));
 					}
 				}.bind(this));
-
+				//Prepare new formatted data ina array
 				oItemCopy.PlanCmprGeneralToPlanCmprOperation.results = deepClone(aOpr);
 				oItemCopy.PlanCmprGeneralToPlanCmprWorkCenter.results = deepClone(aWctr);
 				aMain.push(oItemCopy);

@@ -249,7 +249,7 @@ sap.ui.define([
 			}.bind(this));
 		},
 
-			/* get line item from compare entityset 
+		/* get line item from compare entityset 
 		 * @private
 		 */
 		_getCompareOPLineItems: function (sEntitySet) {
@@ -313,7 +313,7 @@ sap.ui.define([
 						var aOprRes = deepClone(oPlanItem.PlanCmprGeneralToPlanCmprOperation.results);
 						var aWcrRes = deepClone(oPlanItem.PlanCmprGeneralToPlanCmprWorkCenter.results);
 						aOprRes.forEach(function (oInnerData) {
-							if (this._findObjectToInsert(aOpr, oInnerData)) {
+							if (this._findOperationObjectToInsert(aOpr, oInnerData)) {
 								oInnerData.SUM_OPR_DURATION = "-";
 								aOpr.push(oInnerData);
 							}
@@ -344,6 +344,25 @@ sap.ui.define([
 		_findObjectToInsert: function (aData, oItem) {
 			var bValidate = true;
 			aData.forEach(function (oDataItem) {
+
+				if (oDataItem.PLAN_ID !== oItem.PLAN_ID && oDataItem.WORKCENTRE === oItem.WORKCENTRE && oDataItem.MODE === oItem.MODE &&
+					bValidate) {
+					bValidate = false;
+				}
+			});
+			return bValidate;
+		},
+
+		/**
+		 * find the different objects in the array
+		 * @param[aData] plan specific data
+		 * @param{oItem} other plan items
+		 * @return boolean
+		 */
+		_findOperationObjectToInsert: function (aData, oItem) {
+			var bValidate = true;
+			aData.forEach(function (oDataItem) {
+
 				if (oDataItem.PLAN_ID !== oItem.PLAN_ID && oDataItem.WORKCENTRE === oItem.WORKCENTRE && bValidate) {
 					bValidate = false;
 				}

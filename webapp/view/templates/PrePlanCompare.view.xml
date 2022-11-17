@@ -76,7 +76,7 @@
 																							<template:then>
 																								<Title text="{path:'data>Value/Path', formatter:'.evoAH.getCompareDate'}" titleStyle="H5"/>
 																							</template:then>
-																							<template:elseif test="{:= (${data>Org.OData.Core.V1.Description/String} === 'Progress' || ${data>Core.Description/String} === 'Progress')}">
+																							<template:elseif test="{:= (${data>Org.OData.Core.V1.Description/String} === 'Switch' || ${data>Core.Description/String} === 'Switch')}">
 																								<tnt:InfoLabel text="{= '{compareModel>' + ${path : 'data>Value/Path'} + '}' }" displayOnly="true"
 																									colorScheme="{= ${compareModel>STATUS_SHORT} !== 'INPR' ? 8 : 9 }"/>
 																							</template:elseif>

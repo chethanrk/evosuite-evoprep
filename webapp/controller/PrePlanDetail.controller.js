@@ -22,17 +22,17 @@ sap.ui.define([
 			methods: {
 				onPressHeaderEdit: {
 					public: true,
-					final: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
 				onPressGanttFullScreen: {
 					public: true,
-					final: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
 				onPressCancelPrePlanHeader: {
 					public: true,
-					final: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
 				oPressDetailDelete: {
@@ -52,62 +52,62 @@ sap.ui.define([
 				},
 				onClickExpandCollapse: {
 					public: true,
-					final: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
 				onShowDependencies: {
 					public: true,
-					final: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
 				onShapeDrop: {
 					public: true,
-					final: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
 				onShapeResize: {
 					public: true,
-					final: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
 				onPressShapesEdit: {
 					public: true,
-					final: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
 				onPressSavePrePlanHeader: {
 					public: true,
-					final: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
 				navBack: {
 					public: true,
-					final: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
 				onPressUtilizationSync: {
 					public: true,
-					final: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
 				onUtilizationSelectionChange: {
 					public: true,
-					final: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
 				onPressUtilizationGanttFullScreen: {
 					public: true,
-					final: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
 				onUtilizationShapeDoubleClick: {
 					public: true,
-					final: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
 				onBeforeRebindUtilizationDetails: {
 					public: true,
-					final: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				}
 			}

@@ -15,27 +15,27 @@ sap.ui.define([
 			methods: {
 				onClickExpandCollapse: {
 					public: true,
-					final: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
 				onShowDependencies: {
 					public: true,
-					final: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
 				onShapeDrop: {
 					public: true,
-					final: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
 				onShapeResize: {
 					public: true,
-					final: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
 				onPressShapesEdit: {
 					public: true,
-					final: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				}
 			}

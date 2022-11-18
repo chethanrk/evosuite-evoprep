@@ -101,6 +101,7 @@ sap.ui.define([
 			if (sobjectKeyId) {
 				this.navToDetail(sobjectKeyId);
 			}
+			this.getModel("viewModel").setProperty("/bCopyEnabled", false); //added so that copy is disabled even after coming from different view
 		},
 
 		/**
@@ -124,6 +125,7 @@ sap.ui.define([
 				sGuid = oSelectedItem.getBindingContext().getProperty("ObjectKey");
 		 	this.copySelectedPlan(sGuid, this.oSmartTable);
 		 	this._removeTableSelection();
+		 	this.getModel("viewModel").setProperty("/bCopyEnabled", false);
 		 },
 		
 
@@ -194,6 +196,7 @@ sap.ui.define([
 			if (this.oSmartTable) {
 				this.getModel().metadataLoaded().then(function () {
 					this.oSmartTable.rebindTable();
+					this._removeTableSelection();
 				}.bind(this));
 			}
 		},

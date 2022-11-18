@@ -938,10 +938,11 @@ sap.ui.define([
 
 		},
 
-		navToLogs: function (sObjectKey) {
+		navToLogs: function (sObjectKey, sHeaderKeyId) {
 			this.getRouter().navTo("ChangeLogs", {
 				layout: library.LayoutType.ThreeColumnsMidExpanded,
-				plan: sObjectKey
+				operationKey: sObjectKey,
+				plan: sHeaderKeyId
 			});
 		},
 

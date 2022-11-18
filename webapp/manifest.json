@@ -154,7 +154,7 @@
 				},
 				{
 					"name": "ChangeLogs",
-					"pattern": "OperationLog/{layout}/{plan}",
+					"pattern": "PrePlanDetail/{plan}/OperationLog/{operationKey}/{layout}",
 					"target": [
 						"PrePlanMaster",
 						"PrePlanDetail",

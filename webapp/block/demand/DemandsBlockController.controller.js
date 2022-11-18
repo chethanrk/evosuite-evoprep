@@ -197,10 +197,11 @@ sap.ui.define([
 		},
 
 		fnOperationClick: function (oEvent) {
-			var oSource = oEvent.getSource(),
-				sObjectKeyId = oSource.getBindingContext().getProperty("ObjectKey");
+			var oBindCon = oEvent.getParameter("listItem").getBindingContext(),
+				sObjectKeyId = oBindCon.getProperty("ObjectKey"),
+				sHeaderKeyId = oBindCon.getProperty("HeaderObjectKey");
 			if (sObjectKeyId) {
-				this.navToLogs(sObjectKeyId);
+				this.navToLogs(sObjectKeyId, sHeaderKeyId);
 			}
 
 		},

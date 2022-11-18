@@ -1,14 +1,16 @@
-<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:commons="sap.suite.ui.commons" xmlns:core="sap.ui.core">
+<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:commons="sap.suite.ui.commons" xmlns:core="sap.ui.core"
+	controllerName="com.evorait.evosuite.evoprep.controller.OperationLog">
 	<Page title="Change Logs" class="sapUiNoContentPadding">
 		<headerContent>
 			<Button icon="sap-icon://decline" type="Default" tooltip="{i18n>xbtn.close}"/>
 		</headerContent>
 		<content>
-			<commons:Timeline id="idTimeline" sortOldestFirst="true" content="{/ChangeLogsSet}" showHeaderBar="false">
+			<commons:Timeline id="idTimeline" sortOldestFirst="true" content="{PlanItemsToChangeLog}" showHeaderBar="false" showIcons="false"
+				growingThreshold="0">
 				<commons:content>
-					<commons:TimelineItem id="idTemplateItem" dateTime="{Date}" title="changed {FieldName}" userName="{UserName}">
+					<commons:TimelineItem id="idTemplateItem" dateTime="{CHANGE_DATETIME}" title="changed {FIELDNAME}" userName="{USERNAME}">
 						<commons:embeddedControl>
-							<Text text="Then: {OldValue} &#10; Now: {NewValue}"></Text>
+							<Text text="Then: {OLDVALUE} &#10; Now: {NEWVALUE}"></Text>
 						</commons:embeddedControl>
 					</commons:TimelineItem>
 				</commons:content>

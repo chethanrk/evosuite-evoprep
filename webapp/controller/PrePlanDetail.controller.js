@@ -84,6 +84,31 @@ sap.ui.define([
 					public: true,
 					final: true,
 					overrideExecution: OverrideExecution.Instead
+				},
+				onPressUtilizationSync: {
+					public: true,
+					final: true,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onUtilizationSelectionChange: {
+					public: true,
+					final: true,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onPressUtilizationGanttFullScreen: {
+					public: true,
+					final: true,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onUtilizationShapeDoubleClick: {
+					public: true,
+					final: true,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onBeforeRebindUtilizationDetails: {
+					public: true,
+					final: true,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
@@ -98,11 +123,12 @@ sap.ui.define([
 		onInit: function () {
 			this.oViewModel = this.getModel("viewModel");
 			var eventBus = sap.ui.getCore().getEventBus();
-			
+
 			this.oViewModel.setProperty("/busy", false);
 			//Binnding has changed in TemplateRenderController.js
 			eventBus.subscribe("TemplateRendererEvoPrep", "changedBinding", this._changedBinding, this);
 			eventBus.subscribe("BaseController", "refreshFullGantt", this._loadGanttData, this);
+			eventBus.subscribe("BaseController", "refreshUtilizationGantt", this._loadUtilizationGantt, this);
 
 			//Initializing GanttActions.js
 			this.GanttActions = this.getOwnerComponent().GanttActions;
@@ -110,6 +136,9 @@ sap.ui.define([
 
 			this._treeTable = this.getView().byId("idPlanningGanttTreeTable");
 			this._axisTime = this.getView().byId("idPlanningGanttZoom");
+
+			this._UtilizationAxisTime = this.getView().byId("idUtilizationGanttZoom");
+			this._UtilizationSelectView = this.getView().byId("idUtilizationSelect");
 		},
 		/**
 		 * Called when the View has been rendered (so its HTML is part of the document). Post-rendering manipulations of the HTML could be done here.
@@ -157,7 +186,8 @@ sap.ui.define([
 				oViewModel = this.getModel("viewModel");
 			if (oSource.getIcon() === "sap-icon://full-screen") {
 				oViewModel.setProperty("/layout", library.LayoutType.MidColumnFullScreen);
-				oViewModel.setProperty("/ganttFullMode", false);
+				oViewModel.setProperty("/ganttFullMode", true);
+				oViewModel.setProperty("/ganttUtilizationFullMode", false);
 				this.oViewModel.setProperty("/fullscreenGantt", false);
 				oSource.setType("Emphasized");
 			} else {
@@ -167,6 +197,7 @@ sap.ui.define([
 					oViewModel.setProperty("/layout", library.LayoutType.MidColumnFullScreen);
 				}
 				oViewModel.setProperty("/ganttFullMode", true);
+				oViewModel.setProperty("/ganttUtilizationFullMode", true);
 				this.oViewModel.setProperty("/fullscreenGantt", true);
 				oSource.setType("Default");
 			}
@@ -221,14 +252,14 @@ sap.ui.define([
 				this.showConfirmDialog(sTitle, sMsg, successFn.bind(this));
 			}
 		},
-		
+
 		/**
 		 * Copy the opened plan
 		 * */
-		 onPressCopyPrePlanHeader: function(){
-		 	var sGuid = this._oContext.getProperty("ObjectKey");
-			this.copySelectedPlan(sGuid);	
-		 },
+		onPressCopyPrePlanHeader: function () {
+			var sGuid = this._oContext.getProperty("ObjectKey");
+			this.copySelectedPlan(sGuid);
+		},
 
 		/**
 		 * show ActionSheet of status buttons
@@ -396,6 +427,90 @@ sap.ui.define([
 			this.onNavBack();
 		},
 
+		/**
+		 * On click on Sync button in Utilization Gantt Chart
+		 */
+		onPressUtilizationSync: function () {
+			this._loadUtilizationGantt();
+		},
+
+		/**
+		 * On Selection Change of View Mode in Utilization Gantt Chart 
+		 */
+		onUtilizationSelectionChange: function () {
+			this._loadUtilizationGantt();
+		},
+
+		/*On Press of Full Screen Button in Utilization Gantt Chart
+		 * @param oEvent
+		 */
+		onPressUtilizationGanttFullScreen: function (oEvent) {
+			var oSource = oEvent.getSource(),
+				oViewModel = this.getModel("viewModel");
+			if (oSource.getIcon() === "sap-icon://full-screen") {
+				oViewModel.setProperty("/layout", library.LayoutType.MidColumnFullScreen);
+				oViewModel.setProperty("/ganttUtilizationFullMode", true);
+				oViewModel.setProperty("/ganttFullMode", false);
+				this.oViewModel.setProperty("/fullscreenGantt", false);
+				oSource.setType("Emphasized");
+			} else {
+				if (oViewModel.getProperty("/fullscreen")) {
+					oViewModel.setProperty("/layout", library.LayoutType.TwoColumnsMidExpanded);
+				} else {
+					oViewModel.setProperty("/layout", library.LayoutType.MidColumnFullScreen);
+				}
+				oViewModel.setProperty("/ganttUtilizationFullMode", true);
+				oViewModel.setProperty("/ganttFullMode", true);
+				this.oViewModel.setProperty("/fullscreenGantt", true);
+				oSource.setType("Default");
+			}
+				oViewModel.setProperty("/ganttUtilization/ganttSelectionPane", "30%");
+		},
+
+		/*On Press of Shape Double Click in Utilization Gantt Chart
+		 * Displaying Utilization Details in PopOver
+		 * @param oEvent
+		 */
+		onUtilizationShapeDoubleClick: function (oEvent) {
+			var mParams = oEvent.getParameters(),
+				oShape = mParams.shape;
+				this._oUtilizationShapeContext = oShape.getBindingContext();
+			if (!this._oUtilizationPopover) {
+				Fragment.load({
+					name: "com.evorait.evosuite.evoprep.view.fragments.UtilizationDetails",
+					controller: this
+				}).then(function (pPopover) {
+					this._oUtilizationPopover = pPopover;
+					this.getView().addDependent(this._oUtilizationPopover);
+					this._oUtilizationPopover.openBy(oShape);
+				}.bind(this));
+			} else {
+				this._oUtilizationPopover.openBy(oShape);
+				sap.ui.getCore().byId("idUtilizationDetailsSmartTable").rebindTable();
+			}
+		},
+
+		/**
+		 * Utilization Details PopOver 
+		 * Passing selected shape filter
+		 */
+		onBeforeRebindUtilizationDetails: function (oEvent) {
+			var sPlanID = this.getModel().getProperty(this._oContext.getPath() + "/PLAN_ID"),
+				sKey = this._UtilizationSelectView.getSelectedKey(),
+				mBindingParams = oEvent.getParameter("bindingParams"),
+				aFilters = new Filter({
+					filters: [
+						new Filter("PLAN_ID", FilterOperator.EQ, sPlanID),
+						new Filter("CELL_START_DATE", FilterOperator.EQ, this._oUtilizationShapeContext.getProperty("BARSTART_DATE")),
+						new Filter("CELL_END_DATE", FilterOperator.EQ, this._oUtilizationShapeContext.getProperty("BAREND_DATE")),
+						new Filter("VIEW_MODE", FilterOperator.EQ, sKey),
+						new Filter("WORKCENTRE", FilterOperator.EQ, this._oUtilizationShapeContext.getProperty("WORKCENTRE"))
+					],
+					and: true
+				});
+			mBindingParams.filters = mBindingParams.filters.concat(aFilters);
+		},
+
 		/* =========================================================== */
 		/* public methods                                              */
 		/* =========================================================== */
@@ -420,6 +535,7 @@ sap.ui.define([
 					this.oViewModel.setProperty("/bDependencyCall", true);
 					this._oContext = this.getView().getBindingContext();
 					this._rebindPage();
+					this._loadUtilizationGantt();
 					this._loadGanttData();
 				}
 			}
@@ -582,6 +698,7 @@ sap.ui.define([
 			this.oViewModel.setProperty("/editMode", true);
 			this.oViewModel.setProperty("/layout", library.LayoutType.TwoColumnsMidExpanded);
 			this.oViewModel.setProperty("/fullscreen", true);
+			this._loadUtilizationGantt();
 			this._loadGanttData();
 			this.oViewModel.setProperty("/bDependencyCall", true);
 		},
@@ -708,7 +825,7 @@ sap.ui.define([
 				} else {
 					strError = parsedMessage.error.code + ": " + parsedMessage.error.message.value;
 				}
-				sFinalMessage = strError + String.fromCharCode("8226")+ "  " + sMessageDoyouWantToContinue;
+				sFinalMessage = strError + String.fromCharCode("8226") + "  " + sMessageDoyouWantToContinue;
 			} else {
 				sFinalMessage = sMessage;
 			}
@@ -732,7 +849,57 @@ sap.ui.define([
 					}.bind(this)
 				}
 			);
-		}
+		},
+
+		/**
+		 * Loading Utilization Gantt Chart
+		 **/
+		_loadUtilizationGantt: function () {
+			if (this._UtilizationSelectView) {
+				var sKey = this._UtilizationSelectView.getSelectedKey();
+				this._setUtilizationGanttFilter(sKey);
+				this.GanttActions._createUtilizationGanttHorizon(this._UtilizationAxisTime, this._oContext, sKey);
+			}
+		},
+
+		/**
+		 * set filters and read data for Utilization Gantt Chart
+		 *  @param sKey - View Mode Key
+		 **/
+		_setUtilizationGanttFilter: function (sKey) {
+			var aFilters = this._getUtilizationGanttFilters(sKey);
+			var binding = this.getView().byId("idUtilizationGanttTreeTable").getBinding("rows");
+			binding.filter(aFilters, "Application");
+
+			binding.attachDataRequested(function () {
+				this.oViewModel.setProperty("/ganttUtilization/busy", true);
+			}.bind(this));
+
+			binding.attachDataReceived(function (aData) {
+				var iCount = 0;
+				if (aData.getParameters().data) {
+					iCount = aData.getParameters().data.results.length;
+				}
+				this.oViewModel.setProperty("/ganttUtilization/dLastSync", new Date());
+				this.oViewModel.setProperty("/ganttUtilization/busy", false);
+				this.oViewModel.setProperty("/ganttUtilization/iCount", iCount);
+				this.oViewModel.setProperty("/ganttUtilization/ganttSelectionPane", "30%");
+			}.bind(this));
+		},
+
+		/**
+		 * set filters values for Utilization Gantt Chart
+		 *  @param sKey - View Mode Key
+		 * @returns [aFilters]
+		 **/
+		_getUtilizationGanttFilters: function (sKey) {
+			var aFilters = [],
+				sPath = this._oContext.getPath(),
+				sHeaderKey = this.getModel().getProperty(sPath + "/ObjectKey");
+			aFilters.push(new Filter("HeaderObjectKey", FilterOperator.EQ, sHeaderKey));
+			aFilters.push(new Filter("VIEW_MODE", FilterOperator.EQ, sKey));
+			return aFilters;
+		},
 	});
 
 });

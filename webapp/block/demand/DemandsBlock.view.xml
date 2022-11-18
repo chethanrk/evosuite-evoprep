@@ -6,7 +6,7 @@
 		persistencyKey="com.evorait.evosuite.evoprep.DetailDemandTable" enableAutoBinding="true" demandPopin="true" customData:useSmartField="true"
 		customData:useSmartToggle="true" fieldChange="onFieldChange"
 		editTogglable="{parts: [ {path:'ALLOW_FINAL'}, {path:'user>/ENABLE_ITEM_UPDATE'} ], formatter:'.formatter.showOperationEditDel'}"
-		editToggled="onPressEdit" tableBindingPath="PlanHeaderToPlanItems" requestAtLeastFields="ObjectKey,HeaderObjectKey">
+		editToggled="onPressEdit" tableBindingPath="PlanHeaderToPlanItems" initiallyVisibleFields="COMPONENT_EXISTS" requestAtLeastFields="ObjectKey,HeaderObjectKey,MATERIAL_STATUS,MATERIAL_STATUS_DESC,COMPONENT_EXISTS,MATERIAL_STATUS_ICON,MATERIAL_STATUS_STATE">
 		<!--layout data used to make the table growing but the filter bar fixed-->
 		<smartTable:layoutData>
 			<FlexItemData growFactor="1" baseSize="0%"/>
@@ -19,12 +19,37 @@
 				<Button icon="sap-icon://delete" press="onPressDeleteOperations" tooltip="{i18n>btn.remove}"
 					visible="{parts: [{path:'ALLOW_FINAL'}, {path:'user>/ENABLE_ITEM_DELETE'} ], formatter:'.formatter.showOperationEditDel'}"
 					enabled="{viewModel>/bEnableOperationDelete}"/>
+				<Button id="idOverallStatusButton" icon="sap-icon://synchronize" enabled="{viewModel>/bMaterialsDemandsBlock}" text="{i18n>btn.materialStatus}"
+					tooltip="{i18n>btn.materialStatus}" visible="{user>/ENABLE_MATERIAL_AVAILABILITY}" press="onMaterialStatusPress"/>
+				<Button id="materialInfo" text="{i18n>btn.materialInfoButton}" tooltip="{i18n>btn.materialInfoButton}" icon="sap-icon://message-information"
+					press="onMaterialInfoButtonPress" enabled="{viewModel>/bMaterialsDemandsBlock}" visible="{user>/ENABLE_MATERIAL_AVAILABILITY}">
+					<layoutData>
+						<ToolbarLayoutData shrinkable="true"/>
+					</layoutData>
+				</Button>
 				<core:ExtensionPoint name="TableExtP|PrePlanDetail|PlanItemsSet|CustomToolbar"/>
 			</Toolbar>
 		</smartTable:customToolbar>
 		<Table mode="{= ${viewModel>/bOperationTableMode} ? 'None' : 'MultiSelect'}" selectionChange="handleSelectionChangeOperation"
 			growingThreshold="100" itemPress="fnOperationClick">
-			<ColumnListItem type="Navigation"></ColumnListItem>
+			<columns>
+				<Column width="6rem">
+					<customData>
+						<core:CustomData key="p13nData" value='\{"columnKey": "MATERIAL_STATUS", "leadingProperty":"MATERIAL_STATUS", "filterProperty":"MATERIAL_STATUS", "sortProperty":"MATERIAL_STATUS", "columnIndex":"4"}'/>
+					</customData>
+					<Label text="{/PlanItemsSet/MATERIAL_STATUS/##com.sap.vocabularies.Common.v1.Label/String}"
+						tooltip="{/PlanItemsSet/MATERIAL_STATUS/##com.sap.vocabularies.Common.v1.Label/String}"/>
+				</Column>
+			</columns>
+			<ColumnListItem type="Navigation" press="onClickTableRow">
+				<cells>
+					<HBox>
+						<ObjectStatus class="sapUiTinyMargin" tooltip="{MATERIAL_STATUS_DESC}" text="{MATERIAL_STATUS_DESC}"
+							visible="{ path:'COMPONENT_EXISTS' }" icon="{MATERIAL_STATUS_ICON}"
+							state="{path:'MATERIAL_STATUS_STATE',formatter:'.formatter.getDemandState'}"/>
+					</HBox>
+				</cells>
+			</ColumnListItem>
 		</Table>
 	</smartTable:SmartTable>
 </mvc:View>

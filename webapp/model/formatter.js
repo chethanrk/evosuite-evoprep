@@ -1,12 +1,150 @@
 sap.ui.define([
 	"sap/ui/core/format/DateFormat",
 	"sap/gantt/misc/Format",
-	"com/evorait/evosuite/evoprep/model/Constants"
-], function (DateFormat, Format, Constants) {
+	"com/evorait/evosuite/evoprep/model/Constants",
+	"sap/gantt/library",
+	"com/evorait/evosuite/evoprep/assets/js/moment-with-locales.min"
+], function (DateFormat, Format, Constants, GanttLibrary, momentjs) {
 	"use strict";
 
 	var mCriticallyStates = Constants.CRITICALLYSTATES;
-
+	var TimeUnit = GanttLibrary.config.TimeUnit;
+	var oViewMapping = {
+		D: {
+			timeLine: "OneDay",
+			beginDate: moment().startOf("isoWeek").toDate(),
+			endDate: moment().endOf("isoWeek").toDate(),
+			bgDifferenceFn: function (oStartDate, oEndDate) {
+				return oEndDate.diff(oStartDate, "days");
+			},
+			bgStartDateFn: function (oDate) {
+				//start of day
+				return oDate.format("YYYYMMDD000000");
+			},
+			bgEndDateFn: function (oDate) {
+				//end of day
+				var sEnd = oDate.format("YYYYMMDD235959");
+				oDate.add(1, "days");
+				return sEnd;
+			},
+			isFuture: function (date) {
+				if (!date) {
+					return false;
+				}
+				return moment(date).isSameOrAfter(moment().format("YYYY-MM-DD"));
+			}
+		},
+		W: {
+			timeLine: "OneWeek",
+			beginDate: moment().startOf("month").toDate(),
+			endDate: moment().endOf("month").toDate(),
+			bgDifferenceFn: function (oStartDate, oEndDate) {
+				return oEndDate.diff(oStartDate, 'weeks');
+			},
+			bgStartDateFn: function (oDate) {
+				//monday of this week
+				return oDate.day(1).format("YYYYMMDD000000");
+			},
+			bgEndDateFn: function (oDate) {
+				//sunday of week
+				var sEnd = oDate.day(7).format("YYYYMMDD235959");
+				oDate.add(1, "days");
+				return sEnd;
+			},
+			isFuture: function (date) {
+				var today = moment().format("YYYY-MM-DD");
+				if (!date) {
+					return false;
+				}
+				//shape startDate is today or later or week start date or between start and end of week
+				return moment(date).isSameOrAfter(today) ||
+					moment(date).isSame(moment(today).day(1)) ||
+					moment(date).isBetween(moment(today).startOf("day"), moment(today).endOf("day"));
+			}
+		},
+		M: {
+			timeLine: "OneMonth",
+			beginDate: moment().startOf("month").subtract(1, "months").toDate(),
+			endDate: moment().endOf("month").add(2, "months").endOf("month").toDate(),
+			bgDifferenceFn: function (oStartDate, oEndDate) {
+				return oEndDate.diff(oStartDate, 'months');
+			},
+			bgStartDateFn: function (oDate) {
+				//first day of month
+				return oDate.startOf("month").format("YYYYMMDD000000");
+			},
+			bgEndDateFn: function (oDate) {
+				//last day of month
+				var sEnd = oDate.endOf("month").format("YYYYMMDD235959");
+				oDate.add(1, "days");
+				return sEnd;
+			},
+			isFuture: function (date) {
+				var today = moment().format("YYYY-MM-DD");
+				if (!date) {
+					return false;
+				}
+				//shape startDate is today or later or month start date or between start and end of month
+				return moment(date).isSameOrAfter(today) ||
+					moment(date).isSame(moment(today).startOf("month")) ||
+					moment(date).isBetween(moment(today).startOf("day"), moment(today).endOf("day"));
+			}
+		}
+	};
+	var oTimeLineOptions = {
+		"OneDay": {
+			innerInterval: {
+				unit: TimeUnit.day,
+				span: 1,
+				range: 90
+			},
+			largeInterval: {
+				unit: TimeUnit.week,
+				span: 1,
+				pattern: "ww | LLL YYYY"
+			},
+			smallInterval: {
+				unit: TimeUnit.day,
+				span: 1,
+				pattern: "EEE dd"
+			}
+		},
+		"OneWeek": {
+			innerInterval: {
+				unit: TimeUnit.week,
+				span: 1,
+				range: 150
+			},
+			largeInterval: {
+				unit: TimeUnit.month,
+				span: 1,
+				pattern: "LLLL YYYY"
+			},
+			smallInterval: {
+				unit: TimeUnit.week,
+				span: 1,
+				pattern: "ww"
+			}
+		},
+		"OneMonth": {
+			innerInterval: {
+				unit: TimeUnit.month,
+				span: 1,
+				range: 175
+			},
+			largeInterval: {
+				unit: TimeUnit.year,
+				span: 1,
+				format: "YYYY"
+			},
+			smallInterval: {
+				unit: TimeUnit.month,
+				span: 1,
+				pattern: "LLL"
+			}
+		}
+	};
+	
 	return {
 
 		/**
@@ -168,7 +306,7 @@ sap.ui.define([
 		showOperationEditDel: function (bFinal, bAllowOper) {
 			return Boolean(bFinal && bAllowOper);
 		},
-		
+
 		/**
 		 * Formatting TimeZone for Gantt Shape Dates
 		 * @param oDate
@@ -177,6 +315,29 @@ sap.ui.define([
 			var sOffsetMs = new Date(0).getTimezoneOffset() * 60 * 1000;
 			return oDate.getTime() - sOffsetMs;
 		},
+		
+		/**
+		 * get Utilization gantt zoom timeline options for 
+		 * @param {string} sKey - key from Select
+		 * @returns {object} Zoom time interval for Utilization Gantt Chart
+		 */
+		getTimeLineOptions: function (sKey) {
+			if (oViewMapping[sKey]) {
+				return oTimeLineOptions[oViewMapping[sKey].timeLine];
+			} else {
+				return oTimeLineOptions;
+			}
+		},
+		/**
+		 * format the Object Status state acording to Material_Status
+		 * @param sValue
+		 */
+		getDemandState: function (sValue) {
+			if (sValue) {
+				return sValue;
+			}
+			return "None";
+		}
 	};
 
 });

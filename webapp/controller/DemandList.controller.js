@@ -80,10 +80,15 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
+				},
+				onChangeSelectAll: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
-
+		bSelectAll: false,
 		/* =========================================================== */
 		/* Lifecycle methods                                           */
 		/* =========================================================== */
@@ -95,7 +100,6 @@ sap.ui.define([
 		 */
 		onInit: function () {
 			this.oSmartTable = this.getView().byId("demandListSmartTable");
-
 			this.oViewModel = this.getModel("viewModel");
 			this.oCreateModel = this.getModel("CreateModel");
 			this.oViewModel.setProperty("/busy", false);
@@ -148,6 +152,7 @@ sap.ui.define([
 		 */
 		goBackToPrePlans: function () {
 			this._removeOprTableSelection();
+			this.oViewModel.setProperty("/bMaterialsOperations", false);
 			this.getOwnerComponent().getRouter().navTo("PrePlanMaster");
 		},
 
@@ -163,6 +168,23 @@ sap.ui.define([
 				isEnabledPrePlanreate = true;
 			}
 			this.getModel("viewModel").setProperty("/allowPrePlanCreate", isEnabledPrePlanreate);
+
+			//Condition for Disabling Add Operations when its Select All (Later this has to be removed)
+			var bEnableAddOperations = true;
+			if (this.bSelectAll || oEvent.getParameters().rowIndex === 0) {
+				bEnableAddOperations = false;
+			}
+			this.getModel("viewModel").setProperty("/bEnableAddOperations", bEnableAddOperations);
+
+			//When it's not selected from Select All Button
+			if (!this.bSelectAll) {
+				// check enable or disable the materials status and material information button
+				if (this._returnMaterialContext(this.oSmartTable.getTable()).length > 0) {
+					this.oViewModel.setProperty("/bMaterialsOperations", true);
+				} else {
+					this.oViewModel.setProperty("/bMaterialsOperations", false);
+				}
+			}
 		},
 
 		/**
@@ -171,23 +193,40 @@ sap.ui.define([
 		 */
 		onPressCreatePrePlanButton: function (oEvent) {
 			var oTable = this.oSmartTable.getTable(),
-				aSelectedIndices = oTable.getSelectedIndices();
-
-			var oOperationData = this.oCreateModel.getData();
-			aSelectedIndices.forEach(function (iIndex) {
-				var oItem = oTable.getContextByIndex(iIndex),
-					oSelObject = oItem.getObject();
-				delete oSelObject.__metadata;
-				//validate for the duplicate
-				if (this.checkDuplicate(oOperationData.results, oSelObject.ObjectKey)) {
-					oOperationData.results.push(oSelObject);
-				}
-			}.bind(this));
+				aSelectedIndices = oTable.getSelectedIndices(),
+				oOperationData = this.oCreateModel.getData(),
+				aAllOperationsSelected = [];
+			//When Select All Button is Clicked
+			if (this.bSelectAll && aSelectedIndices.length > 100) {
+				aAllOperationsSelected = this.aAllOperations;
+				aAllOperationsSelected.forEach(function (oSelObject) {
+					delete oSelObject.__metadata;
+					//validate for the duplicate
+					if (this.checkDuplicate(oOperationData.results, oSelObject.ObjectKey)) {
+						oOperationData.results.push(oSelObject);
+					}
+				}.bind(this));
+			} else {
+				aSelectedIndices.forEach(function (iIndex) {
+					var oItem = oTable.getContextByIndex(iIndex);
+					if (oItem) {
+						var oSelObject = oItem.getObject();
+						delete oSelObject.__metadata;
+						//validate for the duplicate
+						if (this.checkDuplicate(oOperationData.results, oSelObject.ObjectKey)) {
+							oOperationData.results.push(oSelObject);
+						}
+					}
+				}.bind(this));
+			}
+			this.getView().byId("idSwitchSelectAll").setState(false);
+			this.oViewModel.setProperty("/aAllSelectedOperations", aAllOperationsSelected);
 			this.oCreateModel.refresh();
 			this._removeOprTableSelection();
 			this.getRouter().navTo("CreatePrePlan", {
 				layout: library.LayoutType.MidColumnFullScreen
 			});
+			this.bSelectAll = false; //Clearing Select All Flag	
 		},
 
 		/**
@@ -294,7 +333,14 @@ sap.ui.define([
 		 */
 		onBeforeRebindTablePlanList: function (oEvent) {
 			var mBindingParams = oEvent.getParameter("bindingParams");
-			var aFilters = [new Filter("STATUS_SHORT", FilterOperator.NE, "FINL")];
+			var aFilters = new Filter({
+				filters: [
+					new Filter("STATUS_SHORT", FilterOperator.NE, "FINL"),
+					new Filter("STATUS_SHORT", FilterOperator.NE, "ARCH")
+				],
+				and: true
+			});
+
 			mBindingParams.filters = mBindingParams.filters.concat(aFilters);
 		},
 
@@ -359,6 +405,21 @@ sap.ui.define([
 			this._removeOprTableSelection();
 		},
 
+		/**
+		 * onPress of Select All in Operation List 
+		 * All the rows data is selected from a GET call and Create Plan is allowed  
+		 * @param oEvent
+		 */
+		onChangeSelectAll: function (oEvent) {
+			if (oEvent.getSource().getState()) {
+				this.bSelectAll = true;
+				this.oSmartTable.getTable().selectAll(true);
+			} else {
+				this.bSelectAll = false;
+				this._removeOprTableSelection();
+			}
+		},
+
 		/* =========================================================== */
 		/* Private methods                                           */
 		/* =========================================================== */
@@ -379,15 +440,16 @@ sap.ui.define([
 		_validateOperationFinalStatus: function (aSelectedIndices, oTable) {
 			var bIndicator = false;
 			aSelectedIndices.forEach(function (iIndex) {
-				var oItem = oTable.getContextByIndex(iIndex),
-					oSelObject = oItem.getObject();
-				//validate for the final operations
-				if (!oSelObject.ALLOW_EDIT) {
-					bIndicator = true;
-					return;
+				var oItem = oTable.getContextByIndex(iIndex);
+				if (oItem) {
+					var oSelObject = oItem.getObject();
+					//validate for the final operations
+					if (!oSelObject.ALLOW_EDIT) {
+						bIndicator = true;
+						return;
+					}
 				}
 			}.bind(this));
-
 			return bIndicator;
 		},
 
@@ -402,8 +464,12 @@ sap.ui.define([
 				oResourceBundle.getText("msg.navigateToDetail");
 
 			var successcallback = function () {
-				this.navToDetail(this.selectedPlanObject);
-				this.selectedPlanObject = null;
+				if (this.selectedPlanObject) {
+					//update selected context
+					this.getOwnerComponent().readData(this.selectedPlanObject.getPath());
+					this.navToDetail(this.selectedPlanObject.getProperty("ObjectKey"));
+					this.selectedPlanObject = null;
+				}
 			};
 
 			var cancelCallback = function () {};

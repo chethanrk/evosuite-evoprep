@@ -1,0 +1,5 @@
+<core:FragmentDefinition xmlns="sap.ui.table" xmlns:core="sap.ui.core" xmlns:gnt2="sap.gantt.simple">
+	<gnt2:BaseRectangle shapeId="{ObjectKey}" hoverable="true" showTitle="true" tooltip="{UTILIZATION}" height="19" fill="{COLOR}"
+		title="{UTILIZATION}" time="{parts:['BARSTART_DATE','BARSTART_TIME'],formatter:'.formatter.mergeDateTime'}"
+		endTime="{parts:['BAREND_DATE','BAREND_TIME'],formatter:'.formatter.mergeDateTime'}"/>
+</core:FragmentDefinition>

@@ -144,7 +144,7 @@ sap.ui.define([
 			}
 		}
 	};
-	
+
 	return {
 
 		/**
@@ -315,7 +315,7 @@ sap.ui.define([
 			var sOffsetMs = new Date(0).getTimezoneOffset() * 60 * 1000;
 			return oDate.getTime() - sOffsetMs;
 		},
-		
+
 		/**
 		 * get Utilization gantt zoom timeline options for 
 		 * @param {string} sKey - key from Select
@@ -337,6 +337,26 @@ sap.ui.define([
 				return sValue;
 			}
 			return "None";
+		},
+
+		/**
+		 * format the Old and new values of changes for data formats
+		 * @param sThen
+		 * @param sOldVal
+		 * @param sNow
+		 * @param sNewVal
+		 * @param sField
+		 * @returns {string}
+		 */
+		formatLogValues: function (sThen, sOldVal, sNow, sNewVal, sField) {
+			if (sField.indexOf('DATE') !== -1) {
+				sOldVal = moment(sOldVal, 'YYYYMMDD').format('MMMM DD, YYYY');
+				sNewVal = moment(sNewVal, 'YYYYMMDD').format('MMMM DD, YYYY');
+			} else if (sField.indexOf('TIME') !== -1) {
+				sOldVal = moment(sOldVal, 'HHmmss').format('HH:mm:ss');
+				sNewVal = moment(sNewVal, 'HHmmss').format('HH:mm:ss');
+			}
+			return sThen + ' ' + sOldVal + '\n' + sNow + ' ' + sNewVal;
 		}
 	};
 

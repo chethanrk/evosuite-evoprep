@@ -197,6 +197,10 @@ sap.ui.define([
 				onChangeOperationSelectAll: {
 					public: true,
 					final: true
+				},
+				navToLogs: {
+					public: true,
+					final: true
 				}
 			}
 		},

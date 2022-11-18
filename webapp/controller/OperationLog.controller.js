@@ -1,6 +1,7 @@
 sap.ui.define([
-	"com/evorait/evosuite/evoprep/controller/BaseController"
-], function (BaseController) {
+	"com/evorait/evosuite/evoprep/controller/BaseController",
+	"sap/ui/core/mvc/OverrideExecution"
+], function (BaseController, OverrideExecution) {
 	"use strict";
 
 	return BaseController.extend("com.evorait.evosuite.evoprep.controller.OperationLog", {
@@ -9,7 +10,11 @@ sap.ui.define([
 			// extension can declare the public methods
 			// in general methods that start with "_" are private
 			methods: {
-
+				onCloseLog: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				}
 			}
 		},
 
@@ -25,9 +30,24 @@ sap.ui.define([
 		},
 
 		/* =========================================================== */
-		/* internal methods                                            */
+		/* Public methods                                              */
 		/* =========================================================== */
 
+		/** 
+		 * On close of operation log go back to detail page route
+		 */
+		onCloseLog: function () {
+			this.getView().unbindElement();
+			this.onNavBack();
+		},
+
+		/* =========================================================== */
+		/* Internal methods                                            */
+		/* =========================================================== */
+
+		/** 
+		 * Bind PlanItems element when route is matched
+		 */
 		_routeMatchedLogs: function (oArgs) {
 			var sKey = oArgs.getParameter("arguments").operationKey;
 			this.getView().bindElement({

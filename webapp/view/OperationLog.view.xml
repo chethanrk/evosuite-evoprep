@@ -2,7 +2,7 @@
 	controllerName="com.evorait.evosuite.evoprep.controller.OperationLog">
 	<Page title="Change Logs" class="sapUiNoContentPadding">
 		<headerContent>
-			<Button icon="sap-icon://decline" type="Default" tooltip="{i18n>btn.close}"/>
+			<Button icon="sap-icon://decline" type="Default" tooltip="{i18n>btn.close}" press="onCloseLog"/>
 		</headerContent>
 		<content>
 			<commons:Timeline id="idTimeline" sortOldestFirst="true" content="{PlanItemsToChangeLog}" showHeaderBar="false" showIcons="false"

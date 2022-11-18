@@ -350,11 +350,11 @@ sap.ui.define([
 		 */
 		formatLogValues: function (sThen, sOldVal, sNow, sNewVal, sField) {
 			if (sField.indexOf('DATE') !== -1) {
-				sOldVal = moment(sOldVal, 'YYYYMMDD').format('MMMM DD, YYYY');
-				sNewVal = moment(sNewVal, 'YYYYMMDD').format('MMMM DD, YYYY');
+				sOldVal = sOldVal ? moment(sOldVal, 'YYYYMMDD').format('MMMM DD, YYYY') : sOldVal;
+				sNewVal = sNewVal ? moment(sNewVal, 'YYYYMMDD').format('MMMM DD, YYYY') : sNewVal;
 			} else if (sField.indexOf('TIME') !== -1) {
-				sOldVal = moment(sOldVal, 'HHmmss').format('HH:mm:ss');
-				sNewVal = moment(sNewVal, 'HHmmss').format('HH:mm:ss');
+				sOldVal = sOldVal ? moment(sOldVal, 'HHmmss').format('HH:mm:ss') : sOldVal;
+				sNewVal = sNewVal ? moment(sNewVal, 'HHmmss').format('HH:mm:ss') : sNewVal;
 			}
 			return sThen + ' ' + sOldVal + '\n' + sNow + ' ' + sNewVal;
 		}

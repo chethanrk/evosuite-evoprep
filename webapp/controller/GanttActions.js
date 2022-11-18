@@ -23,37 +23,44 @@ sap.ui.define([
 		},
 
 		/**
-		 * Create Gantt Operation Payload 
+		 * Create Gantt Operation Payload for Batch Update
 		 * @{param} oPayloadData - Shape Data
 		 */
-		_prepareGanttOpeartionPayload: function (oPayloadData) {
+		_prepareGanttOpeartionPayload: function (aPayloadArray) {
+			this._oView.getModel().setDeferredGroups(["batchGanttUpdate"]);
 			return new Promise(function (resolve) {
-				var obj = {};
-				//collect all assignment properties who allowed for create
-				this._oView.getModel().getMetaModel().loaded().then(function () {
-					var oMetaModel = this._oView.getModel().getMetaModel(),
-						oEntitySet = oMetaModel.getODataEntitySet("GanttHierarchySet"),
-						oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
-						aProperty = oEntityType ? oEntityType.property : [];
-					aProperty.forEach(function (property) {
-						if (oPayloadData[property.name]) {
-							obj[property.name] = oPayloadData[property.name];
-						}
-					});
-					resolve(obj);
+				aPayloadArray.forEach(function (oPayloadData) {
+					var obj = {},
+						sPath,
+						mParameters = {
+							groupId: "batchGanttUpdate"
+						};
+					//collect all assignment properties who allowed for create
+					this._oView.getModel().getMetaModel().loaded().then(function () {
+						var oMetaModel = this._oView.getModel().getMetaModel(),
+							oEntitySet = oMetaModel.getODataEntitySet("GanttHierarchySet"),
+							oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
+							aProperty = oEntityType ? oEntityType.property : [];
+						aProperty.forEach(function (property) {
+							if (oPayloadData[property.name]) {
+								obj[property.name] = oPayloadData[property.name];
+							}
+						});
+						sPath = "/GanttHierarchySet('" + oPayloadData.ObjectKey + "')";
+						this._oView.getModel().update(sPath, oPayloadData, mParameters);
+					}.bind(this));
 				}.bind(this));
+				resolve(aPayloadArray);
 			}.bind(this));
 		},
 
 		/**
 		 * Method to Proceed to Update Gantt Operation Shapes to Backend
 		 * and refresh the Detail screen after updating successfully
-		 * @param aPath - Gantt path to be updated
-		 * @param oPayload - Opeartion Payload to be sent to backend
 		 */
-		_proceedToGanttOperationUpdate: function (sPath, oPayload) {
+		_proceedToGanttOperationUpdate: function () {
 			this._oView.getModel("viewModel").setProperty("/ganttSettings/busy", true);
-			this._updateGanttOperationCall(sPath, oPayload)
+			this._updateGanttOperationCall()
 				.then(function (oData) {
 					MessageToast.show(this._oView.getModel('i18n').getResourceBundle().getText("msg.OperationSaveSuccess"));
 					this._oView.getModel("viewModel").setProperty("/ganttSettings/busy", false);
@@ -62,18 +69,17 @@ sap.ui.define([
 					oEventBus.publish("BaseController", "refreshFullGantt", this._loadGanttData, this);
 					oEventBus.publish("BaseController", "refreshUtilizationGantt", this._loadUtilizationGantt, this);
 					this._oView.getModel("viewModel").setProperty("/bDependencyCall", true);
+					this._oView.byId("idPlanningGanttChartTable").getSelection().clear(true);
 				}.bind(this));
 		},
 
 		/**
-		 * Method to Update Gantt Operation Shapes to Backend
-		 * @param aPath - Gantt path to be updated
-		 * @param oPayload - Opeartion Payload to be sent to backend
+		 * Method for Batch Update Gantt Operation Shapes to Backend
 		 * @returns promise
 		 */
-		_updateGanttOperationCall: function (sPath, oPayload) {
+		_updateGanttOperationCall: function () {
 			return new Promise(function (resolve, reject) {
-				this._oView.getModel().update(sPath, oPayload, {
+				this._oView.getModel().submitChanges({
 					success: function (oData) {
 						resolve(oData);
 					},

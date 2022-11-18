@@ -2,13 +2,13 @@
 	<gnt2:BaseConditionalShape activeShape="{ganttModel>HIERARCHY_LEVEL}">
 		<gnt2:shapes>
 			<gnt2:BaseChevron shapeId="{ganttModel>ObjectKey}" countInBirdEye="true" hoverable="true"
-				time="{parts:['ganttModel>START_DATE','ganttModel>EARLIEST_START_TIME'],formatter:'.formatter.mergeDateTime'}" height="19" resizable="false"
+				time="{parts:['ganttModel>START_DATE','ganttModel>START_TIME'],formatter:'.formatter.mergeDateTime'}" height="19" resizable="false"
 				selectable="false" endTime="{parts:['ganttModel>END_DATE','ganttModel>END_TIME'],formatter:'.formatter.mergeDateTime'}"
-				title="{ganttModel>DESCRIPTION}" showTitle="true" tooltip="{ganttModel>DESCRIPTION}" fill="{ganttModel>COLOR}"/>
+				title="{ganttModel>GANTT_BAR_DESCRIPTION}" showTitle="true" tooltip="{ganttModel>GANTT_BAR_DESCRIPTION}" fill="{ganttModel>COLOR}"/>
 			<gnt2:BaseRectangle shapeId="{ganttModel>ObjectKey}" countInBirdEye="true" hoverable="true"
-				time="{parts:['ganttModel>START_DATE','ganttModel>EARLIEST_START_TIME'],formatter:'.formatter.mergeDateTime'}" height="19"
+				time="{parts:['ganttModel>START_DATE','ganttModel>START_TIME'],formatter:'.formatter.mergeDateTime'}" height="19"
 				endTime="{parts:['ganttModel>END_DATE','ganttModel>END_TIME'],formatter:'.formatter.mergeDateTime'}"
-				fill="{ganttModel>COLOR}" title="{ganttModel>DESCRIPTION}" showTitle="true" tooltip="{ganttModel>DESCRIPTION}"
+				fill="{ganttModel>COLOR}" title="{ganttModel>GANTT_BAR_DESCRIPTION}" showTitle="true" tooltip="{ganttModel>GANTT_BAR_DESCRIPTION}"
 				selectable="{= ${user>/ENABLE_PREPLAN_UPDATE} === 'X' &amp;&amp; ${ganttModel>READ_ONLY} === false &amp;&amp; ${viewModel>/bEnableGanttShapesEdit} === true &amp;&amp; ${ALLOW_FINAL} === true}"
 				draggable="{= ${user>/ENABLE_PREPLAN_UPDATE} === 'X' &amp;&amp; ${ganttModel>READ_ONLY} === false &amp;&amp; ${viewModel>/bEnableGanttShapesEdit} === true &amp;&amp; ${ALLOW_FINAL} === true}"
 				resizable="{= ${user>/ENABLE_PREPLAN_UPDATE} === 'X' &amp;&amp; ${ganttModel>READ_ONLY} === false &amp;&amp; ${viewModel>/bEnableGanttShapesEdit} === true &amp;&amp; ${ALLOW_FINAL} === true}"/>

@@ -241,7 +241,7 @@ sap.ui.define([
 		 */
 		oPressDetailDelete: function () {
 			var sTitle = this.getResourceBundle().getText("tit.confirmDelete"),
-				sMsg = this.getResourceBundle().getText("msg.confirmDeleteSelectedPrepLan");
+				sMsg = this.getResourceBundle().getText("msg.confirmDeletePrepLan");
 
 			if (this._oContext) {
 				var successFn = function () {

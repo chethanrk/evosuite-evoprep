@@ -341,18 +341,15 @@ sap.ui.define([
 				aDraggedShapes = oParams.draggedShapeDates,
 				oTargetContext = oParams.targetRow ? oParams.targetRow.getBindingContext("ganttModel") : null,
 				sNewStartDate = oParams.newDateTime,
-				sNewEndDate, sDateDifference, oDraggedData, sPath, sStartDateTime, sEndDateTime;
+				aShapeData = [],
+				sNewEndDate, sDateDifference, oDraggedData, sStartDateTime, sEndDateTime;
 			if (!oTargetContext) {
 				oTargetContext = oParams.targetShape.getParent().getParent().getBindingContext("ganttModel");
 			}
 			for (var i in aDraggedShapes) {
 				var sSourcePath = Utility.parseUid(i).shapeDataName,
 					sTargetPath = oTargetContext.getPath();
-				if (sSourcePath !== sTargetPath) {
-					return;
-				}
 				oDraggedData = this.getModel("ganttModel").getProperty(sSourcePath);
-				sPath = "/GanttHierarchySet('" + oDraggedData.ObjectKey + "')";
 				sStartDateTime = formatter.mergeDateTime(oDraggedData.START_DATE, oDraggedData.START_TIME);
 				sEndDateTime = formatter.mergeDateTime(oDraggedData.END_DATE, oDraggedData.END_TIME);
 				sDateDifference = moment(sEndDateTime).diff(sStartDateTime);
@@ -365,11 +362,11 @@ sap.ui.define([
 
 				this.getModel("ganttModel").setProperty(sSourcePath + "/START_DATE", sNewStartDate);
 				this.getModel("ganttModel").setProperty(sSourcePath + "/END_DATE", sNewEndDate);
-
-				this.GanttActions._prepareGanttOpeartionPayload(oDraggedData).then(function (oPayload) {
-					this.GanttActions._proceedToGanttOperationUpdate(sPath, oPayload);
-				}.bind(this));
+				aShapeData.push(oDraggedData);
 			}
+			this.GanttActions._prepareGanttOpeartionPayload(aShapeData).then(function (aPayload) {
+				this.GanttActions._proceedToGanttOperationUpdate();
+			}.bind(this));
 		},
 
 		/**
@@ -381,7 +378,7 @@ sap.ui.define([
 			var oParams = oEvent.getParameters(),
 				oRowContext = oParams.shape.getBindingContext("ganttModel"),
 				oData = this.getModel("ganttModel").getProperty(oRowContext.getPath()),
-				sPath = "/GanttHierarchySet('" + oData.ObjectKey + "')";
+				aShapeData = [];
 			//Adjusting End Date and Time after resize
 			if (oParams.newTime[0] === oParams.oldTime[0]) {
 				this.getModel("ganttModel").setProperty(oRowContext.getPath() + "/START_DATE", oData.START_DATE);
@@ -400,8 +397,9 @@ sap.ui.define([
 				this.getModel("ganttModel").setProperty(oRowContext.getPath() + "/START_TIME", oData.START_TIME);
 				oData.START_DATE = moment(oData.START_DATE).endOf('day').subtract(999, 'milliseconds').toDate();
 			}
-			this.GanttActions._prepareGanttOpeartionPayload(oData).then(function (oPayload) {
-				this.GanttActions._proceedToGanttOperationUpdate(sPath, oPayload);
+			aShapeData.push(oData);
+			this.GanttActions._prepareGanttOpeartionPayload(aShapeData).then(function (aPayload) {
+				this.GanttActions._proceedToGanttOperationUpdate();
 			}.bind(this));
 		},
 
@@ -465,7 +463,7 @@ sap.ui.define([
 				this.oViewModel.setProperty("/fullscreenGantt", true);
 				oSource.setType("Default");
 			}
-				oViewModel.setProperty("/ganttUtilization/ganttSelectionPane", "30%");
+			oViewModel.setProperty("/ganttUtilization/ganttSelectionPane", "30%");
 		},
 
 		/*On Press of Shape Double Click in Utilization Gantt Chart
@@ -475,7 +473,7 @@ sap.ui.define([
 		onUtilizationShapeDoubleClick: function (oEvent) {
 			var mParams = oEvent.getParameters(),
 				oShape = mParams.shape;
-				this._oUtilizationShapeContext = oShape.getBindingContext();
+			this._oUtilizationShapeContext = oShape.getBindingContext();
 			if (!this._oUtilizationPopover) {
 				Fragment.load({
 					name: "com.evorait.evosuite.evoprep.view.fragments.UtilizationDetails",

@@ -21,6 +21,57 @@
 		<edmx:Include Alias="UI" Namespace="com.sap.vocabularies.UI.v1"/>
 	</edmx:Reference>
 	<edmx:DataServices>
-		<Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="com.evorait.evoprep"></Schema>
+		<Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="com.evorait.evoprep">
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoprep.ComparePlanGeneral">
+				<Annotation Term="UI.Facets" Qualifier="PlanCompareTabs">
+					<Collection>
+						<Record Type="UI.CollectionFacet">
+							<PropertyValue Property="Facets">
+								<Collection>
+									<Record Type="UI.ReferenceFacet">
+										<PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#PlanCompareGeneral"/>
+									</Record>
+								</Collection>
+							</PropertyValue>
+							<Annotation Term="Core.Description" String="Form"/>
+						</Record>
+						<Record Type="UI.ReferenceFacet">
+							<PropertyValue Property="Target" AnnotationPath="@UI.LineItem"/>
+							<PropertyValue Property="com.sap.vocabularies.Common.v1.Label" String="Utilization"/>
+							<Annotation Term="Core.Description" String="Table"/>
+							<Annotation Term="Core.LongDescription" String="UtilizationTab"/>
+						</Record>
+						<Record Type="UI.ReferenceFacet">
+							<PropertyValue Property="Target" AnnotationPath="@UI.LineItem"/>
+							<PropertyValue Property="com.sap.vocabularies.Common.v1.Label" String="Operations"/>
+							<Annotation Term="Core.Description" String="Table"/>
+							<Annotation Term="Core.LongDescription" String="DurationTab"/>
+						</Record>
+					</Collection>
+				</Annotation>
+				<Annotation Term="UI.FieldGroup" Qualifier="CompareHeader">
+					<Record Type="UI.FieldGroupType">
+						<PropertyValue Property="Label" String="General"/>
+						<PropertyValue Property="Data">
+							<Collection>
+								<Record Type="UI.DataField">
+									<PropertyValue Property="Value" Path="PLAN_NAME"/>
+									<Annotation Term="Core.LongDescription" Path="PLAN_ID"/>
+								</Record>
+								<Record Type="UI.DataField">
+									<PropertyValue Property="Value" Path="STATUS_TEXT"/>
+									<Annotation Term="Org.OData.Core.V1.Description" String="Switch"/>
+								</Record>
+								<Record Type="UI.DataField">
+									<PropertyValue Property="Value" Path="START_DATE"/>
+									<Annotation Term="Core.LongDescription" Path="END_DATE"/>
+								</Record>
+							</Collection>
+						</PropertyValue>
+						<PropertyValue Property="com.sap.vocabularies.Common.v1.Label" String="General"/>
+					</Record>
+				</Annotation>
+			</Annotations>
+		</Schema>
 	</edmx:DataServices>
 </edmx:Edmx>

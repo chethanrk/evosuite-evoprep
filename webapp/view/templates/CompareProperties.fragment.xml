@@ -7,6 +7,9 @@
 				<f:GridList items="{path:'compareModel>/compareProperty',templateShareable: true}" class="sapUiResponsiveContentPadding">
 					<f:GridListItem>
 						<VBox height="100%">
+							<layoutData>
+								<FlexItemData growFactor="1" shrinkFactor="0"/>
+							</layoutData>
 							<VBox justifyContent="SpaceBetween">
 								<layoutData>
 									<FlexItemData growFactor="1" shrinkFactor="0"/>
@@ -23,8 +26,11 @@
 																<template:with path="target>Data" var="data">
 																	<template:repeat list="{data>}">
 																		<VBox alignItems="Start" class="sapUiSmallMargin">
-																			<Title text="{:= '{/' + 'ComparePlanGeneralSet' + '/' + ${path : 'data>Value/Path'} + '/##com.sap.vocabularies.Common.v1.Label/String}' }"
-																				wrapping="false" titleStyle="H5"/>
+																			<layoutData>
+																				<FlexItemData growFactor="1" shrinkFactor="0"/>
+																			</layoutData>
+																			<Text text="{:= '{/' + 'ComparePlanGeneralSet' + '/' + ${path : 'data>Value/Path'} + '/##com.sap.vocabularies.Common.v1.Label/String}' }"
+																				wrapping="false"/>
 																		</VBox>
 																	</template:repeat>
 																</template:with>
@@ -36,6 +42,9 @@
 											<template:elseif
 												test="{:= ${detailTabs>Core.Description/String} === 'Table' || ${detailTabs>Org.OData.Core.V1.Description/String} === 'Table'}">
 												<VBox class="sapUiSmallMargin">
+													<layoutData>
+														<FlexItemData growFactor="1" shrinkFactor="0"/>
+													</layoutData>
 													<template:if
 														test="{:= ${parts: [{value:'UtilizationTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameMatch'} }">
 														<template:then>

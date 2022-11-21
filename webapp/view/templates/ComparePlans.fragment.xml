@@ -7,6 +7,9 @@
 				<f:GridList items="{path:'compareModel>/compare',templateShareable: true}" class="sapUiResponsiveContentPadding">
 					<f:GridListItem>
 						<VBox height="100%">
+							<layoutData>
+								<FlexItemData growFactor="1" shrinkFactor="0"/>
+							</layoutData>
 							<VBox justifyContent="SpaceBetween">
 								<layoutData>
 									<FlexItemData growFactor="1" shrinkFactor="0"/>
@@ -17,31 +20,17 @@
 										<template:if test="{:= ${detailTabs>Core.Description/String} === 'Form' || ${detailTabs>Org.OData.Core.V1.Description/String} === 'Form'}">
 											<template:then>
 												<Panel expanded="true" width="auto" class="sapUiResponsiveMargin">
-													<template:with path="detailTabs>Facets" var="facets">
-														<template:repeat list="{facets>}">
-															<template:with path="facets>Target" helper=".AH.resolvePath" var="target">
-																<template:with path="target>Data" var="data">
-																	<template:repeat list="{data>}">
-																		<VBox alignItems="Start" class="sapUiSmallMargin">
-																			<template:if test="{:= ${path: 'data>EdmType'} === 'Edm.DateTime'}">
-																				<template:then>
-																					<Title text="{path:'data>Value/Path', formatter:'.evoAH.getCompareDate'}" titleStyle="H5"/>
-																				</template:then>
-																				<template:else>
-																					<Title text="{= '{compareModel>' + ${path : 'data>Value/Path'} + '}' }" wrapping="false" titleStyle="H5"/>
-																				</template:else>
-																			</template:if>
-																		</VBox>
-																	</template:repeat>
-																</template:with>
-															</template:with>
-														</template:repeat>
+													<template:with path="detailTabs>Facets" var="Facets">
+														<core:Fragment fragmentName="com.evorait.evosuite.evoprep.view.templates.FormTemplate" type="XML"/>
 													</template:with>
 												</Panel>
 											</template:then>
 											<template:elseif
 												test="{:= ${detailTabs>Core.Description/String} === 'Table' || ${detailTabs>Org.OData.Core.V1.Description/String} === 'Table'}">
 												<VBox class="sapUiSmallMargin">
+													<layoutData>
+														<FlexItemData growFactor="1" shrinkFactor="0"/>
+													</layoutData>
 													<template:if
 														test="{:= ${parts: [{value:'UtilizationTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameMatch'} }">
 														<template:then>

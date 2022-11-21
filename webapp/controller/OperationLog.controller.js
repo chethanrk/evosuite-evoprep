@@ -37,8 +37,9 @@ sap.ui.define([
 		 * On close of operation log go back to detail page route
 		 */
 		onCloseLog: function () {
+			var sObjectKey = this.getView().getBindingContext().getProperty('HeaderObjectKey');
+			this.navToDetail(sObjectKey);
 			this.getView().unbindElement();
-			this.onNavBack();
 		},
 
 		/* =========================================================== */

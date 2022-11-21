@@ -102,6 +102,7 @@ sap.ui.define([
 			if (sobjectKeyId) {
 				this.navToDetail(sobjectKeyId);
 			}
+			this.getModel("viewModel").setProperty("/bCopyEnabled", false); //added so that copy is disabled even after coming from different view
 		},
 
 		/**
@@ -138,9 +139,17 @@ sap.ui.define([
 		onCopyPrePlanPress: function () {
 			var oSelectedItem = this.oSmartTable.getTable().getSelectedItem(),
 				sGuid = oSelectedItem.getBindingContext().getProperty("ObjectKey");
+<<<<<<< HEAD
 			this.copySelectedPlan(sGuid, this.oSmartTable);
 			this._removeTableSelection();
 		},
+=======
+		 	this.copySelectedPlan(sGuid, this.oSmartTable);
+		 	this._removeTableSelection();
+		 	this.getModel("viewModel").setProperty("/bCopyEnabled", false);
+		 },
+		
+>>>>>>> develop
 
 		/**
 		 * Navigating to Create PrePlan View on Click of Create PrePlan Button
@@ -209,6 +218,7 @@ sap.ui.define([
 			if (this.oSmartTable) {
 				this.getModel().metadataLoaded().then(function () {
 					this.oSmartTable.rebindTable();
+					this._removeTableSelection();
 				}.bind(this));
 			}
 		},

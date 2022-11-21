@@ -928,6 +928,9 @@ sap.ui.define([
 			var sTitle = oResourceBundle.getText("xtit.confirm"),
 				sContinueAction = oResourceBundle.getText("btn.successMsgBxBtnContinueEditing"),
 				sPlanDetailAction = oResourceBundle.getText("btn.successMsgBxBtnPlanDetail"),
+				sConfirmationCopy = oResourceBundle.getText("msg.confirmCopySelectedPlan"),
+				sAcceptCopy = oResourceBundle.getText("msg.accept"),
+				sDeclineCopy = oResourceBundle.getText("msg.decline"),
 				sMsg;
 
 			var fnContinueCallBack = function () {
@@ -939,7 +942,7 @@ sap.ui.define([
 			var fnPlanDetailCallBack = function (oData) {
 				this.navToDetail(newPlanGuid);
 			};
-			this._setBusyWhileSaving(oTable, true);
+			
 			var callBackFunction = function (oData) {
 				this._setBusyWhileSaving(oTable, false);
 				sMsg = oData.Messagebap;
@@ -948,7 +951,13 @@ sap.ui.define([
 					sPlanDetailAction);
 			}.bind(this);
 
-			this.callFunctionImport(oParams, sFunctionName, "GET", callBackFunction);
+			var fnCopyPlan = function () {
+				this._setBusyWhileSaving(oTable, true);
+				this.callFunctionImport(oParams, sFunctionName, "GET", callBackFunction);
+			};
+
+			this.showConfirmDialog(sTitle, sConfirmationCopy, fnCopyPlan.bind(this), null, "None", sAcceptCopy,
+				sDeclineCopy);
 
 		},
 		/**

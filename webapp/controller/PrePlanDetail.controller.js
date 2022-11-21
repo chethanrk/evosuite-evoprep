@@ -22,17 +22,17 @@ sap.ui.define([
 			methods: {
 				onPressHeaderEdit: {
 					public: true,
-					final: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
 				onPressGanttFullScreen: {
 					public: true,
-					final: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
 				onPressCancelPrePlanHeader: {
 					public: true,
-					final: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
 				oPressDetailDelete: {
@@ -52,62 +52,62 @@ sap.ui.define([
 				},
 				onClickExpandCollapse: {
 					public: true,
-					final: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
 				onShowDependencies: {
 					public: true,
-					final: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
 				onShapeDrop: {
 					public: true,
-					final: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
 				onShapeResize: {
 					public: true,
-					final: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
 				onPressShapesEdit: {
 					public: true,
-					final: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
 				onPressSavePrePlanHeader: {
 					public: true,
-					final: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
 				navBack: {
 					public: true,
-					final: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
 				onPressUtilizationSync: {
 					public: true,
-					final: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
 				onUtilizationSelectionChange: {
 					public: true,
-					final: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
 				onPressUtilizationGanttFullScreen: {
 					public: true,
-					final: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
 				onUtilizationShapeDoubleClick: {
 					public: true,
-					final: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
 				onBeforeRebindUtilizationDetails: {
 					public: true,
-					final: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				}
 			}
@@ -242,7 +242,7 @@ sap.ui.define([
 		 */
 		oPressDetailDelete: function () {
 			var sTitle = this.getResourceBundle().getText("tit.confirmDelete"),
-				sMsg = this.getResourceBundle().getText("msg.confirmDeleteSelectedPrepLan");
+				sMsg = this.getResourceBundle().getText("msg.confirmDeletePrepLan");
 
 			if (this._oContext) {
 				var successFn = function () {

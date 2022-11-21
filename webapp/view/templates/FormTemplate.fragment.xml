@@ -13,12 +13,12 @@
 										<layoutData>
 											<FlexItemData growFactor="1" shrinkFactor="0"/>
 										</layoutData>
-										<template:if test="{:= ${path:'data>Org.OData.Core.V1.LongDescription/Path'}}">
+										<template:if test="{:= (${path:'data>Org.OData.Core.V1.LongDescription/Path'} || ${path:'data>Core.LongDescription/Path'})}">
 											<template:then>
 												<template:if test="{:= (${path: 'data>EdmType'} === 'Edm.DateTime' || ${path: 'data>EdmType'} === 'Edm.Date')}">
 													<template:then>
 														<Text wrapping="false"
-															text="{path:'data>Value/Path', formatter:'.evoAH.getCompareDate'} - {path:'data>Org.OData.Core.V1.LongDescription/Path', formatter:'.evoAH.getCompareDate'}"/>
+															text="{path:'data>Value/Path', formatter:'.evoAH.getCompareDate'} - {path:'data>Core.LongDescription/Path', formatter:'.evoAH.getCompareDate'}"/>
 													</template:then>
 													<template:elseif test="{:= (${data>Org.OData.Core.V1.Description/String} === 'Switch' || ${data>Core.Description/String} === 'Switch')}">
 														<tnt:InfoLabel text="{= '{compareModel>' + ${path : 'data>Value/Path'} + '}' }" displayOnly="true" colorScheme="5"/>
@@ -29,7 +29,7 @@
 																<FlexItemData growFactor="1" shrinkFactor="0"/>
 															</layoutData>
 															<Text text="{= '{compareModel>' + ${path : 'data>Value/Path'} + '}' }" wrapping="false"/>
-															<Text text=" ( {= '{compareModel>' + ${path : 'data>Org.OData.Core.V1.LongDescription/Path'} + '}' } ) " wrapping="false"/>
+															<Text text=" ( {= '{compareModel>' + ${path : 'data>Core.LongDescription/Path'} + '}' } ) " wrapping="false"/>
 														</HBox>
 													</template:else>
 												</template:if>

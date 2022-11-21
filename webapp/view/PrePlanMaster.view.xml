@@ -24,7 +24,7 @@
 			</f:DynamicPageHeader>
 		</f:header>
 		<f:content>
-			<smartTable:SmartTable id="idPagePrePlanSmartTable" height="100%" width="100%" entitySet="PlanHeaderSet" header="{i18n>tit.plan}"
+			<smartTable:SmartTable id="idPagePrePlanSmartTable" placeToolbarInTable="true" height="100%" width="100%" entitySet="PlanHeaderSet" header="{i18n>tit.plan}"
 				smartFilterId="idPagePrePlanSmartFilterBar" tableType="ResponsiveTable" useExportToExcel="true" useVariantManagement="true"
 				useTablePersonalisation="true" showRowCount="true" persistencyKey="com.evorait.evosuite.evoprep.PrePlanTable" enableAutoBinding="false"
 				demandPopin="true" customData:useSmartField="true" customData:useSmartToggle="true" fieldChange="onFieldChange"
@@ -46,7 +46,7 @@
 					</OverflowToolbar>
 					<core:ExtensionPoint name="TableExtP|PrePlanMaster|PlanHeaderSet|CustomToolbar"/>
 				</smartTable:customToolbar>
-				<Table id="idPageMasterPageSmartTableTable" growing="true" mode="MultiSelect" sticky="ColumnHeaders,HeaderToolbar,InfoToolbar"
+				<Table id="idPageMasterPageSmartTableTable" growing="true" mode="MultiSelect" sticky="ColumnHeaders,HeaderToolbar"
 					selectionChange="onWPrePlanListSelectionChange">
 					<columns>
 						<core:ExtensionPoint name="TableExtP|PrePlanMaster|PlanHeaderSet|CustomColumn"/>

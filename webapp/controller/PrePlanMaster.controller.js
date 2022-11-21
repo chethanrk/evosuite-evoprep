@@ -139,17 +139,11 @@ sap.ui.define([
 		onCopyPrePlanPress: function () {
 			var oSelectedItem = this.oSmartTable.getTable().getSelectedItem(),
 				sGuid = oSelectedItem.getBindingContext().getProperty("ObjectKey");
-<<<<<<< HEAD
+
 			this.copySelectedPlan(sGuid, this.oSmartTable);
 			this._removeTableSelection();
+			this.getModel("viewModel").setProperty("/bCopyEnabled", false);
 		},
-=======
-		 	this.copySelectedPlan(sGuid, this.oSmartTable);
-		 	this._removeTableSelection();
-		 	this.getModel("viewModel").setProperty("/bCopyEnabled", false);
-		 },
-		
->>>>>>> develop
 
 		/**
 		 * Navigating to Create PrePlan View on Click of Create PrePlan Button

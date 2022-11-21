@@ -95,11 +95,11 @@ sap.ui.define([
 		 * @param oAxisTimeStrategy - Gantt AxisTimeStrategy
 		 * @param oContext - Detail Page BindingContext
 		 */
-		_createGanttHorizon: function (oAxisTimeStrategy, oContext) {
+		_createGanttHorizon: function (oAxisTimeStrategy, oContext, oDateRange) {
 			var sPath = oContext.getPath(),
 				oHorizonDates;
 			if (oAxisTimeStrategy) {
-				oHorizonDates = this._getHorizonDates(sPath);
+				oHorizonDates = this._getHorizonDates(sPath, oDateRange);
 				oAxisTimeStrategy.setTotalHorizon(new sap.gantt.config.TimeHorizon({
 					startTime: oHorizonDates.totalHorizon.startDate,
 					endTime: oHorizonDates.totalHorizon.endDate
@@ -116,20 +116,27 @@ sap.ui.define([
 		 * Function to Calcualate Gantt Horizon Dates  
 		 * @param sPath 
 		 */
-		_getHorizonDates: function (sPath) {
+		_getHorizonDates: function (sPath, oDateRange) {
+
 			var sStartDate = this._oView.getModel().getProperty(sPath + "/START_DATE"),
 				sEndDate = this._oView.getModel().getProperty(sPath + "/END_DATE"),
-				sMidDate = new Date(sEndDate - (sEndDate - sStartDate) / 2),
-				oHorizonDates = {
-					visibleHorizon: {
-						startDate: moment(sMidDate).startOf("day").subtract(2, "day").toDate(),
-						endDate: moment(sMidDate).endOf("day").add(1, "day").toDate()
-					},
-					totalHorizon: {
-						startDate: moment(sStartDate).startOf("day").subtract(30, "day").toDate(),
-						endDate: moment(sEndDate).endOf("day").add(30, "day").toDate()
-					}
-				};
+				sTotalStartDate = sStartDate,
+				sTotalEndDate = sEndDate,
+				oHorizonDates;
+			if (oDateRange) {
+				sTotalStartDate = oDateRange.getDateValue();
+				sTotalEndDate = oDateRange.getSecondDateValue();
+			}
+			oHorizonDates = {
+				visibleHorizon: {
+					startDate: moment(sStartDate).startOf("day").subtract(1, "day").toDate(),
+					endDate: moment(sStartDate).endOf("day").add(1, "day").toDate()
+				},
+				totalHorizon: {
+					startDate: moment(sTotalStartDate).startOf("day").subtract(1, "day").toDate(),
+					endDate: moment(sTotalEndDate).endOf("day").add(1, "day").toDate()
+				}
+			};
 			return oHorizonDates;
 		},
 

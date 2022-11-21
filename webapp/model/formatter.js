@@ -352,7 +352,7 @@ sap.ui.define([
 				} else if (sValue === "ARCH") {
 					return "Success";
 				} else if (sValue === "FINL") {
-					return "ERROR";
+					return "Error";
 				}
 			}
 			return "None";

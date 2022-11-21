@@ -348,7 +348,7 @@ sap.ui.define([
 				if (sValue === "INPR") {
 					return "Success";
 				} else if (sValue === "NEW") {
-					return "Info";
+					return "Information";
 				} else if (sValue === "ARCH") {
 					return "Success";
 				} else if (sValue === "FINL") {

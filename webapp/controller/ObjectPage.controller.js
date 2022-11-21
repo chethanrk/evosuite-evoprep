@@ -148,7 +148,7 @@ sap.ui.define([
 				oFilters;
 
 			aPlans.forEach(function (sPlan) {
-				aFilters.push(new Filter("HeaderObjectKey", FilterOperator.EQ, sPlan));
+				aFilters.push(new Filter("ObjectKey", FilterOperator.EQ, sPlan));
 			});
 
 			oFilters = new Filter({

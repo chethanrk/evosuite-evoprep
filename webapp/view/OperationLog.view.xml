@@ -1,0 +1,20 @@
+<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:commons="sap.suite.ui.commons" xmlns:core="sap.ui.core"
+	controllerName="com.evorait.evosuite.evoprep.controller.OperationLog">
+	<Page title="Change Logs" class="sapUiNoContentPadding">
+		<headerContent>
+			<Button icon="sap-icon://decline" type="Default" tooltip="{i18n>btn.close}" press="onCloseLog"/>
+		</headerContent>
+		<content>
+			<commons:Timeline id="idTimeline" sortOldestFirst="true" content="{PlanItemsToChangeLog}" showHeaderBar="false" showIcons="false"
+				growingThreshold="0">
+				<commons:content>
+					<commons:TimelineItem id="idTemplateItem" dateTime="{CHANGE_DATETIME}" title="{i18n>txt.logTitle} {FIELDNAME}" userName="{USERNAME}">
+						<commons:embeddedControl>
+							<Text text="{parts: ['i18n>txt.then', 'OLDVALUE', 'i18n>txt.now', 'NEWVALUE', 'FIELDNAME' ], formatter:'.formatter.formatLogValues'}"></Text>
+						</commons:embeddedControl>
+					</commons:TimelineItem>
+				</commons:content>
+			</commons:Timeline>
+		</content>
+	</Page>
+</mvc:View>

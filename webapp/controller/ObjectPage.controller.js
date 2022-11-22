@@ -1,7 +1,10 @@
 sap.ui.define([
 	"com/evorait/evosuite/evoprep/controller/TemplateRenderController",
-	"sap/ui/core/mvc/OverrideExecution"
-], function (TemplateRenderController, OverrideExecution) {
+	"sap/ui/core/mvc/OverrideExecution",
+	"sap/ui/model/Filter",
+	"sap/ui/model/FilterOperator",
+	"sap/base/util/deepClone"
+], function (TemplateRenderController, OverrideExecution, Filter, FilterOperator, deepClone) {
 	"use strict";
 
 	return TemplateRenderController.extend("com.evorait.evosuite.evoprep.controller.ObjectPage", {
@@ -111,7 +114,7 @@ sap.ui.define([
 			this.getOwnerComponent().oSystemInfoProm.then(function () {
 				this._onRouteMatched(sViewName, "PlanHeaderSet", mParams);
 				this._getGanttLineItems(sEntitySet);
-				this._getUtilizationGanttLineItems();
+				this._getUtilizationGanttLineItems("WorkCenterSet");
 			}.bind(this));
 		},
 
@@ -119,24 +122,63 @@ sap.ui.define([
 		 * pre plan compare page
 		 */
 		_setPrePlanComparePageInfo: function (sRouteName, oArgs) {
-			oArgs.plan = "00000000000000000005";
-			this.getModel("viewModel").setProperty("/layout", oArgs.layout);
-			var sViewName = "com.evorait.evosuite.evoprep.view.templates.PrePlanCompare#Plans",
-				mParams = {
-					ObjectKey: oArgs.plan
-				};
+			var aPlans = JSON.parse(oArgs.plans),
+				sViewName = "";
 
-			if (oArgs.plan) {
-				sViewName = "com.evorait.evosuite.evoprep.view.templates.PrePlanCompare#Plans" + oArgs.plan;
-				this.getModel("templateProperties").setProperty("/annotationPath", {
-					entitySet: "PlanHeaderSet",
-					path: "com.sap.vocabularies.UI.v1.Facets#PrePlanCompareTabs_" + oArgs.plan,
-					headerPath: "com.sap.vocabularies.UI.v1.HeaderFacets#PrePlanCompareHeader_" + oArgs.plan
-				});
-			}
-			//wait for backend request
-			this.getOwnerComponent().oSystemInfoProm.then(function () {
-				this._onRouteMatched(sViewName, "PlanHeaderSet", mParams);
+			this.getModel("viewModel").setProperty("/layout", oArgs.layout);
+			sViewName = "com.evorait.evosuite.evoprep.view.templates.PrePlanCompare#Plans" + new Date().getTime();
+
+			this.getModel("templateProperties").setProperty("/annotationPath", {
+				entitySet: "ComparePlanGeneralSet",
+				path: "com.sap.vocabularies.UI.v1.Facets#PlanCompareTabs",
+				headerPath: "com.sap.vocabularies.UI.v1.HeaderFacets#CompareHeader"
+			});
+
+			this._getCompareData(aPlans, sViewName);
+
+		},
+
+		/**
+		 * Get compare details with filter
+		 * @[param] aPlans - array of selected plan 
+		 * @ sViewName - sViewName view to navigate
+		 */
+		_getCompareData: function (aPlans, sViewName) {
+			var aFilters = [],
+				oFilters;
+
+			aPlans.forEach(function (sPlan) {
+				aFilters.push(new Filter("ObjectKey", FilterOperator.EQ, sPlan));
+			});
+
+			oFilters = new Filter({
+				filters: aFilters,
+				and: false
+			});
+			this.getModel("viewModel").setProperty("/busy", true);
+			this.getOwnerComponent().readData("/ComparePlanGeneralSet", [oFilters], {
+				"$expand": "PlanCmprGeneralToPlanCmprOperation,PlanCmprGeneralToPlanCmprWorkCenter"
+			}).then(function (data) {
+				if (data && data.results) {
+					data.results = this.formatTableData(data.results);
+
+					this.getModel("compareModel").setProperty("/compare", data.results);
+					this.getModel("compareModel").setProperty("/compareProperty", [data.results[0]]);
+
+					this.getModel("compareModel").setProperty("/entitySet", "ComparePlanGeneralSet");
+					this.getModel("viewModel").setProperty("/fullscreenGantt", false);
+					this.getModel("viewModel").setProperty("/busy", false);
+
+					this._getCompareOPLineItems("ComparePlanOperationSet");
+					this._getCompareWCLineItems("ComparePlanWorkcenterSet");
+
+					this._onRouteMatched(sViewName, "ComparePlanGeneralSet");
+				}
+
+			}.bind(this)).catch(function (oError) {
+				this.getModel("compareModel").setProperty("/compare", []);
+				this.getModel("compareModel").setProperty("/compareProperty", []);
+				this._onRouteMatched(sViewName, "ComparePlanGeneralSet");
 			}.bind(this));
 		},
 
@@ -210,9 +252,8 @@ sap.ui.define([
 		/* get line item from Utilization Gantt entityset 
 		 * @private
 		 */
-		_getUtilizationGanttLineItems: function () {
-			var sEntitySet = "WorkCenterSet",
-				oTempModel = this.getModel("templateProperties"),
+		_getUtilizationGanttLineItems: function (sEntitySet) {
+			var oTempModel = this.getModel("templateProperties"),
 				oModel = this.getModel();
 
 			oTempModel.setProperty("/ganttUtilizationConfigs", {});
@@ -229,5 +270,135 @@ sap.ui.define([
 				}
 			}.bind(this));
 		},
+        
+        /**
+		 * Change logs page
+		 */
+		_setChangeLogsPageInfo: function (sRouteName, oArgs) {
+			this.getModel("viewModel").setProperty("/layout", oArgs.layout);
+			this._setPrePlanDetailPageInfo(sRouteName, oArgs);
+		},
+        
+        /* get line item from compare entityset 
+		 * @private
+		 */
+		_getCompareOPLineItems: function (sEntitySet) {
+			var oTempModel = this.getModel("templateProperties"),
+				oModel = this.getModel();
+
+			oTempModel.setProperty("/OperationConfigs", {});
+			oTempModel.setProperty("/OperationConfigs/entitySet", sEntitySet);
+
+			//collect all tab IDs
+			oModel.getMetaModel().loaded().then(function () {
+				var oMetaModel = oModel.getMetaModel(),
+					oEntitySet = oMetaModel.getODataEntitySet(sEntitySet),
+					oEntityType = oMetaModel.getODataEntityType(oEntitySet.entityType),
+					aLineItems = oEntityType["com.sap.vocabularies.UI.v1.LineItem"];
+				if (aLineItems) {
+					oTempModel.setProperty("/OperationConfigs/lineItems", aLineItems);
+				}
+			}.bind(this));
+		},
+
+		/* get line item from compare entityset 
+		 * @private
+		 */
+		_getCompareWCLineItems: function (sEntitySet) {
+			var oTempModel = this.getModel("templateProperties"),
+				oModel = this.getModel();
+
+			oTempModel.setProperty("/WorkcenterConfigs", {});
+			oTempModel.setProperty("/WorkcenterConfigs/entitySet", sEntitySet);
+
+			//collect all tab IDs
+			oModel.getMetaModel().loaded().then(function () {
+				var oMetaModel = oModel.getMetaModel(),
+					oEntitySet = oMetaModel.getODataEntitySet(sEntitySet),
+					oEntityType = oMetaModel.getODataEntityType(oEntitySet.entityType),
+					aLineItems = oEntityType["com.sap.vocabularies.UI.v1.LineItem"];
+				if (aLineItems) {
+					oTempModel.setProperty("/WorkcenterConfigs/lineItems", aLineItems);
+				}
+			}.bind(this));
+		},
+
+		/**
+		 * Format the original data according to compare screen
+		 * @[param] - aData data to be proccess
+		 * @return [aMain] - formatted data
+		 */
+		formatTableData: function (aData) {
+			var aMain = [];
+			aData.forEach(function (oItem) {
+				var aOpr = [],
+					aWctr = [],
+					oItemCopy = deepClone(oItem);
+				//copy valid data to the plan
+				aOpr = deepClone(oItem.PlanCmprGeneralToPlanCmprOperation.results);
+				aWctr = deepClone(oItem.PlanCmprGeneralToPlanCmprWorkCenter.results);
+
+				aData.forEach(function (oPlanItem) {
+					if (oItem.ObjectKey !== oPlanItem.ObjectKey) {
+						var aOprRes = deepClone(oPlanItem.PlanCmprGeneralToPlanCmprOperation.results);
+						var aWcrRes = deepClone(oPlanItem.PlanCmprGeneralToPlanCmprWorkCenter.results);
+						//copy additional operations data to the plan
+						aOprRes.forEach(function (oInnerData) {
+							if (this._findOperationObjectToInsert(aOpr, oInnerData)) {
+								oInnerData.SUM_OPR_DURATION = "-";
+								aOpr.push(oInnerData);
+							}
+						}.bind(this));
+						//copy additional utilization(workcentre and empty week) data to the plan
+						aWcrRes.forEach(function (oInnerData) {
+							if (this._findObjectToInsert(aWctr, oInnerData)) {
+								oInnerData.UTILIZATION = "-";
+								aWctr.push(oInnerData);
+							}
+						}.bind(this));
+					}
+				}.bind(this));
+				//Prepare new formatted data ina array
+				oItemCopy.PlanCmprGeneralToPlanCmprOperation.results = deepClone(aOpr);
+				oItemCopy.PlanCmprGeneralToPlanCmprWorkCenter.results = deepClone(aWctr);
+				aMain.push(oItemCopy);
+			}.bind(this));
+			return aMain;
+		},
+
+		/**
+		 * find the different objects in the array
+		 * @param[aData] plan specific data
+		 * @param{oItem} other plan items
+		 * @return boolean
+		 */
+		_findObjectToInsert: function (aData, oItem) {
+			var bValidate = true;
+			aData.forEach(function (oDataItem) {
+
+				if (oDataItem.PLAN_ID !== oItem.PLAN_ID && oDataItem.WORKCENTRE === oItem.WORKCENTRE && oDataItem.MODE === oItem.MODE &&
+					bValidate) {
+					bValidate = false;
+				}
+			});
+			return bValidate;
+		},
+
+		/**
+		 * find the different objects in the array
+		 * @param[aData] plan specific data
+		 * @param{oItem} other plan items
+		 * @return boolean
+		 */
+		_findOperationObjectToInsert: function (aData, oItem) {
+			var bValidate = true;
+			aData.forEach(function (oDataItem) {
+
+				if (oDataItem.PLAN_ID !== oItem.PLAN_ID && oDataItem.WORKCENTRE === oItem.WORKCENTRE && bValidate) {
+					bValidate = false;
+				}
+			});
+			return bValidate;
+		}
 	});
 });

@@ -103,7 +103,8 @@ sap.ui.define([
 				},
 				onPressClose: {
 					public: true,
-					final: true
+					final: false,
+					overrideExecution: OverrideExecution.after
 				},
 				getAllSmartForms: {
 					public: true,
@@ -195,6 +196,10 @@ sap.ui.define([
 					final: true
 				},
 				onChangeOperationSelectAll: {
+					public: true,
+					final: true
+				},
+				navToLogs: {
 					public: true,
 					final: true
 				}
@@ -993,6 +998,19 @@ sap.ui.define([
 				this.bOperationSelectAll = false;
 				oTable.removeSelections();
 			}
+		},
+
+		/**
+		 * Route to Change logs view
+		 * @param sObjectKey - For GUID Plan Items, 
+		 * @param sHeaderKeyId - For GUID Plan Header
+		 */
+		navToLogs: function (sObjectKey, sHeaderKeyId) {
+			this.getRouter().navTo("ChangeLogs", {
+				layout: library.LayoutType.ThreeColumnsMidExpanded,
+				operationKey: sObjectKey,
+				plan: sHeaderKeyId
+			});
 		},
 
 		/* =========================================================== */

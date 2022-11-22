@@ -1,0 +1,131 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:layout="sap.ui.layout" xmlns:f="sap.f"
+	xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+	xmlns:template="http://schemas.sap.com/sapui5/extension/sap.ui.core.template/1">
+	<template:alias name=".AH" value="sap.ui.model.odata.AnnotationHelper">
+		<template:alias name=".evoAH" value="com.evorait.evosuite.evoprep.model.AnnotationHelper">
+			<template:with path="templateProperties>/" var="tempProps">
+				<f:GridList items="{path:'compareModel>/compareProperty',templateShareable: true}" class="sapUiResponsiveContentPadding">
+					<f:GridListItem>
+						<VBox height="100%">
+							<layoutData>
+								<FlexItemData growFactor="1" shrinkFactor="0"/>
+							</layoutData>
+							<VBox justifyContent="SpaceBetween">
+								<layoutData>
+									<FlexItemData growFactor="1" shrinkFactor="0"/>
+								</layoutData>
+								<template:with path="templateProperties>/annotationPath"
+									helper="com.evorait.evosuite.evoprep.model.AnnotationHelper.resolveObjectContentPath" var="detailTabs">
+									<template:repeat list="{detailTabs>}">
+										<template:if test="{:= ${detailTabs>Core.Description/String} === 'Form' || ${detailTabs>Org.OData.Core.V1.Description/String} === 'Form'}">
+											<template:then>
+												<Panel expanded="true" width="auto" class="sapUiResponsiveMargin">
+													<template:with path="detailTabs>Facets" var="facets">
+														<template:repeat list="{facets>}">
+															<template:with path="facets>Target" helper=".AH.resolvePath" var="target">
+																<template:with path="target>Data" var="data">
+																	<template:repeat list="{data>}">
+																		<VBox alignItems="Start" class="sapUiSmallMargin">
+																			<layoutData>
+																				<FlexItemData growFactor="1" shrinkFactor="0"/>
+																			</layoutData>
+																			<Text text="{:= '{/' + 'ComparePlanGeneralSet' + '/' + ${path : 'data>Value/Path'} + '/##com.sap.vocabularies.Common.v1.Label/String}' }"
+																				wrapping="false"/>
+																		</VBox>
+																	</template:repeat>
+																</template:with>
+															</template:with>
+														</template:repeat>
+													</template:with>
+												</Panel>
+											</template:then>
+											<template:elseif
+												test="{:= ${detailTabs>Core.Description/String} === 'Table' || ${detailTabs>Org.OData.Core.V1.Description/String} === 'Table'}">
+												<VBox class="sapUiSmallMargin">
+													<layoutData>
+														<FlexItemData growFactor="1" shrinkFactor="0"/>
+													</layoutData>
+													<template:if
+														test="{:= ${parts: [{value:'UtilizationTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameMatch'} }">
+														<template:then>
+															<Table growing="true"
+																items="{path:'compareModel>PlanCmprGeneralToPlanCmprWorkCenter/results',templateShareable: true,sorter : [{ path: 'WORKCENTRE', descending: false },{ path: 'MODE', descending: false }]}"
+																headerText="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}">
+																<columns>
+																	<template:repeat list="{path:'tempProps>/WorkcenterConfigs/lineItems'}" var="lineItem">
+																		<Column demandPopin="true">
+																			<Text
+																				text="{:= '{/' + ${tempProps>/WorkcenterConfigs/entitySet} + '/' + ${lineItem>Value/Path} + '/##com.sap.vocabularies.Common.v1.Label/String}' }"
+																				wrapping="false"/>
+																		</Column>
+																	</template:repeat>
+																	<Column demandPopin="true" hAlign="Center">
+																		<Text text="{:= '{/' + ${tempProps>/WorkcenterConfigs/entitySet} + '/' + 'MODE' + '/##com.sap.vocabularies.Common.v1.Label/String}' }"
+																			wrapping="false"/>
+																	</Column>
+																</columns>
+																<items>
+																	<ColumnListItem>
+																		<cells>
+																			<template:repeat list="{path:'tempProps>/WorkcenterConfigs/lineItems/'}" var="lineItem">
+																				<template:if test="{:= ${path: 'lineItem>EdmType'} === 'Edm.Date'}">
+																					<template:then>
+																						<Text text="{path:'lineItem>Value/Path', formatter:'.evoAH.getOperationDate'}" wrapping="false"/>
+																					</template:then>
+																					<template:else>
+																						<Text text="{= '{compareModel>' + ${path : 'lineItem>Value/Path'} + '}' }" wrapping="false" visible="{= ${compareModel>MODE} === ''}"/>
+																					</template:else>
+																				</template:if>
+																			</template:repeat>
+																			<Text text="W-{compareModel>MODE}" visible="{= ${compareModel>MODE} !== ''}"/>
+																		</cells>
+																	</ColumnListItem>
+																</items>
+															</Table>
+														</template:then>
+														<template:elseif
+															test="{:= ${parts: [{value:'DurationTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameMatch'} }">
+															<Table growing="true"
+																items="{path:'compareModel>PlanCmprGeneralToPlanCmprOperation/results',templateShareable: true,sorter : { path : 'PLAN_ID' }}"
+																headerText="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}">
+																<columns>
+																	<template:repeat list="{path:'tempProps>/OperationConfigs/lineItems'}" var="lineItem">
+																		<Column demandPopin="true">
+																			<Text
+																				text="{:= '{/' + ${tempProps>/OperationConfigs/entitySet} + '/' + ${lineItem>Value/Path} + '/##com.sap.vocabularies.Common.v1.Label/String}' }"
+																				wrapping="false"/>
+																		</Column>
+																	</template:repeat>
+																</columns>
+																<items>
+																	<ColumnListItem>
+																		<cells>
+																			<template:repeat list="{path:'tempProps>/OperationConfigs/lineItems/'}" var="lineItem">
+																				<template:if test="{:= ${path: 'lineItem>EdmType'} === 'Edm.Date'}">
+																					<template:then>
+																						<Text text="{path:'lineItem>Value/Path', formatter:'.evoAH.getOperationDate'}" wrapping="false"/>
+																					</template:then>
+																					<template:else>
+																						<Text text="{= '{compareModel>' + ${path : 'lineItem>Value/Path'} + '}' }" wrapping="false"/>
+																					</template:else>
+																				</template:if>
+																			</template:repeat>
+																		</cells>
+																	</ColumnListItem>
+																</items>
+															</Table>
+														</template:elseif>
+													</template:if>
+												</VBox>
+											</template:elseif>
+										</template:if>
+									</template:repeat>
+								</template:with>
+							</VBox>
+						</VBox>
+					</f:GridListItem>
+				</f:GridList>
+			</template:with>
+		</template:alias>
+	</template:alias>
+</core:FragmentDefinition>

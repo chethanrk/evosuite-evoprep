@@ -114,6 +114,11 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
+				},
+				onPlanningGanttChangeDateRange: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
@@ -127,6 +132,7 @@ sap.ui.define([
 		 */
 		onInit: function () {
 			this.oViewModel = this.getModel("viewModel");
+			this.oViewModel.setProperty("/busy", false);
 			var eventBus = sap.ui.getCore().getEventBus();
 
 			this.oViewModel.setProperty("/busy", false);
@@ -500,6 +506,7 @@ sap.ui.define([
 		/**
 		 * Utilization Details PopOver 
 		 * Passing selected shape filter
+		 * @param oEvent
 		 */
 		onBeforeRebindUtilizationDetails: function (oEvent) {
 			var sPlanID = this.getModel().getProperty(this._oContext.getPath() + "/PLAN_ID"),
@@ -516,6 +523,29 @@ sap.ui.define([
 					and: true
 				});
 			mBindingParams.filters = mBindingParams.filters.concat(aFilters);
+		},
+
+		/**
+		 * on changing Graphic Planning DateRange
+		 * Updating Gantt Chart Horizon
+		 * @param oEvent
+		 */
+		onPlanningGanttChangeDateRange: function (oEvent) {
+			var oSource = oEvent.getSource(),
+				dStartDate = oSource.getDateValue(),
+				dEndDate = oSource.getSecondDateValue(),
+				dPlanStartDate = this.getModel().getProperty(this._oContext.getPath() + "/START_DATE"),
+				dPlanEndDate = this.getModel().getProperty(this._oContext.getPath() + "/END_DATE"),
+				bCheckStartDate = dPlanStartDate < dEndDate && dPlanStartDate > dStartDate,
+				bCheckEndDate = dPlanEndDate < dEndDate && dPlanEndDate > dStartDate;
+			//Condition to check if the selected date range included Plan Start and End Dates or not
+			if (!bCheckStartDate && !bCheckEndDate) {
+				var sMsg = this.getResourceBundle().getText("msg.ganttDateCheck");
+				this.showMessageToast(sMsg);
+				oSource.setDateValue(dPlanStartDate);
+				oSource.setSecondDateValue(dPlanEndDate);
+			}
+			this.GanttActions._createGanttHorizon(this._axisTime, this._oContext, oSource);
 		},
 
 		/* =========================================================== */
@@ -538,9 +568,8 @@ sap.ui.define([
 				}
 
 				if (oData.viewNameId === sViewName) {
-					this.oViewModel.setProperty("/bShowDependencies", false); //Disabling Dependencies in Graphic Planning GanttChart
-					this.oViewModel.setProperty("/bDependencyCall", true);
 					this._oContext = this.getView().getBindingContext();
+					this._resetGlobalValues(); //Called to reset all the global values
 					this._rebindPage();
 					this._loadUtilizationGantt();
 					this._loadGanttData();
@@ -907,6 +936,19 @@ sap.ui.define([
 			aFilters.push(new Filter("VIEW_MODE", FilterOperator.EQ, sKey));
 			return aFilters;
 		},
+
+		/**
+		 * To reset all the global values after each navigation
+		 **/
+		_resetGlobalValues: function () {
+			this.oViewModel.setProperty("/bShowDependencies", false); //Disabling Dependencies in Graphic Planning GanttChart
+			this.oViewModel.setProperty("/bDependencyCall", true);
+			this.oViewModel.setProperty("/ganttSettings/sStartDate", this.getModel().getProperty(this._oContext.getPath() + "/START_DATE"));
+			this.oViewModel.setProperty("/ganttSettings/sEndDate", this.getModel().getProperty(this._oContext.getPath() + "/END_DATE"));
+			if (this._UtilizationSelectView) {
+				this._UtilizationSelectView.setSelectedKey(this.getModel("user").getProperty("/DEFAULT_VIEW_MODE"));
+			}
+		}
 	});
 
 });

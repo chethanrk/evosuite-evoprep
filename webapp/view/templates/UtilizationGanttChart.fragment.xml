@@ -14,7 +14,7 @@
 								<Label
 									text="{i18n>lbl.lastSyn} {path:'viewModel>/ganttUtilization/dLastSync', type:'sap.ui.model.type.DateTime', formatOptions : { style:'medium'}}"/>
 								<Text text="|"/>
-								<Select id="idUtilizationSelect" selectedKey="{user>/DEFAULT_VIEW_MODE}" forceSelection="true" change="onUtilizationSelectionChange">
+								<Select id="idUtilizationSelect" forceSelection="true" change="onUtilizationSelectionChange">
 									<core:Item key="D" text="{i18n>lbl.daily}"/>
 									<core:Item key="W" text="{i18n>lbl.weekly}"/>
 									<core:Item key="M" text="{i18n>lbl.monthly}"/>

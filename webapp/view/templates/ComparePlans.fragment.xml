@@ -1,0 +1,86 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:layout="sap.ui.layout" xmlns:f="sap.f"
+	xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+	xmlns:template="http://schemas.sap.com/sapui5/extension/sap.ui.core.template/1">
+	<template:alias name=".AH" value="sap.ui.model.odata.AnnotationHelper">
+		<template:alias name=".evoAH" value="com.evorait.evosuite.evoprep.model.AnnotationHelper">
+			<template:with path="templateProperties>/" var="tempProps">
+				<f:GridList items="{path:'compareModel>/compare',templateShareable: true}" class="sapUiResponsiveContentPadding">
+					<f:GridListItem>
+						<VBox height="100%">
+							<layoutData>
+								<FlexItemData growFactor="1" shrinkFactor="0"/>
+							</layoutData>
+							<VBox justifyContent="SpaceBetween">
+								<layoutData>
+									<FlexItemData growFactor="1" shrinkFactor="0"/>
+								</layoutData>
+								<template:with path="templateProperties>/annotationPath"
+									helper="com.evorait.evosuite.evoprep.model.AnnotationHelper.resolveObjectContentPath" var="detailTabs">
+									<template:repeat list="{detailTabs>}">
+										<template:if test="{:= ${detailTabs>Core.Description/String} === 'Form' || ${detailTabs>Org.OData.Core.V1.Description/String} === 'Form'}">
+											<template:then>
+												<Panel expanded="true" width="auto" class="sapUiResponsiveMargin">
+													<template:with path="detailTabs>Facets" var="Facets">
+														<core:Fragment fragmentName="com.evorait.evosuite.evoprep.view.templates.FormTemplate" type="XML"/>
+													</template:with>
+												</Panel>
+											</template:then>
+											<template:elseif
+												test="{:= ${detailTabs>Core.Description/String} === 'Table' || ${detailTabs>Org.OData.Core.V1.Description/String} === 'Table'}">
+												<VBox class="sapUiSmallMargin">
+													<layoutData>
+														<FlexItemData growFactor="1" shrinkFactor="0"/>
+													</layoutData>
+													<template:if
+														test="{:= ${parts: [{value:'UtilizationTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameMatch'} }">
+														<template:then>
+															<Table growing="true"
+																items="{path:'compareModel>PlanCmprGeneralToPlanCmprWorkCenter/results',templateShareable: true, sorter : [{ path: 'WORKCENTRE', descending: false },{ path: 'MODE', descending: false }]}"
+																headerText="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}">
+																<columns>
+																	<Column demandPopin="true" hAlign="Center">
+																		<Text text="{/ComparePlanWorkcenterSet/UTILIZATION/##com.sap.vocabularies.Common.v1.Label/String}"/>
+																	</Column>
+																</columns>
+																<items>
+																	<ColumnListItem>
+																		<cells>
+																			<Title text="{compareModel>UTILIZATION}" titleStyle="{= ${compareModel>MODE} !== ''? 'H6':'H4'}"/>
+																		</cells>
+																	</ColumnListItem>
+																</items>
+															</Table>
+														</template:then>
+														<template:elseif
+															test="{:= ${parts: [{value:'DurationTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameMatch'} }">
+															<Table growing="true"
+																items="{path:'compareModel>PlanCmprGeneralToPlanCmprOperation/results',templateShareable: true, sorter : { path: 'PLAN_ID', descending: false }}"
+																headerText="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}">
+																<columns>
+																	<Column demandPopin="true" hAlign="Center">
+																		<Text text="{/ComparePlanOperationSet/SUM_OPR_DURATION/##com.sap.vocabularies.Common.v1.Label/String}"/>
+																	</Column>
+																</columns>
+																<items>
+																	<ColumnListItem>
+																		<cells>
+																			<Text text="{compareModel>SUM_OPR_DURATION}"/>
+																		</cells>
+																	</ColumnListItem>
+																</items>
+															</Table>
+														</template:elseif>
+													</template:if>
+												</VBox>
+											</template:elseif>
+										</template:if>
+									</template:repeat>
+								</template:with>
+							</VBox>
+						</VBox>
+					</f:GridListItem>
+				</f:GridList>
+			</template:with>
+		</template:alias>
+	</template:alias>
+</core:FragmentDefinition>

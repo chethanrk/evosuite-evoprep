@@ -11,6 +11,8 @@
 						<gnt2:ContainerToolbar id="idGanttChartContainerToolbar" alignCustomContentToRight="true" style="Clear">
 							<gnt2:content>
 								<ToolbarSpacer/>
+								<DateRangeSelection id="idPlanningGanttDateRange" width="21%" dateValue="{viewModel>/ganttSettings/sStartDate}" secondDateValue="{viewModel>/ganttSettings/sEndDate}"
+									change="onPlanningGanttChangeDateRange" enabled="true"/>
 								<core:ExtensionPoint name="GanttExtP|PlanningGantt|GanttHierarchySet|ContainerToolbar|Before"/>
 								<Button text="{= ${viewModel>/bShowDependencies} === false ? ${i18n>xbut.showDependencies} : ${i18n>xbut.hideDependencies}}"
 									visible="{= ${user>/ENABLE_HIDE_DEPENDENCY} === 'X'}" press="onShowDependencies"

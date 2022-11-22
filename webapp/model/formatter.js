@@ -340,6 +340,26 @@ sap.ui.define([
 		},
 
 		/**
+		 * format the Old and new values of changes for data formats
+		 * @param sThen
+		 * @param sOldVal
+		 * @param sNow
+		 * @param sNewVal
+		 * @param sField
+		 * @returns {string}
+		 */
+		formatLogValues: function (sThen, sOldVal, sNow, sNewVal, sField) {
+			if (sField.indexOf('DATE') !== -1) {
+				sOldVal = sOldVal ? moment(sOldVal, 'YYYYMMDD').format('MMMM DD, YYYY') : sOldVal;
+				sNewVal = sNewVal ? moment(sNewVal, 'YYYYMMDD').format('MMMM DD, YYYY') : sNewVal;
+			} else if (sField.indexOf('TIME') !== -1) {
+				sOldVal = sOldVal ? moment(sOldVal, 'HHmmss').format('HH:mm:ss') : sOldVal;
+				sNewVal = sNewVal ? moment(sNewVal, 'HHmmss').format('HH:mm:ss') : sNewVal;
+			}
+			return sThen + ' ' + sOldVal + '\n' + sNow + ' ' + sNewVal;
+		},
+        
+        /**
 		 * format the plan status acording state
 		 * @param sValue
 		 */

@@ -11,8 +11,11 @@
 						<gnt2:ContainerToolbar id="idGanttChartContainerToolbar" alignCustomContentToRight="true" style="Clear">
 							<gnt2:content>
 								<ToolbarSpacer/>
+								<DateRangeSelection id="idPlanningGanttDateRange" width="21%" dateValue="{viewModel>/ganttSettings/sStartDate}" secondDateValue="{viewModel>/ganttSettings/sEndDate}"
+									change="onPlanningGanttChangeDateRange" enabled="true"/>
 								<core:ExtensionPoint name="GanttExtP|PlanningGantt|GanttHierarchySet|ContainerToolbar|Before"/>
-								<Button text="{= ${viewModel>/bShowDependencies} === false ? ${i18n>xbut.showDependencies} : ${i18n>xbut.hideDependencies}}" visible="{= ${user>/ENABLE_HIDE_DEPENDENCY} === 'X'}" press="onShowDependencies"
+								<Button text="{= ${viewModel>/bShowDependencies} === false ? ${i18n>xbut.showDependencies} : ${i18n>xbut.hideDependencies}}"
+									visible="{= ${user>/ENABLE_HIDE_DEPENDENCY} === 'X'}" press="onShowDependencies"
 									tooltip="{= ${viewModel>/bShowDependencies} === false ? ${i18n>xbut.showDependencies} : ${i18n>xbut.hideDependencies}}"/>
 								<Text text="|"/>
 								<Button icon="sap-icon://edit" tooltip="{i18n>xbut.edit}"
@@ -25,10 +28,10 @@
 							</gnt2:legendContainer>
 						</gnt2:ContainerToolbar>
 					</gnt2:toolbar>
-					<gnt2:GanttChartWithTable id="idPlanningGanttChartTable" shapeSelectionMode="MultiWithKeyboard" dragOrientation="Horizontal" shapePress="onShapePress" ghostAlignment="Start"
-						adhocLineLayer="Bottom" nowLineInUTC="false" dragStart="onShapeDragStart" shapeDrop="onShapeDrop" shapeMouseEnter="onShapeMouseEnter"
-						shapeResize="onShapeResize" shapeSelectionSettings="{color: '#808080', strokeWidth: 1, strokeDasharray: '5,2'}"
-						selectionPanelSize="{viewModel>/ganttSelectionPane}">
+					<gnt2:GanttChartWithTable id="idPlanningGanttChartTable" shapeSelectionMode="MultiWithKeyboard" dragOrientation="Horizontal"
+						shapePress="onShapePress" ghostAlignment="Start" adhocLineLayer="Bottom" nowLineInUTC="false" dragStart="onShapeDragStart"
+						shapeDrop="onShapeDrop" shapeMouseEnter="onShapeMouseEnter" shapeResize="onShapeResize"
+						shapeSelectionSettings="{color: '#808080', strokeWidth: 1, strokeDasharray: '5,2'}" selectionPanelSize="{viewModel>/ganttSelectionPane}">
 						<gnt2:axisTimeStrategy>
 							<axistime:StepwiseZoomStrategy id="idPlanningGanttZoom" zoomLevels="3"></axistime:StepwiseZoomStrategy>
 						</gnt2:axisTimeStrategy>

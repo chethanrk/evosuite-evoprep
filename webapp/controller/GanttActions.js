@@ -94,6 +94,7 @@ sap.ui.define([
 		 * Creating Gantt Horizon for Gantt 
 		 * @param oAxisTimeStrategy - Gantt AxisTimeStrategy
 		 * @param oContext - Detail Page BindingContext
+		 * @param oDateRange - DateRange Context
 		 */
 		_createGanttHorizon: function (oAxisTimeStrategy, oContext, oDateRange) {
 			var sPath = oContext.getPath(),

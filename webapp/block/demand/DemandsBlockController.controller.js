@@ -57,7 +57,7 @@ sap.ui.define([
 		 * @memberOf com.evorait.evosuite.evoprep.block.demand.DemandsBlocks
 		 */
 		onExit: function () {
-		
+
 			this.destroyOperationListFragment();
 		},
 
@@ -211,6 +211,10 @@ sap.ui.define([
 			}
 		},
 
+		/**
+		 * On click of operation route to Change Logs page
+		 * @param oEvent
+		 */
 		fnOperationClick: function (oEvent) {
 			var oBindCon = oEvent.getParameter("listItem").getBindingContext(),
 				sObjectKeyId = oBindCon.getProperty("ObjectKey"),

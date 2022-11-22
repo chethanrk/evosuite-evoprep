@@ -990,6 +990,11 @@ sap.ui.define([
 			}
 		},
 
+		/**
+		 * Route to Change logs view
+		 * @param sObjectKey - For GUID Plan Items, 
+		 * @param sHeaderKeyId - For GUID Plan Header
+		 */
 		navToLogs: function (sObjectKey, sHeaderKeyId) {
 			this.getRouter().navTo("ChangeLogs", {
 				layout: library.LayoutType.ThreeColumnsMidExpanded,

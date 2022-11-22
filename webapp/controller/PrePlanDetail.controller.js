@@ -105,6 +105,11 @@ sap.ui.define([
 					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
+				onDoubleClickPlanningGantt: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
 				onBeforeRebindUtilizationDetails: {
 					public: true,
 					final: false,
@@ -486,6 +491,10 @@ sap.ui.define([
 				this._oUtilizationPopover.openBy(oShape);
 				sap.ui.getCore().byId("idUtilizationDetailsSmartTable").rebindTable();
 			}
+		},
+
+		onDoubleClickPlanningGantt: function (oEvent) {
+		
 		},
 
 		/**

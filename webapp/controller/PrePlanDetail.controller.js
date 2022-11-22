@@ -534,9 +534,8 @@ sap.ui.define([
 				this.showMessageToast(sMsg);
 				oSource.setDateValue(dPlanStartDate);
 				oSource.setSecondDateValue(dPlanEndDate);
-			} else {
-				this.GanttActions._createGanttHorizon(this._axisTime, this._oContext, oSource);
 			}
+			this.GanttActions._createGanttHorizon(this._axisTime, this._oContext, oSource);
 		},
 
 		/* =========================================================== */

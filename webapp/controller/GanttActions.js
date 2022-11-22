@@ -115,9 +115,9 @@ sap.ui.define([
 		/**
 		 * Function to Calcualate Gantt Horizon Dates  
 		 * @param sPath 
+		 * @param oDateRange 
 		 */
 		_getHorizonDates: function (sPath, oDateRange) {
-
 			var sStartDate = this._oView.getModel().getProperty(sPath + "/START_DATE"),
 				sEndDate = this._oView.getModel().getProperty(sPath + "/END_DATE"),
 				sTotalStartDate = sStartDate,
@@ -130,7 +130,7 @@ sap.ui.define([
 			oHorizonDates = {
 				visibleHorizon: {
 					startDate: moment(sStartDate).startOf("day").subtract(1, "day").toDate(),
-					endDate: moment(sStartDate).endOf("day").add(1, "day").toDate()
+					endDate: moment(sEndDate).endOf("day").add(1, "day").toDate()
 				},
 				totalHorizon: {
 					startDate: moment(sTotalStartDate).startOf("day").subtract(1, "day").toDate(),

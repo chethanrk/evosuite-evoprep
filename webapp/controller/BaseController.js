@@ -103,7 +103,8 @@ sap.ui.define([
 				},
 				onPressClose: {
 					public: true,
-					final: true
+					final: false,
+					overrideExecution: OverrideExecution.after
 				},
 				getAllSmartForms: {
 					public: true,

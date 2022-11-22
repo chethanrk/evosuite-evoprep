@@ -1,46 +1,123 @@
 <mvc:View controllerName="com.evorait.evosuite.evoprep.controller.PrePlanCompare" xmlns="sap.m" xmlns:core="sap.ui.core"
-	xmlns:mvc="sap.ui.core.mvc" xmlns:uxap="sap.uxap" xmlns:layout="sap.ui.layout" xmlns:smartField="sap.ui.comp.smartfield"
-	xmlns:smartTable="sap.ui.comp.smarttable" xmlns:blocks="com.evorait.evosuite.evoprep.block"
+	xmlns:mvc="sap.ui.core.mvc" xmlns:uxap="sap.uxap" xmlns:layout="sap.ui.layout" xmlns:f="sap.f" xmlns:tnt="sap.tnt"
 	xmlns:template="http://schemas.sap.com/sapui5/extension/sap.ui.core.template/1"
-	xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
+	xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" height="100%">
 	<template:alias name=".AH" value="sap.ui.model.odata.AnnotationHelper">
 		<template:alias name=".evoAH" value="com.evorait.evosuite.evoprep.model.AnnotationHelper">
 			<template:with path="templateProperties>/" var="tempProps">
-				<uxap:ObjectPageLayout id="prePlanComparePage" class="sapUiNoContentPadding" useIconTabBar="false" enableLazyLoading="true"
-					isChildPage="true" showFooter="false" busy="{viewModel>/busy}" busyIndicatorDelay="{viewModel>/delay}">
-					<uxap:headerTitle>
-						<uxap:ObjectPageHeader objectTitle="Compare" objectSubtitle="Compare">
-							<uxap:actions>
-								<core:ExtensionPoint name="PageExtP|PrePlanCompare|PlanHeaderSet|Title|Action"/>
-							</uxap:actions>
-							<uxap:sideContentButton></uxap:sideContentButton>
-							<uxap:navigationBar>
-								<Bar class="sapUiTinyMarginTop">
-									<contentLeft>
-										<core:ExtensionPoint name="PageExtP|PrePlanCompare|PlanHeaderSet|NavigationBar|Left"/>
-									</contentLeft>
-									<contentMiddle>
-										<Title text="PrePlan Compare"/>
-									</contentMiddle>
-									<contentRight>
-										<Button icon="{path:'viewModel>/fullscreen',formatter:'.formatter.fullScreenVisibility'}" tooltip="Full screen" press="onPressFullScreen"/>
-										<Button icon="sap-icon://decline" tooltip="close" press="onPressClose"/>
-										<core:ExtensionPoint name="PageExtP|PrePlanCompare|PlanHeaderSet|NavigationBar|Right"/>
-									</contentRight>
-								</Bar>
-							</uxap:navigationBar>
-						</uxap:ObjectPageHeader>
-					</uxap:headerTitle>
-					<uxap:headerContent></uxap:headerContent>
-					<uxap:sections></uxap:sections>
-					<uxap:footer>
-						<OverflowToolbar id="idPrePlanDetailFooterToolbar" visible="false">
-							<core:ExtensionPoint name="PageExtP|PrePlanCompare|PlanHeaderSet|Footer|Left"/>
+				<f:DynamicPage id="idPlanComaprePage" backgroundDesign="List" headerExpanded="true" preserveHeaderStateOnScroll="true" fitContent="true"
+					showFooter="true" class="sapUiContentPadding" stickySubheaderProvider="" busy="{viewModel>/busy}">
+					<f:title>
+						<f:DynamicPageTitle backgroundDesign="Transparent">
+							<f:heading>
+								<Title text="{i18n>tit.comparePlans}"/>
+							</f:heading>
+							<f:navigationActions>
+								<core:ExtensionPoint name="PageExtP|PrePlanCompare|ComparePlanGeneralSet|Title|Action"/>
+								<Button icon="sap-icon://decline" tooltip="close" press="onPressClose"/>
+							</f:navigationActions>
+						</f:DynamicPageTitle>
+					</f:title>
+					<f:header>
+						<f:DynamicPageHeader backgroundDesign="Translucent" class="sapUiContentPadding" pinnable="true">
+							<HBox width="100%" fitContainer="true">
+								<layoutData>
+									<FlexItemData growFactor="1" shrinkFactor="0"/>
+								</layoutData>
+								<HBox width="40%" direction="Column">
+									<layoutData>
+										<FlexItemData growFactor="1" shrinkFactor="0"/>
+									</layoutData>
+									<template:with path="templateProperties>/annotationPath"
+										helper="com.evorait.evosuite.evoprep.model.AnnotationHelper.resolveObjectHeaderPath" var="headerDetails">
+										<f:GridList items="{path:'compareModel>/compareProperty',templateShareable: true}" class="sapUiResponsiveContentPadding">
+											<f:GridListItem>
+												<VBox height="100%">
+													<layoutData>
+														<FlexItemData growFactor="1" shrinkFactor="0"/>
+													</layoutData>
+													<VBox justifyContent="SpaceBetween">
+														<layoutData>
+															<FlexItemData growFactor="1" shrinkFactor="0"/>
+														</layoutData>
+														<template:repeat list="{headerDetails>}">
+															<template:with path="headerDetails>Facets" var="headerFacets">
+																<template:repeat list="{headerFacets>}">
+																	<template:with path="headerFacets>Target" helper=".AH.resolvePath" var="target">
+																		<template:with path="target>Data" var="data">
+																			<layout:VerticalLayout>
+																				<template:repeat list="{data>}">
+																					<VBox alignItems="Start" class="sapUiSmallMargin">
+																						<layoutData>
+																							<FlexItemData growFactor="1" shrinkFactor="0"/>
+																						</layoutData>
+																						<Text text="{:= '{/' + 'ComparePlanGeneralSet' + '/' + ${path : 'data>Value/Path'} + '/##com.sap.vocabularies.Common.v1.Label/String}' }"
+																							wrapping="false"/>
+																					</VBox>
+																				</template:repeat>
+																			</layout:VerticalLayout>
+																		</template:with>
+																	</template:with>
+																</template:repeat>
+															</template:with>
+														</template:repeat>
+													</VBox>
+												</VBox>
+											</f:GridListItem>
+										</f:GridList>
+									</template:with>
+								</HBox>
+								<HBox width="60%" direction="Column">
+									<layoutData>
+										<FlexItemData growFactor="1" shrinkFactor="0"/>
+									</layoutData>
+									<template:with path="templateProperties>/annotationPath"
+										helper="com.evorait.evosuite.evoprep.model.AnnotationHelper.resolveObjectHeaderPath" var="headerDetails">
+										<f:GridList items="{path:'compareModel>/compare',templateShareable: true}" class="sapUiResponsiveContentPadding">
+											<f:GridListItem highlight="{path:'compareModel>STATUS_SHORT',formatter:'.formatter.getPlanState'}">
+												<VBox height="100%">
+													<VBox justifyContent="SpaceBetween">
+														<layoutData>
+															<FlexItemData growFactor="1" shrinkFactor="0"/>
+														</layoutData>
+														<template:repeat list="{headerDetails>}">
+															<template:with path="headerDetails>Facets" var="Facets">
+																<core:Fragment fragmentName="com.evorait.evosuite.evoprep.view.templates.FormTemplate" type="XML"/>
+															</template:with>
+														</template:repeat>
+													</VBox>
+												</VBox>
+											</f:GridListItem>
+										</f:GridList>
+									</template:with>
+								</HBox>
+							</HBox>
+						</f:DynamicPageHeader>
+					</f:header>
+					<f:content>
+						<HBox width="100%" fitContainer="true">
+							<HBox width="40%" direction="Column">
+								<layoutData>
+									<FlexItemData growFactor="1" shrinkFactor="0"/>
+								</layoutData>
+								<core:Fragment fragmentName="com.evorait.evosuite.evoprep.view.templates.CompareProperties" type="XML"/>
+							</HBox>
+							<HBox width="60%" direction="Column">
+								<layoutData>
+									<FlexItemData growFactor="1" shrinkFactor="0"/>
+								</layoutData>
+								<core:Fragment fragmentName="com.evorait.evosuite.evoprep.view.templates.ComparePlans" type="XML"/>
+							</HBox>
+						</HBox>
+					</f:content>
+					<f:footer>
+						<OverflowToolbar id="idPrePlanCompareFooterToolbar" visible="false">
+							<core:ExtensionPoint name="PageExtP|PrePlanCompare|ComparePlanGeneralSet|Footer|Left"/>
 							<ToolbarSpacer/>
-							<core:ExtensionPoint name="PageExtP|PrePlanCompare|PlanHeaderSet|Footer|Right"/>
+							<core:ExtensionPoint name="PageExtP|PrePlanCompare|ComparePlanGeneralSet|Footer|Right"/>
 						</OverflowToolbar>
-					</uxap:footer>
-				</uxap:ObjectPageLayout>
+					</f:footer>
+				</f:DynamicPage>
 			</template:with>
 		</template:alias>
 	</template:alias>

@@ -357,6 +357,25 @@ sap.ui.define([
 				sNewVal = sNewVal ? moment(sNewVal, 'HHmmss').format('HH:mm:ss') : sNewVal;
 			}
 			return sThen + ' ' + sOldVal + '\n' + sNow + ' ' + sNewVal;
+		},
+        
+        /**
+		 * format the plan status acording state
+		 * @param sValue
+		 */
+		getPlanState: function (sValue) {
+			if (sValue) {
+				if (sValue === "INPR") {
+					return "Success";
+				} else if (sValue === "NEW") {
+					return "Information";
+				} else if (sValue === "ARCH") {
+					return "Success";
+				} else if (sValue === "FINL") {
+					return "Error";
+				}
+			}
+			return "None";
 		}
 	};
 

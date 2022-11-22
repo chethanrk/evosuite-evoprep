@@ -127,6 +127,7 @@ sap.ui.define([
 		 */
 		onInit: function () {
 			this.oViewModel = this.getModel("viewModel");
+			this.oViewModel.setProperty("/busy", false);
 			var eventBus = sap.ui.getCore().getEventBus();
 
 			this.oViewModel.setProperty("/busy", false);

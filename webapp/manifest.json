@@ -134,7 +134,6 @@
 					"name": "PrePlanCompare",
 					"pattern": "PrePlanCompare/{layout}/{plans}",
 					"target": [
-						"PrePlanMaster",
 						"PrePlanCompare"
 					]
 				},

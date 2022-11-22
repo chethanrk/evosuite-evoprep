@@ -5,10 +5,10 @@
 		stretch="{viewModel>/dialog/stretch}">
 		<content></content>
 		<beginButton>
-			<Button text="{i18n>btn.cancel}" press="onPressClose"/>
+			<Button text="{i18n>xbtn.cancel}" press="onPressClose"/>
 		</beginButton>
 		<endButton>
-			<Button id="formDialogSaveBtn" text="{i18n>btn.save}" type="Emphasized" press="onPressSave"/>
+			<Button id="formDialogSaveBtn" text="{i18n>xbtn.save}" type="Emphasized" press="onPressSave"/>
 		</endButton>
 	</Dialog>
 </core:FragmentDefinition>

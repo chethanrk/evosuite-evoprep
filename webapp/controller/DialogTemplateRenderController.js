@@ -34,7 +34,6 @@ sap.ui.define([
 			}
 		},
 
-
 		_oDialog: null,
 
 		_oResourceBundle: null,
@@ -110,6 +109,9 @@ sap.ui.define([
 			TemplateRenderController.prototype.onExit.apply(this, arguments);
 			this._oDialog.destroy(true);
 			this._oDialog = undefined;
+			var eventBus = sap.ui.getCore().getEventBus();
+			//Binnding has changed in TemplateRenderController.js
+			eventBus.unsubscribe("TemplateRendererEvoPrep", "changedBinding", this._changedBinding, this);
 		},
 
 		/* =========================================================== */
@@ -177,10 +179,6 @@ sap.ui.define([
 			this._oDialog.bindElement(sPath);
 			this._oDialog.setTitle(this._oResourceBundle.getText(this._mParams.title));
 			this._oView.addDependent(this._oDialog);
-
-			//Set save button text if different text needs to be displayed using param saveButtonText
-			sap.ui.getCore().byId("formDialogSaveBtn").setText(this._oResourceBundle.getText(this._mParams.saveButtonText ? this._mParams.saveButtonText :
-				"btn.save"));
 
 			this._oModel.metadataLoaded().then(function () {
 				//get template and create views

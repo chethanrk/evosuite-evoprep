@@ -364,7 +364,7 @@ sap.ui.define([
 				}).then(function (oDialog) {
 					this._addExistingPlan = oDialog;
 					this.getView().addDependent(oDialog);
-					this.open(oDialog);
+					this.openDialog(oDialog);
 					this._addExistingPlan.attachAfterOpen(function () {
 						var oPlanSmartTable = sap.ui.getCore().byId("idPlanListFragSmartTable");
 						oPlanSmartTable.getTable().removeSelections();
@@ -372,7 +372,7 @@ sap.ui.define([
 					}.bind(this));
 				}.bind(this));
 			} else {
-				this.open(this._addExistingPlan);
+				this.openDialog(this._addExistingPlan);
 			}
 		},
 

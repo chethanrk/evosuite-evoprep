@@ -76,7 +76,7 @@ sap.ui.define([
 					public: true,
 					final: true
 				},
-				open: {
+				openDialog: {
 					public: true,
 					final: true
 				},
@@ -200,6 +200,10 @@ sap.ui.define([
 					final: true
 				},
 				navToLogs: {
+					public: true,
+					final: true
+				},
+				getViewUniqueName: {
 					public: true,
 					final: true
 				}
@@ -355,10 +359,10 @@ sap.ui.define([
 					controller: this
 				}).then(function (oDialog) {
 					this._infoDialog = oDialog;
-					this.open(oDialog);
+					this.openDialog(oDialog);
 				}.bind(this));
 			} else {
-				this.open(this._infoDialog);
+				this.openDialog(this._infoDialog);
 			}
 		},
 
@@ -883,7 +887,7 @@ sap.ui.define([
 				}).then(function (oDialog) {
 					this._addOperationsDetail = oDialog;
 					this.getView().addDependent(oDialog);
-					this.open(oDialog);
+					this.openDialog(oDialog);
 					this._addOperationsDetail.attachAfterOpen(function () {
 						var oOpSmartTable = sap.ui.getCore().byId("idOperationListFragSmartTable");
 						oOpSmartTable.getTable().removeSelections();
@@ -891,7 +895,7 @@ sap.ui.define([
 					}.bind(this));
 				}.bind(this));
 			} else {
-				this.open(this._addOperationsDetail);
+				this.openDialog(this._addOperationsDetail);
 			}
 			this.bOperationSelectAll = false;
 			sap.ui.getCore().byId("idOprSwitchSelectAll").setState(false);
@@ -1011,6 +1015,16 @@ sap.ui.define([
 				operationKey: sObjectKey,
 				plan: sHeaderKeyId
 			});
+		},
+		
+		/**
+		 * gets unique view id setted by TemplateRenderer
+		 * @return string
+		 */
+		getViewUniqueName: function () {
+			var sViewId = this.getView().getId(),
+				sViewName = this.getView().getViewName();
+			return sViewName + "#" + sViewId;
 		},
 
 		/* =========================================================== */

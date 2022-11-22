@@ -936,6 +936,9 @@ sap.ui.define([
 			this.oViewModel.setProperty("/bDependencyCall", true);
 			this.oViewModel.setProperty("/ganttSettings/sStartDate", this.getModel().getProperty(this._oContext.getPath() + "/START_DATE"));
 			this.oViewModel.setProperty("/ganttSettings/sEndDate", this.getModel().getProperty(this._oContext.getPath() + "/END_DATE"));
+			if (this._UtilizationSelectView) {
+				this._UtilizationSelectView.setSelectedKey(this.getModel("user").getProperty("/DEFAULT_VIEW_MODE"));
+			}
 		}
 	});
 

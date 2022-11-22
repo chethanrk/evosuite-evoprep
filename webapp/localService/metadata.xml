@@ -166,6 +166,16 @@
 				<Property Name="CREATED_BY" Type="Edm.String" Nullable="false" MaxLength="12" sap:label="Created by"/>
 				<Property Name="PLAN_ID" Type="Edm.String" Nullable="false" MaxLength="20" sap:label="Plan ID"/>
 			</EntityType>
+			<EntityType Name="ChangeLogs" sap:content-version="1">
+				<Key>
+					<PropertyRef Name="UserName"/>
+				</Key>
+				<Property Name="UserName" Type="Edm.String" Nullable="false" MaxLength="15" sap:label="User name"/>
+				<Property Name="Date" Type="Edm.DateTime" Precision="0" sap:display-format="Date" sap:label="Changed Date"/>
+				<Property Name="FieldName" Type="Edm.String" Nullable="false" MaxLength="24" sap:label="Fieldname"/>
+				<Property Name="OldValue" Type="Edm.String" Nullable="false" MaxLength="40" sap:label="Old value"/>
+				<Property Name="NewValue" Type="Edm.String" Nullable="false" MaxLength="40" sap:label="New value"/>
+			</EntityType>
 			<Association Name="PlanHeaderToPlanItems" sap:content-version="1">
 				<End Type="com.evorait.evoprep.PlanHeader" Multiplicity="1" Role="FromRole_PlanHeaderToPlanItems"/>
 				<End Type="com.evorait.evoprep.PlanItems" Multiplicity="*" Role="ToRole_PlanHeaderToPlanItems"/>
@@ -184,6 +194,7 @@
 				<EntitySet Name="PlanHeaderSet" EntityType="com.evorait.evoprep.PlanHeader" sap:content-version="1"/>
 				<EntitySet Name="FunctionsSet" EntityType="com.evorait.evoprep.Functions" sap:content-version="1"/>
 				<EntitySet Name="SHPlanNameSet" EntityType="com.evorait.evoprep.SHPlanName" sap:content-version="1"/>
+				<EntitySet Name="ChangeLogsSet" EntityType="com.evorait.evoprep.ChangeLogs" sap:content-version="1"/>
 				<AssociationSet Name="PlanHeaderToPlanItemsSet" Association="com.evorait.evoprep.PlanHeaderToPlanItems" sap:creatable="false"
 					sap:updatable="false" sap:deletable="false" sap:content-version="1">
 					<End EntitySet="PlanHeaderSet" Role="FromRole_PlanHeaderToPlanItems"/>

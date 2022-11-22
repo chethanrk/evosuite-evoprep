@@ -27,6 +27,11 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
+				},
+				fnOperationClick: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
@@ -205,6 +210,20 @@ sap.ui.define([
 				this.showMessageToast(sMsg);
 				this.getModel().resetChanges();
 			}
+		},
+
+		/**
+		 * On click of operation route to Change Logs page
+		 * @param oEvent
+		 */
+		fnOperationClick: function (oEvent) {
+			var oBindCon = oEvent.getParameter("listItem").getBindingContext(),
+				sObjectKeyId = oBindCon.getProperty("ObjectKey"),
+				sHeaderKeyId = oBindCon.getProperty("HeaderObjectKey");
+			if (sObjectKeyId) {
+				this.navToLogs(sObjectKeyId, sHeaderKeyId);
+			}
+
 		},
 
 		/* =========================================================== */

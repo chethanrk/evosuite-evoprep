@@ -229,5 +229,13 @@ sap.ui.define([
 				}
 			}.bind(this));
 		},
+        
+        /**
+		 * Change logs page
+		 */
+		_setChangeLogsPageInfo: function (sRouteName, oArgs) {
+			this.getModel("viewModel").setProperty("/layout", oArgs.layout);
+			this._setPrePlanDetailPageInfo(sRouteName, oArgs);
+		}
 	});
 });

@@ -47,18 +47,31 @@ sap.ui.define([
 		/**
 		 * overwrite constructor
 		 * set manuel owner component for nested xml views
+		 * @param{oComponent} - component of the application
 		 */
 		constructor: function (oComponent) {
 			this.setOwnerComponent(oComponent);
 			TemplateRenderController.apply(this, arguments);
 
+		},
+
+		/**
+		 * Called when dialog got destroyed
+		 */
+		onExit: function () {
+			TemplateRenderController.prototype.onExit.apply(this, arguments);
+			this._oDialog.destroy(true);
+			this._oDialog = undefined;
 			var eventBus = sap.ui.getCore().getEventBus();
-			eventBus.subscribe("DialogTemplateRendererEvoPrep", "savingConfirmed", this._savingConfirmed, this);
+			//Binnding has changed in TemplateRenderController.js
+			eventBus.unsubscribe("TemplateRendererEvoPrep", "changedBinding", this._changedBinding, this);
 		},
 
 		/**
 		 * open dialog 
 		 * and render annotation based SmartForm inside dialog content
+		 * @param{oView} - view where it is opening
+		 * @param{mParams} - additional details to load dialog
 		 */
 		open: function (oView, mParams) {
 			this._oView = oView;
@@ -70,8 +83,8 @@ sap.ui.define([
 			//set annotation path and other parameters
 			this.setTemplateProperties(mParams);
 			var mDialogParams = {
-				draggable: false,
-				resizable: false,
+				draggable: true,
+				resizable: true,
 				verticalScrolling: true,
 				horizontalScrolling: true,
 				stretch: false
@@ -99,19 +112,10 @@ sap.ui.define([
 		},
 
 		/**
-		 * Save SmartForm
+		 * Save dialog SmartForm 
 		 */
 		onPressSave: function (oEvent) {
 			this._saveDialogChanges(this._mParams);
-		},
-
-		onExit: function () {
-			TemplateRenderController.prototype.onExit.apply(this, arguments);
-			this._oDialog.destroy(true);
-			this._oDialog = undefined;
-			var eventBus = sap.ui.getCore().getEventBus();
-			//Binnding has changed in TemplateRenderController.js
-			eventBus.unsubscribe("TemplateRendererEvoPrep", "changedBinding", this._changedBinding, this);
 		},
 
 		/* =========================================================== */
@@ -124,24 +128,21 @@ sap.ui.define([
 		 */
 		_saveDialogChanges: function (mParams) {
 			var oContentView = this._oDialog.getContent()[0],
-				oContentContext = oContentView.getBindingContext(),
 				oViewController = oContentView.getController(),
-				aForms = oViewController.getAllSmartForms(oContentView.getControlsByFieldGroupId("smartFormTemplate"));
+				aForms = oViewController.getAllSmartForms(oContentView.getControlsByFieldGroupId("smartFormTemplate")),
+				mErrors = {};
 
-			if (aForms.length > 0 && oViewController.validateForm) {
-				var mErrors = oViewController.validateForm(aForms);
+			if (aForms.length > 0 && oViewController.validateForm && this._oModel.hasPendingChanges()) {
+				mErrors = oViewController.validateForm(aForms);
 				if (mParams) {
 					//special cases when there is a confirm dialog between
 					for (var key in mParams) {
 						mErrors[key] = mParams[key];
 					}
 				}
-				if (oContentContext && (oContentContext.getPath().indexOf("('id-") > 0)) {
-					mErrors.isCreate = true;
-					mErrors.oContext = oContentContext;
-				}
+
 				//if form is valid save created entry
-				oViewController.saveChanges(mErrors, this._saveSuccessFn.bind(this, mErrors), this._saveErrorFn.bind(this), this._oDialog);
+				oViewController.saveChangesMain(mErrors, this._saveSuccessFn.bind(this, mErrors), this._saveErrorFn.bind(this), this._oDialog);
 			}
 		},
 
@@ -190,14 +191,6 @@ sap.ui.define([
 		},
 
 		/**
-		 * show confirm dialog in special cases
-		 * @params mParams
-		 */
-		_savingConfirmed: function (sChannel, sEvent, oData) {
-			this._saveDialogChanges(oData.mParams);
-		},
-
-		/**
 		 * What should happen after binding changed
 		 */
 		_afterBindSuccess: function () {
@@ -210,6 +203,10 @@ sap.ui.define([
 		 * @param oResponse
 		 */
 		_saveSuccessFn: function (oParam, oResponse) {
+			var oEventBus = sap.ui.getCore().getEventBus();
+			oEventBus.publish("BaseController", "refreshFullGantt");
+			oEventBus.publish("BaseController", "refreshUtilizationGantt");
+			this._oModel.refresh();
 			this._oDialog.close();
 		},
 

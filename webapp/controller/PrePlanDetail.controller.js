@@ -499,19 +499,27 @@ sap.ui.define([
 			}
 		},
 
+		/**
+		 * Called when double click on shapes
+		 * collectes the annotations and view details
+		 * @param oEvent
+		 */
 		onDoubleClickPlanningGantt: function (oEvent) {
 			var oShape = oEvent.getParameter("shape"),
 				oContext = oShape.getBindingContext("ganttModel"),
+				mParams = {};
+			if (oContext) {
 				mParams = {
 					viewName: "com.evorait.evosuite.evoprep.view.templates.DialogContentWrapper#EditOperations",
 					annotationPath: "com.sap.vocabularies.UI.v1.Facets#EditOperations",
 					entitySet: "GanttHierarchySet",
 					controllerName: "EditOperation",
-					title: "btn.edit",
+					title: "tit.editOperation",
 					type: "Edit",
 					sPath: "/GanttHierarchySet('" + oContext.getProperty("ObjectKey") + "')"
 				};
-			this.getOwnerComponent().DialogTemplateRenderer.open(this.getView(), mParams);
+				this.getOwnerComponent().DialogTemplateRenderer.open(this.getView(), mParams);
+			}
 		},
 
 		/**

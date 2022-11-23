@@ -11,10 +11,7 @@ sap.ui.define([
 			// extension can declare the public methods
 			// in general methods that start with "_" are private
 			methods: {
-				isSmartFieldEditable: {
-					public: true,
-					final: false
-				}
+
 			}
 		},
 
@@ -26,13 +23,9 @@ sap.ui.define([
 
 		_oContext: null,
 
-		_sPath: null,
-
 		_mParams: {},
 
 		_type: {},
-
-		_selectedEntitySet: null,
 
 		/* =========================================================== */
 		/* lifecycle methods                                           */
@@ -63,28 +56,6 @@ sap.ui.define([
 		/* =========================================================== */
 		/* Events                                                      */
 		/* =========================================================== */
-
-		/**
-		 * formatter function
-		 */
-		isSmartFieldEditable: function () {
-			return true;
-		},
-
-		/**
-		 * Dialog default properties
-		 */
-		setDefaultDialogProps: function () {
-			var mDialogParams = {
-				draggable: false,
-				resizable: false,
-				verticalScrolling: true,
-				horizontalScrolling: true,
-				stretch: false
-			};
-			this.getModel("viewModel").setProperty("/dialog", mDialogParams);
-
-		},
 
 		/* =========================================================== */
 		/* internal methods                                              */
@@ -120,7 +91,6 @@ sap.ui.define([
 			if (!this._oContext) {
 				return;
 			}
-			this._sPath = this._oContext.getPath();
 
 			//global parameters
 			this._mParams = this.oTemplateModel.getProperty("/tempData");
@@ -131,8 +101,6 @@ sap.ui.define([
 				}
 			}
 
-			// Selected entity set
-			this._selectedEntitySet = this._mParams.entitySet;
 			//get dialog control
 			this._oDialog = this.getView().getParent();
 			if (this._oDialog) {

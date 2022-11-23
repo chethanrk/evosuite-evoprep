@@ -46,7 +46,7 @@ sap.ui.define([
 		 * @param oEvent
 		 */
 		onChangeSmartField: function (oEvent) {
-			DialogFormController.prototype.onChangeSmartField.apply(this, arguments);
+			
 		},
 
 		/* =========================================================== */

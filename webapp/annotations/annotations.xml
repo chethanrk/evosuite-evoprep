@@ -41,13 +41,25 @@
 						<PropertyValue Property="Data">
 							<Collection>
 								<Record Type="UI.DataField">
-									<PropertyValue Property="Value" Path="WORKCENTRE"/>
+									<PropertyValue Property="Value" Path="ORDER_NUMBER"/>
 								</Record>
 								<Record Type="UI.DataField">
 									<PropertyValue Property="Value" Path="ORDER_NUMBER_DESCRIPTION"/>
 								</Record>
 								<Record Type="UI.DataField">
+									<PropertyValue Property="Value" Path="OPERATION_NUMBER"/>
+								</Record>
+								<Record Type="UI.DataField">
 									<PropertyValue Property="Value" Path="OPERATION_DESCRIPTION"/>
+								</Record>
+								<Record Type="UI.DataField">
+									<PropertyValue Property="Value" Path="EARLIEST_START_DATE"/>
+								</Record>
+								<Record Type="UI.DataField">
+									<PropertyValue Property="Value" Path="EARLIEST_END_DATE"/>
+								</Record>
+								<Record Type="UI.DataField">
+									<PropertyValue Property="Value" Path="WORKCENTRE"/>
 								</Record>
 							</Collection>
 						</PropertyValue>

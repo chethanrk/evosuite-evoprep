@@ -91,7 +91,8 @@ sap.ui.define([
 					iCount : 0,
 					ganttSelectionPane:"30%"
 				},
-				aAllSelectedOperations: [] //handle select all
+				aAllSelectedOperations: [], //handle select all,
+				bEnableFinalizeOperationList:false // handle the finalize of the operations in the main operations list
 			};
 
 			//GetSystemInformation Call

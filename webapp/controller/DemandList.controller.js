@@ -184,7 +184,15 @@ sap.ui.define([
 				} else {
 					this.oViewModel.setProperty("/bMaterialsOperations", false);
 				}
+				// check enable or disable the finalise button in the table header
+				
+				if (this._returnFinalizeContext(this.oSmartTable.getTable()).length > 0) {
+					this.oViewModel.setProperty("/bEnableFinalizeOperationList", true);
+				} else {
+					this.oViewModel.setProperty("/bEnableFinalizeOperationList", false);
+				}
 			}
+
 		},
 
 		/**

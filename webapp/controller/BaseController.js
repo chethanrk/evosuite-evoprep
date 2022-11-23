@@ -946,7 +946,7 @@ sap.ui.define([
 			var fnPlanDetailCallBack = function (oData) {
 				this.navToDetail(newPlanGuid);
 			};
-			
+
 			var callBackFunction = function (oData) {
 				this._setBusyWhileSaving(oTable, false);
 				sMsg = oData.Messagebap;
@@ -1066,6 +1066,31 @@ sap.ui.define([
 			if (aSelectedItemsPath.length > 0) {
 				this.getOwnerComponent().materialInfoDialog.open(this.getView(), aSelectedItemsPath);
 			}
+		},
+		onFinalizeBtnPress: function () {
+			var oTable = this.oSmartTable.getTable(),
+				aSelectedContext = this._returnFinalizeContext(oTable),
+				sPath;
+
+			for (var i = 0; i < aSelectedContext.length; i++) {
+				sPath = aSelectedContext[i].getPath();
+				this.getModel().setProperty(sPath + "/FUNCTION", "OPER_DISPATCH");
+			}
+			if (aSelectedContext.length > 0) {
+				this.saveChangesMain({
+					state: "success",
+					isCreate: false
+				}, this._afterSucessFinalize.bind(this));
+			}
+		},
+		_afterSucessFinalize: function () {
+			var oTable = this.oSmartTable.getTable();
+			if (oTable.getAggregation("items")) {
+				oTable.removeSelections();
+			} else {
+				oTable.clearSelection(true);
+			}
+			this.oSmartTable.rebindTable(true);
 		},
 		/*
 		 * function to deleted recent created context if exist
@@ -1295,6 +1320,38 @@ sap.ui.define([
 				}
 			}
 
+			return aArrayMaterialContext;
+		},
+		/** Method to get the context of selected items in the 
+		 * demands table which has allow_edit true 
+		 * This method is used in the Demands List and Plan Details Views
+		 * @param oTable {object} table instance
+		 * @return aArrayMaterialContext {array}
+		 */
+		_returnFinalizeContext: function (oTable) {
+			var aSelectections, aContext, sDemandPath, sSystemStatus, aArrayMaterialContext = [];
+			if (oTable.getAggregation("items")) {
+				aSelectections = oTable.getSelectedItems();
+				for (var i = 0; i < aSelectections.length; i++) {
+					aContext = aSelectections[i].getBindingContext();
+					sDemandPath = aContext.getPath();
+					sSystemStatus = this.getModel().getProperty(sDemandPath + "/ALLOW_EDIT");
+					if (sSystemStatus === "X") {
+						aArrayMaterialContext.push(aContext);
+					}
+				}
+			} else {
+				aSelectections = this.oSmartTable.getTable().getSelectedIndices();
+				for (var j = 0; j < aSelectections.length; j++) {
+					aContext = this.oSmartTable.getTable().getContextByIndex(aSelectections[j]);
+					sDemandPath = aContext.getPath();
+					sSystemStatus = this.getModel().getProperty(sDemandPath + "/ALLOW_EDIT");
+					if (sSystemStatus === "X") {
+						aArrayMaterialContext.push(aContext);
+					}
+				}
+			}
+			console.log(aArrayMaterialContext)
 			return aArrayMaterialContext;
 		}
 

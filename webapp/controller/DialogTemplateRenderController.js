@@ -181,6 +181,9 @@ sap.ui.define([
 			this._oDialog.setTitle(this._oResourceBundle.getText(this._mParams.title));
 			this._oView.addDependent(this._oDialog);
 
+			//Set save button visibility if different text needs to be displayed using param saveButtonVisible
+			sap.ui.getCore().byId("formDialogSaveBtn").setVisible(this._mParams.saveButtonVisible);
+
 			this._oModel.metadataLoaded().then(function () {
 				//get template and create views
 				this._mParams.oView = this._oView;

@@ -517,6 +517,7 @@ sap.ui.define([
 					controllerName: "EditOperation",
 					title: "tit.editOperation",
 					type: "Edit",
+					saveButtonVisible: this.getView().getBindingContext().getProperty("ALLOW_FINAL"),
 					sPath: "/GanttHierarchySet('" + oContext.getProperty("ObjectKey") + "')"
 				};
 				this.getOwnerComponent().DialogTemplateRenderer.open(this.getView(), mParams);

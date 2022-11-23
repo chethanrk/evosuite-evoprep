@@ -75,8 +75,15 @@ sap.ui.define([
 
 				if (oData.viewNameId === this._sViewNameId) {
 					//SmartForm is editable
+					var oDetail = this.getView().getParent().getParent(),
+						oContext = oDetail.getBindingContext();
+
 					this._aSmartForms = this.getAllSmartForms(this.getView().getControlsByFieldGroupId("smartFormTemplate"));
-					this.setFormsEditable(this._aSmartForms, true);
+					if (oContext.getProperty("ALLOW_FINAL")) {
+						this.setFormsEditable(this._aSmartForms, true);
+					} else {
+						this.setFormsEditable(this._aSmartForms, false);
+					}
 				}
 			}
 		},

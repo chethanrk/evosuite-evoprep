@@ -508,7 +508,8 @@ sap.ui.define([
 			var oShape = oEvent.getParameter("shape"),
 				oContext = oShape.getBindingContext("ganttModel"),
 				mParams = {};
-			if (oContext) {
+
+			if (oContext && oContext.getProperty("OPERATION_NUMBER") !== "") {
 				mParams = {
 					viewName: "com.evorait.evosuite.evoprep.view.templates.DialogContentWrapper#EditOperations",
 					annotationPath: "com.sap.vocabularies.UI.v1.Facets#EditOperations",

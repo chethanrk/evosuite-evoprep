@@ -370,7 +370,7 @@ sap.ui.define([
 		 * Open information popover 
 		 * @param {oDialog}  -- information dialog instance
 		 */
-		open: function (oDialog) {
+		openDialog: function (oDialog) {
 			var oView = this.getView();
 			oDialog.addStyleClass(this.getOwnerComponent().getContentDensityClass());
 			oView.addDependent(oDialog);

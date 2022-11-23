@@ -1067,6 +1067,10 @@ sap.ui.define([
 				this.getOwnerComponent().materialInfoDialog.open(this.getView(), aSelectedItemsPath);
 			}
 		},
+		/**
+		 * Method called on the press of finalize button press on the 
+		 * operations table
+		 */
 		onFinalizeBtnPress: function () {
 			var oTable = this.oSmartTable.getTable(),
 				aSelectedContext = this._returnFinalizeContext(oTable),
@@ -1082,15 +1086,6 @@ sap.ui.define([
 					isCreate: false
 				}, this._afterSucessFinalize.bind(this));
 			}
-		},
-		_afterSucessFinalize: function () {
-			var oTable = this.oSmartTable.getTable();
-			if (oTable.getAggregation("items")) {
-				oTable.removeSelections();
-			} else {
-				oTable.clearSelection(true);
-			}
-			this.oSmartTable.rebindTable(true);
 		},
 		/*
 		 * function to deleted recent created context if exist
@@ -1351,8 +1346,19 @@ sap.ui.define([
 					}
 				}
 			}
-			console.log(aArrayMaterialContext)
 			return aArrayMaterialContext;
+		},
+		/** This method is called after the sucess call on press
+		 * of the finalize button for the operation
+		 */
+		_afterSucessFinalize: function () {
+			var oTable = this.oSmartTable.getTable();
+			if (oTable.getAggregation("items")) {
+				oTable.removeSelections();
+			} else {
+				oTable.clearSelection(true);
+			}
+			this.oSmartTable.rebindTable(true);
 		}
 
 	});

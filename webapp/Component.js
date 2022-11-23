@@ -9,9 +9,10 @@ sap.ui.define([
 	"sap/ui/model/json/JSONModel",
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
-	"com/evorait/evosuite/evoprep/controller/GanttActions"
+	"com/evorait/evosuite/evoprep/controller/GanttActions",
+	"com/evorait/evosuite/evoprep/controller/MaterialInfoDialog"
 ], function (UIComponent, Device, models, ErrorHandler, MessageManager, Constants, library, JSONModel, Filter, FilterOperator,
-	GanttActions) {
+	GanttActions, MaterialInfoDialog) {
 	"use strict";
 
 	var oMessageManager = sap.ui.getCore().getMessageManager();
@@ -80,10 +81,17 @@ sap.ui.define([
 					sStartDate: null,
 					sEndDate: null
 				},
-				bDependencyCall:false, //Restricting expand call in Graphic Planning GanttChart
-				bEnableOperationDelete:false, //Enabling/Disabling Delete Button in Plan Detail Operation Tab
-				bOperationTableMode:false, //Plan Detail Operation Table Selection Mode
+				bDependencyCall: false, //Restricting expand call in Graphic Planning GanttChart
+				bEnableOperationDelete: false, //Enabling/Disabling Delete Button in Plan Detail Operation Tab
+				bOperationTableMode: false, //Plan Detail Operation Table Selection Mode
 				bCopyEnabled: false, //disable the copy button by default
+				ganttUtilization: { //Utilization Gantt Chart Parameters
+					busy: true,
+					dLastSync: null,
+					iCount : 0,
+					ganttSelectionPane:"30%"
+				},
+				aAllSelectedOperations: [], //handle select all
                 authorizeCheck: false // SAP standard check 
 			};
 
@@ -99,6 +107,7 @@ sap.ui.define([
 
 			//Creating the Global Gantt Model for PlanningGanttChart
 			this.setModel(models.createHelperModel(), "ganttModel");
+			this.setModel(models.createHelperModel(), "compareModel");
 
 			this._getTemplateProps();
 
@@ -113,6 +122,8 @@ sap.ui.define([
 
 			//initialize GanttActions.js with component
 			this.GanttActions = new GanttActions();
+			this.materialInfoDialog = new MaterialInfoDialog();
+			this.materialInfoDialog.init();
 		},
 
 		/**

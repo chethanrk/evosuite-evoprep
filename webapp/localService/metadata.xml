@@ -347,7 +347,17 @@
 				<Property Name="CREATED_BY" Type="Edm.String" Nullable="false" MaxLength="12" sap:label="Created By"/>
 				<Property Name="PLAN_ID" Type="Edm.String" Nullable="false" MaxLength="20" sap:label="Plan ID" sap:creatable="false" sap:updatable="false"/>
 			</EntityType>
-			<EntityType Name="SHOrderNumber" sap:content-version="1">
+			<EntityType Name="ChangeLogs" sap:content-version="1">
+				<Key>
+					<PropertyRef Name="UserName"/>
+				</Key>
+				<Property Name="UserName" Type="Edm.String" Nullable="false" MaxLength="15" sap:label="User name"/>
+				<Property Name="Date" Type="Edm.DateTime" Precision="0" sap:display-format="Date" sap:label="Changed Date"/>
+				<Property Name="FieldName" Type="Edm.String" Nullable="false" MaxLength="24" sap:label="Fieldname"/>
+				<Property Name="OldValue" Type="Edm.String" Nullable="false" MaxLength="40" sap:label="Old value"/>
+				<Property Name="NewValue" Type="Edm.String" Nullable="false" MaxLength="40" sap:label="New value"/>
+			</EntityType>
+            <EntityType Name="SHOrderNumber" sap:content-version="1">
 				<Key>
 					<PropertyRef Name="AUFNR"/>
 				</Key>
@@ -594,16 +604,7 @@
 				<EntitySet Name="PlanHeaderSet" EntityType="com.evorait.evoprep.PlanHeader" sap:content-version="1"/>
 				<EntitySet Name="FunctionsSet" EntityType="com.evorait.evoprep.Functions" sap:content-version="1"/>
 				<EntitySet Name="SHPlanNameSet" EntityType="com.evorait.evoprep.SHPlanName" sap:content-version="1"/>
-				<EntitySet Name="SHOrderNumberSet" EntityType="com.evorait.evoprep.SHOrderNumber" sap:content-version="1"/>
-				<EntitySet Name="SHPlanStatusSet" EntityType="com.evorait.evoprep.SHPlanStatus" sap:content-version="1"/>
-				<EntitySet Name="GanttHierarchySet" EntityType="com.evorait.evoprep.GanttHierarchy" sap:content-version="1"/>
-				<EntitySet Name="GanttHierarchyDependencySet" EntityType="com.evorait.evoprep.GanttHierarchyDependency" sap:content-version="1"/>
-				<EntitySet Name="NetworkRelationSet" EntityType="com.evorait.evoprep.NetworkRelation" sap:content-version="1"/>
-				<EntitySet Name="NavigationLinksSet" EntityType="com.evorait.evoprep.NavigationLinks" sap:content-version="1"/>
-				<EntitySet Name="PlanHeaderFunctionsSet" EntityType="com.evorait.evoprep.PlanHeaderFunctions" sap:content-version="1"/>
-				<EntitySet Name="SHUserStatusTxtSet" EntityType="com.evorait.evoprep.SHUserStatusTxt" sap:content-version="1"/>
-				<EntitySet Name="WorkCenterSet" EntityType="com.evorait.evoprep.WorkCenter" sap:content-version="1"/>
-				<EntitySet Name="PlanComponentsSet" EntityType="com.evorait.evoprep.PlanComponents" sap:content-version="1"/>
+				<EntitySet Name="ChangeLogsSet" EntityType="com.evorait.evoprep.ChangeLogs" sap:content-version="1"/>
 				<AssociationSet Name="PlanHeaderToPlanItemsSet" Association="com.evorait.evoprep.PlanHeaderToPlanItems" sap:creatable="false"
 					sap:updatable="false" sap:deletable="false" sap:content-version="1">
 					<End EntitySet="PlanHeaderSet" Role="FromRole_PlanHeaderToPlanItems"/>

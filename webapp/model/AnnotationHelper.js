@@ -158,6 +158,19 @@ sap.ui.define([],
 		};
 
 		/**
+		 * checks if annotation description has tab name inside compare
+		 */
+		var hasTabNameMatch = function (sValue, sAnnotation, sLongAnnotation) {
+			if (sValue && (sAnnotation || sLongAnnotation)) {
+				if (sValue === sAnnotation || sValue === sLongAnnotation) {
+					return true;
+				}
+				return false;
+			}
+			return false;
+		};
+
+		/**
 		 * get extension point name for field group before and after
 		 * in SmartFormTemplate fragment
 		 */
@@ -245,6 +258,11 @@ sap.ui.define([],
 			return "{path:'CreateModel>" + sProp + "'" + "," + "formatter:'.formatter.formatDate'" + "}";
 		};
 
+		/*Format compare screen dates*/
+		var getCompareDate = function (sProp) {
+			return "{path:'compareModel>" + sProp + "'" + "," + "formatter:'.formatter.formatDate'" + "}";
+		};
+
 		return {
 			resolveModelPath: resolveModelPath,
 			resolveObjectHeaderPath: resolveObjectHeaderPath,
@@ -260,7 +278,9 @@ sap.ui.define([],
 			getFieldExtPoint: getFieldExtPoint,
 			getFieldGroupExtPoint: getFieldGroupExtPoint,
 			getExtPoint: getExtPoint,
-			getOperationDate: getOperationDate
+			getOperationDate: getOperationDate,
+			getCompareDate: getCompareDate,
+			hasTabNameMatch: hasTabNameMatch
 		};
 
 	},

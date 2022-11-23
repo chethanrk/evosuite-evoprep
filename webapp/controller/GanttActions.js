@@ -23,56 +23,63 @@ sap.ui.define([
 		},
 
 		/**
-		 * Create Gantt Operation Payload 
+		 * Create Gantt Operation Payload for Batch Update
 		 * @{param} oPayloadData - Shape Data
 		 */
-		_prepareGanttOpeartionPayload: function (oPayloadData) {
+		_prepareGanttOpeartionPayload: function (aPayloadArray) {
+			this._oView.getModel().setDeferredGroups(["batchGanttUpdate"]);
 			return new Promise(function (resolve) {
-				var obj = {};
-				//collect all assignment properties who allowed for create
-				this._oView.getModel().getMetaModel().loaded().then(function () {
-					var oMetaModel = this._oView.getModel().getMetaModel(),
-						oEntitySet = oMetaModel.getODataEntitySet("GanttHierarchySet"),
-						oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
-						aProperty = oEntityType ? oEntityType.property : [];
-					aProperty.forEach(function (property) {
-						if (oPayloadData[property.name]) {
-							obj[property.name] = oPayloadData[property.name];
-						}
-					});
-					resolve(obj);
+				aPayloadArray.forEach(function (oPayloadData) {
+					var obj = {},
+						sPath,
+						mParameters = {
+							groupId: "batchGanttUpdate"
+						};
+					//collect all assignment properties who allowed for create
+					this._oView.getModel().getMetaModel().loaded().then(function () {
+						var oMetaModel = this._oView.getModel().getMetaModel(),
+							oEntitySet = oMetaModel.getODataEntitySet("GanttHierarchySet"),
+							oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
+							aProperty = oEntityType ? oEntityType.property : [];
+						aProperty.forEach(function (property) {
+							if (oPayloadData[property.name]) {
+								obj[property.name] = oPayloadData[property.name];
+							}
+						});
+						sPath = "/GanttHierarchySet('" + oPayloadData.ObjectKey + "')";
+						this._oView.getModel().update(sPath, oPayloadData, mParameters);
+					}.bind(this));
 				}.bind(this));
+				resolve(aPayloadArray);
 			}.bind(this));
 		},
 
 		/**
 		 * Method to Proceed to Update Gantt Operation Shapes to Backend
 		 * and refresh the Detail screen after updating successfully
-		 * @param aPath - Gantt path to be updated
-		 * @param oPayload - Opeartion Payload to be sent to backend
 		 */
-		_proceedToGanttOperationUpdate: function (sPath, oPayload) {
+		_proceedToGanttOperationUpdate: function () {
 			this._oView.getModel("viewModel").setProperty("/ganttSettings/busy", true);
-			this._updateGanttOperationCall(sPath, oPayload)
+			this._updateGanttOperationCall()
 				.then(function (oData) {
 					MessageToast.show(this._oView.getModel('i18n').getResourceBundle().getText("msg.OperationSaveSuccess"));
 					this._oView.getModel("viewModel").setProperty("/ganttSettings/busy", false);
 					this._oView.getModel().refresh();
 					var oEventBus = sap.ui.getCore().getEventBus();
 					oEventBus.publish("BaseController", "refreshFullGantt", this._loadGanttData, this);
-						this._oView.getModel("viewModel").setProperty("/bDependencyCall", true);
+					oEventBus.publish("BaseController", "refreshUtilizationGantt", this._loadUtilizationGantt, this);
+					this._oView.getModel("viewModel").setProperty("/bDependencyCall", true);
+					this._oView.byId("idPlanningGanttChartTable").getSelection().clear(true);
 				}.bind(this));
 		},
 
 		/**
-		 * Method to Update Gantt Operation Shapes to Backend
-		 * @param aPath - Gantt path to be updated
-		 * @param oPayload - Opeartion Payload to be sent to backend
+		 * Method for Batch Update Gantt Operation Shapes to Backend
 		 * @returns promise
 		 */
-		_updateGanttOperationCall: function (sPath, oPayload) {
+		_updateGanttOperationCall: function () {
 			return new Promise(function (resolve, reject) {
-				this._oView.getModel().update(sPath, oPayload, {
+				this._oView.getModel().submitChanges({
 					success: function (oData) {
 						resolve(oData);
 					},
@@ -87,12 +94,13 @@ sap.ui.define([
 		 * Creating Gantt Horizon for Gantt 
 		 * @param oAxisTimeStrategy - Gantt AxisTimeStrategy
 		 * @param oContext - Detail Page BindingContext
+		 * @param oDateRange - DateRange Context
 		 */
-		_createGanttHorizon: function (oAxisTimeStrategy, oContext) {
+		_createGanttHorizon: function (oAxisTimeStrategy, oContext, oDateRange) {
 			var sPath = oContext.getPath(),
 				oHorizonDates;
 			if (oAxisTimeStrategy) {
-				oHorizonDates = this._getHorizonDates(sPath);
+				oHorizonDates = this._getHorizonDates(sPath, oDateRange);
 				oAxisTimeStrategy.setTotalHorizon(new sap.gantt.config.TimeHorizon({
 					startTime: oHorizonDates.totalHorizon.startDate,
 					endTime: oHorizonDates.totalHorizon.endDate
@@ -108,23 +116,90 @@ sap.ui.define([
 		/**
 		 * Function to Calcualate Gantt Horizon Dates  
 		 * @param sPath 
+		 * @param oDateRange 
 		 */
-		_getHorizonDates: function (sPath) {
+		_getHorizonDates: function (sPath, oDateRange) {
 			var sStartDate = this._oView.getModel().getProperty(sPath + "/START_DATE"),
 				sEndDate = this._oView.getModel().getProperty(sPath + "/END_DATE"),
-				sMidDate = new Date(sEndDate - (sEndDate - sStartDate) / 2),
-				oHorizonDates = {
-					visibleHorizon: {
-						startDate: moment(sMidDate).startOf("day").subtract(2, "day").toDate(),
-						endDate: moment(sMidDate).endOf("day").add(1, "day").toDate() 
-					},
-					totalHorizon: {
-						startDate: moment(sStartDate).startOf("day").subtract(30, "day").toDate(), 
-						endDate: moment(sEndDate).endOf("day").add(30, "day").toDate() 
-					}
-				};
+				sTotalStartDate = sStartDate,
+				sTotalEndDate = sEndDate,
+				oHorizonDates;
+			if (oDateRange) {
+				sTotalStartDate = oDateRange.getDateValue();
+				sTotalEndDate = oDateRange.getSecondDateValue();
+			}
+			oHorizonDates = {
+				visibleHorizon: {
+					startDate: moment(sStartDate).startOf("day").subtract(1, "day").toDate(),
+					endDate: moment(sEndDate).endOf("day").add(1, "day").toDate()
+				},
+				totalHorizon: {
+					startDate: moment(sTotalStartDate).startOf("day").subtract(1, "day").toDate(),
+					endDate: moment(sTotalEndDate).endOf("day").add(1, "day").toDate()
+				}
+			};
 			return oHorizonDates;
 		},
+
+		/**
+		 * Creating Gantt Horizon for Utilization Gantt Chart
+		 * @param oAxisTimeStrategy - Gantt AxisTimeStrategy
+		 * @param oContext - Detail Page BindingContext
+		 * @param sKey - View Mode Key
+		 */
+		_createUtilizationGanttHorizon: function (oAxisTimeStrategy, oContext, sKey) {
+			if (oAxisTimeStrategy) {
+				var sPath = oContext.getPath(),
+					oHorizonDates = this._getUtilizationGanttHorizonDates(sPath, sKey);
+				oAxisTimeStrategy.setVisibleHorizon(new sap.gantt.config.TimeHorizon({
+					startTime: oHorizonDates.visibleHorizon.startDate,
+					endTime: oHorizonDates.visibleHorizon.endDate
+				}));
+				oAxisTimeStrategy.setTotalHorizon(new sap.gantt.config.TimeHorizon({
+					startTime: oHorizonDates.totalHorizon.startDate,
+					endTime: oHorizonDates.totalHorizon.endDate
+				}));
+				oAxisTimeStrategy.setTimeLineOption(formatter.getTimeLineOptions(sKey));
+				if (sKey === "D") {
+					oAxisTimeStrategy.setZoomLevel(6);
+				}
+			}
+		},
+
+		/**
+		 * Function to Calcualate Utilization Gantt Horizon Dates  
+		 * @param sPath 
+		 */
+		_getUtilizationGanttHorizonDates: function (sPath, sKey) {
+			var sStartDate = this._oView.getModel().getProperty(sPath + "/START_DATE"),
+				sEndDate = this._oView.getModel().getProperty(sPath + "/END_DATE"),
+				sTotalStartDate, sTotalEndDate;
+			if (sKey === "W") {
+				sTotalStartDate = moment(sStartDate).startOf('week').toDate();
+				sTotalEndDate = moment(sEndDate).endOf('week').toDate();
+			} else if (sKey === "M") {
+				sTotalStartDate = moment(sStartDate).startOf('month').toDate();
+				sTotalEndDate = moment(sEndDate).endOf('month').toDate();
+			} else if (sKey === "D") {
+				sTotalStartDate = sStartDate;
+				sTotalEndDate = sEndDate;
+			}
+			sTotalStartDate = moment(sTotalStartDate).startOf("day").subtract(1, "day").toDate();
+			sTotalEndDate = moment(sTotalEndDate).endOf("day").add(1, "day").toDate();
+
+			var oHorizonDates = {
+				visibleHorizon: {
+					startDate: sStartDate,
+					endDate: sEndDate
+				},
+				totalHorizon: {
+					startDate: sTotalStartDate,
+					endDate: sTotalEndDate
+				}
+			};
+			return oHorizonDates;
+		},
+
 	});
 
 });

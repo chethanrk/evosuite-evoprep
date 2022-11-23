@@ -125,20 +125,32 @@ sap.ui.define([
 		onPressAdd: function (oEvent) {
 			var oSmartTable = sap.ui.getCore().byId("idOperationListFragSmartTable"),
 				oTable = oSmartTable.getTable(),
-				aSelectedItems = oTable.getSelectedItems();
+				aSelectedItems = oTable.getSelectedItems(),
+				aAllOperationsSelected = [];
 
 			if (aSelectedItems.length === 0) {
 				this.showMessageToast(this.getResourceBundle().getText("msg.selectAtleast"));
 				return;
 			}
 			var oOperationData = this.oCreateModel.getData();
-			aSelectedItems.forEach(function (oItem) {
-				var oSelObject = oItem.getBindingContext().getObject();
-				delete oSelObject.__metadata;
-				oOperationData.results.push(oSelObject);
-			}.bind(this));
+			//When Select All is pressed
+			if (this.bOperationSelectAll) {
+				aAllOperationsSelected = this.aOprFrgAllOperations;
+				aAllOperationsSelected.forEach(function (oSelObject) {
+					delete oSelObject.__metadata;
+					oOperationData.results.push(oSelObject);
+				}.bind(this));
+			} else {
+				aSelectedItems.forEach(function (oItem) {
+					var oSelObject = oItem.getBindingContext().getObject();
+					delete oSelObject.__metadata;
+					oOperationData.results.push(oSelObject);
+				}.bind(this));
+			}
+			this.oViewModel.setProperty("/aAllSelectedOperations", aAllOperationsSelected);
 			this.oCreateModel.refresh();
 			this.onPressOperationListCancel();
+		//	this.bOperationSelectAll = false;
 		},
 
 		/**
@@ -172,7 +184,7 @@ sap.ui.define([
 							oPayloadData.PlanHeaderToPlanItems = this.oCreateModel.getProperty("/results");
 							oPayloadData.FUNCTION = this.getModel("user").getProperty("/DEFAULT_FUNCTION");
 
-							this.CreatePrePlan(oPayloadData, this._createSuccess.bind(this),this._errorCallBackForPlanHeaderSet.bind(this));
+							this.CreatePrePlan(oPayloadData, this._createSuccess.bind(this), this._errorCallBackForPlanHeaderSet.bind(this));
 						}
 					}.bind(this));
 				}
@@ -286,7 +298,8 @@ sap.ui.define([
 			MessageBox.confirm(
 				sMsg, {
 					styleClass: this.getOwnerComponent().getContentDensityClass(),
-					actions: [oResourceBundle.getText("btn.successMsgBxBtnBack"), oResourceBundle.getText("btn.successMsgBxBtnPlanDetail"), oResourceBundle.getText("btn.successMsgBxBtnContinueEditing")
+					actions: [oResourceBundle.getText("btn.successMsgBxBtnBack"), oResourceBundle.getText("btn.successMsgBxBtnPlanDetail"),
+						oResourceBundle.getText("btn.successMsgBxBtnContinueEditing")
 					],
 					onClose: function (oAction) {
 						if (oAction === oResourceBundle.getText("btn.successMsgBxBtnBack")) {
@@ -311,13 +324,27 @@ sap.ui.define([
 		_getValidationParameters: function (aItems) {
 			return new Promise(function (resolve) {
 				var oPrepData = {
-					"sOrder": undefined,
-					"sOpr": undefined
-				};
+						"sOrder": undefined,
+						"sOpr": undefined
+					},
+					bCheckAllSelected = false;
+				//If All Items are Selected, All the rows data will be populated
+				if (this.oViewModel.getProperty("/aAllSelectedOperations").length !== 0) {
+					aItems = this.oViewModel.getProperty("/aAllSelectedOperations");
+					bCheckAllSelected = true;
+					this.oViewModel.setProperty("/operationTableCount", this.getResourceBundle().getText("tit.opr", (aItems.length).toString()));
+				}
 				aItems.forEach(function (oItem) {
-					var sordnum = oItem.getBindingContext("CreateModel").getProperty("ORDER_NUMBER"),
+					var sordnum, soprnum;
+					//When it's SelectAll data is fetched from stored Json
+					if (bCheckAllSelected) {
+						sordnum = oItem.ORDER_NUMBER;
+						soprnum = oItem.OPERATION_NUMBER;
+					} else {
+						//Data is feteched only from selected context's
+						sordnum = oItem.getBindingContext("CreateModel").getProperty("ORDER_NUMBER");
 						soprnum = oItem.getBindingContext("CreateModel").getProperty("OPERATION_NUMBER");
-
+					}
 					if (typeof oPrepData.sOrder === "undefined") {
 						oPrepData.sOrder = sordnum;
 					} else {

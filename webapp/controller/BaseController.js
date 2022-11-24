@@ -203,7 +203,11 @@ sap.ui.define([
 					public: true,
 					final: true
 				},
-				getViewUniqueName: {
+				onPressSmartField: {
+					public: true,
+					final: true
+				},
+				onPressSmartField: {
 					public: true,
 					final: true
 				}
@@ -950,7 +954,7 @@ sap.ui.define([
 			var fnPlanDetailCallBack = function (oData) {
 				this.navToDetail(newPlanGuid);
 			};
-			
+
 			var callBackFunction = function (oData) {
 				this._setBusyWhileSaving(oTable, false);
 				sMsg = oData.Messagebap;
@@ -1016,7 +1020,7 @@ sap.ui.define([
 				plan: sHeaderKeyId
 			});
 		},
-		
+
 		/**
 		 * gets unique view id setted by TemplateRenderer
 		 * @return string
@@ -1025,6 +1029,15 @@ sap.ui.define([
 			var sViewId = this.getView().getId(),
 				sViewName = this.getView().getViewName();
 			return sViewName + "#" + sViewId;
+		},
+
+		/**
+		 * when SmartField is visible as link
+		 * show app to app navigation popup
+		 */
+		onPressSmartField: function (oEvent) {
+			var oSource = oEvent.getSource();
+			this.openApp2AppPopover(oSource, oSource.getUrl());
 		},
 
 		/* =========================================================== */

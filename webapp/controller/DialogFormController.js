@@ -74,16 +74,7 @@ sap.ui.define([
 				this._sViewNameId = this.getViewUniqueName();
 
 				if (oData.viewNameId === this._sViewNameId) {
-					//SmartForm is editable
-					var oDetail = this.getView().getParent().getParent(),
-						oContext = oDetail.getBindingContext();
 
-					this._aSmartForms = this.getAllSmartForms(this.getView().getControlsByFieldGroupId("smartFormTemplate"));
-					if (oContext.getProperty("ALLOW_FINAL")) {
-						this.setFormsEditable(this._aSmartForms, true);
-					} else {
-						this.setFormsEditable(this._aSmartForms, false);
-					}
 				}
 			}
 		},
@@ -113,6 +104,9 @@ sap.ui.define([
 			if (this._oDialog) {
 				this._oDialog.setContentWidth("auto");
 			}
+
+			this.setFormsEditable(this._aSmartForms, this._mParams.saveButtonVisible);
+
 		}
 
 	});

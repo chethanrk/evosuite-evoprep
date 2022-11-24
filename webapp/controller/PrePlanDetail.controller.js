@@ -162,11 +162,14 @@ sap.ui.define([
 		/**
 		 * Called when a controller is destroyed
 		 * Object on exit
+		 * Unsubscribe the subscribed events
 		 */
 		onExit: function () {
 			this.getView().unbindElement();
 			var eventBus = sap.ui.getCore().getEventBus();
 			eventBus.unsubscribe("TemplateRendererEvoPrep", "changedBinding", this._changedBinding, this);
+			eventBus.unsubscribe("BaseController", "refreshFullGantt", this._loadGanttData, this);
+			eventBus.unsubscribe("BaseController", "refreshUtilizationGantt", this._loadUtilizationGantt, this);
 
 			if (this._actionSheetStatus) {
 				this._actionSheetStatus.destroy(true);
@@ -507,7 +510,10 @@ sap.ui.define([
 		onDoubleClickPlanningGantt: function (oEvent) {
 			var oShape = oEvent.getParameter("shape"),
 				oContext = oShape.getBindingContext("ganttModel"),
-				mParams = {};
+				oHeaderContext = this.getView().getBindingContext(),
+				mParams = {},
+				bValidate = formatter.checkGanttEditability(this.getModel("user").getProperty("/ENABLE_PREPLAN_UPDATE"), oContext.getProperty(
+					"READ_ONLY"), this.oViewModel.getProperty("/bEnableGanttShapesEdit"), oHeaderContext.getProperty("ALLOW_FINAL"));
 
 			if (oContext && oContext.getProperty("OPERATION_NUMBER") !== "") {
 				mParams = {
@@ -517,7 +523,7 @@ sap.ui.define([
 					controllerName: "EditOperation",
 					title: "tit.editOperation",
 					type: "Edit",
-					saveButtonVisible: this.getView().getBindingContext().getProperty("ALLOW_FINAL"),
+					saveButtonVisible: bValidate,
 					sPath: "/GanttHierarchySet('" + oContext.getProperty("ObjectKey") + "')"
 				};
 				this.getOwnerComponent().DialogTemplateRenderer.open(this.getView(), mParams);

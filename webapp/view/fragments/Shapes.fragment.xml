@@ -7,11 +7,11 @@
 				title="{ganttModel>GANTT_BAR_DESCRIPTION}" showTitle="true" tooltip="{ganttModel>GANTT_BAR_DESCRIPTION}" fill="{ganttModel>COLOR}"/>
 			<gnt2:BaseRectangle shapeId="{ganttModel>ObjectKey}" countInBirdEye="true" hoverable="true"
 				time="{parts:['ganttModel>START_DATE','ganttModel>START_TIME'],formatter:'.formatter.mergeDateTime'}" height="19"
-				endTime="{parts:['ganttModel>END_DATE','ganttModel>END_TIME'],formatter:'.formatter.mergeDateTime'}"
-				fill="{ganttModel>COLOR}" title="{ganttModel>GANTT_BAR_DESCRIPTION}" showTitle="true" tooltip="{ganttModel>GANTT_BAR_DESCRIPTION}"
-				selectable="{= ${user>/ENABLE_PREPLAN_UPDATE} === 'X' &amp;&amp; ${ganttModel>READ_ONLY} === false &amp;&amp; ${viewModel>/bEnableGanttShapesEdit} === true &amp;&amp; ${ALLOW_FINAL} === true}"
-				draggable="{= ${user>/ENABLE_PREPLAN_UPDATE} === 'X' &amp;&amp; ${ganttModel>READ_ONLY} === false &amp;&amp; ${viewModel>/bEnableGanttShapesEdit} === true &amp;&amp; ${ALLOW_FINAL} === true}"
-				resizable="{= ${user>/ENABLE_PREPLAN_UPDATE} === 'X' &amp;&amp; ${ganttModel>READ_ONLY} === false &amp;&amp; ${viewModel>/bEnableGanttShapesEdit} === true &amp;&amp; ${ALLOW_FINAL} === true}"/>
+				endTime="{parts:['ganttModel>END_DATE','ganttModel>END_TIME'],formatter:'.formatter.mergeDateTime'}" fill="{ganttModel>COLOR}"
+				title="{ganttModel>GANTT_BAR_DESCRIPTION}" showTitle="true" tooltip="{ganttModel>GANTT_BAR_DESCRIPTION}"
+				selectable="{parts:[{path:'user>/ENABLE_PREPLAN_UPDATE'},{path:'ganttModel>READ_ONLY'},{path:'viewModel>/bEnableGanttShapesEdit'},{path:'ALLOW_FINAL'}],formatter:'.formatter.checkGanttEditability'}"
+				draggable="{parts:[{path:'user>/ENABLE_PREPLAN_UPDATE'},{path:'ganttModel>READ_ONLY'},{path:'viewModel>/bEnableGanttShapesEdit'},{path:'ALLOW_FINAL'}],formatter:'.formatter.checkGanttEditability'}"
+				resizable="{parts:[{path:'user>/ENABLE_PREPLAN_UPDATE'},{path:'ganttModel>READ_ONLY'},{path:'viewModel>/bEnableGanttShapesEdit'},{path:'ALLOW_FINAL'}],formatter:'.formatter.checkGanttEditability'}"/>
 		</gnt2:shapes>
 	</gnt2:BaseConditionalShape>
 </core:FragmentDefinition>

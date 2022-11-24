@@ -202,6 +202,10 @@ sap.ui.define([
 				navToLogs: {
 					public: true,
 					final: true
+				},
+				onFinalizeBtnPress: {
+					public: true,
+					final: true
 				}
 			}
 		},
@@ -705,7 +709,7 @@ sap.ui.define([
 		 * @param errorFn
 		 */
 		deleteEntries: function (aSelected, oTable) {
-	
+
 			return new Promise(function (resolve) {
 				var oModel = this.getModel(),
 					aContext = [];

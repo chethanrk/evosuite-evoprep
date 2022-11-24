@@ -136,6 +136,12 @@ sap.ui.define([
 			} else {
 				this.getModel("viewModel").setProperty("/bMaterialsDemandsBlock", false);
 			}
+			// check the enable or disable finalize button in the operations table header
+			if (this._returnFinalizeContext(this.oSmartTable.getTable()).length > 0) {
+				this.getModel("viewModel").setProperty("/bEnableFinalizePlanDetails", true);
+			} else {
+				this.getModel("viewModel").setProperty("/bEnableFinalizePlanDetails", false);
+			}
 
 		},
 		/**

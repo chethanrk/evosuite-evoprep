@@ -202,6 +202,10 @@ sap.ui.define([
 				navToLogs: {
 					public: true,
 					final: true
+				},
+				onFinalizeBtnPress: {
+					public: true,
+					final: true
 				}
 			}
 		},
@@ -705,6 +709,7 @@ sap.ui.define([
 		 * @param errorFn
 		 */
 		deleteEntries: function (aSelected, oTable) {
+
 			return new Promise(function (resolve) {
 				var oModel = this.getModel(),
 					aContext = [];
@@ -1358,7 +1363,10 @@ sap.ui.define([
 			} else {
 				oTable.clearSelection(true);
 			}
+			this.getModel("viewModel").setProperty("/bEnableFinalizeOperationList", false);
+			this.getModel("viewModel").setProperty("/bEnableFinalizePlanDetails", false);
 			this.oSmartTable.rebindTable(true);
+			this.getModel().resetChanges();
 		}
 
 	});

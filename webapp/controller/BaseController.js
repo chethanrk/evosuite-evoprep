@@ -742,7 +742,6 @@ sap.ui.define([
 		 * @param oCtrl
 		 */
 		saveChangesMain: function (mParams, oSuccessCallback, oErrorCallback, oCtrl) {
-			console.log(this.getModel());
 			if (mParams.state === "success") {
 				this._setBusyWhileSaving(oCtrl, true);
 

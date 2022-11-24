@@ -20,6 +20,8 @@
 				<Button icon="sap-icon://delete" press="onPressDeleteOperations" tooltip="{i18n>btn.remove}"
 					visible="{parts: [{path:'ALLOW_FINAL'}, {path:'user>/ENABLE_ITEM_DELETE'} ], formatter:'.formatter.showOperationEditDel'}"
 					enabled="{viewModel>/bEnableOperationDelete}"/>
+				<Button text="{i18n>btn.finalize}" tooltip="{i18n>btn.finalize}" press="onFinalizeBtnPress"
+					enabled="{viewModel>/bEnableFinalizePlanDetails}"/>
 				<Button id="idOverallStatusButton" icon="sap-icon://synchronize" enabled="{viewModel>/bMaterialsDemandsBlock}"
 					text="{i18n>btn.materialStatus}" tooltip="{i18n>btn.materialStatus}" visible="{user>/ENABLE_MATERIAL_AVAILABILITY}"
 					press="onMaterialStatusPress"/>

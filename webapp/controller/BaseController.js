@@ -705,6 +705,7 @@ sap.ui.define([
 		 * @param errorFn
 		 */
 		deleteEntries: function (aSelected, oTable) {
+	
 			return new Promise(function (resolve) {
 				var oModel = this.getModel(),
 					aContext = [];
@@ -737,6 +738,7 @@ sap.ui.define([
 		 * @param oCtrl
 		 */
 		saveChangesMain: function (mParams, oSuccessCallback, oErrorCallback, oCtrl) {
+			console.log(this.getModel());
 			if (mParams.state === "success") {
 				this._setBusyWhileSaving(oCtrl, true);
 
@@ -1358,7 +1360,10 @@ sap.ui.define([
 			} else {
 				oTable.clearSelection(true);
 			}
+			this.getModel("viewModel").setProperty("/bEnableFinalizeOperationList", false);
+			this.getModel("viewModel").setProperty("/bEnableFinalizePlanDetails", false);
 			this.oSmartTable.rebindTable(true);
+			this.getModel().resetChanges();
 		}
 
 	});

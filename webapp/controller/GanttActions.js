@@ -151,6 +151,9 @@ sap.ui.define([
 			if (oAxisTimeStrategy) {
 				var sPath = oContext.getPath(),
 					oHorizonDates = this._getUtilizationGanttHorizonDates(sPath, sKey);
+				if (sKey === "D") {
+					oAxisTimeStrategy.setZoomLevel(6);
+				}
 				oAxisTimeStrategy.setVisibleHorizon(new sap.gantt.config.TimeHorizon({
 					startTime: oHorizonDates.visibleHorizon.startDate,
 					endTime: oHorizonDates.visibleHorizon.endDate
@@ -160,9 +163,6 @@ sap.ui.define([
 					endTime: oHorizonDates.totalHorizon.endDate
 				}));
 				oAxisTimeStrategy.setTimeLineOption(formatter.getTimeLineOptions(sKey));
-				if (sKey === "D") {
-					oAxisTimeStrategy.setZoomLevel(6);
-				}
 			}
 		},
 

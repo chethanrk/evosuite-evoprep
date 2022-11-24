@@ -21,51 +21,6 @@
 		<edmx:Include Alias="UI" Namespace="com.sap.vocabularies.UI.v1"/>
 	</edmx:Reference>
 	<edmx:DataServices>
-		<Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="com.evorait.evoprep">
-			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="com.evorait.evoprep.GanttHierarchy">
-				<Annotation Term="UI.Facets" Qualifier="EditOperations">
-					<Collection>
-						<Record Type="UI.CollectionFacet">
-							<PropertyValue Property="Facets">
-								<Collection>
-									<Record Type="UI.ReferenceFacet">
-										<PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#EditOperations"/>
-									</Record>
-								</Collection>
-							</PropertyValue>
-						</Record>
-					</Collection>
-				</Annotation>
-				<Annotation Term="UI.FieldGroup" Qualifier="EditOperations">
-					<Record Type="UI.FieldGroupType">
-						<PropertyValue Property="Data">
-							<Collection>
-								<Record Type="UI.DataField">
-									<PropertyValue Property="Value" Path="ORDER_NUMBER"/>
-								</Record>
-								<Record Type="UI.DataField">
-									<PropertyValue Property="Value" Path="ORDER_NUMBER_DESCRIPTION"/>
-								</Record>
-								<Record Type="UI.DataField">
-									<PropertyValue Property="Value" Path="OPERATION_NUMBER"/>
-								</Record>
-								<Record Type="UI.DataField">
-									<PropertyValue Property="Value" Path="OPERATION_DESCRIPTION"/>
-								</Record>
-								<Record Type="UI.DataField">
-									<PropertyValue Property="Value" Path="EARLIEST_START_DATE"/>
-								</Record>
-								<Record Type="UI.DataField">
-									<PropertyValue Property="Value" Path="EARLIEST_END_DATE"/>
-								</Record>
-								<Record Type="UI.DataField">
-									<PropertyValue Property="Value" Path="WORKCENTRE"/>
-								</Record>
-							</Collection>
-						</PropertyValue>
-					</Record>
-				</Annotation>
-			</Annotations>
-		</Schema>
+		<Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="com.evorait.evoprep"></Schema>
 	</edmx:DataServices>
 </edmx:Edmx>

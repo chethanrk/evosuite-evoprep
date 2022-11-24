@@ -74,7 +74,7 @@ sap.ui.define([
 				this._sViewNameId = this.getViewUniqueName();
 
 				if (oData.viewNameId === this._sViewNameId) {
-
+					//Any generic logic to the dialog
 				}
 			}
 		},
@@ -104,7 +104,7 @@ sap.ui.define([
 			if (this._oDialog) {
 				this._oDialog.setContentWidth("auto");
 			}
-
+			//set form editable based on plan status/operation status/gantt edit feature 
 			this.setFormsEditable(this._aSmartForms, this._mParams.saveButtonVisible);
 
 		}

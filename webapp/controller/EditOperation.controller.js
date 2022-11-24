@@ -46,7 +46,7 @@ sap.ui.define([
 		 * @param oEvent
 		 */
 		onChangeSmartField: function (oEvent) {
-
+			//any validation in edit opeation functioanlity
 		},
 
 		/* =========================================================== */
@@ -69,11 +69,10 @@ sap.ui.define([
 
 			if (oData && oData.viewNameId === this._sViewNameId) {
 				this._getDefaultGlobalParameters();
-				this._oParentContext = this.getView().getParent().getParent().getBindingContext().getObject();
 
 				//Edit specific logic
 				if (this._type.edit) {
-
+					//any firther logic related edit functionality
 				}
 			}
 		}

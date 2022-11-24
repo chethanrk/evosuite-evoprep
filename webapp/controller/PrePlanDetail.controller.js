@@ -523,7 +523,7 @@ sap.ui.define([
 					controllerName: "EditOperation",
 					title: "tit.editOperation",
 					type: "Edit",
-					saveButtonVisible: bValidate,
+					saveButtonVisible: bValidate, //Validate the edit feature based on syatem info/operation status/plan status and edit gantt indicator
 					sPath: "/GanttHierarchySet('" + oContext.getProperty("ObjectKey") + "')"
 				};
 				this.getOwnerComponent().DialogTemplateRenderer.open(this.getView(), mParams);
@@ -596,6 +596,9 @@ sap.ui.define([
 
 				if (oData.viewNameId === sViewName) {
 					this._oContext = this.getView().getBindingContext();
+					if (!this._oContext) {
+						return;
+					}
 					this._resetGlobalValues(); //Called to reset all the global values
 					this._rebindPage();
 					this._loadUtilizationGantt();

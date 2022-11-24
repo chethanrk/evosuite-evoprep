@@ -153,6 +153,7 @@ sap.ui.define([
 		goBackToPrePlans: function () {
 			this._removeOprTableSelection();
 			this.oViewModel.setProperty("/bMaterialsOperations", false);
+			this.oViewModel.setProperty("/bEnableFinalizeOperationList", false);
 			this.getOwnerComponent().getRouter().navTo("PrePlanMaster");
 		},
 

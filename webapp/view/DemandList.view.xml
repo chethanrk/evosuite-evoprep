@@ -53,7 +53,7 @@
 						<ToolbarSpacer/>
 						<Text text="{i18n>xbut.SelectAll}"/>
 						<Switch id="idSwitchSelectAll" change="onChangeSelectAll"/>
-						<Button text="Finalize" tooltip="{i18n>btn.materialInfoButton}" 
+						<Button text="{i18n>btn.finalize}" tooltip="{i18n>btn.finalize}" 
 							press="onFinalizeBtnPress" enabled="{viewModel>/bEnableFinalizeOperationList}" />
 						<Button press="onPressCreatePrePlanButton" tooltip="{i18n>tit.createPrePlan}" text="{i18n>tit.createPrePlan}"
 							visible="{= ${user>/ENABLE_PREPLAN_CREATE} === 'X'}" enabled="{viewModel>/allowPrePlanCreate}"/>

@@ -43,7 +43,8 @@
 								rows="{path: 'ganttModel>/data', parameters: { arrayNames: ['children'], numberOfExpandedLevels: 1, groupId: 'GanttTree'} }">
 								<table:columns>
 									<template:repeat list="{path:'tempProps>ganttConfigs/lineItems/'}" var="lineItem">
-										<table:Column>
+										<table:Column sortProperty="{= ${path:'lineItem>Value/Path'}}" filterProperty="{= ${path:'lineItem>Value/Path'}}"
+											tooltip="{:= '{/' + ${tempProps>ganttConfigs/entitySet} + '/' + ${lineItem>Value/Path} + '/##com.sap.vocabularies.Common.v1.Label/String}' }">
 											<Text
 												text="{:= '{/' + ${tempProps>ganttConfigs/entitySet} + '/' + ${lineItem>Value/Path} + '/##com.sap.vocabularies.Common.v1.Label/String}' }"/>
 											<table:template>

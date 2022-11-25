@@ -361,8 +361,8 @@ sap.ui.define([
 			}
 			return sThen + ' ' + sOldVal + '\n' + sNow + ' ' + sNewVal;
 		},
-        
-        /**
+
+		/**
 		 * format the plan status acording state
 		 * @param sValue
 		 */
@@ -379,6 +379,18 @@ sap.ui.define([
 				}
 			}
 			return "None";
+		},
+
+		/**
+		 * Garphicplanning edit handling
+		 * @param bEnableUpdateplan - system info indicator
+		 * @param bGanttRealOnly - operation edit indicator
+		 * @param bEnableGanttShapesEdit - local edit indicator
+		 * @param ballowFinal - plan final status indicator
+		 * 
+		 */
+		checkGanttEditability: function (bEnableUpdateplan, bGanttRealOnly, bEnableGanttShapesEdit, ballowFinal) {
+			return Boolean(bEnableUpdateplan === 'X' && !bGanttRealOnly && bEnableGanttShapesEdit && ballowFinal);
 		},
         
         /**

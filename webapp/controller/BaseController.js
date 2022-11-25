@@ -76,7 +76,7 @@ sap.ui.define([
 					public: true,
 					final: true
 				},
-				open: {
+				openDialog: {
 					public: true,
 					final: true
 				},
@@ -200,6 +200,14 @@ sap.ui.define([
 					final: true
 				},
 				navToLogs: {
+					public: true,
+					final: true
+				},
+				onFinalizeBtnPress: {
+					public: true,
+					final: true
+				},
+                onPressSmartField: {
 					public: true,
 					final: true
 				}
@@ -355,10 +363,10 @@ sap.ui.define([
 					controller: this
 				}).then(function (oDialog) {
 					this._infoDialog = oDialog;
-					this.open(oDialog);
+					this.openDialog(oDialog);
 				}.bind(this));
 			} else {
-				this.open(this._infoDialog);
+				this.openDialog(this._infoDialog);
 			}
 		},
 
@@ -366,7 +374,7 @@ sap.ui.define([
 		 * Open information popover 
 		 * @param {oDialog}  -- information dialog instance
 		 */
-		open: function (oDialog) {
+		openDialog: function (oDialog) {
 			var oView = this.getView();
 			oDialog.addStyleClass(this.getOwnerComponent().getContentDensityClass());
 			oView.addDependent(oDialog);
@@ -705,6 +713,7 @@ sap.ui.define([
 		 * @param errorFn
 		 */
 		deleteEntries: function (aSelected, oTable) {
+
 			return new Promise(function (resolve) {
 				var oModel = this.getModel(),
 					aContext = [];
@@ -883,7 +892,7 @@ sap.ui.define([
 				}).then(function (oDialog) {
 					this._addOperationsDetail = oDialog;
 					this.getView().addDependent(oDialog);
-					this.open(oDialog);
+					this.openDialog(oDialog);
 					this._addOperationsDetail.attachAfterOpen(function () {
 						var oOpSmartTable = sap.ui.getCore().byId("idOperationListFragSmartTable");
 						oOpSmartTable.getTable().removeSelections();
@@ -891,7 +900,7 @@ sap.ui.define([
 					}.bind(this));
 				}.bind(this));
 			} else {
-				this.open(this._addOperationsDetail);
+				this.openDialog(this._addOperationsDetail);
 			}
 			this.bOperationSelectAll = false;
 			sap.ui.getCore().byId("idOprSwitchSelectAll").setState(false);
@@ -946,7 +955,7 @@ sap.ui.define([
 			var fnPlanDetailCallBack = function (oData) {
 				this.navToDetail(newPlanGuid);
 			};
-			
+
 			var callBackFunction = function (oData) {
 				this._setBusyWhileSaving(oTable, false);
 				sMsg = oData.Messagebap;
@@ -1013,6 +1022,25 @@ sap.ui.define([
 			});
 		},
 
+		/**
+		 * gets unique view id setted by TemplateRenderer
+		 * @return string
+		 */
+		getViewUniqueName: function () {
+			var sViewId = this.getView().getId(),
+				sViewName = this.getView().getViewName();
+			return sViewName + "#" + sViewId;
+		},
+
+		/**
+		 * when SmartField is visible as link
+		 * show app to app navigation popup
+		 */
+		onPressSmartField: function (oEvent) {
+			var oSource = oEvent.getSource();
+			this.openApp2AppPopover(oSource, oSource.getUrl());
+		},
+
 		/* =========================================================== */
 		/* Private methods                                              */
 		/* =========================================================== */
@@ -1065,6 +1093,26 @@ sap.ui.define([
 			}
 			if (aSelectedItemsPath.length > 0) {
 				this.getOwnerComponent().materialInfoDialog.open(this.getView(), aSelectedItemsPath);
+			}
+		},
+		/**
+		 * Method called on the press of finalize button press on the 
+		 * operations table
+		 */
+		onFinalizeBtnPress: function () {
+			var oTable = this.oSmartTable.getTable(),
+				aSelectedContext = this._returnFinalizeContext(oTable),
+				sPath;
+
+			for (var i = 0; i < aSelectedContext.length; i++) {
+				sPath = aSelectedContext[i].getPath();
+				this.getModel().setProperty(sPath + "/FUNCTION", "OPER_DISPATCH");
+			}
+			if (aSelectedContext.length > 0) {
+				this.saveChangesMain({
+					state: "success",
+					isCreate: false
+				}, this._afterSucessFinalize.bind(this));
 			}
 		},
 		/*
@@ -1296,6 +1344,52 @@ sap.ui.define([
 			}
 
 			return aArrayMaterialContext;
+		},
+		/** Method to get the context of selected items in the 
+		 * demands table which has allow_edit true 
+		 * This method is used in the Demands List and Plan Details Views
+		 * @param oTable {object} table instance
+		 * @return aArrayMaterialContext {array}
+		 */
+		_returnFinalizeContext: function (oTable) {
+			var aSelectections, aContext, sDemandPath, sSystemStatus, aArrayMaterialContext = [];
+			if (oTable.getAggregation("items")) {
+				aSelectections = oTable.getSelectedItems();
+				for (var i = 0; i < aSelectections.length; i++) {
+					aContext = aSelectections[i].getBindingContext();
+					sDemandPath = aContext.getPath();
+					sSystemStatus = this.getModel().getProperty(sDemandPath + "/ALLOW_EDIT");
+					if (sSystemStatus === "X") {
+						aArrayMaterialContext.push(aContext);
+					}
+				}
+			} else {
+				aSelectections = this.oSmartTable.getTable().getSelectedIndices();
+				for (var j = 0; j < aSelectections.length; j++) {
+					aContext = this.oSmartTable.getTable().getContextByIndex(aSelectections[j]);
+					sDemandPath = aContext.getPath();
+					sSystemStatus = this.getModel().getProperty(sDemandPath + "/ALLOW_EDIT");
+					if (sSystemStatus === "X") {
+						aArrayMaterialContext.push(aContext);
+					}
+				}
+			}
+			return aArrayMaterialContext;
+		},
+		/** This method is called after the sucess call on press
+		 * of the finalize button for the operation
+		 */
+		_afterSucessFinalize: function () {
+			var oTable = this.oSmartTable.getTable();
+			if (oTable.getAggregation("items")) {
+				oTable.removeSelections();
+			} else {
+				oTable.clearSelection(true);
+			}
+			this.getModel("viewModel").setProperty("/bEnableFinalizeOperationList", false);
+			this.getModel("viewModel").setProperty("/bEnableFinalizePlanDetails", false);
+			this.oSmartTable.rebindTable(true);
+			this.getModel().resetChanges();
 		}
 
 	});

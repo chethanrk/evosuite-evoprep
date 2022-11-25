@@ -45,7 +45,7 @@
 								<table:columns>
 									<template:repeat list="{path:'tempProps>ganttUtilizationConfigs/lineItems/'}" var="lineItem">
 										<table:Column sortProperty="{= ${path:'lineItem>Value/Path'}}" filterProperty="{= ${path:'lineItem>Value/Path'}}"
-											tooltip="{= ${path:'lineItem>Value/Path'}}">
+											tooltip="{:= '{/' + ${tempProps>ganttUtilizationConfigs/entitySet} + '/' + ${lineItem>Value/Path} + '/##com.sap.vocabularies.Common.v1.Label/String}' }">
 											<Label
 												text="{:= '{/' + ${tempProps>ganttUtilizationConfigs/entitySet} + '/' + ${lineItem>Value/Path} + '/##com.sap.vocabularies.Common.v1.Label/String}' }"/>
 											<table:template>

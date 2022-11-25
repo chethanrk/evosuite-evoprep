@@ -105,6 +105,11 @@ sap.ui.define([
 					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
+				onDoubleClickPlanningGantt: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
 				onBeforeRebindUtilizationDetails: {
 					public: true,
 					final: false,
@@ -157,11 +162,14 @@ sap.ui.define([
 		/**
 		 * Called when a controller is destroyed
 		 * Object on exit
+		 * Unsubscribe the subscribed events
 		 */
 		onExit: function () {
 			this.getView().unbindElement();
 			var eventBus = sap.ui.getCore().getEventBus();
 			eventBus.unsubscribe("TemplateRendererEvoPrep", "changedBinding", this._changedBinding, this);
+			eventBus.unsubscribe("BaseController", "refreshFullGantt", this._loadGanttData, this);
+			eventBus.unsubscribe("BaseController", "refreshUtilizationGantt", this._loadUtilizationGantt, this);
 
 			if (this._actionSheetStatus) {
 				this._actionSheetStatus.destroy(true);
@@ -495,6 +503,34 @@ sap.ui.define([
 		},
 
 		/**
+		 * Called when double click on shapes
+		 * collectes the annotations and view details
+		 * @param oEvent
+		 */
+		onDoubleClickPlanningGantt: function (oEvent) {
+			var oShape = oEvent.getParameter("shape"),
+				oContext = oShape.getBindingContext("ganttModel"),
+				oHeaderContext = this.getView().getBindingContext(),
+				mParams = {},
+				bValidate = formatter.checkGanttEditability(this.getModel("user").getProperty("/ENABLE_PREPLAN_UPDATE"), oContext.getProperty(
+					"READ_ONLY"), this.oViewModel.getProperty("/bEnableGanttShapesEdit"), oHeaderContext.getProperty("ALLOW_FINAL"));
+
+			if (oContext && oContext.getProperty("OPERATION_NUMBER") !== "") {
+				mParams = {
+					viewName: "com.evorait.evosuite.evoprep.view.templates.DialogContentWrapper#EditOperations",
+					annotationPath: "com.sap.vocabularies.UI.v1.Facets#EditOperations",
+					entitySet: "GanttHierarchySet",
+					controllerName: "EditOperation",
+					title: "tit.editOperation",
+					type: "Edit",
+					saveButtonVisible: bValidate, //Validate the edit feature based on syatem info/operation status/plan status and edit gantt indicator
+					sPath: "/GanttHierarchySet('" + oContext.getProperty("ObjectKey") + "')"
+				};
+				this.getOwnerComponent().DialogTemplateRenderer.open(this.getView(), mParams);
+			}
+		},
+
+		/**
 		 * Utilization Details PopOver 
 		 * Passing selected shape filter
 		 * @param oEvent
@@ -560,6 +596,9 @@ sap.ui.define([
 
 				if (oData.viewNameId === sViewName) {
 					this._oContext = this.getView().getBindingContext();
+					if (!this._oContext) {
+						return;
+					}
 					this._resetGlobalValues(); //Called to reset all the global values
 					this._rebindPage();
 					this._loadUtilizationGantt();

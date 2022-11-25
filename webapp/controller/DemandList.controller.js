@@ -153,6 +153,7 @@ sap.ui.define([
 		goBackToPrePlans: function () {
 			this._removeOprTableSelection();
 			this.oViewModel.setProperty("/bMaterialsOperations", false);
+			this.oViewModel.setProperty("/bEnableFinalizeOperationList", false);
 			this.getOwnerComponent().getRouter().navTo("PrePlanMaster");
 		},
 
@@ -189,7 +190,15 @@ sap.ui.define([
 				} else {
 					this.oViewModel.setProperty("/bMaterialsOperations", false);
 				}
+				// check enable or disable the finalise button in the table header
+				
+				if (this._returnFinalizeContext(this.oSmartTable.getTable()).length > 0) {
+					this.oViewModel.setProperty("/bEnableFinalizeOperationList", true);
+				} else {
+					this.oViewModel.setProperty("/bEnableFinalizeOperationList", false);
+				}
 			}
+
 		},
 
 		/**
@@ -369,7 +378,7 @@ sap.ui.define([
 				}).then(function (oDialog) {
 					this._addExistingPlan = oDialog;
 					this.getView().addDependent(oDialog);
-					this.open(oDialog);
+					this.openDialog(oDialog);
 					this._addExistingPlan.attachAfterOpen(function () {
 						var oPlanSmartTable = sap.ui.getCore().byId("idPlanListFragSmartTable");
 						oPlanSmartTable.getTable().removeSelections();
@@ -377,7 +386,7 @@ sap.ui.define([
 					}.bind(this));
 				}.bind(this));
 			} else {
-				this.open(this._addExistingPlan);
+				this.openDialog(this._addExistingPlan);
 			}
 		},
 

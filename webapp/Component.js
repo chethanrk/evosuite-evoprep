@@ -10,9 +10,10 @@ sap.ui.define([
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
 	"com/evorait/evosuite/evoprep/controller/GanttActions",
-	"com/evorait/evosuite/evoprep/controller/MaterialInfoDialog"
+	"com/evorait/evosuite/evoprep/controller/MaterialInfoDialog",
+	"com/evorait/evosuite/evoprep/controller/DialogTemplateRenderController",
 ], function (UIComponent, Device, models, ErrorHandler, MessageManager, Constants, library, JSONModel, Filter, FilterOperator,
-	GanttActions, MaterialInfoDialog) {
+	GanttActions, MaterialInfoDialog,DialogTemplateRenderController) {
 	"use strict";
 
 	var oMessageManager = sap.ui.getCore().getMessageManager();
@@ -51,6 +52,9 @@ sap.ui.define([
 
 			//Creating the Global message model for MessageManager
 			this.setModel(models.createMessageModel(), "messageManager");
+			
+			//initialize dialog conroller
+			this.DialogTemplateRenderer = new DialogTemplateRenderController(this);
 
 			//Creating the Global User model
 			this.setModel(models.createUserModel(this), "user");
@@ -91,7 +95,9 @@ sap.ui.define([
 					iCount : 0,
 					ganttSelectionPane:"30%"
 				},
-				aAllSelectedOperations: [], //handle select all
+				aAllSelectedOperations: [], //handle select all,
+				bEnableFinalizeOperationList:false, // handle the enable or disable of finalize button of the operations in the main operations list
+				bEnableFinalizePlanDetails:false, // handle the enable or disable of finalize button of the operations in the plan details view
                 authorizeCheck: false // SAP standard check 
 			};
 

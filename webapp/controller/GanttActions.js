@@ -66,8 +66,8 @@ sap.ui.define([
 					this._oView.getModel("viewModel").setProperty("/ganttSettings/busy", false);
 					this._oView.getModel().refresh();
 					var oEventBus = sap.ui.getCore().getEventBus();
-					oEventBus.publish("BaseController", "refreshFullGantt", this._loadGanttData, this);
-					oEventBus.publish("BaseController", "refreshUtilizationGantt", this._loadUtilizationGantt, this);
+					oEventBus.publish("BaseController", "refreshFullGantt");
+					oEventBus.publish("BaseController", "refreshUtilizationGantt");
 					this._oView.getModel("viewModel").setProperty("/bDependencyCall", true);
 					this._oView.byId("idPlanningGanttChartTable").getSelection().clear(true);
 				}.bind(this));
@@ -151,6 +151,9 @@ sap.ui.define([
 			if (oAxisTimeStrategy) {
 				var sPath = oContext.getPath(),
 					oHorizonDates = this._getUtilizationGanttHorizonDates(sPath, sKey);
+				if (sKey === "D") {
+					oAxisTimeStrategy.setZoomLevel(6);
+				}
 				oAxisTimeStrategy.setVisibleHorizon(new sap.gantt.config.TimeHorizon({
 					startTime: oHorizonDates.visibleHorizon.startDate,
 					endTime: oHorizonDates.visibleHorizon.endDate
@@ -160,9 +163,6 @@ sap.ui.define([
 					endTime: oHorizonDates.totalHorizon.endDate
 				}));
 				oAxisTimeStrategy.setTimeLineOption(formatter.getTimeLineOptions(sKey));
-				if (sKey === "D") {
-					oAxisTimeStrategy.setZoomLevel(6);
-				}
 			}
 		},
 

@@ -1,13 +1,13 @@
 sap.ui.define([
-	"com/evorait/evosuite/evoprep/controller/AddOperation",
+	"com/evorait/evosuite/evoprep/controller/OperationTableController",
 	"sap/ui/core/mvc/Controller",
 	"sap/base/util/isEmptyObject",
 	"sap/ui/core/Fragment",
 	"sap/ui/core/mvc/OverrideExecution"
-], function (BaseController, Controller, isEmptyObject, Fragment, OverrideExecution) {
+], function (OperationTableController, Controller, isEmptyObject, Fragment, OverrideExecution) {
 	"use strict";
 
-	return BaseController.extend("com.evorait.evosuite.evoprep.block.demand.DemandsBlockController", {
+	return OperationTableController.extend("com.evorait.evosuite.evoprep.block.demand.DemandsBlockController", {
 
 		metadata: {
 			// extension can declare the public methods
@@ -35,8 +35,7 @@ sap.ui.define([
 				}
 			}
 		},
-		_oTable: null,
-		_oOperationContext: null,
+
 		/* =========================================================== */
 		/* Lifecycle methods                                           */
 		/* =========================================================== */
@@ -47,8 +46,9 @@ sap.ui.define([
 		 * @memberOf com.evorait.evosuite.evoprep.block.demand.DemandsBlock
 		 */
 		onInit: function () {
+			OperationTableController.prototype.onInit.apply(this, arguments);
 			this.oSmartTable = this.getView().byId("idDemandBlockSmartTable");
-			this._oTable = this.oSmartTable.getTable();
+			this.oTable = this.oSmartTable.getTable();
 		},
 
 		/**
@@ -57,7 +57,6 @@ sap.ui.define([
 		 * @memberOf com.evorait.evosuite.evoprep.block.demand.DemandsBlocks
 		 */
 		onExit: function () {
-
 			this.destroyOperationListFragment();
 		},
 
@@ -131,17 +130,8 @@ sap.ui.define([
 			}
 			// check enable or disable the materials status and material information button
 
-			if (this._returnMaterialContext(this.oSmartTable.getTable()).length > 0) {
-				this.getModel("viewModel").setProperty("/bMaterialsDemandsBlock", true);
-			} else {
-				this.getModel("viewModel").setProperty("/bMaterialsDemandsBlock", false);
-			}
-			// check the enable or disable finalize button in the operations table header
-			if (this._returnFinalizeContext(this.oSmartTable.getTable()).length > 0) {
-				this.getModel("viewModel").setProperty("/bEnableFinalizePlanDetails", true);
-			} else {
-				this.getModel("viewModel").setProperty("/bEnableFinalizePlanDetails", false);
-			}
+			//handle finalise and material releated button enable
+			this._handleOprCommonBtnEnable();
 
 		},
 		/**
@@ -149,7 +139,7 @@ sap.ui.define([
 		 */
 		onPressDeleteOperations: function () {
 			var sTitle = this.getResourceBundle().getText("tit.confirmDelete"),
-				aSelectedItems = this._oTable.getSelectedItems(),
+				aSelectedItems = this.oTable.getSelectedItems(),
 				sMsg;
 
 			var successFn = function () {
@@ -167,19 +157,19 @@ sap.ui.define([
 					isDelete: true,
 					aContext: aContext
 				}, this._afterSuccess.bind(this), this._afterError.bind(this), this.getView());
-				this._oTable.removeSelections();
+				this.oTable.removeSelections();
 				this.getModel("viewModel").setProperty("/bEnableOperationDelete", false);
 			};
 
 			var declineFn = function () {
-				this._oTable.removeSelections();
+				this.oTable.removeSelections();
 				this.getModel("viewModel").setProperty("/bEnableOperationDelete", false);
 			};
 
 			if (aSelectedItems.length > 0) {
-				if (this._oTable.getItems().length === 1) {
+				if (this.oTable.getItems().length === 1) {
 					sMsg = this.getResourceBundle().getText("msg.confirmDeleteLastOperation");
-				} else if (this._oTable.getItems().length === aSelectedItems.length) {
+				} else if (this.oTable.getItems().length === aSelectedItems.length) {
 					sMsg = this.getResourceBundle().getText("msg.confirmDeleteAllOperation");
 				} else if (aSelectedItems.length === 1) {
 					sMsg = this.getResourceBundle().getText("msg.confirmDeleteSelectedOperation");

@@ -38,13 +38,41 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
+				},
+				onFinalizeBtnPress: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onMaterialStatusPress: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onMaterialInfoButtonPress: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
-
 			}
 		},
 
 		oSmartTable: null,
 		selectedPlanObject: null,
+
+		oTable: null,
+
+		/* =========================================================== */
+		/* Lifecycle methods                                           */
+		/* =========================================================== */
+
+		/**
+		 * Base for the operation list and demand block oninit
+		 */
+		onInit: function () {
+			BaseController.prototype.onInit.apply(this, arguments);
+			this.oViewModel = this.getModel("viewModel");
+		},
 
 		/**
 		 * Prepare function import parameter ready
@@ -57,7 +85,7 @@ sap.ui.define([
 						"sOrder": undefined,
 						"sOpr": undefined
 					},
-					oTable = this.oSmartTable.getTable(),
+					oTable = this.oTable,
 					bCheckSelectAll = false;
 				//When Select All is selected
 				if (this.getModel("viewModel").getProperty("/aAllSelectedOperations").length !== 0) {
@@ -178,7 +206,7 @@ sap.ui.define([
 						oParentSource = this.getView();
 					} else {
 						if (typeof (iIndex) === "number") {
-							var oTable = this.oSmartTable.getTable(),
+							var oTable = this.oTable,
 								oItem = oTable.getContextByIndex(iIndex);
 							oRowData = oItem.getObject();
 							var planlist = sap.ui.getCore().byId("idPlanListFragSmartTable").getTable();
@@ -209,6 +237,129 @@ sap.ui.define([
 				}.bind(this));
 				resolve(aSelectedItems);
 			}.bind(this));
+		},
+
+		/**
+		 * On Refresh Material Status Button press in Demand/Operations Table
+		 * used in the for table in demandsblock and demandslist
+		 */
+		onMaterialStatusPress: function (oEvent) {
+			var oTable = this.oTable;
+			var oSelectedIndices = this._returnPropertyContext(oTable, "COMPONENT_EXISTS"),
+				oViewModel = this.getModel("viewModel"),
+				sDemandPath, aPromises = [];
+			oViewModel.setProperty("/busy", true);
+			for (var i = 0; i < oSelectedIndices.length; i++) {
+				sDemandPath = oSelectedIndices[i].getPath();
+				aPromises.push(this.getOwnerComponent().readData(sDemandPath));
+			}
+			Promise.all(aPromises).then(function () {
+				oViewModel.setProperty("/busy", false);
+			});
+		},
+		/**
+		 * On Material Info Button press event in Demands/Operations Table
+		 * used in the for table in demandsblock and demandslist
+		 */
+		onMaterialInfoButtonPress: function () {
+			var oTable = this.oTable;
+			var aSelectedItems = this._returnPropertyContext(oTable, "COMPONENT_EXISTS");
+			var aSelectedItemsPath = [];
+			for (var i = 0; i < aSelectedItems.length; i++) {
+				aSelectedItemsPath.push({
+					sPath: aSelectedItems[i].getPath()
+				});
+			}
+			if (aSelectedItemsPath.length > 0) {
+				this.getOwnerComponent().materialInfoDialog.open(this.getView(), aSelectedItemsPath);
+			}
+		},
+		/**
+		 * Method called on the press of finalize button press on the 
+		 * operations table
+		 */
+		onFinalizeBtnPress: function () {
+			var oTable = this.oTable,
+				aSelectedContext = this._returnPropertyContext(oTable, "ALLOW_EDIT"),
+				sPath;
+
+			for (var i = 0; i < aSelectedContext.length; i++) {
+				sPath = aSelectedContext[i].getPath();
+				this.getModel().setProperty(sPath + "/FUNCTION", "OPER_DISPATCH");
+			}
+			if (aSelectedContext.length > 0) {
+				this.saveChangesMain({
+					state: "success",
+					isCreate: false
+				}, this._afterSucessFinalize.bind(this));
+			}
+		},
+
+		/** Method to get the context of selected items in the 
+		 * demands table which has component_exist true for 
+		 * checking the material information
+		 * This method is used in the DemandsBlock and DemandsList Views
+		 * @param oTable {object} table instance
+		 * @param sProperty {string} property name to be validate
+		 * @return aArrayPropertyContext {array}
+		 */
+		_returnPropertyContext: function (oTable, sProperty) {
+			var aSelectections, aContext, sDemandPath, bPropertyExist, aArrayPropertyContext = [];
+			if (oTable.getAggregation("items")) {
+				aSelectections = oTable.getSelectedItems();
+				for (var i = 0; i < aSelectections.length; i++) {
+					aContext = aSelectections[i].getBindingContext();
+					sDemandPath = aContext.getPath();
+					bPropertyExist = this.getModel().getProperty(sDemandPath + "/" + sProperty);
+					if (bPropertyExist) {
+						aArrayPropertyContext.push(aContext);
+					}
+				}
+			} else {
+				aSelectections = this.oTable.getSelectedIndices();
+				for (var j = 0; j < aSelectections.length; j++) {
+					aContext = this.oTable.getContextByIndex(aSelectections[j]);
+					sDemandPath = aContext.getPath();
+					bPropertyExist = this.getModel().getProperty(sDemandPath + "/" + sProperty);
+					if (bPropertyExist) {
+						aArrayPropertyContext.push(aContext);
+					}
+				}
+			}
+
+			return aArrayPropertyContext;
+		},
+
+		/**
+		 * Validate finalise and material button enable state
+		 */
+		_handleOprCommonBtnEnable: function () {
+			if (this._returnPropertyContext(this.oTable, "COMPONENT_EXISTS").length > 0) {
+				this.oViewModel.setProperty("/bMaterialsDemandsBlock", true);
+			} else {
+				this.oViewModel.setProperty("/bMaterialsDemandsBlock", false);
+			}
+			// check the enable or disable finalize button in the operations table header
+			if (this._returnPropertyContext(this.oTable, "ALLOW_EDIT").length > 0) {
+				this.oViewModel.setProperty("/bEnableFinalizeBtn", true);
+			} else {
+				this.oViewModel.setProperty("/bEnableFinalizeBtn", false);
+			}
+		},
+
+		/** This method is called after the sucess call on press
+		 * of the finalize button for the operation
+		 */
+		_afterSucessFinalize: function () {
+			var oTable = this.oTable;
+			if (oTable.getAggregation("items")) {
+				oTable.removeSelections();
+			} else {
+				oTable.clearSelection(true);
+			}
+			this.getModel("viewModel").setProperty("/bEnableFinalizeBtn", false);
+			this.oSmartTable.rebindTable(true);
+			this.getModel().resetChanges();
 		}
 	});
 

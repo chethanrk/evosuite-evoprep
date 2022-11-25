@@ -50,9 +50,9 @@
 				</smartTable:layoutData>
 				<smartTable:customToolbar>
 					<Toolbar>
-						<ToolbarSpacer/>
-						<Text text="{i18n>xbut.SelectAll}"/>
+						<Text text="{i18n>xbut.SelectAll}" wrapping="false"/>
 						<Switch id="idSwitchSelectAll" change="onChangeSelectAll"/>
+                        <ToolbarSpacer/>
 						<Button text="{i18n>btn.finalize}" tooltip="{i18n>btn.finalize}" 
 							press="onFinalizeBtnPress" enabled="{viewModel>/bEnableFinalizeOperationList}" visible="{= ${user>/ENABLE_ITEM_FINAL} === 'X'}" />
 						<Button press="onPressCreatePrePlanButton" tooltip="{i18n>tit.createPrePlan}" text="{i18n>tit.createPrePlan}"

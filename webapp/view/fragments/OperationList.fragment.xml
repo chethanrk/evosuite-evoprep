@@ -29,19 +29,19 @@
 						<smartTable:SmartTable id="idOperationListFragSmartTable" height="100%" width="100%" entitySet="PlanItemsSet" header="{i18n>tit.operations}"
 							smartFilterId="idOperationListFragSmartFilterBar" tableType="ResponsiveTable" useExportToExcel="true" useVariantManagement="false"
 							useTablePersonalisation="true" showRowCount="true" enableAutoBinding="false" demandPopin="true" requestAtLeastFields="ObjectKey"
-							beforeRebindTable="onOperationListDataReceived">
+							beforeRebindTable="onOperationListDataReceived" placeToolbarInTable="true">
 							<!-- layout data used to make the table growing but the filter bar fixed -->
 							<smartTable:layoutData>
 								<FlexItemData growFactor="1" baseSize="0%"/>
 							</smartTable:layoutData>
 							<smartTable:customToolbar>
 								<Toolbar>
-									<ToolbarSpacer/>
-									<Text text="{i18n>xbut.SelectAll}"/>
+									<Text text="{i18n>xbut.SelectAll}" wrapping="false"/>
 									<Switch id="idOprSwitchSelectAll" change="onChangeOperationSelectAll"/>
+									<ToolbarSpacer/>
 								</Toolbar>
 							</smartTable:customToolbar>
-							<Table growing="true" growingThreshold="100" mode="MultiSelect" sticky="ColumnHeaders,HeaderToolbar,InfoToolbar"
+							<Table growing="true" growingThreshold="100" mode="MultiSelect" sticky="ColumnHeaders,HeaderToolbar"
 								selectionChange="onOprListSelectionChange"/>
 						</smartTable:SmartTable>
 					</f:content>

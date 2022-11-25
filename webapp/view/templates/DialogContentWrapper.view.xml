@@ -1,0 +1,24 @@
+<mvc:View xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc" xmlns:layout="sap.ui.layout"
+	xmlns:template="http://schemas.sap.com/sapui5/extension/sap.ui.core.template/1" displayBlock="true" height="100%">
+	<template:alias name=".AH" value="sap.ui.model.odata.AnnotationHelper">
+		<template:alias name=".evoAH" value="com.evorait.evosuite.evoprep.model.AnnotationHelper">
+			<template:with path="templateProperties>/" var="tempProps">
+				<template:with path="tempProps>/annotationPath" helper="com.evorait.evosuite.evoprep.model.AnnotationHelper.resolveObjectContentPath"
+					var="contentTabs">
+					<core:ExtensionPoint
+						name="{:= ${parts: [{path: 'contentTabs>'},{value:'SmartForm', model:'tempProps'},{path:'tempProps>annotationPath'},{value:'Before', model:'tempProps'}],formatter:'com.evorait.evosuite.evoprep.model.AnnotationHelper.getFieldGroupExtPoint'}}"/>
+					<core:ExtensionPoint
+						name="{:= ${parts: [{path: 'contentTabs>'},{value:'SmartForm', model:'tempProps'},{path:'tempProps>annotationPath'},{value:'Instead', model:'tempProps'}],formatter:'com.evorait.evosuite.evoprep.model.AnnotationHelper.getFieldGroupExtPoint'}}">
+						<template:repeat list="{contentTabs>}">
+							<template:with path="contentTabs>Facets" var="facets">
+								<core:Fragment fragmentName="com.evorait.evosuite.evoprep.view.templates.SmartFormTemplate" type="XML"/>
+							</template:with>
+						</template:repeat>
+					</core:ExtensionPoint>
+					<core:ExtensionPoint
+						name="{:= ${parts: [{path: 'contentTabs>'},{value:'SmartForm', model:'tempProps'},{path:'tempProps>annotationPath'},{value:'After', model:'tempProps'}],formatter:'com.evorait.evosuite.evoprep.model.AnnotationHelper.getFieldGroupExtPoint'}}"/>
+				</template:with>
+			</template:with>
+		</template:alias>
+	</template:alias>
+</mvc:View>

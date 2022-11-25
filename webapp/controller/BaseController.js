@@ -76,7 +76,7 @@ sap.ui.define([
 					public: true,
 					final: true
 				},
-				open: {
+				openDialog: {
 					public: true,
 					final: true
 				},
@@ -204,6 +204,10 @@ sap.ui.define([
 					final: true
 				},
 				onFinalizeBtnPress: {
+					public: true,
+					final: true
+				},
+                onPressSmartField: {
 					public: true,
 					final: true
 				}
@@ -359,10 +363,10 @@ sap.ui.define([
 					controller: this
 				}).then(function (oDialog) {
 					this._infoDialog = oDialog;
-					this.open(oDialog);
+					this.openDialog(oDialog);
 				}.bind(this));
 			} else {
-				this.open(this._infoDialog);
+				this.openDialog(this._infoDialog);
 			}
 		},
 
@@ -370,7 +374,7 @@ sap.ui.define([
 		 * Open information popover 
 		 * @param {oDialog}  -- information dialog instance
 		 */
-		open: function (oDialog) {
+		openDialog: function (oDialog) {
 			var oView = this.getView();
 			oDialog.addStyleClass(this.getOwnerComponent().getContentDensityClass());
 			oView.addDependent(oDialog);
@@ -888,7 +892,7 @@ sap.ui.define([
 				}).then(function (oDialog) {
 					this._addOperationsDetail = oDialog;
 					this.getView().addDependent(oDialog);
-					this.open(oDialog);
+					this.openDialog(oDialog);
 					this._addOperationsDetail.attachAfterOpen(function () {
 						var oOpSmartTable = sap.ui.getCore().byId("idOperationListFragSmartTable");
 						oOpSmartTable.getTable().removeSelections();
@@ -896,7 +900,7 @@ sap.ui.define([
 					}.bind(this));
 				}.bind(this));
 			} else {
-				this.open(this._addOperationsDetail);
+				this.openDialog(this._addOperationsDetail);
 			}
 			this.bOperationSelectAll = false;
 			sap.ui.getCore().byId("idOprSwitchSelectAll").setState(false);
@@ -1016,6 +1020,25 @@ sap.ui.define([
 				operationKey: sObjectKey,
 				plan: sHeaderKeyId
 			});
+		},
+
+		/**
+		 * gets unique view id setted by TemplateRenderer
+		 * @return string
+		 */
+		getViewUniqueName: function () {
+			var sViewId = this.getView().getId(),
+				sViewName = this.getView().getViewName();
+			return sViewName + "#" + sViewId;
+		},
+
+		/**
+		 * when SmartField is visible as link
+		 * show app to app navigation popup
+		 */
+		onPressSmartField: function (oEvent) {
+			var oSource = oEvent.getSource();
+			this.openApp2AppPopover(oSource, oSource.getUrl());
 		},
 
 		/* =========================================================== */

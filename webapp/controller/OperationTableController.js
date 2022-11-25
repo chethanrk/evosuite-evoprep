@@ -309,24 +309,27 @@ sap.ui.define([
 				aSelectections = oTable.getSelectedItems();
 				for (var i = 0; i < aSelectections.length; i++) {
 					aContext = aSelectections[i].getBindingContext();
-					sDemandPath = aContext.getPath();
-					bPropertyExist = this.getModel().getProperty(sDemandPath + "/" + sProperty);
-					if (bPropertyExist) {
-						aArrayPropertyContext.push(aContext);
+					if (aContext) {
+						sDemandPath = aContext.getPath();
+						bPropertyExist = this.getModel().getProperty(sDemandPath + "/" + sProperty);
+						if (bPropertyExist) {
+							aArrayPropertyContext.push(aContext);
+						}
 					}
 				}
 			} else {
 				aSelectections = this.oTable.getSelectedIndices();
 				for (var j = 0; j < aSelectections.length; j++) {
 					aContext = this.oTable.getContextByIndex(aSelectections[j]);
-					sDemandPath = aContext.getPath();
-					bPropertyExist = this.getModel().getProperty(sDemandPath + "/" + sProperty);
-					if (bPropertyExist) {
-						aArrayPropertyContext.push(aContext);
+					if (aContext) {
+						sDemandPath = aContext.getPath();
+						bPropertyExist = this.getModel().getProperty(sDemandPath + "/" + sProperty);
+						if (bPropertyExist) {
+							aArrayPropertyContext.push(aContext);
+						}
 					}
 				}
 			}
-
 			return aArrayPropertyContext;
 		},
 

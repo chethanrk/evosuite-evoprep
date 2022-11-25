@@ -394,7 +394,6 @@ sap.ui.define([
 				planlist = sap.ui.getCore().byId("idPlanListFragSmartTable").getTable(),
 				oSelPlan = planlist.getSelectedItem();
 
-			//this._triggerItemMergerequest(aSelectedItems, this._addExistingSuccess.bind(this), this._addExistingError.bind(this));
 			this.getValidationParameters(aSelectedItems).then(function (oPreparedData) {
 				if (oPreparedData && oPreparedData.sOrder && oPreparedData.sOpr) {
 					oPreparedData.sPrepPlan = oSelPlan.getBindingContext().getProperty("PLAN_ID");

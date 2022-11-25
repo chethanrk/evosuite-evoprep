@@ -128,7 +128,6 @@ sap.ui.define([
 			} else {
 				this.getModel("viewModel").setProperty("/bEnableOperationDelete", false);
 			}
-			// check enable or disable the materials status and material information button
 
 			//handle finalise and material releated button enable
 			this._handleOprCommonBtnEnable();

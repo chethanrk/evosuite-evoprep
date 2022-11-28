@@ -22,14 +22,11 @@
 					enabled="{viewModel>/bEnableOperationDelete}"/>
 				<Button text="{i18n>btn.finalize}" tooltip="{i18n>btn.finalize}" press="onFinalizeBtnPress"
 					enabled="{viewModel>/bEnableFinalizeBtn}" visible="{= ${user>/ENABLE_PLAN_OPRN_FINAL} === 'X'}" />
-				<Button id="idOverallStatusButton" icon="sap-icon://synchronize" enabled="{viewModel>/bMaterialsDemandsBlock}"
+				<Button icon="sap-icon://synchronize" enabled="{viewModel>/bMaterialsDemandsBlock}"
 					text="{i18n>btn.materialStatus}" tooltip="{i18n>btn.materialStatus}" visible="{user>/ENABLE_MATERIAL_AVAILABILITY}"
 					press="onMaterialStatusPress"/>
-				<Button id="materialInfo" text="{i18n>btn.materialInfoButton}" tooltip="{i18n>btn.materialInfoButton}" icon="sap-icon://message-information"
+				<Button text="{i18n>btn.materialInfoButton}" tooltip="{i18n>btn.materialInfoButton}" icon="sap-icon://message-information"
 					press="onMaterialInfoButtonPress" enabled="{viewModel>/bMaterialsDemandsBlock}" visible="{user>/ENABLE_MATERIAL_AVAILABILITY}">
-					<layoutData>
-						<ToolbarLayoutData shrinkable="true"/>
-					</layoutData>
 				</Button>
 				<core:ExtensionPoint name="TableExtP|PrePlanDetail|PlanItemsSet|CustomToolbar"/>
 			</Toolbar>

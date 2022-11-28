@@ -96,8 +96,8 @@ sap.ui.define([
 					ganttSelectionPane: "30%"
 				},
 				aAllSelectedOperations: [], //handle select all,
-				bEnableFinalizeBtn: false, // handle the enable or disable of finalize button of the operations 
-				bEnableFinalizePlanDetails: false // handle the enable or disable of finalize button of the operations in the plan details view
+				bMaterialsDemandsBlock:false,// handle the enab,e and disable of finalize button in the demands table
+				bEnableFinalizeBtn: false // handle the enable or disable of finalize button of the operations 
 			};
 
 			//GetSystemInformation Call

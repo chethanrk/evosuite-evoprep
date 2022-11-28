@@ -52,14 +52,18 @@
 					<Toolbar>
 						<Text text="{i18n>xbut.SelectAll}" wrapping="false"/>
 						<Switch id="idSwitchSelectAll" change="onChangeSelectAll" enabled="{parts: ['viewModel>/authorizeCheck' , 'user>/ENABLE_IW32_AUTH_CHECK' ], formatter:'.formatter.enableBtn' }"/>
-                        <ToolbarSpacer/>
-						<Button text="{i18n>btn.finalize}" tooltip="{i18n>btn.finalize}" 
-							press="onFinalizeBtnPress" enabled="{viewModel>/bEnableFinalizeOperationList}" visible="{= ${user>/ENABLE_ITEM_FINAL} === 'X'}" />
+						<ToolbarSpacer/>
 						<Button press="onPressCreatePrePlanButton" tooltip="{i18n>tit.createPrePlan}" text="{i18n>tit.createPrePlan}"
 							visible="{= ${user>/ENABLE_PREPLAN_CREATE} === 'X'}" enabled="{viewModel>/allowPrePlanCreate}"/>
 						<Button press="onPressAddExistingPlan" tooltip="{i18n>tit.addExistingPlan}" text="{i18n>tit.addExistingPlan}"
 							visible="{= ${user>/ENABLE_PREPLAN_ITEM_ADD} === 'X'}"
 							enabled="{= ${viewModel>/allowPrePlanCreate} &amp;&amp; ${viewModel>/bEnableAddOperations} }"/>
+						<Button text="{i18n>btn.finalize}" tooltip="{i18n>btn.finalize}" press="onFinalizeBtnPress" enabled="{viewModel>/bEnableFinalizeBtn}"
+							visible="{= ${user>/ENABLE_ITEM_FINAL} === 'X'}"/>
+						<Button icon="sap-icon://synchronize" enabled="{viewModel>/bMaterialsDemandsBlock}" text="{i18n>btn.materialStatus}"
+							tooltip="{i18n>btn.materialStatus}" visible="{user>/ENABLE_MATERIAL_AVAILABILITY}" press="onMaterialStatusPress"/>
+						<Button text="{i18n>btn.materialInfoButton}" tooltip="{i18n>btn.materialInfoButton}" icon="sap-icon://message-information"
+							press="onMaterialInfoButtonPress" enabled="{viewModel>/bMaterialsDemandsBlock}" visible="{user>/ENABLE_MATERIAL_AVAILABILITY}"></Button>
 						<core:ExtensionPoint name="TableExtP|DemandList|PlanItemsSet|CustomToolbar"/>
 					</Toolbar>
 				</smartTable:customToolbar>

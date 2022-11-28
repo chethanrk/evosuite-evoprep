@@ -54,7 +54,7 @@
 						<Switch id="idSwitchSelectAll" change="onChangeSelectAll"/>
                         <ToolbarSpacer/>
 						<Button text="{i18n>btn.finalize}" tooltip="{i18n>btn.finalize}" 
-							press="onFinalizeBtnPress" enabled="{viewModel>/bEnableFinalizeOperationList}" visible="{= ${user>/ENABLE_ITEM_FINAL} === 'X'}" />
+							press="onFinalizeBtnPress" enabled="{viewModel>/bEnableFinalizeBtn}" visible="{= ${user>/ENABLE_ITEM_FINAL} === 'X'}" />
 						<Button press="onPressCreatePrePlanButton" tooltip="{i18n>tit.createPrePlan}" text="{i18n>tit.createPrePlan}"
 							visible="{= ${user>/ENABLE_PREPLAN_CREATE} === 'X'}" enabled="{viewModel>/allowPrePlanCreate}"/>
 						<Button press="onPressAddExistingPlan" tooltip="{i18n>tit.addExistingPlan}" text="{i18n>tit.addExistingPlan}"

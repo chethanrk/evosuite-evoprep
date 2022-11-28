@@ -176,7 +176,8 @@ sap.ui.define([
 				},
 				onPressAddOperations: {
 					public: true,
-					final: true
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				},
 				onPressOperationSelectCancel: {
 					public: true,
@@ -203,11 +204,7 @@ sap.ui.define([
 					public: true,
 					final: true
 				},
-				onFinalizeBtnPress: {
-					public: true,
-					final: true
-				},
-                onPressSmartField: {
+				onPressSmartField: {
 					public: true,
 					final: true
 				}
@@ -622,7 +619,7 @@ sap.ui.define([
 			var oBundle = this.getModel("i18n").getResourceBundle();
 			var sTitle = oBundle.getText("errorTitle");
 			var sMsg = oBundle.getText("errorText");
-			var sBtn = oBundle.getText("close");
+			var sBtn = oBundle.getText("btn.close");
 
 			var dialog = new Dialog({
 				title: sTitle,
@@ -1060,61 +1057,7 @@ sap.ui.define([
 			}
 			return null;
 		},
-		/**
-		 * On Refresh Material Status Button press in Demand/Operations Table
-		 * used in the for table in demandsblock and demandslist
-		 */
-		onMaterialStatusPress: function (oEvent) {
-			var oTable = this.oSmartTable.getTable();
-			var oSelectedIndices = this._returnMaterialContext(oTable),
-				oViewModel = this.getModel("viewModel"),
-				sDemandPath, aPromises = [];
-			oViewModel.setProperty("/busy", true);
-			for (var i = 0; i < oSelectedIndices.length; i++) {
-				sDemandPath = oSelectedIndices[i].getPath();
-				aPromises.push(this.getOwnerComponent().readData(sDemandPath));
-			}
-			Promise.all(aPromises).then(function () {
-				oViewModel.setProperty("/busy", false);
-			});
-		},
-		/**
-		 * On Material Info Button press event in Demands/Operations Table
-		 * used in the for table in demandsblock and demandslist
-		 */
-		onMaterialInfoButtonPress: function () {
-			var oTable = this.oSmartTable.getTable();
-			var aSelectedItems = this._returnMaterialContext(oTable);
-			var aSelectedItemsPath = [];
-			for (var i = 0; i < aSelectedItems.length; i++) {
-				aSelectedItemsPath.push({
-					sPath: aSelectedItems[i].getPath()
-				});
-			}
-			if (aSelectedItemsPath.length > 0) {
-				this.getOwnerComponent().materialInfoDialog.open(this.getView(), aSelectedItemsPath);
-			}
-		},
-		/**
-		 * Method called on the press of finalize button press on the 
-		 * operations table
-		 */
-		onFinalizeBtnPress: function () {
-			var oTable = this.oSmartTable.getTable(),
-				aSelectedContext = this._returnFinalizeContext(oTable),
-				sPath;
 
-			for (var i = 0; i < aSelectedContext.length; i++) {
-				sPath = aSelectedContext[i].getPath();
-				this.getModel().setProperty(sPath + "/FUNCTION", "OPER_DISPATCH");
-			}
-			if (aSelectedContext.length > 0) {
-				this.saveChangesMain({
-					state: "success",
-					isCreate: false
-				}, this._afterSucessFinalize.bind(this));
-			}
-		},
 		/*
 		 * function to deleted recent created context if exist
 		 *
@@ -1311,85 +1254,6 @@ sap.ui.define([
 					}.bind(this)
 				}
 			);
-		},
-		/** Method to get the context of selected items in the 
-		 * demands table which has component_exist true for 
-		 * checking the material information
-		 * This method is used in the DemandsBlock and DemandsList Views
-		 * @param oTable {object} table instance
-		 * @return aArrayMaterialContext {array}
-		 */
-		_returnMaterialContext: function (oTable) {
-			var aSelectections, aContext, sDemandPath, bComponentExist, aArrayMaterialContext = [];
-			if (oTable.getAggregation("items")) {
-				aSelectections = oTable.getSelectedItems();
-				for (var i = 0; i < aSelectections.length; i++) {
-					aContext = aSelectections[i].getBindingContext();
-					sDemandPath = aContext.getPath();
-					bComponentExist = this.getModel().getProperty(sDemandPath + "/COMPONENT_EXISTS");
-					if (bComponentExist) {
-						aArrayMaterialContext.push(aContext);
-					}
-				}
-			} else {
-				aSelectections = this.oSmartTable.getTable().getSelectedIndices();
-				for (var j = 0; j < aSelectections.length; j++) {
-					aContext = this.oSmartTable.getTable().getContextByIndex(aSelectections[j]);
-					sDemandPath = aContext.getPath();
-					bComponentExist = this.getModel().getProperty(sDemandPath + "/COMPONENT_EXISTS");
-					if (bComponentExist) {
-						aArrayMaterialContext.push(aContext);
-					}
-				}
-			}
-
-			return aArrayMaterialContext;
-		},
-		/** Method to get the context of selected items in the 
-		 * demands table which has allow_edit true 
-		 * This method is used in the Demands List and Plan Details Views
-		 * @param oTable {object} table instance
-		 * @return aArrayMaterialContext {array}
-		 */
-		_returnFinalizeContext: function (oTable) {
-			var aSelectections, aContext, sDemandPath, sSystemStatus, aArrayMaterialContext = [];
-			if (oTable.getAggregation("items")) {
-				aSelectections = oTable.getSelectedItems();
-				for (var i = 0; i < aSelectections.length; i++) {
-					aContext = aSelectections[i].getBindingContext();
-					sDemandPath = aContext.getPath();
-					sSystemStatus = this.getModel().getProperty(sDemandPath + "/ALLOW_EDIT");
-					if (sSystemStatus === "X") {
-						aArrayMaterialContext.push(aContext);
-					}
-				}
-			} else {
-				aSelectections = this.oSmartTable.getTable().getSelectedIndices();
-				for (var j = 0; j < aSelectections.length; j++) {
-					aContext = this.oSmartTable.getTable().getContextByIndex(aSelectections[j]);
-					sDemandPath = aContext.getPath();
-					sSystemStatus = this.getModel().getProperty(sDemandPath + "/ALLOW_EDIT");
-					if (sSystemStatus === "X") {
-						aArrayMaterialContext.push(aContext);
-					}
-				}
-			}
-			return aArrayMaterialContext;
-		},
-		/** This method is called after the sucess call on press
-		 * of the finalize button for the operation
-		 */
-		_afterSucessFinalize: function () {
-			var oTable = this.oSmartTable.getTable();
-			if (oTable.getAggregation("items")) {
-				oTable.removeSelections();
-			} else {
-				oTable.clearSelection(true);
-			}
-			this.getModel("viewModel").setProperty("/bEnableFinalizeOperationList", false);
-			this.getModel("viewModel").setProperty("/bEnableFinalizePlanDetails", false);
-			this.oSmartTable.rebindTable(true);
-			this.getModel().resetChanges();
 		}
 
 	});

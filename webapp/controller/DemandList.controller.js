@@ -1,16 +1,16 @@
 sap.ui.define([
 	//	"sap/ui/core/mvc/Controller"
-	"com/evorait/evosuite/evoprep/controller/AddOperation",
+	"com/evorait/evosuite/evoprep/controller/OperationTableController",
 	"sap/ui/core/Fragment",
 	"sap/ui/core/mvc/OverrideExecution",
 	"sap/base/util/isEmptyObject",
 	"sap/f/library",
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator"
-], function (BaseController, Fragment, OverrideExecution, isEmptyObject, library, Filter, FilterOperator) {
+], function (OperationTableController, Fragment, OverrideExecution, isEmptyObject, library, Filter, FilterOperator) {
 	"use strict";
 
-	return BaseController.extend("com.evorait.evosuite.evoprep.controller.DemandList", {
+	return OperationTableController.extend("com.evorait.evosuite.evoprep.controller.DemandList", {
 
 		metadata: {
 			// extension can declare the public methods
@@ -99,9 +99,12 @@ sap.ui.define([
 		 * @memberOf com.evorait.evosuite.evoprep.view.DemandList
 		 */
 		onInit: function () {
+			OperationTableController.prototype.onInit.apply(this, arguments);
 			this.oSmartTable = this.getView().byId("demandListSmartTable");
-			this.oViewModel = this.getModel("viewModel");
+			this.oTable = this.oSmartTable.getTable();
+
 			this.oCreateModel = this.getModel("CreateModel");
+
 			this.oViewModel.setProperty("/busy", false);
 		},
 
@@ -153,7 +156,7 @@ sap.ui.define([
 		goBackToPrePlans: function () {
 			this._removeOprTableSelection();
 			this.oViewModel.setProperty("/bMaterialsOperations", false);
-			this.oViewModel.setProperty("/bEnableFinalizeOperationList", false);
+			this.oViewModel.setProperty("/bEnableFinalizeBtn", false);
 			this.getOwnerComponent().getRouter().navTo("PrePlanMaster");
 		},
 
@@ -164,7 +167,7 @@ sap.ui.define([
 		 */
 		handleDemandSelectionChange: function (oEvent) {
 			var isEnabledPrePlanreate = false;
-			var aSelecteOperationIndice = this.oSmartTable.getTable().getSelectedIndices();
+			var aSelecteOperationIndice = this.oTable.getSelectedIndices();
 			if (aSelecteOperationIndice.length > 0) {
 				isEnabledPrePlanreate = true;
 			}
@@ -179,19 +182,8 @@ sap.ui.define([
 
 			//When it's not selected from Select All Button
 			if (!this.bSelectAll) {
-				// check enable or disable the materials status and material information button
-				if (this._returnMaterialContext(this.oSmartTable.getTable()).length > 0) {
-					this.oViewModel.setProperty("/bMaterialsOperations", true);
-				} else {
-					this.oViewModel.setProperty("/bMaterialsOperations", false);
-				}
-				// check enable or disable the finalise button in the table header
-				
-				if (this._returnFinalizeContext(this.oSmartTable.getTable()).length > 0) {
-					this.oViewModel.setProperty("/bEnableFinalizeOperationList", true);
-				} else {
-					this.oViewModel.setProperty("/bEnableFinalizeOperationList", false);
-				}
+				//handle finalise and material releated button enable
+				this._handleOprCommonBtnEnable();
 			}
 
 		},
@@ -201,7 +193,7 @@ sap.ui.define([
 		 * Navigate to the create preplan page
 		 */
 		onPressCreatePrePlanButton: function (oEvent) {
-			var oTable = this.oSmartTable.getTable(),
+			var oTable = this.oTable,
 				aSelectedIndices = oTable.getSelectedIndices(),
 				oOperationData = this.oCreateModel.getData(),
 				aAllOperationsSelected = [];
@@ -358,7 +350,7 @@ sap.ui.define([
 		 * Validate the final opetaions to exclude
 		 */
 		onPressAddExistingPlan: function (oEvent) {
-			var oTable = this.oSmartTable.getTable(),
+			var oTable = this.oTable,
 				aSelectedIndices = oTable.getSelectedIndices();
 
 			if (this._validateOperationFinalStatus(aSelectedIndices, oTable)) {
@@ -402,7 +394,6 @@ sap.ui.define([
 				planlist = sap.ui.getCore().byId("idPlanListFragSmartTable").getTable(),
 				oSelPlan = planlist.getSelectedItem();
 
-			//this._triggerItemMergerequest(aSelectedItems, this._addExistingSuccess.bind(this), this._addExistingError.bind(this));
 			this.getValidationParameters(aSelectedItems).then(function (oPreparedData) {
 				if (oPreparedData && oPreparedData.sOrder && oPreparedData.sOpr) {
 					oPreparedData.sPrepPlan = oSelPlan.getBindingContext().getProperty("PLAN_ID");
@@ -422,7 +413,7 @@ sap.ui.define([
 		onChangeSelectAll: function (oEvent) {
 			if (oEvent.getSource().getState()) {
 				this.bSelectAll = true;
-				this.oSmartTable.getTable().selectAll(true);
+				this.oTable.selectAll(true);
 			} else {
 				this.bSelectAll = false;
 				this._removeOprTableSelection();
@@ -437,7 +428,7 @@ sap.ui.define([
 		 * Method to deselect the selcted items
 		 */
 		_removeOprTableSelection: function () {
-			this.oSmartTable.getTable().clearSelection(true);
+			this.oTable.clearSelection(true);
 			this.getModel("viewModel").setProperty("/allowPrePlanCreate", false);
 		},
 

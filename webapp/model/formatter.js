@@ -303,7 +303,10 @@ sap.ui.define([
 		 * @param bAllowOper
 		 * @returns {boolean}
 		 */
-		showOperationEditDel: function (bFinal, bAllowOper) {
+		showOperationEditDel: function (bFinal, bAllowOper, bAuthCheck, bIW32Check) {
+			if (bAuthCheck) {
+				return Boolean(bFinal && bAllowOper && bIW32Check);
+			}
 			return Boolean(bFinal && bAllowOper);
 		},
 
@@ -389,7 +392,7 @@ sap.ui.define([
 		checkGanttEditability: function (bEnableUpdateplan, bGanttRealOnly, bEnableGanttShapesEdit, ballowFinal) {
 			return Boolean(bEnableUpdateplan === 'X' && !bGanttRealOnly && bEnableGanttShapesEdit && ballowFinal);
 		},
-		
+
 		/**
 		 * Formatting visibility of edit button for SAP standard authroization check
 		 * @param bEnableCheck
@@ -403,7 +406,7 @@ sap.ui.define([
 			}
 			return Boolean(bEnableCheck);
 		},
-		
+
 		/**
 		 * Formatting visibility of buttons for SAP standard authroization check
 		 * @param bAuthCheck

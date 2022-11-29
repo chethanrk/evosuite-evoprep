@@ -123,7 +123,11 @@ sap.ui.define([
 		handleSelectionChangeOperation: function (oEvent) {
 			var oSource = oEvent.getSource(),
 				aSelectedItems = oSource.getSelectedItems();
-			if (aSelectedItems.length > 0) {
+			if (aSelectedItems.length > 0 && this.getModel("viewModel").getProperty("/authorizeCheck")) {
+				this.getModel("viewModel").setProperty("/bEnableOperationDelete", Boolean(this.getModel("user").getProperty(
+					"/ENABLE_IW32_AUTH_CHECK")));
+			} else if (aSelectedItems.length >
+				0) {
 				this.getModel("viewModel").setProperty("/bEnableOperationDelete", true);
 			} else {
 				this.getModel("viewModel").setProperty("/bEnableOperationDelete", false);

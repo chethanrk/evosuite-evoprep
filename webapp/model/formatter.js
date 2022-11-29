@@ -388,7 +388,7 @@ sap.ui.define([
 		 */
 		checkGanttEditability: function (bEnableUpdateplan, bGanttRealOnly, bEnableGanttShapesEdit, ballowFinal) {
 			return Boolean(bEnableUpdateplan === 'X' && !bGanttRealOnly && bEnableGanttShapesEdit && ballowFinal);
-		},
+		}
 	};
 
 });

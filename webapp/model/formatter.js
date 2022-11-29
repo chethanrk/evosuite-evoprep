@@ -388,6 +388,17 @@ sap.ui.define([
 		 */
 		checkGanttEditability: function (bEnableUpdateplan, bGanttRealOnly, bEnableGanttShapesEdit, ballowFinal) {
 			return Boolean(bEnableUpdateplan === 'X' && !bGanttRealOnly && bEnableGanttShapesEdit && ballowFinal);
+		},
+
+		/**
+		 * Formatter for setting Icon for Utilization Column in Garphic Planning
+		 * @param sIcon 
+		 */
+		setUtilizationIcon: function (sIcon) {
+			if (sIcon !== "") {
+				return sIcon;
+			}
+			return null;
 		}
 	};
 

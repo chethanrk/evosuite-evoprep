@@ -83,7 +83,9 @@ sap.ui.define([
 				ganttSettings: {
 					busy: true,
 					sStartDate: null,
-					sEndDate: null
+					sEndDate: null,
+					bShowUtilization:false,//Utilization Column Visibility
+					bUtilizationCall:false //Utilization Service Call
 				},
 				bDependencyCall: false, //Restricting expand call in Graphic Planning GanttChart
 				bEnableOperationDelete: false, //Enabling/Disabling Delete Button in Plan Detail Operation Tab

@@ -235,6 +235,7 @@ sap.ui.define([
 			oEventBus.publish("BaseController", "refreshFullGantt", this._loadGanttData, this);
 			oEventBus.publish("BaseController", "refreshUtilizationGantt", this._loadUtilizationGantt, this);
 			this.getModel("viewModel").setProperty("/bDependencyCall", true);
+			this.getModel("viewModel").setProperty("/ganttSettings/bUtilizationCall", true);
 		},
 
 		/**

@@ -119,6 +119,11 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
+				},
+				onChangeCalculateUtilization: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
@@ -575,6 +580,22 @@ sap.ui.define([
 			this.GanttActions._createGanttHorizon(this._axisTime, this._oContext, oSource);
 		},
 
+		/**
+		 * on show Utilization Column in Graphic Planning 
+		 * @param oEvent
+		 */
+		onChangeCalculateUtilization: function (oEvent) {
+			if (oEvent.getSource().getState()) {
+				this.oViewModel.setProperty("/ganttSettings/bShowUtilization", true);
+				//Service Call while Utilization on for First Time
+				if (this.oViewModel.getProperty("/ganttSettings/bUtilizationCall")) {
+					this._loadGanttData();
+				}
+			} else {
+				this.oViewModel.setProperty("/ganttSettings/bShowUtilization", false);
+			}
+		},
+
 		/* =========================================================== */
 		/* public methods                                              */
 		/* =========================================================== */
@@ -767,6 +788,7 @@ sap.ui.define([
 			this._loadUtilizationGantt();
 			this._loadGanttData();
 			this.oViewModel.setProperty("/bDependencyCall", true);
+			this.oViewModel.setProperty("/ganttSettings/bUtilizationCall", true);
 		},
 
 		/**
@@ -813,7 +835,9 @@ sap.ui.define([
 				var sEntitySet = "/GanttHierarchySet",
 					aFilters = [],
 					mParams = "",
-					sPath = this._oContext.getPath();
+					sPath = this._oContext.getPath(),
+					bUtilizationOn = this.getView().byId("idCalculateUtilization").getState();
+
 				//Passing Expand Call Only while Clicking on Show Dependecies for First Time
 				if (this.oViewModel.getProperty("/bDependencyCall") && this.oViewModel.getProperty("/bShowDependencies")) {
 					mParams = {
@@ -824,6 +848,12 @@ sap.ui.define([
 				var sHeaderKey = this.getModel().getProperty(sPath + "/ObjectKey");
 				aFilters.push(new Filter("HIERARCHY_LEVEL", FilterOperator.EQ, iLevel));
 				aFilters.push(new Filter("HeaderObjectKey", FilterOperator.EQ, sHeaderKey));
+			
+				//Passing Utilization filter only when Utilization Switch is On
+				if (bUtilizationOn && iLevel === 1 && this.oViewModel.getProperty("/ganttSettings/bUtilizationCall")) {
+					aFilters.push(new Filter("REQUEST_UTILIZATION", FilterOperator.EQ, bUtilizationOn));
+					this.oViewModel.setProperty("/ganttSettings/bUtilizationCall", false);
+				}
 
 				this.getModel("viewModel").setProperty("/ganttSettings/sStartDate", this.getModel().getProperty(sPath + "/START_DATE"));
 				this.getModel("viewModel").setProperty("/ganttSettings/sEndDate", this.getModel().getProperty(sPath + "/END_DATE"));
@@ -858,6 +888,7 @@ sap.ui.define([
 			aChildren = this._recurseChildren2Level(aChildren, iLevel, callbackFn);
 			this.oGanttModel.setProperty("/data/children", aChildren);
 		},
+		
 		/**
 		 * Display the error messages from the backend for the
 		 * PlanHeaderSet entity set specific in case we change
@@ -973,11 +1004,14 @@ sap.ui.define([
 		_resetGlobalValues: function () {
 			this.oViewModel.setProperty("/bShowDependencies", false); //Disabling Dependencies in Graphic Planning GanttChart
 			this.oViewModel.setProperty("/bDependencyCall", true);
+			this.oViewModel.setProperty("/ganttSettings/bUtilizationCall", true);
+			this.oViewModel.setProperty("/ganttSettings/bShowUtilization", false);
 			this.oViewModel.setProperty("/ganttSettings/sStartDate", this.getModel().getProperty(this._oContext.getPath() + "/START_DATE"));
 			this.oViewModel.setProperty("/ganttSettings/sEndDate", this.getModel().getProperty(this._oContext.getPath() + "/END_DATE"));
 			if (this._UtilizationSelectView) {
 				this._UtilizationSelectView.setSelectedKey(this.getModel("user").getProperty("/DEFAULT_VIEW_MODE"));
 			}
+			this.getView().byId("idCalculateUtilization").setState(false);
 		}
 	});
 

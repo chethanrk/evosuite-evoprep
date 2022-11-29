@@ -391,16 +391,6 @@ sap.ui.define([
 		},
 
 
-		/**
-		 * Formatter for setting Icon for Utilization Column in Garphic Planning
-		 * @param sIcon 
-		 */
-		setUtilizationIcon: function (sIcon) {
-			if (sIcon !== "") {
-				return sIcon;
-			}
-			return null;
-		}
 	};
 
 });

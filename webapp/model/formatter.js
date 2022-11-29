@@ -390,6 +390,7 @@ sap.ui.define([
 			return Boolean(bEnableUpdateplan === 'X' && !bGanttRealOnly && bEnableGanttShapesEdit && ballowFinal);
 		},
 
+
 		/**
 		 * Formatter for setting Icon for Utilization Column in Garphic Planning
 		 * @param sIcon 

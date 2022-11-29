@@ -168,13 +168,18 @@ sap.ui.define([
 		handleDemandSelectionChange: function (oEvent) {
 			var isEnabledPrePlanreate = false;
 			var aSelecteOperationIndice = this.oTable.getSelectedIndices();
-			if (aSelecteOperationIndice.length > 0) {
+			if (aSelecteOperationIndice.length > 0 && this.getModel("viewModel").getProperty("/authorizeCheck")) {
+				isEnabledPrePlanreate = Boolean(this.getModel("user").getProperty("/ENABLE_IW32_AUTH_CHECK"));
+			} else if (aSelecteOperationIndice.length > 0) {
 				isEnabledPrePlanreate = true;
 			}
 			this.getModel("viewModel").setProperty("/allowPrePlanCreate", isEnabledPrePlanreate);
 
 			//Condition for Disabling Add Operations when its Select All (Later this has to be removed)
 			var bEnableAddOperations = true;
+			if (this.getModel("viewModel").getProperty("/authorizeCheck")) { //SAP authorization check
+				bEnableAddOperations = Boolean(this.getModel("user").getProperty("/ENABLE_IW32_AUTH_CHECK"));
+			}
 			if (this.bSelectAll || oEvent.getParameters().rowIndex === 0) {
 				bEnableAddOperations = false;
 			}

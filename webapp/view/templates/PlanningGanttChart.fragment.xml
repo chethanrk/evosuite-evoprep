@@ -19,7 +19,8 @@
 									tooltip="{= ${viewModel>/bShowDependencies} === false ? ${i18n>xbut.showDependencies} : ${i18n>xbut.hideDependencies}}"/>
 								<Text text="|"/>
 								<Button icon="sap-icon://edit" tooltip="{i18n>xbut.edit}"
-									visible="{= ${user>/ENABLE_PREPLAN_UPDATE} === 'X' &amp;&amp; ${ALLOW_FINAL} === true}" press="onPressShapesEdit"/>
+									visible="{= ${user>/ENABLE_PREPLAN_UPDATE} === 'X' &amp;&amp; ${ALLOW_FINAL} === true}"
+									enabled="{parts: ['viewModel>/authorizeCheck', 'user>/ENABLE_IW32_AUTH_CHECK'], formatter:'.formatter.enableBtn'}" press="onPressShapesEdit"/>
 								<Button icon="{path:'viewModel>/fullscreenGantt',formatter:'.formatter.fullScreenGanttVisibility'}" press="onPressGanttFullScreen"/>
 								<core:ExtensionPoint name="GanttExtP|PlanningGantt|GanttHierarchySet|ContainerToolbar|After"/>
 							</gnt2:content>

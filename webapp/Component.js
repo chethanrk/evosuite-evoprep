@@ -97,7 +97,8 @@ sap.ui.define([
 				},
 				aAllSelectedOperations: [], //handle select all,
 				bMaterialsDemandsBlock:false,// handle the enab,e and disable of finalize button in the demands table
-				bEnableFinalizeBtn: false // handle the enable or disable of finalize button of the operations 
+				bEnableFinalizeBtn: false, // handle the enable or disable of finalize button of the operations 
+                authorizeCheck: false // SAP standard check 
 			};
 
 			//GetSystemInformation Call
@@ -171,6 +172,7 @@ sap.ui.define([
 			this.oSystemInfoProm = new Promise(function (resolve) {
 				this.readData("/SystemInformationSet", []).then(function (oData) {
 					this.getModel("user").setData(oData.results[0]);
+					this.getModel("viewModel").setProperty("/authorizeCheck", oData.results[0].ENABLE_PM_AUTH_CHECK);
 					resolve(oData.results[0]);
 				}.bind(this));
 			}.bind(this));

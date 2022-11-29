@@ -303,7 +303,10 @@ sap.ui.define([
 		 * @param bAllowOper
 		 * @returns {boolean}
 		 */
-		showOperationEditDel: function (bFinal, bAllowOper) {
+		showOperationEditDel: function (bFinal, bAllowOper, bAuthCheck, bIW32Check) {
+			if (bAuthCheck) {
+				return Boolean(bFinal && bAllowOper && bIW32Check);
+			}
 			return Boolean(bFinal && bAllowOper);
 		},
 
@@ -388,6 +391,33 @@ sap.ui.define([
 		 */
 		checkGanttEditability: function (bEnableUpdateplan, bGanttRealOnly, bEnableGanttShapesEdit, ballowFinal) {
 			return Boolean(bEnableUpdateplan === 'X' && !bGanttRealOnly && bEnableGanttShapesEdit && ballowFinal);
+		},
+        
+        /**
+		 * Formatting visibility of edit button for SAP standard authroization check
+		 * @param bEnableCheck
+		 * @param bAuthCheck
+		 * @param bIW32Auth
+		 * @returns {boolean}
+		 */
+		enableEditToggleBtn: function (bEnableCheck, bAuthCheck, bIW32Auth) {
+			if (bAuthCheck) {
+				return Boolean(bEnableCheck && bIW32Auth);
+			}
+			return Boolean(bEnableCheck);
+		},
+
+		/**
+		 * Formatting visibility of buttons for SAP standard authroization check
+		 * @param bAuthCheck
+		 * @param bIW32Auth
+		 * @returns {boolean}
+		 */
+		enableBtn: function (bAuthCheck, bIW32Auth) {
+			if (bAuthCheck) {
+				return Boolean(bIW32Auth);
+			}
+			return true;
 		}
 	};
 

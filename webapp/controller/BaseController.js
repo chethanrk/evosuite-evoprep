@@ -1254,6 +1254,15 @@ sap.ui.define([
 					}.bind(this)
 				}
 			);
+		},
+		/**
+		 * Change the deferred group of the odata model
+		 * to changes.
+		 * @param oView - This is the view instance 
+		 * @private
+		 */
+		_resetDeferredGroupToChanges: function (oView) {
+			oView.getModel().setDeferredGroups(["changes"]);
 		}
 
 	});

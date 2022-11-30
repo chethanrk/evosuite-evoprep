@@ -235,6 +235,7 @@ sap.ui.define([
 		_afterSuccess: function () {
 			this.showMessageToast(this.getResourceBundle().getText("msg.saveSuccess"));
 			this.getModel().refresh();
+			this._resetDeferredGroupToChanges(this.getView());
 			var oEventBus = sap.ui.getCore().getEventBus();
 			oEventBus.publish("BaseController", "refreshFullGantt", this._loadGanttData, this);
 			oEventBus.publish("BaseController", "refreshUtilizationGantt", this._loadUtilizationGantt, this);
@@ -246,6 +247,7 @@ sap.ui.define([
 		 */
 		_afterError: function () {
 			this.getModel().resetChanges();
+			this._resetDeferredGroupToChanges(this.getView());
 		}
 	});
 });

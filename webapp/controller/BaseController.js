@@ -207,6 +207,10 @@ sap.ui.define([
 				onPressSmartField: {
 					public: true,
 					final: true
+				},
+				resetDeferredGroupToChanges :{
+					public:true,
+					final:true
 				}
 			}
 		},
@@ -1036,6 +1040,14 @@ sap.ui.define([
 		onPressSmartField: function (oEvent) {
 			var oSource = oEvent.getSource();
 			this.openApp2AppPopover(oSource, oSource.getUrl());
+		},
+		/**
+		 * Change the deferred group of the odata model
+		 * to changes.
+		 * @param oView - This is the view instance 
+		 */
+		resetDeferredGroupToChanges: function (oView) {
+			oView.getModel().setDeferredGroups(["changes"]);
 		},
 
 		/* =========================================================== */

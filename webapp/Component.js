@@ -98,7 +98,7 @@ sap.ui.define([
 					ganttSelectionPane: "30%"
 				},
 				aAllSelectedOperations: [], //handle select all,
-				bMaterialsDemandsBlock:false,// handle the enab,e and disable of finalize button in the demands table
+				bMaterialsDemandsBlock:false,// handle the enable and disable of finalize button in the demands table
 				bEnableFinalizeBtn: false, // handle the enable or disable of finalize button of the operations 
                 authorizeCheck: false // SAP standard check 
 			};

@@ -392,8 +392,8 @@ sap.ui.define([
 		checkGanttEditability: function (bEnableUpdateplan, bGanttRealOnly, bEnableGanttShapesEdit, ballowFinal) {
 			return Boolean(bEnableUpdateplan === 'X' && !bGanttRealOnly && bEnableGanttShapesEdit && ballowFinal);
 		},
-        
-        /**
+
+		/**
 		 * Formatting visibility of edit button for SAP standard authroization check
 		 * @param bEnableCheck
 		 * @param bAuthCheck
@@ -418,6 +418,17 @@ sap.ui.define([
 				return Boolean(bIW32Auth);
 			}
 			return true;
+		},
+		
+		/**
+		 * Formatter for setting Icon for Utilization Column in Garphic Planning
+		 * @param sIcon 
+		 */
+		setUtilizationIcon: function (sIcon) {
+			if (sIcon !== "") {
+				return sIcon;
+			}
+			return null;
 		}
 	};
 

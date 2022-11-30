@@ -11,8 +11,10 @@
 						<gnt2:ContainerToolbar id="idGanttChartContainerToolbar" alignCustomContentToRight="true" style="Clear">
 							<gnt2:content>
 								<ToolbarSpacer/>
-								<DateRangeSelection id="idPlanningGanttDateRange" width="21%" dateValue="{viewModel>/ganttSettings/sStartDate}" secondDateValue="{viewModel>/ganttSettings/sEndDate}"
-									change="onPlanningGanttChangeDateRange" enabled="true"/>
+								<Text text="{i18n>lbl.Utilization}"/>
+								<Switch id="idCalculateUtilization" change="onChangeCalculateUtilization"/>
+								<DateRangeSelection id="idPlanningGanttDateRange" width="21%" dateValue="{viewModel>/ganttSettings/sStartDate}"
+									secondDateValue="{viewModel>/ganttSettings/sEndDate}" change="onPlanningGanttChangeDateRange" enabled="true"/>
 								<core:ExtensionPoint name="GanttExtP|PlanningGantt|GanttHierarchySet|ContainerToolbar|Before"/>
 								<Button text="{= ${viewModel>/bShowDependencies} === false ? ${i18n>xbut.showDependencies} : ${i18n>xbut.hideDependencies}}"
 									visible="{= ${user>/ENABLE_HIDE_DEPENDENCY} === 'X'}" press="onShowDependencies"
@@ -53,6 +55,17 @@
 											</table:template>
 										</table:Column>
 									</template:repeat>
+									<table:Column visible="{viewModel>/ganttSettings/bShowUtilization}" hAlign="Center">
+										<Text text="{/GanttHierarchySet/UTILIZATION/##com.sap.vocabularies.Common.v1.Label/String}"/>
+										<table:customData>
+											<core:CustomData key="p13nData"
+												value='\{"columnKey": "UTILIZATION", "leadingProperty":"UTILIZATION", "filterProperty":"UTILIZATION", "sortProperty":"UTILIZATION", "columnIndex":""}'/>
+										</table:customData>
+										<table:template>
+											<core:Icon src="{path:'ganttModel>ICON', formatter:'.formatter.setUtilizationIcon'}" color="{ganttModel>UTILIZATION_COLOR}"
+												tooltip="{ganttModel>UTILIZATION}"></core:Icon>
+										</table:template>
+									</table:Column>
 								</table:columns>
 								<table:extension>
 									<OverflowToolbar>

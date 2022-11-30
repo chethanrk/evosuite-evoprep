@@ -70,6 +70,7 @@ sap.ui.define([
 					oEventBus.publish("BaseController", "refreshUtilizationGantt");
 					this._oView.getModel("viewModel").setProperty("/bDependencyCall", true);
 					this._oView.byId("idPlanningGanttChartTable").getSelection().clear(true);
+					this._resetDeferredGroupToChanges(this._oView);
 				}.bind(this));
 		},
 

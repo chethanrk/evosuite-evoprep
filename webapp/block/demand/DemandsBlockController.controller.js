@@ -236,11 +236,7 @@ sap.ui.define([
 			this.showMessageToast(this.getResourceBundle().getText("msg.saveSuccess"));
 			this.getModel().refresh();
 			this.resetDeferredGroupToChanges(this.getView());
-			var oEventBus = sap.ui.getCore().getEventBus();
-			oEventBus.publish("BaseController", "refreshFullGantt", this._loadGanttData, this);
-			oEventBus.publish("BaseController", "refreshUtilizationGantt", this._loadUtilizationGantt, this);
-			this.getModel("viewModel").setProperty("/bDependencyCall", true);
-			this.getModel("viewModel").setProperty("/ganttSettings/bUtilizationCall", true);
+			this.refreshGantChartData();
 		},
 
 		/**

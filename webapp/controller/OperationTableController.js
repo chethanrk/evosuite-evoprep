@@ -361,8 +361,10 @@ sap.ui.define([
 				oTable.clearSelection(true);
 			}
 			this.getModel("viewModel").setProperty("/bEnableFinalizeBtn", false);
+			this.getModel().refresh();
 			this.oSmartTable.rebindTable(true);
 			this.getModel().resetChanges();
+			this.refreshGantChartData();
 		}
 	});
 

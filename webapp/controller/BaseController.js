@@ -208,7 +208,11 @@ sap.ui.define([
 					public: true,
 					final: true
 				},
-				resetDeferredGroupToChanges :{
+				resetDeferredGroupToChanges: {
+					public: true,
+					final: true
+				},
+				refreshGantChartData:{
 					public:true,
 					final:true
 				}
@@ -1048,6 +1052,16 @@ sap.ui.define([
 		 */
 		resetDeferredGroupToChanges: function (oView) {
 			oView.getModel().setDeferredGroups(["changes"]);
+		},
+		/**
+		 * Used to refresh gantt chart related data
+		 */
+		refreshGantChartData: function () {
+			var oEventBus = sap.ui.getCore().getEventBus();
+			oEventBus.publish("BaseController", "refreshFullGantt");
+			oEventBus.publish("BaseController", "refreshUtilizationGantt");
+			this.getModel("viewModel").setProperty("/bDependencyCall", true);
+			this.getModel("viewModel").setProperty("/ganttSettings/bUtilizationCall", true);
 		},
 
 		/* =========================================================== */

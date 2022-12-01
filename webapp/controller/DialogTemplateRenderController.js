@@ -206,9 +206,7 @@ sap.ui.define([
 		 * @param oResponse
 		 */
 		_saveSuccessFn: function (oParam, oResponse) {
-			var oEventBus = sap.ui.getCore().getEventBus();
-			oEventBus.publish("BaseController", "refreshFullGantt");
-			oEventBus.publish("BaseController", "refreshUtilizationGantt");
+			this.refreshGantChartData();
 			this._oModel.refresh();
 			this._oDialog.close();
 		},

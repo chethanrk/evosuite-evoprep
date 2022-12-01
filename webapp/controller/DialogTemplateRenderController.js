@@ -206,7 +206,7 @@ sap.ui.define([
 		 * @param oResponse
 		 */
 		_saveSuccessFn: function (oParam, oResponse) {
-			this.refreshGantChartData();
+			this.refreshGantChartData(this._oView.getModel("viewModel"));
 			this._oModel.refresh();
 			this._oDialog.close();
 		},

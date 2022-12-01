@@ -361,8 +361,14 @@ sap.ui.define([
 				oTable.clearSelection(true);
 			}
 			this.getModel("viewModel").setProperty("/bEnableFinalizeBtn", false);
+			this.getModel().refresh();
 			this.oSmartTable.rebindTable(true);
 			this.getModel().resetChanges();
+			var oEventBus = sap.ui.getCore().getEventBus();
+			oEventBus.publish("BaseController", "refreshFullGantt", this._loadGanttData, this);
+			oEventBus.publish("BaseController", "refreshUtilizationGantt", this._loadUtilizationGantt, this);
+			this.getModel("viewModel").setProperty("/bDependencyCall", true);
+			this.getModel("viewModel").setProperty("/ganttSettings/bUtilizationCall", true);
 		}
 	});
 

@@ -212,9 +212,9 @@ sap.ui.define([
 					public: true,
 					final: true
 				},
-				refreshGantChartData:{
-					public:true,
-					final:true
+				refreshGantChartData: {
+					public: true,
+					final: true
 				}
 			}
 		},
@@ -1055,13 +1055,20 @@ sap.ui.define([
 		},
 		/**
 		 * Used to refresh gantt chart related data
+		 * @param oModel - viewModel instance, its a non mandatory param 
 		 */
-		refreshGantChartData: function () {
+		refreshGantChartData: function (oModel) {
 			var oEventBus = sap.ui.getCore().getEventBus();
+			var oViewModel;
 			oEventBus.publish("BaseController", "refreshFullGantt");
 			oEventBus.publish("BaseController", "refreshUtilizationGantt");
-			this.getModel("viewModel").setProperty("/bDependencyCall", true);
-			this.getModel("viewModel").setProperty("/ganttSettings/bUtilizationCall", true);
+			if (oModel) {
+				oViewModel = oModel;
+			} else {
+				oViewModel = this.getModel("viewModel");
+			}
+			oViewModel.setProperty("/bDependencyCall", true);
+			oViewModel.setProperty("/ganttSettings/bUtilizationCall", true);
 		},
 
 		/* =========================================================== */

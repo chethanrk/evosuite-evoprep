@@ -170,7 +170,7 @@ sap.ui.define([
 				bUserInteraction = oEvent.getParameter("userInteraction"),
 				isEnabledPrePlanreate = false,
 				aSelecteOperationIndice = this.oTable.getSelectedIndices(),
-				bCheckSelectAll;
+				bCheckSelectAll, bEnableAddOperations;
 			if (aSelecteOperationIndice.length > 0 && this.getModel("viewModel").getProperty("/authorizeCheck")) {
 				isEnabledPrePlanreate = Boolean(this.getModel("user").getProperty("/ENABLE_IW32_AUTH_CHECK"));
 			} else if (aSelecteOperationIndice.length > 0) {
@@ -178,7 +178,7 @@ sap.ui.define([
 			}
 			this.getModel("viewModel").setProperty("/allowPrePlanCreate", isEnabledPrePlanreate);
 
-			var bEnableAddOperations = true;
+			 bEnableAddOperations = true;
 			if (this.getModel("viewModel").getProperty("/authorizeCheck")) { //SAP authorization check
 				bEnableAddOperations = Boolean(this.getModel("user").getProperty("/ENABLE_IW32_AUTH_CHECK"));
 			}

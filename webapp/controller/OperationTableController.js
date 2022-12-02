@@ -280,8 +280,19 @@ sap.ui.define([
 		 */
 		onFinalizeBtnPress: function () {
 			var oTable = this.oTable,
+				iTotalSelections,
 				aSelectedContext = this._returnPropertyContext(oTable, "ALLOW_EDIT"),
 				sPath;
+			// validating the selected context
+			if (oTable.getAggregation("items")) {
+				iTotalSelections = oTable.getSelectedItems();
+			} else {
+				iTotalSelections = oTable.getSelectedIndices();
+			}
+			if (iTotalSelections.length !== aSelectedContext.length) {
+				this.showMessageToast(this.getResourceBundle().getText("msg.operationTinalizeBtnValidation"));
+				return;
+			}
 
 			for (var i = 0; i < aSelectedContext.length; i++) {
 				sPath = aSelectedContext[i].getPath();

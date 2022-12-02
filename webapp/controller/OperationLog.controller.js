@@ -38,12 +38,8 @@ sap.ui.define([
 		 */
 		onCloseLog: function () {
 			this.getView().unbindElement();
-			var sLayout = library.LayoutType.ThreeColumnsMidExpandedEndHidden,
-				oViewModel = this.getModel("viewModel");
-			if (this.getModel("user").getProperty("/DEFAULT_PLAN_DET_FULLSC")) {
-				sLayout = library.LayoutType.MidColumnFullScreen;
-			}
-			oViewModel.setProperty("/layout", sLayout);
+			var oViewModel = this.getModel("viewModel");
+			oViewModel.setProperty("/layout", this._detailPageLayout());
 		},
 
 		/* =========================================================== */

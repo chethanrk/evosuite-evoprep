@@ -200,10 +200,6 @@ sap.ui.define([
 					public: true,
 					final: true
 				},
-				navToLogs: {
-					public: true,
-					final: true
-				},
 				onPressSmartField: {
 					public: true,
 					final: true
@@ -811,12 +807,8 @@ sap.ui.define([
 		 * Navigate to detail page with selected plan
 		 */
 		navToDetail: function (sPlanObject) {
-			var sLayout = library.LayoutType.TwoColumnsMidExpanded;
-			if (this.getModel("user").getProperty("/DEFAULT_PLAN_DET_FULLSC")) {
-				sLayout = library.LayoutType.MidColumnFullScreen;
-			}
 			this.getRouter().navTo("PrePlanDetail", {
-				layout: sLayout,
+				layout: this._detailPageLayout(),
 				plan: sPlanObject
 			});
 		},
@@ -1012,19 +1004,6 @@ sap.ui.define([
 				this.bOperationSelectAll = false;
 				oTable.removeSelections();
 			}
-		},
-
-		/**
-		 * Route to Change logs view
-		 * @param sObjectKey - For GUID Plan Items, 
-		 * @param sHeaderKeyId - For GUID Plan Header
-		 */
-		navToLogs: function (sObjectKey, sHeaderKeyId) {
-			this.getRouter().navTo("ChangeLogs", {
-				layout: library.LayoutType.ThreeColumnsMidExpanded,
-				operationKey: sObjectKey,
-				plan: sHeaderKeyId
-			});
 		},
 
 		/**
@@ -1287,6 +1266,18 @@ sap.ui.define([
 					}.bind(this)
 				}
 			);
+		},
+
+		/**
+		 * Decides layout of detail page based on global config
+		 * @private
+		 */
+		_detailPageLayout: function () {
+			var sLayout = library.LayoutType.ThreeColumnsMidExpandedEndHidden;
+			if (this.getModel("user").getProperty("/DEFAULT_PLAN_DET_FULLSC")) {
+				sLayout = library.LayoutType.MidColumnFullScreen;
+			}
+			return sLayout;
 		}
 
 	});

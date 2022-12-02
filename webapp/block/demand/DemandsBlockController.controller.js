@@ -3,8 +3,9 @@ sap.ui.define([
 	"sap/ui/core/mvc/Controller",
 	"sap/base/util/isEmptyObject",
 	"sap/ui/core/Fragment",
-	"sap/ui/core/mvc/OverrideExecution"
-], function (OperationTableController, Controller, isEmptyObject, Fragment, OverrideExecution) {
+	"sap/ui/core/mvc/OverrideExecution",
+	"sap/f/library"
+], function (OperationTableController, Controller, isEmptyObject, Fragment, OverrideExecution, library) {
 	"use strict";
 
 	return OperationTableController.extend("com.evorait.evosuite.evoprep.block.demand.DemandsBlockController", {
@@ -217,11 +218,12 @@ sap.ui.define([
 		 */
 		fnOperationClick: function (oEvent) {
 			var oBindCon = oEvent.getParameter("listItem").getBindingContext(),
-				sObjectKeyId = oBindCon.getProperty("ObjectKey"),
-				sHeaderKeyId = oBindCon.getProperty("HeaderObjectKey");
-			if (sObjectKeyId) {
-				this.navToLogs(sObjectKeyId, sHeaderKeyId);
-			}
+				sObjectKeyId = oBindCon.getProperty("ObjectKey");
+			var oEventBus = sap.ui.getCore().getEventBus();
+			this.oViewModel.setProperty("/layout", library.LayoutType.ThreeColumnsMidExpanded);
+			oEventBus.publish("ChangeLogs", "routeMatched", {
+				sKey: sObjectKeyId
+			});
 
 		},
 

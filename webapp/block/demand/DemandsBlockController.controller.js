@@ -29,7 +29,7 @@ sap.ui.define([
 					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
-				fnOperationClick: {
+				fnChangeIconClick: {
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
@@ -213,11 +213,11 @@ sap.ui.define([
 		},
 
 		/**
-		 * On click of operation route to Change Logs page
+		 * On click of CHange Icon show Change Logs page
 		 * @param oEvent
 		 */
-		fnOperationClick: function (oEvent) {
-			var oBindCon = oEvent.getParameter("listItem").getBindingContext(),
+		fnChangeIconClick: function (oEvent) {
+			var oBindCon = oEvent.getSource().getBindingContext(),
 				sObjectKeyId = oBindCon.getProperty("ObjectKey");
 			var oEventBus = sap.ui.getCore().getEventBus();
 			this.oViewModel.setProperty("/layout", library.LayoutType.ThreeColumnsMidExpanded);

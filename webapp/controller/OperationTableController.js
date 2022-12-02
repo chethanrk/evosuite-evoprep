@@ -290,7 +290,7 @@ sap.ui.define([
 				iTotalSelections = oTable.getSelectedIndices();
 			}
 			if (iTotalSelections.length !== aSelectedContext.length) {
-				this.showMessageToast(this.getResourceBundle().getText("msg.operationTinalizeBtnValidation"));
+				this.showMessageToast(this.getResourceBundle().getText("msg.operationFinalizeBtnValidation"));
 				return;
 			}
 
@@ -303,6 +303,19 @@ sap.ui.define([
 					state: "success",
 					isCreate: false
 				}, this._afterSucessFinalize.bind(this));
+			}
+		},
+		/**
+		 * This method is used to validate if the user can edit the 
+		 * operation or not
+		 * @param mParam is the event object
+		 */
+		validateEditFinalizeOperation: function (mParam) {
+			var oContext = mParam.getParameter("changeEvent").getSource().getBindingContext();
+			var sValue = oContext.getProperty("SYSTEM_STATUS");
+			if (sValue.includes("DSPT")) {
+				this.getView().getModel().resetChanges([oContext.getPath()]);
+				this.showMessageToast(this.getResourceBundle().getText("msg.operationTinalizeBtnValidation"));
 			}
 		},
 

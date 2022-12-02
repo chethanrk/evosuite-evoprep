@@ -85,6 +85,11 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
+				},
+				onFieldChangeOperationsList: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
@@ -423,6 +428,14 @@ sap.ui.define([
 				this.bSelectAll = false;
 				this._removeOprTableSelection();
 			}
+		},
+		/**
+		 * This method is trigerred when we try to edit field of the table 
+		 * in the edit mode
+		 * @param oEvent
+		 */
+		onFieldChangeOperationsList: function (oEvent) {
+			this.validateEditFinalizeOperation(oEvent);
 		},
 
 		/* =========================================================== */

@@ -38,7 +38,7 @@
 		</f:header>
 		<f:content>
 			<smartTable:SmartTable id="demandListSmartTable" height="100%" width="100%" entitySet="PlanItemsSet" header="{i18n>tit.OperationsTable}"
-				tableType="Table" useExportToExcel="true" useVariantManagement="true" persistencyKey="com.evorait.evosuite.evoprep.DemandListTable"
+				tableType="Table" useExportToExcel="true" useVariantManagement="true" persistencyKey="com.evorait.evosuite.evoprep.DemandListTable" fieldChange="onFieldChangeOperationsList"
 				useTablePersonalisation="true" showRowCount="true" enableAutoBinding="true" demandPopin="false" smartFilterId="demandListSmartFilterBar"
 				customData:useSmartField="true" customData:useSmartToggle="true" editTogglable="{parts: ['user>/ENABLE_ITEM_UPDATE', 'viewModel>/authorizeCheck', 'user>/ENABLE_IW32_AUTH_CHECK'], formatter:'.formatter.enableEditToggleBtn'}"
 				editToggled="onPressEdit"

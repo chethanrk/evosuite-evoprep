@@ -542,6 +542,7 @@ sap.ui.define([
 		 */
 		onBeforeRebindUtilizationDetails: function (oEvent) {
 			var sPlanID = this.getModel().getProperty(this._oContext.getPath() + "/PLAN_ID"),
+				bBlockByPlan = this.getModel().getProperty(this._oContext.getPath() + "/BLOCKED_BY_PLAN"),
 				sKey = this._UtilizationSelectView.getSelectedKey(),
 				mBindingParams = oEvent.getParameter("bindingParams"),
 				aFilters = new Filter({
@@ -550,6 +551,7 @@ sap.ui.define([
 						new Filter("CELL_START_DATE", FilterOperator.EQ, this._oUtilizationShapeContext.getProperty("BARSTART_DATE")),
 						new Filter("CELL_END_DATE", FilterOperator.EQ, this._oUtilizationShapeContext.getProperty("BAREND_DATE")),
 						new Filter("VIEW_MODE", FilterOperator.EQ, sKey),
+						new Filter("BLOCKED_BY_PLAN", FilterOperator.EQ, bBlockByPlan),
 						new Filter("WORKCENTRE", FilterOperator.EQ, this._oUtilizationShapeContext.getProperty("WORKCENTRE"))
 					],
 					and: true
@@ -848,7 +850,7 @@ sap.ui.define([
 				var sHeaderKey = this.getModel().getProperty(sPath + "/ObjectKey");
 				aFilters.push(new Filter("HIERARCHY_LEVEL", FilterOperator.EQ, iLevel));
 				aFilters.push(new Filter("HeaderObjectKey", FilterOperator.EQ, sHeaderKey));
-			
+
 				//Passing Utilization filter only when Utilization Switch is On
 				if (bUtilizationOn && iLevel === 1 && this.oViewModel.getProperty("/ganttSettings/bUtilizationCall")) {
 					aFilters.push(new Filter("REQUEST_UTILIZATION", FilterOperator.EQ, bUtilizationOn));
@@ -888,7 +890,7 @@ sap.ui.define([
 			aChildren = this._recurseChildren2Level(aChildren, iLevel, callbackFn);
 			this.oGanttModel.setProperty("/data/children", aChildren);
 		},
-		
+
 		/**
 		 * Display the error messages from the backend for the
 		 * PlanHeaderSet entity set specific in case we change

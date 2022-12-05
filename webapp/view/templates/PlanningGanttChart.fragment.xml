@@ -11,8 +11,6 @@
 						<gnt2:ContainerToolbar id="idGanttChartContainerToolbar" alignCustomContentToRight="true" style="Clear">
 							<gnt2:content>
 								<ToolbarSpacer/>
-								<Text text="{i18n>lbl.Utilization}"/>
-								<Switch id="idCalculateUtilization" change="onChangeCalculateUtilization"/>
 								<DateRangeSelection id="idPlanningGanttDateRange" width="21%" dateValue="{viewModel>/ganttSettings/sStartDate}"
 									secondDateValue="{viewModel>/ganttSettings/sEndDate}" change="onPlanningGanttChangeDateRange" enabled="true"/>
 								<core:ExtensionPoint name="GanttExtP|PlanningGantt|GanttHierarchySet|ContainerToolbar|Before"/>
@@ -80,6 +78,8 @@
 													<core:CustomData key="Function" value="COLLAPSE"/>
 												</customData>
 											</Button>
+											<Text text="{i18n>lbl.Utilization}"/>
+											<Switch id="idCalculateUtilization" change="onChangeCalculateUtilization"/>
 											<ToolbarSpacer/>
 										</content>
 									</OverflowToolbar>

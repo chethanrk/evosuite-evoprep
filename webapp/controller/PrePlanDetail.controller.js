@@ -152,6 +152,8 @@ sap.ui.define([
 
 			this._treeTable = this.getView().byId("idPlanningGanttTreeTable");
 			this._axisTime = this.getView().byId("idPlanningGanttZoom");
+			this._planningGanttContainer = this.getView().byId("idPlanningGanttChartContainer");
+			this._utilizationGanttContainer = this.getView().byId("idUtilizationGanttChartContainer");
 
 			this._UtilizationAxisTime = this.getView().byId("idUtilizationGanttZoom");
 			this._UtilizationSelectView = this.getView().byId("idUtilizationSelect");
@@ -209,6 +211,8 @@ sap.ui.define([
 				oViewModel.setProperty("/ganttUtilizationFullMode", false);
 				this.oViewModel.setProperty("/fullscreenGantt", false);
 				oSource.setType("Emphasized");
+				oEvent.getSource().getParent().getParent().getParent().getParent().addStyleClass("sapUxAPObjectPageSubSectionFitContainer");
+				this._planningGanttContainer.setHeight("100%");
 			} else {
 				if (oViewModel.getProperty("/fullscreen")) {
 					oViewModel.setProperty("/layout", library.LayoutType.TwoColumnsMidExpanded);
@@ -219,6 +223,8 @@ sap.ui.define([
 				oViewModel.setProperty("/ganttUtilizationFullMode", true);
 				this.oViewModel.setProperty("/fullscreenGantt", true);
 				oSource.setType("Default");
+				oEvent.getSource().getParent().getParent().getParent().getParent().removeStyleClass("sapUxAPObjectPageSubSectionFitContainer");
+				this._planningGanttContainer.setHeight("350px");
 			}
 		},
 
@@ -470,6 +476,8 @@ sap.ui.define([
 				oViewModel.setProperty("/ganttFullMode", false);
 				this.oViewModel.setProperty("/fullscreenGantt", false);
 				oSource.setType("Emphasized");
+				oEvent.getSource().getParent().getParent().getParent().getParent().addStyleClass("sapUxAPObjectPageSubSectionFitContainer");
+				this._utilizationGanttContainer.setHeight("100%");
 			} else {
 				if (oViewModel.getProperty("/fullscreen")) {
 					oViewModel.setProperty("/layout", library.LayoutType.TwoColumnsMidExpanded);
@@ -480,6 +488,8 @@ sap.ui.define([
 				oViewModel.setProperty("/ganttFullMode", true);
 				this.oViewModel.setProperty("/fullscreenGantt", true);
 				oSource.setType("Default");
+				oEvent.getSource().getParent().getParent().getParent().getParent().removeStyleClass("sapUxAPObjectPageSubSectionFitContainer");
+				this._utilizationGanttContainer.setHeight("350px");
 			}
 			oViewModel.setProperty("/ganttUtilization/ganttSelectionPane", "30%");
 		},
@@ -819,6 +829,7 @@ sap.ui.define([
 				.then(function () {
 					//backup original data
 					this.oOriginData = deepClone(this.oGanttModel.getProperty("/"));
+					this.iNumberOfLines = this._countLineItems(this.oOriginData);
 					this.getModel("viewModel").setProperty("/ganttSettings/busy", false);
 				}.bind(this));
 		},
@@ -887,6 +898,22 @@ sap.ui.define([
 			}.bind(this);
 			aChildren = this._recurseChildren2Level(aChildren, iLevel, callbackFn);
 			this.oGanttModel.setProperty("/data/children", aChildren);
+		},
+		
+		/**
+		 * Count the number of line items in the result for visible row count
+		 * @Athour Rahul
+		 * @param {Object} data Data of gantt chart 
+		 * @version 2301
+		 * @private
+		 */
+		_countLineItems: function (data) {
+			var iLength = 0;
+			iLength = data.data.children.length;
+			for(var i in data.data.children){
+				iLength = iLength + data.data.children[i].children.length;
+			}
+			return iLength;
 		},
 		
 		/**

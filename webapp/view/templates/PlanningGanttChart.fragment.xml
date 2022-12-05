@@ -6,7 +6,7 @@
 		<template:alias name=".evoAH" value="com.evorait.evosuite.evoprep.model.AnnotationHelper">
 			<template:with path="templateProperties>/" var="tempProps">
 				<gnt2:GanttChartContainer id="idPlanningGanttChartContainer" busy="{viewModel>/ganttSettings/busy}" enableCursorLine="false"
-					enableTimeScrollSync="false" height="100%" class="sapUiNoContentPadding">
+					enableTimeScrollSync="false" height="350px" class="sapUiNoContentPadding">
 					<gnt2:toolbar>
 						<gnt2:ContainerToolbar id="idGanttChartContainerToolbar" alignCustomContentToRight="true" style="Clear">
 							<gnt2:content>

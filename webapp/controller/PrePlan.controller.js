@@ -23,7 +23,6 @@ sap.ui.define([
 			var oRouter = this.getRouter();
 			oRouter.getRoute("PrePlanMaster").attachMatched(this._routeMatchedPlan, this);
 			oRouter.getRoute("PrePlanDetail").attachMatched(this._routeMatchedPlan, this);
-			oRouter.getRoute("ChangeLogs").attachMatched(this._routeMatchedPlan, this);
 			oRouter.getRoute("CreatePrePlan").attachMatched(this._routeMatchedCreatePlan, this);
 
 		},

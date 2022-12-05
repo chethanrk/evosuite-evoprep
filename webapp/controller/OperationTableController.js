@@ -290,7 +290,7 @@ sap.ui.define([
 				iTotalSelections = oTable.getSelectedIndices();
 			}
 			if (iTotalSelections.length !== aSelectedContext.length) {
-				this.showMessageToast(this.getResourceBundle().getText("msg.operationFinalizeBtnValidation"));
+				this.showMessageToast(this.getResourceBundle().getText("msg.operationTinalizeBtnValidation"));
 				return;
 			}
 
@@ -315,7 +315,7 @@ sap.ui.define([
 			var sValue = oContext.getProperty("SYSTEM_STATUS");
 			if (sValue.includes("DSPT")) {
 				this.getView().getModel().resetChanges([oContext.getPath()]);
-				this.showMessageToast(this.getResourceBundle().getText("msg.operationTinalizeBtnValidation"));
+				this.showMessageToast(this.getResourceBundle().getText("msg.operationEditFinalizeValidation"));
 			}
 		},
 

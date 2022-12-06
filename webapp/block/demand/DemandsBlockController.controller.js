@@ -211,7 +211,7 @@ sap.ui.define([
 				return;
 			}
 			// check the validation for the finalized operation change
-			this.validateEditFinalizeOperation(oEvent);
+			this.validateEditFinalizeOperation(oEvent,"SYSTEM_STATUS_CODE");
 
 		},
 

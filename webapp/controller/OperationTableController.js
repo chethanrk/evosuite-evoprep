@@ -309,10 +309,11 @@ sap.ui.define([
 		 * This method is used to validate if the user can edit the 
 		 * operation or not
 		 * @param mParam is the event object
+		 * @mParam mProperty is the model property
 		 */
-		validateEditFinalizeOperation: function (mParam) {
+		validateEditFinalizeOperation: function (mParam,mProperty) {
 			var oContext = mParam.getParameter("changeEvent").getSource().getBindingContext();
-			var sValue = oContext.getProperty("SYSTEM_STATUS");
+			var sValue = oContext.getProperty(mProperty);
 			if (sValue.includes("DSPT")) {
 				this.getView().getModel().resetChanges([oContext.getPath()]);
 				this.showMessageToast(this.getResourceBundle().getText("msg.operationEditFinalizeValidation"));

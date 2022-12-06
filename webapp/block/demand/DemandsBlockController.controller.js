@@ -209,7 +209,11 @@ sap.ui.define([
 			if (result) {
 				this.showMessageToast(sMsg);
 				this.getModel().resetChanges();
+				return;
 			}
+			// check the validation for the finalized operation change
+			this.validateEditFinalizeOperation(oEvent,"SYSTEM_STATUS_CODE");
+
 		},
 
 		/**

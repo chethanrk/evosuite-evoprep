@@ -280,8 +280,19 @@ sap.ui.define([
 		 */
 		onFinalizeBtnPress: function () {
 			var oTable = this.oTable,
+				iTotalSelections,
 				aSelectedContext = this._returnPropertyContext(oTable, "ALLOW_EDIT"),
 				sPath;
+			// validating the selected context
+			if (oTable.getAggregation("items")) {
+				iTotalSelections = oTable.getSelectedItems();
+			} else {
+				iTotalSelections = oTable.getSelectedIndices();
+			}
+			if (iTotalSelections.length !== aSelectedContext.length) {
+				this.showMessageToast(this.getResourceBundle().getText("msg.operationTinalizeBtnValidation"));
+				return;
+			}
 
 			for (var i = 0; i < aSelectedContext.length; i++) {
 				sPath = aSelectedContext[i].getPath();
@@ -292,6 +303,20 @@ sap.ui.define([
 					state: "success",
 					isCreate: false
 				}, this._afterSucessFinalize.bind(this));
+			}
+		},
+		/**
+		 * This method is used to validate if the user can edit the 
+		 * operation or not
+		 * @param mParam is the event object
+		 * @mParam mProperty is the model property
+		 */
+		validateEditFinalizeOperation: function (mParam,mProperty) {
+			var oContext = mParam.getParameter("changeEvent").getSource().getBindingContext();
+			var sValue = oContext.getProperty(mProperty);
+			if (sValue.includes("DSPT")) {
+				this.getView().getModel().resetChanges([oContext.getPath()]);
+				this.showMessageToast(this.getResourceBundle().getText("msg.operationEditFinalizeValidation"));
 			}
 		},
 

@@ -1,7 +1,8 @@
 sap.ui.define([
 	"com/evorait/evosuite/evoprep/controller/BaseController",
-	"sap/ui/core/mvc/OverrideExecution"
-], function (BaseController, OverrideExecution) {
+	"sap/ui/core/mvc/OverrideExecution",
+	"sap/f/library"
+], function (BaseController, OverrideExecution, library) {
 	"use strict";
 
 	return BaseController.extend("com.evorait.evosuite.evoprep.controller.OperationLog", {
@@ -24,9 +25,8 @@ sap.ui.define([
 		 * @memberOf com.evorait.evosuite.evoprep.view.PrePlan
 		 */
 		onInit: function () {
-			var oRouter = this.getRouter();
-			//route for page operation logs
-			oRouter.getRoute("ChangeLogs").attachMatched(this._routeMatchedLogs, this);
+			var oEventBus = sap.ui.getCore().getEventBus();
+			oEventBus.subscribe("ChangeLogs", "routeMatched", this._routeMatchedLogs, this);
 		},
 
 		/* =========================================================== */
@@ -37,9 +37,9 @@ sap.ui.define([
 		 * On close of operation log go back to detail page route
 		 */
 		onCloseLog: function () {
-			var sObjectKey = this.getView().getBindingContext().getProperty('HeaderObjectKey');
-			this.navToDetail(sObjectKey);
 			this.getView().unbindElement();
+			var oViewModel = this.getModel("viewModel");
+			oViewModel.setProperty("/layout", this._detailPageLayout());
 		},
 
 		/* =========================================================== */
@@ -47,12 +47,12 @@ sap.ui.define([
 		/* =========================================================== */
 
 		/** 
-		 * Bind PlanItems element when route is matched
+		 * Bind PlanItems element when operation is clicked
 		 */
-		_routeMatchedLogs: function (oArgs) {
-			var sKey = oArgs.getParameter("arguments").operationKey;
+		_routeMatchedLogs: function (sChannel, sEvent, oData) {
+			var sObjectKey = oData.sKey;
 			this.getView().bindElement({
-				path: "/PlanItemsSet('" + sKey + "')"
+				path: "/PlanItemsSet('" + sObjectKey + "')"
 			});
 		}
 	});

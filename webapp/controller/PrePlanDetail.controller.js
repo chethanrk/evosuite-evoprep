@@ -357,27 +357,25 @@ sap.ui.define([
 		onShapeDrop: function (oEvent) {
 			var oParams = oEvent.getParameters(),
 				aDraggedShapes = oParams.draggedShapeDates,
+				sLastDraggedShapeUid = oParams.lastDraggedShapeUid,
+				dOldStartDateTime = aDraggedShapes[sLastDraggedShapeUid].time,
 				oTargetContext = oParams.targetRow ? oParams.targetRow.getBindingContext("ganttModel") : null,
 				sNewStartDate = oParams.newDateTime,
 				aShapeData = [],
-				sNewEndDate, sDateDifference, oDraggedData, sStartDateTime, sEndDateTime;
+				sDateDifference = sNewStartDate.getTime() - dOldStartDateTime.getTime(),
+				sNewEndDate, oDraggedData, sStartDateTime, sEndDateTime;
 			if (!oTargetContext) {
 				oTargetContext = oParams.targetShape.getParent().getParent().getBindingContext("ganttModel");
 			}
 			for (var i in aDraggedShapes) {
-				var sSourcePath = Utility.parseUid(i).shapeDataName,
-					sTargetPath = oTargetContext.getPath();
+				var sSourcePath = Utility.parseUid(i).shapeDataName;
 				oDraggedData = this.getModel("ganttModel").getProperty(sSourcePath);
 				sStartDateTime = formatter.mergeDateTime(oDraggedData.START_DATE, oDraggedData.START_TIME);
 				sEndDateTime = formatter.mergeDateTime(oDraggedData.END_DATE, oDraggedData.END_TIME);
-				sDateDifference = moment(sEndDateTime).diff(sStartDateTime);
-				if (sDateDifference < 0) {
-					sDateDifference = sDateDifference * -1;
-				}
-				sNewEndDate = new Date(moment(sNewStartDate).add(sDateDifference));
+				sNewStartDate = new Date(moment(sStartDateTime).add(sDateDifference));
+				sNewEndDate = new Date(moment(sEndDateTime).add(sDateDifference));
 				oDraggedData.START_TIME.ms = sNewStartDate.getTime();
 				oDraggedData.END_TIME.ms = sNewEndDate.getTime();
-
 				this.getModel("ganttModel").setProperty(sSourcePath + "/START_DATE", sNewStartDate);
 				this.getModel("ganttModel").setProperty(sSourcePath + "/END_DATE", sNewEndDate);
 				aShapeData.push(oDraggedData);

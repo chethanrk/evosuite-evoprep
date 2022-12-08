@@ -205,7 +205,7 @@ sap.ui.define([
 			//handle messageToast for select all using table checkbox
 			if(bCheckSelectAll){
 				iNoOfSelected = this.getSelectedItemsCount(this.oTable);
-				this.showMessageToast(this.getResourceBundle().getText("ymsg.maxRowSelection") + " " + iNoOfSelected);
+				this.showMessageToast(this.getResourceBundle().getText("ymsg.maxRowSelection", [iNoOfSelected]));
 			}
 			
 		},

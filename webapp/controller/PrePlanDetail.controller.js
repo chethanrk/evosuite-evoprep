@@ -224,7 +224,7 @@ sap.ui.define([
 				this.oViewModel.setProperty("/fullscreenGantt", true);
 				oSource.setType("Default");
 				oEvent.getSource().getParent().getParent().getParent().getParent().removeStyleClass("sapUxAPObjectPageSubSectionFitContainer");
-				this._planningGanttContainer.setHeight("350px");
+				this._planningGanttContainer.setHeight("500px");
 			}
 		},
 
@@ -489,7 +489,7 @@ sap.ui.define([
 				this.oViewModel.setProperty("/fullscreenGantt", true);
 				oSource.setType("Default");
 				oEvent.getSource().getParent().getParent().getParent().getParent().removeStyleClass("sapUxAPObjectPageSubSectionFitContainer");
-				this._utilizationGanttContainer.setHeight("350px");
+				this._utilizationGanttContainer.setHeight("300px");
 			}
 			oViewModel.setProperty("/ganttUtilization/ganttSelectionPane", "30%");
 		},

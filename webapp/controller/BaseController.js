@@ -211,6 +211,11 @@ sap.ui.define([
 				refreshGantChartData: {
 					public: true,
 					final: true
+				},
+				getSelectedItemsCount: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
 				}
 			}
 		},
@@ -1048,6 +1053,23 @@ sap.ui.define([
 			}
 			oViewModel.setProperty("/bDependencyCall", true);
 			oViewModel.setProperty("/ganttSettings/bUtilizationCall", true);
+		},
+		
+		/**
+		 * Used for getting the number of items selected using table select All checkbox
+		 * @param oTable - takes table as a parameter
+		 * Returns the Number of Items selected
+		 */
+		getSelectedItemsCount: function(oTable){
+			var aSelectedIndice = oTable.getSelectedIndices(),
+			iNoOfSelected = 0;
+			aSelectedIndice.forEach(function (iIndex){
+					var oItem = oTable.getContextByIndex(iIndex);
+					if(oItem){
+						iNoOfSelected++;
+					}
+			}.bind(this));
+			return iNoOfSelected + 1;
 		},
 
 		/* =========================================================== */

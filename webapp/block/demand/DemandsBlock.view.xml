@@ -5,7 +5,7 @@
 		tableType="ResponsiveTable" useExportToExcel="false" useVariantManagement="true" useTablePersonalisation="true" showRowCount="true"
 		persistencyKey="com.evorait.evosuite.evoprep.DetailDemandTable" enableAutoBinding="true" demandPopin="true" customData:useSmartField="true"
 		customData:useSmartToggle="true" fieldChange="onFieldChange"
-		editTogglable="{parts: [ {path:'ALLOW_FINAL'}, {path:'user>/ENABLE_ITEM_UPDATE'}, {path:'viewModel>/authorizeCheck'}, {path:'user>/ENABLE_IW32_AUTH_CHECK'} ], formatter:'.formatter.showOperationEditDel'}"
+		editTogglable="{parts: [ {path:'ALLOW_FINAL'}, {path:'user>/ENABLE_ITEM_UPDATE'}, {path:'viewModel>/validateIW32Auth'}], formatter:'.formatter.showOperationEditDel'}"
 		editToggled="onPressEdit" tableBindingPath="PlanHeaderToPlanItems" initiallyVisibleFields="COMPONENT_EXISTS"
 		requestAtLeastFields="ObjectKey,HeaderObjectKey,MATERIAL_STATUS,MATERIAL_STATUS_DESC,COMPONENT_EXISTS,MATERIAL_STATUS_ICON,MATERIAL_STATUS_STATE,SYSTEM_STATUS_CODE">
 		<!--layout data used to make the table growing but the filter bar fixed-->
@@ -17,10 +17,10 @@
 				<ToolbarSpacer/>
 				<Button icon="sap-icon://add" press="onPressAddOperations" tooltip="{i18n>btn.addOper}"
 					visible="{parts: [{path:'user>/ENABLE_ITEM_UPDATE'}, {path:'ALLOW_FINAL'}, {path:'user>/ENABLE_ITEM_ADD'} ], formatter:'.formatter.showOperationAdd'}"
-					enabled="{parts: ['viewModel>/authorizeCheck', 'user>/ENABLE_IW32_AUTH_CHECK'], formatter:'.formatter.enableBtn'}"/>
+					enabled="{viewModel>/validateIW32Auth}"/>
 				<Button icon="sap-icon://delete" press="onPressDeleteOperations" tooltip="{i18n>btn.remove}"
 					visible="{parts: [{path:'ALLOW_FINAL'}, {path:'user>/ENABLE_ITEM_DELETE'} ], formatter:'.formatter.showOperationEditDel'}"
-					enabled="{viewModel>/bEnableOperationDelete}"/>
+					enabled="{parts: ['viewModel>/bEnableOperationDelete', 'viewModel>/validateIW32Auth'], formatter:'.formatter.enableEditToggleBtn'}"/>
 				<Button text="{i18n>btn.finalize}" tooltip="{i18n>btn.finalize}" press="onFinalizeBtnPress" enabled="{viewModel>/bEnableFinalizeBtn}"
 					visible="{= ${user>/ENABLE_PLAN_OPRN_FINAL} === 'X'}"/>
 				<Button icon="sap-icon://synchronize" enabled="{viewModel>/bMaterialsDemandsBlock}" text="{i18n>btn.materialStatus}"

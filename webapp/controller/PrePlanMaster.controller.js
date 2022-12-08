@@ -163,9 +163,7 @@ sap.ui.define([
 			var isPreplanDeletEnabled = false,
 				oSelectedPrePlanContext = this.oSmartTable.getTable().getSelectedContexts(),
 				sStatus;
-			if (oSelectedPrePlanContext.length > 0 && this.getModel("viewModel").getProperty("/authorizeCheck")) {
-				isPreplanDeletEnabled = Boolean(this.getModel("user").getProperty("/ENABLE_IW32_AUTH_CHECK"));
-			} else if (oSelectedPrePlanContext.length > 0) {
+			if (oSelectedPrePlanContext.length > 0) {
 				isPreplanDeletEnabled = true;
 			}
 

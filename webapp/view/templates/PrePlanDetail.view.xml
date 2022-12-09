@@ -19,7 +19,7 @@
 									enabled="{viewModel>/validateIW32Auth}" press="onPressChangeStatus"/>
 								<uxap:ObjectPageHeaderActionButton type="Default" press="onPressCopyPrePlanHeader" text="{i18n>xbut.copy}" hideText="false"
 									tooltip="{i18n>xbut.copy}"
-									visible="{= ${user>/ENABLE_PLAN_COPY} === 'X' &amp;&amp; (${STATUS_SHORT} === 'NEW' || ${STATUS_SHORT} === 'INPR')}"
+									visible="{= ${user>/ENABLE_PLAN_COPY} === 'X' &amp;&amp; ${viewModel>/editMode} &amp;&amp; (${STATUS_SHORT} === 'NEW' || ${STATUS_SHORT} === 'INPR')}"
 									enabled="{viewModel>/validateIW32Auth}"/>
 								<uxap:ObjectPageHeaderActionButton id="idStatusCopy" hideText="false" type="Default" text="{i18n>xbut.copy}" tooltip="{i18n>xbut.copy}"
 									visible="false"/>

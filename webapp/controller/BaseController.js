@@ -1054,20 +1054,20 @@ sap.ui.define([
 			oViewModel.setProperty("/bDependencyCall", true);
 			oViewModel.setProperty("/ganttSettings/bUtilizationCall", true);
 		},
-		
+
 		/**
 		 * Used for getting the number of items selected using table select All checkbox
 		 * @param oTable - takes table as a parameter
 		 * Returns the Number of Items selected
 		 */
-		getSelectedItemsCount: function(oTable){
+		getSelectedItemsCount: function (oTable) {
 			var aSelectedIndice = oTable.getSelectedIndices(),
-			iNoOfSelected = 0;
-			aSelectedIndice.forEach(function (iIndex){
-					var oItem = oTable.getContextByIndex(iIndex);
-					if(oItem){
-						iNoOfSelected++;
-					}
+				iNoOfSelected = 0;
+			aSelectedIndice.forEach(function (iIndex) {
+				var oItem = oTable.getContextByIndex(iIndex);
+				if (oItem) {
+					iNoOfSelected++;
+				}
 			}.bind(this));
 			return iNoOfSelected + 1;
 		},
@@ -1295,7 +1295,7 @@ sap.ui.define([
 		 * @private
 		 */
 		_detailPageLayout: function () {
-			var sLayout = library.LayoutType.ThreeColumnsMidExpandedEndHidden;
+			var sLayout = library.LayoutType.TwoColumnsMidExpanded;
 			if (this.getModel("user").getProperty("/DEFAULT_PLAN_DET_FULLSC")) {
 				sLayout = library.LayoutType.MidColumnFullScreen;
 			}

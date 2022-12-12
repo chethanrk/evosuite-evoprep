@@ -110,6 +110,11 @@ sap.ui.define([
 					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
+				onPlanningShaprePress: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
 				onBeforeRebindUtilizationDetails: {
 					public: true,
 					final: false,
@@ -527,6 +532,43 @@ sap.ui.define([
 					sPath: "/GanttHierarchySet('" + oContext.getProperty("ObjectKey") + "')"
 				};
 				this.getOwnerComponent().DialogTemplateRenderer.open(this.getView(), mParams);
+			}
+		},
+
+		/**
+		 * Triigers when shape selection change 
+		 * To validate the header selection to avaid multiple select
+		 * @param {oEvent}
+		 */
+		onPlanningShaprePress: function (oEvent) {
+			var oShape = oEvent.getParameter("shape"),
+				oShapeContext = {},
+				aSelectedShapesIds = this.getView().byId("idPlanningGanttChartTable").getSelectedShapeUid(),
+				oRowDetails = {},
+				oRowObject = {},
+				bValidate = false;
+			if (!oShape) {
+				return;
+			}
+			oShapeContext = oShape.getBindingContext("ganttModel");
+			if (!oShape.getSelected()) {
+				aSelectedShapesIds.forEach(function (sid) {
+					oRowDetails = Utility.parseUid(sid);
+					oRowObject = this.getModel("ganttModel").getProperty(oRowDetails.shapeDataName);
+					if (oRowObject.HIERARCHY_LEVEL === 0 || oShapeContext.getProperty("HIERARCHY_LEVEL") === 0) {
+						bValidate = true;
+					}
+				}.bind(this));
+			}
+			if (bValidate) {
+				if (aSelectedShapesIds.length === 2) {
+					oEvent.preventDefault();
+					this.showMessageToast("Selecting order and operations together is not allowed");
+					return;
+				} else {
+					this.getView().byId("idPlanningGanttChartTable").getSelection().clear(true);
+					return;
+				}
 			}
 		},
 

@@ -47,12 +47,6 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
-				},
-
-				onOprListSelectionChange: {
-					public: true,
-					final: false,
-					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
@@ -210,22 +204,6 @@ sap.ui.define([
 						this._triggerFunctionImport(oPreparedData);
 					}
 				}.bind(this));
-			}
-		},
-
-		/**
-		 * Operation list fragment selection change
-		 * validate to duplicate operation selection
-		 */
-		onOprListSelectionChange: function (oEvent) {
-			var oSelectedItem = oEvent.getParameter("listItem"),
-				oContext = oSelectedItem.getBindingContext(),
-				oOperationData = this.oCreateModel.getData();
-
-			//validate for the duplicate
-			if (!this.checkDuplicate(oOperationData.results, oContext.getProperty("ObjectKey"))) {
-				this.showMessageToast(this.getResourceBundle().getText("ymsg.duplicateValidation"));
-				oSelectedItem.setSelected(false);
 			}
 		},
 

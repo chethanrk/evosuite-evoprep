@@ -216,6 +216,11 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.After
+				},
+				onOprListSelectionChange: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
@@ -1054,22 +1059,56 @@ sap.ui.define([
 			oViewModel.setProperty("/bDependencyCall", true);
 			oViewModel.setProperty("/ganttSettings/bUtilizationCall", true);
 		},
-		
+
 		/**
 		 * Used for getting the number of items selected using table select All checkbox
 		 * @param oTable - takes table as a parameter
 		 * Returns the Number of Items selected
 		 */
-		getSelectedItemsCount: function(oTable){
-			var aSelectedIndice = oTable.getSelectedIndices(),
-			iNoOfSelected = 0;
-			aSelectedIndice.forEach(function (iIndex){
+		getSelectedItemsCount: function (oTable) {
+			var sTableType = oTable.getMetadata().getName(),
+				aSelectedIndice, iNoOfSelected = 0;
+			if (sTableType === "sap.m.Table") {
+				iNoOfSelected = oTable.getSelectedContextPaths().length;
+			} else {
+				aSelectedIndice = oTable.getSelectedIndices();
+				aSelectedIndice.forEach(function (iIndex) {
 					var oItem = oTable.getContextByIndex(iIndex);
-					if(oItem){
+					if (oItem) {
 						iNoOfSelected++;
 					}
-			}.bind(this));
-			return iNoOfSelected + 1;
+				}.bind(this));
+			}
+			return iNoOfSelected;
+		},
+
+		/**
+		 * Operation list fragment selection change
+		 * validate to duplicate operation selection
+		 */
+		onOprListSelectionChange: function (oEvent) {
+			var oSelectedItem = oEvent.getParameter("listItem"),
+				oContext = oSelectedItem.getBindingContext(),
+				bUserSelectAll = oEvent.getParameter("selectAll"),
+				iNoOfSelected = 0,
+				oOperationData;
+				
+			//check for create or detail
+			if(this.oCreateModel){
+				oOperationData = this.oCreateModel.getData();
+			}
+
+			//handle messageToast for select all using table checkbox
+			if (bUserSelectAll) {
+				iNoOfSelected = this.getSelectedItemsCount(oEvent.getSource().getParent().getTable());
+				this.showMessageToast(this.getResourceBundle().getText("ymsg.maxRowSelection", [iNoOfSelected]));
+			}
+
+			//validate for the duplicate
+			if (!this.checkDuplicate(oOperationData.results, oContext.getProperty("ObjectKey"))) {
+				this.showMessageToast(this.getResourceBundle().getText("ymsg.duplicateValidation"));
+				oSelectedItem.setSelected(false);
+			}
 		},
 
 		/* =========================================================== */

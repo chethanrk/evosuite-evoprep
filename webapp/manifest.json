@@ -127,7 +127,8 @@
 					"pattern": "PrePlanDetail/{layout}/{plan}",
 					"target": [
 						"PrePlanMaster",
-						"PrePlanDetail"
+						"PrePlanDetail",
+						"OperationLog"
 					]
 				},
 				{
@@ -149,15 +150,6 @@
 					"pattern": "demandList",
 					"target": [
 						"demandList"
-					]
-				},
-				{
-					"name": "ChangeLogs",
-					"pattern": "PrePlanDetail/{plan}/OperationLog/{operationKey}/{layout}",
-					"target": [
-						"PrePlanMaster",
-						"PrePlanDetail",
-						"OperationLog"
 					]
 				}
 			],

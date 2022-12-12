@@ -200,13 +200,22 @@ sap.ui.define([
 					public: true,
 					final: true
 				},
-				navToLogs: {
-					public: true,
-					final: true
-				},
 				onPressSmartField: {
 					public: true,
 					final: true
+				},
+				resetDeferredGroupToChanges: {
+					public: true,
+					final: true
+				},
+				refreshGantChartData: {
+					public: true,
+					final: true
+				},
+				getSelectedItemsCount: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
 				}
 			}
 		},
@@ -803,12 +812,8 @@ sap.ui.define([
 		 * Navigate to detail page with selected plan
 		 */
 		navToDetail: function (sPlanObject) {
-			var sLayout = library.LayoutType.TwoColumnsMidExpanded;
-			if (this.getModel("user").getProperty("/DEFAULT_PLAN_DET_FULLSC")) {
-				sLayout = library.LayoutType.MidColumnFullScreen;
-			}
 			this.getRouter().navTo("PrePlanDetail", {
-				layout: sLayout,
+				layout: this._detailPageLayout(),
 				plan: sPlanObject
 			});
 		},
@@ -1007,19 +1012,6 @@ sap.ui.define([
 		},
 
 		/**
-		 * Route to Change logs view
-		 * @param sObjectKey - For GUID Plan Items, 
-		 * @param sHeaderKeyId - For GUID Plan Header
-		 */
-		navToLogs: function (sObjectKey, sHeaderKeyId) {
-			this.getRouter().navTo("ChangeLogs", {
-				layout: library.LayoutType.ThreeColumnsMidExpanded,
-				operationKey: sObjectKey,
-				plan: sHeaderKeyId
-			});
-		},
-
-		/**
 		 * gets unique view id setted by TemplateRenderer
 		 * @return string
 		 */
@@ -1036,6 +1028,48 @@ sap.ui.define([
 		onPressSmartField: function (oEvent) {
 			var oSource = oEvent.getSource();
 			this.openApp2AppPopover(oSource, oSource.getUrl());
+		},
+		/**
+		 * Change the deferred group of the odata model
+		 * to changes.
+		 * @param oView - This is the view instance 
+		 */
+		resetDeferredGroupToChanges: function (oView) {
+			oView.getModel().setDeferredGroups(["changes"]);
+		},
+		/**
+		 * Used to refresh gantt chart related data
+		 * @param oModel - viewModel instance, its a non mandatory param 
+		 */
+		refreshGantChartData: function (oModel) {
+			var oEventBus = sap.ui.getCore().getEventBus();
+			var oViewModel;
+			oEventBus.publish("BaseController", "refreshFullGantt");
+			oEventBus.publish("BaseController", "refreshUtilizationGantt");
+			if (oModel) {
+				oViewModel = oModel;
+			} else {
+				oViewModel = this.getModel("viewModel");
+			}
+			oViewModel.setProperty("/bDependencyCall", true);
+			oViewModel.setProperty("/ganttSettings/bUtilizationCall", true);
+		},
+		
+		/**
+		 * Used for getting the number of items selected using table select All checkbox
+		 * @param oTable - takes table as a parameter
+		 * Returns the Number of Items selected
+		 */
+		getSelectedItemsCount: function(oTable){
+			var aSelectedIndice = oTable.getSelectedIndices(),
+			iNoOfSelected = 0;
+			aSelectedIndice.forEach(function (iIndex){
+					var oItem = oTable.getContextByIndex(iIndex);
+					if(oItem){
+						iNoOfSelected++;
+					}
+			}.bind(this));
+			return iNoOfSelected + 1;
 		},
 
 		/* =========================================================== */
@@ -1254,6 +1288,18 @@ sap.ui.define([
 					}.bind(this)
 				}
 			);
+		},
+
+		/**
+		 * Decides layout of detail page based on global config
+		 * @private
+		 */
+		_detailPageLayout: function () {
+			var sLayout = library.LayoutType.ThreeColumnsMidExpandedEndHidden;
+			if (this.getModel("user").getProperty("/DEFAULT_PLAN_DET_FULLSC")) {
+				sLayout = library.LayoutType.MidColumnFullScreen;
+			}
+			return sLayout;
 		}
 
 	});

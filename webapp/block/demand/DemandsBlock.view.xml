@@ -5,9 +5,9 @@
 		tableType="ResponsiveTable" useExportToExcel="false" useVariantManagement="true" useTablePersonalisation="true" showRowCount="true"
 		persistencyKey="com.evorait.evosuite.evoprep.DetailDemandTable" enableAutoBinding="true" demandPopin="true" customData:useSmartField="true"
 		customData:useSmartToggle="true" fieldChange="onFieldChange"
-		editTogglable="{parts: [ {path:'ALLOW_FINAL'}, {path:'user>/ENABLE_ITEM_UPDATE'} ], formatter:'.formatter.showOperationEditDel'}"
+		editTogglable="{parts: [ {path:'ALLOW_FINAL'}, {path:'user>/ENABLE_ITEM_UPDATE'}, {path:'viewModel>/validateIW32Auth'}], formatter:'.formatter.showOperationEditDel'}"
 		editToggled="onPressEdit" tableBindingPath="PlanHeaderToPlanItems" initiallyVisibleFields="COMPONENT_EXISTS"
-		requestAtLeastFields="ObjectKey,HeaderObjectKey,MATERIAL_STATUS,MATERIAL_STATUS_DESC,COMPONENT_EXISTS,MATERIAL_STATUS_ICON,MATERIAL_STATUS_STATE">
+		requestAtLeastFields="ObjectKey,HeaderObjectKey,MATERIAL_STATUS,MATERIAL_STATUS_DESC,COMPONENT_EXISTS,MATERIAL_STATUS_ICON,MATERIAL_STATUS_STATE,SYSTEM_STATUS_CODE">
 		<!--layout data used to make the table growing but the filter bar fixed-->
 		<smartTable:layoutData>
 			<FlexItemData growFactor="1" baseSize="0%"/>
@@ -16,23 +16,22 @@
 			<Toolbar>
 				<ToolbarSpacer/>
 				<Button icon="sap-icon://add" press="onPressAddOperations" tooltip="{i18n>btn.addOper}"
-					visible="{parts: [{path:'user>/ENABLE_ITEM_UPDATE'}, {path:'ALLOW_FINAL'}, {path:'user>/ENABLE_ITEM_ADD'} ], formatter:'.formatter.showOperationAdd'}"/>
+					visible="{parts: [{path:'user>/ENABLE_ITEM_UPDATE'}, {path:'ALLOW_FINAL'}, {path:'user>/ENABLE_ITEM_ADD'} ], formatter:'.formatter.showOperationAdd'}"
+					enabled="{viewModel>/validateIW32Auth}"/>
 				<Button icon="sap-icon://delete" press="onPressDeleteOperations" tooltip="{i18n>btn.remove}"
 					visible="{parts: [{path:'ALLOW_FINAL'}, {path:'user>/ENABLE_ITEM_DELETE'} ], formatter:'.formatter.showOperationEditDel'}"
-					enabled="{viewModel>/bEnableOperationDelete}"/>
-				<Button text="{i18n>btn.finalize}" tooltip="{i18n>btn.finalize}" press="onFinalizeBtnPress"
-					enabled="{viewModel>/bEnableFinalizeBtn}" visible="{= ${user>/ENABLE_PLAN_OPRN_FINAL} === 'X'}" />
-				<Button icon="sap-icon://synchronize" enabled="{viewModel>/bMaterialsDemandsBlock}"
-					text="{i18n>btn.materialStatus}" tooltip="{i18n>btn.materialStatus}" visible="{user>/ENABLE_MATERIAL_AVAILABILITY}"
-					press="onMaterialStatusPress"/>
+					enabled="{parts: ['viewModel>/bEnableOperationDelete', 'viewModel>/validateIW32Auth'], formatter:'.formatter.enableEditToggleBtn'}"/>
+				<Button text="{i18n>btn.finalize}" tooltip="{i18n>btn.finalize}" press="onFinalizeBtnPress" enabled="{viewModel>/bEnableFinalizeBtn}"
+					visible="{= ${user>/ENABLE_PLAN_OPRN_FINAL} === 'X'}"/>
+				<Button icon="sap-icon://synchronize" enabled="{viewModel>/bMaterialsDemandsBlock}" text="{i18n>btn.materialStatus}"
+					tooltip="{i18n>btn.materialStatus}" visible="{user>/ENABLE_MATERIAL_AVAILABILITY}" press="onMaterialStatusPress"/>
 				<Button text="{i18n>btn.materialInfoButton}" tooltip="{i18n>btn.materialInfoButton}" icon="sap-icon://message-information"
-					press="onMaterialInfoButtonPress" enabled="{viewModel>/bMaterialsDemandsBlock}" visible="{user>/ENABLE_MATERIAL_AVAILABILITY}">
-				</Button>
+					press="onMaterialInfoButtonPress" enabled="{viewModel>/bMaterialsDemandsBlock}" visible="{user>/ENABLE_MATERIAL_AVAILABILITY}"></Button>
 				<core:ExtensionPoint name="TableExtP|PrePlanDetail|PlanItemsSet|CustomToolbar"/>
 			</Toolbar>
 		</smartTable:customToolbar>
 		<Table mode="{= ${viewModel>/bOperationTableMode} ? 'None' : 'MultiSelect'}" selectionChange="handleSelectionChangeOperation"
-			growingThreshold="100" itemPress="fnOperationClick">
+			growingThreshold="100">
 			<columns>
 				<Column width="6rem">
 					<customData>
@@ -50,7 +49,7 @@
 						tooltip="{/PlanItemsSet/CHANGE_INDICATOR/##com.sap.vocabularies.Common.v1.Label/String}"/>
 				</Column>
 			</columns>
-			<ColumnListItem type="Navigation" press="onClickTableRow">
+			<ColumnListItem press="onClickTableRow">
 				<cells>
 					<HBox>
 						<ObjectStatus class="sapUiTinyMargin" tooltip="{MATERIAL_STATUS_DESC}" text="{MATERIAL_STATUS_DESC}" visible="{ path:'COMPONENT_EXISTS' }"
@@ -58,7 +57,7 @@
 					</HBox>
 				</cells>
 				<cells>
-					<core:Icon src="sap-icon://alert" visible="{CHANGE_INDICATOR}"/>
+					<core:Icon src="sap-icon://alert" visible="{CHANGE_INDICATOR}" press="fnChangeIconClick" color="Default"/>
 				</cells>
 			</ColumnListItem>
 		</Table>

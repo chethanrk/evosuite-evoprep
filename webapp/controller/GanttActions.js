@@ -69,7 +69,9 @@ sap.ui.define([
 					oEventBus.publish("BaseController", "refreshFullGantt");
 					oEventBus.publish("BaseController", "refreshUtilizationGantt");
 					this._oView.getModel("viewModel").setProperty("/bDependencyCall", true);
+					this._oView.getModel("viewModel").setProperty("/ganttSettings/bUtilizationCall", true);
 					this._oView.byId("idPlanningGanttChartTable").getSelection().clear(true);
+					this.resetDeferredGroupToChanges(this._oView);
 				}.bind(this));
 		},
 

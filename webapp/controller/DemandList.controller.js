@@ -85,6 +85,11 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
+				},
+				onFieldChangeOperationsList: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
@@ -166,16 +171,22 @@ sap.ui.define([
 		 * Validate for the minimum 1 operation selection
 		 */
 		handleDemandSelectionChange: function (oEvent) {
-			var isEnabledPrePlanreate = false;
-			var aSelecteOperationIndice = this.oTable.getSelectedIndices();
+			var bUserSelectAll = oEvent.getParameter("selectAll"),
+				bUserInteraction = oEvent.getParameter("userInteraction"),
+				isEnabledPrePlanreate = false,
+				aSelecteOperationIndice = this.oTable.getSelectedIndices(),
+				bCheckSelectAll, bEnableAddOperations, 
+				iNoOfSelected;
 			if (aSelecteOperationIndice.length > 0) {
 				isEnabledPrePlanreate = true;
 			}
 			this.getModel("viewModel").setProperty("/allowPrePlanCreate", isEnabledPrePlanreate);
 
-			//Condition for Disabling Add Operations when its Select All (Later this has to be removed)
-			var bEnableAddOperations = true;
-			if (this.bSelectAll || oEvent.getParameters().rowIndex === 0) {
+			bEnableAddOperations = true;
+
+			//Condition for Disabling Add Operations when Select All is checked from Table Header
+			bCheckSelectAll = bUserSelectAll && bUserInteraction;
+			if (this.bSelectAll || bCheckSelectAll) {
 				bEnableAddOperations = false;
 			}
 			this.getModel("viewModel").setProperty("/bEnableAddOperations", bEnableAddOperations);
@@ -185,7 +196,13 @@ sap.ui.define([
 				//handle finalise and material releated button enable
 				this._handleOprCommonBtnEnable();
 			}
-
+			
+			//handle messageToast for select all using table checkbox
+			if(bCheckSelectAll){
+				iNoOfSelected = this.getSelectedItemsCount(this.oTable);
+				this.showMessageToast(this.getResourceBundle().getText("ymsg.maxRowSelection", [iNoOfSelected]));
+			}
+			
 		},
 
 		/**
@@ -418,6 +435,14 @@ sap.ui.define([
 				this.bSelectAll = false;
 				this._removeOprTableSelection();
 			}
+		},
+		/**
+		 * This method is trigerred when we try to edit field of the table 
+		 * in the edit mode
+		 * @param oEvent
+		 */
+		onFieldChangeOperationsList: function (oEvent) {
+			this.validateEditFinalizeOperation(oEvent, "SYSTEM_STATUS");
 		},
 
 		/* =========================================================== */

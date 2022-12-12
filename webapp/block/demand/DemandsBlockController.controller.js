@@ -3,8 +3,9 @@ sap.ui.define([
 	"sap/ui/core/mvc/Controller",
 	"sap/base/util/isEmptyObject",
 	"sap/ui/core/Fragment",
-	"sap/ui/core/mvc/OverrideExecution"
-], function (OperationTableController, Controller, isEmptyObject, Fragment, OverrideExecution) {
+	"sap/ui/core/mvc/OverrideExecution",
+	"sap/f/library"
+], function (OperationTableController, Controller, isEmptyObject, Fragment, OverrideExecution, library) {
 	"use strict";
 
 	return OperationTableController.extend("com.evorait.evosuite.evoprep.block.demand.DemandsBlockController", {
@@ -28,7 +29,7 @@ sap.ui.define([
 					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
-				fnOperationClick: {
+				fnChangeIconClick: {
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
@@ -123,7 +124,8 @@ sap.ui.define([
 		handleSelectionChangeOperation: function (oEvent) {
 			var oSource = oEvent.getSource(),
 				aSelectedItems = oSource.getSelectedItems();
-			if (aSelectedItems.length > 0) {
+			if (aSelectedItems.length >
+				0) {
 				this.getModel("viewModel").setProperty("/bEnableOperationDelete", true);
 			} else {
 				this.getModel("viewModel").setProperty("/bEnableOperationDelete", false);
@@ -204,20 +206,25 @@ sap.ui.define([
 			if (result) {
 				this.showMessageToast(sMsg);
 				this.getModel().resetChanges();
+				return;
 			}
+			// check the validation for the finalized operation change
+			this.validateEditFinalizeOperation(oEvent, "SYSTEM_STATUS_CODE");
+
 		},
 
 		/**
-		 * On click of operation route to Change Logs page
+		 * On click of CHange Icon show Change Logs page
 		 * @param oEvent
 		 */
-		fnOperationClick: function (oEvent) {
-			var oBindCon = oEvent.getParameter("listItem").getBindingContext(),
-				sObjectKeyId = oBindCon.getProperty("ObjectKey"),
-				sHeaderKeyId = oBindCon.getProperty("HeaderObjectKey");
-			if (sObjectKeyId) {
-				this.navToLogs(sObjectKeyId, sHeaderKeyId);
-			}
+		fnChangeIconClick: function (oEvent) {
+			var oBindCon = oEvent.getSource().getBindingContext(),
+				sObjectKeyId = oBindCon.getProperty("ObjectKey");
+			var oEventBus = sap.ui.getCore().getEventBus();
+			this.oViewModel.setProperty("/layout", library.LayoutType.ThreeColumnsMidExpanded);
+			oEventBus.publish("ChangeLogs", "routeMatched", {
+				sKey: sObjectKeyId
+			});
 
 		},
 
@@ -231,10 +238,8 @@ sap.ui.define([
 		_afterSuccess: function () {
 			this.showMessageToast(this.getResourceBundle().getText("msg.saveSuccess"));
 			this.getModel().refresh();
-			var oEventBus = sap.ui.getCore().getEventBus();
-			oEventBus.publish("BaseController", "refreshFullGantt", this._loadGanttData, this);
-			oEventBus.publish("BaseController", "refreshUtilizationGantt", this._loadUtilizationGantt, this);
-			this.getModel("viewModel").setProperty("/bDependencyCall", true);
+			this.resetDeferredGroupToChanges(this.getView());
+			this.refreshGantChartData();
 		},
 
 		/**
@@ -242,6 +247,7 @@ sap.ui.define([
 		 */
 		_afterError: function () {
 			this.getModel().resetChanges();
+			this.resetDeferredGroupToChanges(this.getView());
 		}
 	});
 });

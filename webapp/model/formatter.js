@@ -301,10 +301,11 @@ sap.ui.define([
 		 * format visibility of delete operation button in PrePlan Detail
 		 * @param bFinal
 		 * @param bAllowOper
+		 * @param bAuthCheck
 		 * @returns {boolean}
 		 */
-		showOperationEditDel: function (bFinal, bAllowOper) {
-			return Boolean(bFinal && bAllowOper);
+		showOperationEditDel: function (bFinal, bAllowOper, bAuthCheck) {
+			return Boolean(bFinal && bAllowOper && bAuthCheck);
 		},
 
 		/**
@@ -388,6 +389,27 @@ sap.ui.define([
 		 */
 		checkGanttEditability: function (bEnableUpdateplan, bGanttRealOnly, bEnableGanttShapesEdit, ballowFinal) {
 			return Boolean(bEnableUpdateplan === 'X' && !bGanttRealOnly && bEnableGanttShapesEdit && ballowFinal);
+		},
+
+		/**
+		 * Formatting visibility of edit button for SAP standard authroization check
+		 * @param bEnableCheck
+		 * @param bAuthCheck
+		 * @returns {boolean}
+		 */
+		enableEditToggleBtn: function (bEnableCheck, bAuthCheck) {
+			return Boolean(bEnableCheck && bAuthCheck);
+		},
+
+		/**
+		 * Formatter for setting Icon for Utilization Column in Garphic Planning
+		 * @param sIcon 
+		 */
+		setUtilizationIcon: function (sIcon) {
+			if (sIcon !== "") {
+				return sIcon;
+			}
+			return null;
 		}
 	};
 

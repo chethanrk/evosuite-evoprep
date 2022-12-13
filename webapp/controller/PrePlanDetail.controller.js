@@ -115,6 +115,11 @@ sap.ui.define([
 					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
+				onShapeDragStart: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
 				onBeforeRebindUtilizationDetails: {
 					public: true,
 					final: false,
@@ -374,13 +379,21 @@ sap.ui.define([
 				sNewStartDate = oParams.newDateTime,
 				aShapeData = [],
 				sDateDifference = sNewStartDate.getTime() - dOldStartDateTime.getTime(),
-				sNewEndDate, oDraggedData, sStartDateTime, sEndDateTime;
+				sNewEndDate, oDraggedData, sStartDateTime, sEndDateTime, sSourcePath;
+
 			if (!oTargetContext) {
 				oTargetContext = oParams.targetShape.getParent().getParent().getBindingContext("ganttModel");
 			}
+
 			for (var i in aDraggedShapes) {
-				var sSourcePath = Utility.parseUid(i).shapeDataName;
+				sSourcePath = Utility.parseUid(i).shapeDataName;
 				oDraggedData = this.getModel("ganttModel").getProperty(sSourcePath);
+
+				//Validate the past date for header bar
+				if (moment(sNewStartDate).isBefore(moment()) && oDraggedData.HIERARCHY_LEVEL === 0 && !oDraggedData.ENABLE_PAST_DATE) {
+					this.showMessageToast(this.getResourceBundle().getText("msg.orderPastDateValidation"));
+					return;
+				}
 				sStartDateTime = formatter.mergeDateTime(oDraggedData.START_DATE, oDraggedData.START_TIME);
 				sEndDateTime = formatter.mergeDateTime(oDraggedData.END_DATE, oDraggedData.END_TIME);
 				sNewStartDate = new Date(moment(sStartDateTime).add(sDateDifference));
@@ -391,9 +404,11 @@ sap.ui.define([
 				this.getModel("ganttModel").setProperty(sSourcePath + "/END_DATE", sNewEndDate);
 				aShapeData.push(oDraggedData);
 			}
-			this.GanttActions._prepareGanttOpeartionPayload(aShapeData).then(function (aPayload) {
-				this.GanttActions._proceedToGanttOperationUpdate();
-			}.bind(this));
+			if (aShapeData.length) {
+				this.GanttActions._prepareGanttOpeartionPayload(aShapeData).then(function (aPayload) {
+					this.GanttActions._proceedToGanttOperationUpdate();
+				}.bind(this));
+			}
 		},
 
 		/**
@@ -404,8 +419,7 @@ sap.ui.define([
 		onShapeResize: function (oEvent) {
 			var oParams = oEvent.getParameters(),
 				oRowContext = oParams.shape.getBindingContext("ganttModel"),
-				oData = this.getModel("ganttModel").getProperty(oRowContext.getPath()),
-				aShapeData = [];
+				oData = this.getModel("ganttModel").getProperty(oRowContext.getPath());
 			//Adjusting End Date and Time after resize
 			if (oParams.newTime[0] === oParams.oldTime[0]) {
 				this.getModel("ganttModel").setProperty(oRowContext.getPath() + "/START_DATE", oData.START_DATE);
@@ -424,8 +438,7 @@ sap.ui.define([
 				this.getModel("ganttModel").setProperty(oRowContext.getPath() + "/START_TIME", oData.START_TIME);
 				oData.START_DATE = moment(oData.START_DATE).endOf('day').subtract(999, 'milliseconds').toDate();
 			}
-			aShapeData.push(oData);
-			this.GanttActions._prepareGanttOpeartionPayload(aShapeData).then(function (aPayload) {
+			this.GanttActions._prepareGanttOpeartionPayload([oData]).then(function (aPayload) {
 				this.GanttActions._proceedToGanttOperationUpdate();
 			}.bind(this));
 		},
@@ -576,7 +589,7 @@ sap.ui.define([
 			if (bValidate) {
 				if (aSelectedShapesIds.length === 2) {
 					oEvent.preventDefault();
-					this.showMessageToast("Selecting order and operations together is not allowed");
+					this.showMessageToast(this.getResourceBundle().getText("msg.shapeSelectionValidation"));
 					return;
 				} else {
 					this.getView().byId("idPlanningGanttChartTable").getSelection().clear(true);
@@ -584,6 +597,15 @@ sap.ui.define([
 				}
 			}
 		},
+
+		/**
+		 * Dragstart to validate the shape drag for past date
+		 * @param oEvent
+		 */
+		/*onShapeDragStart: function (oEvent) {
+			var oSource = oEvent;
+			oEvent.preventDefault();
+		},*/
 
 		/**
 		 * Utilization Details PopOver 
@@ -952,12 +974,12 @@ sap.ui.define([
 		_countLineItems: function (data) {
 			var iLength = 0;
 			iLength = data.data.children.length;
-			for(var i in data.data.children){
+			for (var i in data.data.children) {
 				iLength = iLength + data.data.children[i].children.length;
 			}
 			return iLength;
 		},
-		
+
 		/**
 		 * Display the error messages from the backend for the
 		 * PlanHeaderSet entity set specific in case we change

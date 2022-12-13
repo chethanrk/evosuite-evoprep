@@ -296,7 +296,7 @@ sap.ui.define([
 
 			for (var i = 0; i < aSelectedContext.length; i++) {
 				sPath = aSelectedContext[i].getPath();
-				this.getModel().setProperty(sPath + "/FUNCTION", "OPER_DISPATCH");
+				this.getModel().setProperty(sPath + "/FUNCTION", "OPER_FINAL");
 			}
 			if (aSelectedContext.length > 0) {
 				this.saveChangesMain({

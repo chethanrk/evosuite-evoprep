@@ -581,7 +581,7 @@ sap.ui.define([
 				aSelectedShapesIds.forEach(function (sid) {
 					oRowDetails = Utility.parseUid(sid);
 					oRowObject = this.getModel("ganttModel").getProperty(oRowDetails.shapeDataName);
-					if (oRowObject.HIERARCHY_LEVEL === 0 || oShapeContext.getProperty("HIERARCHY_LEVEL") === 0) {
+					if (oRowObject && (oRowObject.HIERARCHY_LEVEL === 0 || oShapeContext.getProperty("HIERARCHY_LEVEL") === 0)) {
 						bValidate = true;
 					}
 				}.bind(this));

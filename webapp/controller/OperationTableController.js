@@ -314,7 +314,7 @@ sap.ui.define([
 		validateEditFinalizeOperation: function (mParam,mProperty) {
 			var oContext = mParam.getParameter("changeEvent").getSource().getBindingContext();
 			var sValue = oContext.getProperty(mProperty);
-			if (sValue.includes("DSPT")) {
+			if (!sValue) {
 				this.getView().getModel().resetChanges([oContext.getPath()]);
 				this.showMessageToast(this.getResourceBundle().getText("msg.operationEditFinalizeValidation"));
 			}

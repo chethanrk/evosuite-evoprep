@@ -442,7 +442,7 @@ sap.ui.define([
 		 * @param oEvent
 		 */
 		onFieldChangeOperationsList: function (oEvent) {
-			this.validateEditFinalizeOperation(oEvent, "SYSTEM_STATUS");
+			this.validateEditFinalizeOperation(oEvent, "ALLOW_EDIT");
 		},
 
 		/* =========================================================== */

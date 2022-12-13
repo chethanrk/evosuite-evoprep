@@ -296,7 +296,7 @@ sap.ui.define([
 
 			for (var i = 0; i < aSelectedContext.length; i++) {
 				sPath = aSelectedContext[i].getPath();
-				this.getModel().setProperty(sPath + "/FUNCTION", "OPER_DISPATCH");
+				this.getModel().setProperty(sPath + "/FUNCTION", "OPER_FINAL");
 			}
 			if (aSelectedContext.length > 0) {
 				this.saveChangesMain({
@@ -314,7 +314,7 @@ sap.ui.define([
 		validateEditFinalizeOperation: function (mParam,mProperty) {
 			var oContext = mParam.getParameter("changeEvent").getSource().getBindingContext();
 			var sValue = oContext.getProperty(mProperty);
-			if (sValue.includes("DSPT")) {
+			if (!sValue) {
 				this.getView().getModel().resetChanges([oContext.getPath()]);
 				this.showMessageToast(this.getResourceBundle().getText("msg.operationEditFinalizeValidation"));
 			}

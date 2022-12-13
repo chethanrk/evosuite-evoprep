@@ -36,6 +36,8 @@ sap.ui.define([
 		 * Called when close comapre page 
 		 */
 		onPressClose: function (oEvent) {
+			//enabling the below property as it is getting disabled on click of compare
+			this.getModel("viewModel").setProperty("/fullscreenGantt", true);
 			BaseController.prototype.onPressClose.apply(this, arguments);
 			this.getModel("compareModel").setProperty("/compare", []);
 			this.getModel("compareModel").setProperty("/compare0", []);

@@ -37,13 +37,14 @@
 					<OverflowToolbar class="prePlanListToolbar">
 						<ToolbarSpacer/>
 						<Button type="Ghost" id="idBtnCreatePrePlan" text="{i18n>xbut.create}" tooltip="{i18n>xbut.create}" press="onCreatePrePlanPress"
-							visible="{= ${user>/ENABLE_PREPLAN_CREATE} === 'X'}" enabled="{parts: ['viewModel>/authorizeCheck' , 'user>/ENABLE_IW32_AUTH_CHECK' ], formatter:'.formatter.enableBtn' }"/>
-						<Button type="Ghost" id="idBtnCopyPrePlan" text="{i18n>xbut.copy}" press="onCopyPrePlanPress" visible="{= ${user>/ENABLE_PLAN_COPY} === 'X'}"
-							enabled="{parts: ['viewModel>/bCopyEnabled', 'viewModel>/authorizeCheck', 'user>/ENABLE_IW32_AUTH_CHECK'], formatter:'.formatter.enableEditToggleBtn'}"/>
+							visible="{= ${user>/ENABLE_PREPLAN_CREATE} === 'X'}" enabled="{viewModel>/validateIW32Auth}"/>
+						<Button type="Ghost" id="idBtnCopyPrePlan" text="{i18n>xbut.copy}" press="onCopyPrePlanPress"
+							visible="{= ${user>/ENABLE_PLAN_COPY} === 'X'}"
+							enabled="{parts: ['viewModel>/bCopyEnabled', 'viewModel>/validateIW32Auth'], formatter:'.formatter.enableEditToggleBtn'}"/>
 						<Button type="Ghost" id="idBtnComaprePrePlan" text="{i18n>xbut.comapre}" tooltip="{i18n>xbut.comapre}" press="onPressComapre"
-							visible="{= ${user>/ENABLE_PLAN_COMPARE} === 'X'}" enabled="{parts: ['viewModel>/authorizeCheck' , 'user>/ENABLE_IW32_AUTH_CHECK' ], formatter:'.formatter.enableBtn' }"/>
+							visible="{= ${user>/ENABLE_PLAN_COMPARE} === 'X'}" enabled="{viewModel>/validateIW32Auth}"/>
 						<Button type="Ghost" id="idBtnDeletePrePlan" text="{i18n>xbut.delete}" tooltip="{i18n>xbut.delete}" press="onDeletePrePlanPress"
-							enabled="{viewModel>/isPrePlanSelected}"
+							enabled="{parts: ['viewModel>/isPrePlanSelected', 'viewModel>/validateIW32Auth'], formatter:'.formatter.enableEditToggleBtn'}"
 							visible="{parts:[{path:'user>/ENABLE_PLAN_DELETE'},{path:'viewModel>/layout'}],formatter:'.formatter.showDeleteMasterList'}"/>
 					</OverflowToolbar>
 					<core:ExtensionPoint name="TableExtP|PrePlanMaster|PlanHeaderSet|CustomToolbar"/>

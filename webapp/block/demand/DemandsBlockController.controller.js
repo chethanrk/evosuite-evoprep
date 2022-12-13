@@ -124,10 +124,7 @@ sap.ui.define([
 		handleSelectionChangeOperation: function (oEvent) {
 			var oSource = oEvent.getSource(),
 				aSelectedItems = oSource.getSelectedItems();
-			if (aSelectedItems.length > 0 && this.getModel("viewModel").getProperty("/authorizeCheck")) {
-				this.getModel("viewModel").setProperty("/bEnableOperationDelete", Boolean(this.getModel("user").getProperty(
-					"/ENABLE_IW32_AUTH_CHECK")));
-			} else if (aSelectedItems.length >
+			if (aSelectedItems.length >
 				0) {
 				this.getModel("viewModel").setProperty("/bEnableOperationDelete", true);
 			} else {
@@ -212,7 +209,7 @@ sap.ui.define([
 				return;
 			}
 			// check the validation for the finalized operation change
-			this.validateEditFinalizeOperation(oEvent,"SYSTEM_STATUS_CODE");
+			this.validateEditFinalizeOperation(oEvent, "SYSTEM_STATUS_CODE");
 
 		},
 

@@ -84,8 +84,8 @@ sap.ui.define([
 					busy: true,
 					sStartDate: null,
 					sEndDate: null,
-					bShowUtilization:false,//Utilization Column Visibility
-					bUtilizationCall:false //Utilization Service Call
+					bShowUtilization: false, //Utilization Column Visibility
+					bUtilizationCall: false //Utilization Service Call
 				},
 				bDependencyCall: false, //Restricting expand call in Graphic Planning GanttChart
 				bEnableOperationDelete: false, //Enabling/Disabling Delete Button in Plan Detail Operation Tab
@@ -98,13 +98,15 @@ sap.ui.define([
 					ganttSelectionPane: "30%"
 				},
 				aAllSelectedOperations: [], //handle select all,
-				bMaterialsDemandsBlock:false,// handle the enable and disable of finalize button in the demands table
+				bMaterialsDemandsBlock: false, // handle the enable and disable of finalize button in the demands table
 				bEnableFinalizeBtn: false, // handle the enable or disable of finalize button of the operations 
-                authorizeCheck: false // SAP standard check 
+				validateIW32Auth: true // SAP standard check 
 			};
 
 			//GetSystemInformation Call
 			this._getSystemInformation();
+
+			this.oSystemInfoProm.then(this._handleAuthorization.bind(this));
 
 			this.setModel(models.createHelperModel(viewModelObj), "viewModel");
 			this.setModel(models.createCreateModel(), "CreateModel");
@@ -174,7 +176,6 @@ sap.ui.define([
 			this.oSystemInfoProm = new Promise(function (resolve) {
 				this.readData("/SystemInformationSet", []).then(function (oData) {
 					this.getModel("user").setData(oData.results[0]);
-					this.getModel("viewModel").setProperty("/authorizeCheck", oData.results[0].ENABLE_PM_AUTH_CHECK);
 					resolve(oData.results[0]);
 				}.bind(this));
 			}.bind(this));
@@ -296,6 +297,17 @@ sap.ui.define([
 		_navLinksVisibility: function (mProps) {
 			for (var n in mProps) {
 				mProps[n].btnVisibility = Object.values(Constants.ALLOWED_LINKS).indexOf(mProps[n].ApplicationId) !== -1 ? true : false;
+			}
+		},
+
+		/**
+		 * Handle SAP authorization
+		 */
+		_handleAuthorization: function () {
+			var bPMAuth = this.getModel("user").getProperty("/ENABLE_PM_AUTH_CHECK"),
+				bIW32Auth = this.getModel("user").getProperty("/ENABLE_IW32_AUTH_CHECK");
+			if (bPMAuth) {
+				this.getModel("viewModel").setProperty("/validateIW32Auth", Boolean(bIW32Auth));
 			}
 		}
 

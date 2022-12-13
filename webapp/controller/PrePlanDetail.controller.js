@@ -152,6 +152,8 @@ sap.ui.define([
 
 			this._treeTable = this.getView().byId("idPlanningGanttTreeTable");
 			this._axisTime = this.getView().byId("idPlanningGanttZoom");
+			this._planningGanttContainer = this.getView().byId("idPlanningGanttChartContainer");
+			this._utilizationGanttContainer = this.getView().byId("idUtilizationGanttChartContainer");
 
 			this._UtilizationAxisTime = this.getView().byId("idUtilizationGanttZoom");
 			this._UtilizationSelectView = this.getView().byId("idUtilizationSelect");
@@ -209,6 +211,8 @@ sap.ui.define([
 				oViewModel.setProperty("/ganttUtilizationFullMode", false);
 				this.oViewModel.setProperty("/fullscreenGantt", false);
 				oSource.setType("Emphasized");
+				oEvent.getSource().getParent().getParent().getParent().getParent().addStyleClass("sapUxAPObjectPageSubSectionFitContainer");
+				this._planningGanttContainer.setHeight("100%");
 			} else {
 				if (oViewModel.getProperty("/fullscreen")) {
 					oViewModel.setProperty("/layout", library.LayoutType.TwoColumnsMidExpanded);
@@ -219,6 +223,8 @@ sap.ui.define([
 				oViewModel.setProperty("/ganttUtilizationFullMode", true);
 				this.oViewModel.setProperty("/fullscreenGantt", true);
 				oSource.setType("Default");
+				oEvent.getSource().getParent().getParent().getParent().getParent().removeStyleClass("sapUxAPObjectPageSubSectionFitContainer");
+				this._planningGanttContainer.setHeight("500px");
 			}
 		},
 
@@ -357,27 +363,25 @@ sap.ui.define([
 		onShapeDrop: function (oEvent) {
 			var oParams = oEvent.getParameters(),
 				aDraggedShapes = oParams.draggedShapeDates,
+				sLastDraggedShapeUid = oParams.lastDraggedShapeUid,
+				dOldStartDateTime = aDraggedShapes[sLastDraggedShapeUid].time,
 				oTargetContext = oParams.targetRow ? oParams.targetRow.getBindingContext("ganttModel") : null,
 				sNewStartDate = oParams.newDateTime,
 				aShapeData = [],
-				sNewEndDate, sDateDifference, oDraggedData, sStartDateTime, sEndDateTime;
+				sDateDifference = sNewStartDate.getTime() - dOldStartDateTime.getTime(),
+				sNewEndDate, oDraggedData, sStartDateTime, sEndDateTime;
 			if (!oTargetContext) {
 				oTargetContext = oParams.targetShape.getParent().getParent().getBindingContext("ganttModel");
 			}
 			for (var i in aDraggedShapes) {
-				var sSourcePath = Utility.parseUid(i).shapeDataName,
-					sTargetPath = oTargetContext.getPath();
+				var sSourcePath = Utility.parseUid(i).shapeDataName;
 				oDraggedData = this.getModel("ganttModel").getProperty(sSourcePath);
 				sStartDateTime = formatter.mergeDateTime(oDraggedData.START_DATE, oDraggedData.START_TIME);
 				sEndDateTime = formatter.mergeDateTime(oDraggedData.END_DATE, oDraggedData.END_TIME);
-				sDateDifference = moment(sEndDateTime).diff(sStartDateTime);
-				if (sDateDifference < 0) {
-					sDateDifference = sDateDifference * -1;
-				}
-				sNewEndDate = new Date(moment(sNewStartDate).add(sDateDifference));
+				sNewStartDate = new Date(moment(sStartDateTime).add(sDateDifference));
+				sNewEndDate = new Date(moment(sEndDateTime).add(sDateDifference));
 				oDraggedData.START_TIME.ms = sNewStartDate.getTime();
 				oDraggedData.END_TIME.ms = sNewEndDate.getTime();
-
 				this.getModel("ganttModel").setProperty(sSourcePath + "/START_DATE", sNewStartDate);
 				this.getModel("ganttModel").setProperty(sSourcePath + "/END_DATE", sNewEndDate);
 				aShapeData.push(oDraggedData);
@@ -470,6 +474,8 @@ sap.ui.define([
 				oViewModel.setProperty("/ganttFullMode", false);
 				this.oViewModel.setProperty("/fullscreenGantt", false);
 				oSource.setType("Emphasized");
+				oEvent.getSource().getParent().getParent().getParent().getParent().addStyleClass("sapUxAPObjectPageSubSectionFitContainer");
+				this._utilizationGanttContainer.setHeight("100%");
 			} else {
 				if (oViewModel.getProperty("/fullscreen")) {
 					oViewModel.setProperty("/layout", library.LayoutType.TwoColumnsMidExpanded);
@@ -480,6 +486,8 @@ sap.ui.define([
 				oViewModel.setProperty("/ganttFullMode", true);
 				this.oViewModel.setProperty("/fullscreenGantt", true);
 				oSource.setType("Default");
+				oEvent.getSource().getParent().getParent().getParent().getParent().removeStyleClass("sapUxAPObjectPageSubSectionFitContainer");
+				this._utilizationGanttContainer.setHeight("300px");
 			}
 			oViewModel.setProperty("/ganttUtilization/ganttSelectionPane", "30%");
 		},
@@ -821,6 +829,7 @@ sap.ui.define([
 				.then(function () {
 					//backup original data
 					this.oOriginData = deepClone(this.oGanttModel.getProperty("/"));
+					this.iNumberOfLines = this._countLineItems(this.oOriginData);
 					this.getModel("viewModel").setProperty("/ganttSettings/busy", false);
 				}.bind(this));
 		},
@@ -891,6 +900,22 @@ sap.ui.define([
 			this.oGanttModel.setProperty("/data/children", aChildren);
 		},
 
+		/**
+		 * Count the number of line items in the result for visible row count
+		 * @Athour Rahul
+		 * @param {Object} data Data of gantt chart 
+		 * @version 2301
+		 * @private
+		 */
+		_countLineItems: function (data) {
+			var iLength = 0;
+			iLength = data.data.children.length;
+			for(var i in data.data.children){
+				iLength = iLength + data.data.children[i].children.length;
+			}
+			return iLength;
+		},
+		
 		/**
 		 * Display the error messages from the backend for the
 		 * PlanHeaderSet entity set specific in case we change

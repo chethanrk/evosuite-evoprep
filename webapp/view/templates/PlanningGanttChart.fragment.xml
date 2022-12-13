@@ -6,7 +6,7 @@
 		<template:alias name=".evoAH" value="com.evorait.evosuite.evoprep.model.AnnotationHelper">
 			<template:with path="templateProperties>/" var="tempProps">
 				<gnt2:GanttChartContainer id="idPlanningGanttChartContainer" busy="{viewModel>/ganttSettings/busy}" enableCursorLine="false"
-					enableTimeScrollSync="false" height="100%" class="sapUiNoContentPadding">
+					enableTimeScrollSync="false" height="500px" class="sapUiNoContentPadding">
 					<gnt2:toolbar>
 						<gnt2:ContainerToolbar id="idGanttChartContainerToolbar" alignCustomContentToRight="true" style="Clear">
 							<gnt2:content>
@@ -19,8 +19,8 @@
 									tooltip="{= ${viewModel>/bShowDependencies} === false ? ${i18n>xbut.showDependencies} : ${i18n>xbut.hideDependencies}}"/>
 								<Text text="|"/>
 								<Button icon="sap-icon://edit" tooltip="{i18n>xbut.edit}"
-									visible="{= ${user>/ENABLE_PREPLAN_UPDATE} === 'X' &amp;&amp; ${ALLOW_FINAL} === true}"
-									enabled="{parts: ['viewModel>/authorizeCheck', 'user>/ENABLE_IW32_AUTH_CHECK'], formatter:'.formatter.enableBtn'}" press="onPressShapesEdit"/>
+									visible="{= ${user>/ENABLE_PREPLAN_UPDATE} === 'X' &amp;&amp; ${ALLOW_FINAL} === true}" enabled="{viewModel>/validateIW32Auth}"
+									press="onPressShapesEdit"/>
 								<Button icon="{path:'viewModel>/fullscreenGantt',formatter:'.formatter.fullScreenGanttVisibility'}" press="onPressGanttFullScreen"/>
 								<core:ExtensionPoint name="GanttExtP|PlanningGantt|GanttHierarchySet|ContainerToolbar|After"/>
 							</gnt2:content>

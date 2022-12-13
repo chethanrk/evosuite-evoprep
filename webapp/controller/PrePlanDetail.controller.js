@@ -115,11 +115,6 @@ sap.ui.define([
 					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
-				onShapeDragStart: {
-					public: true,
-					final: false,
-					overrideExecution: OverrideExecution.Instead
-				},
 				onBeforeRebindUtilizationDetails: {
 					public: true,
 					final: false,
@@ -597,15 +592,6 @@ sap.ui.define([
 				}
 			}
 		},
-
-		/**
-		 * Dragstart to validate the shape drag for past date
-		 * @param oEvent
-		 */
-		/*onShapeDragStart: function (oEvent) {
-			var oSource = oEvent;
-			oEvent.preventDefault();
-		},*/
 
 		/**
 		 * Utilization Details PopOver 

@@ -2,7 +2,7 @@
 	xmlns:smartTable="sap.ui.comp.smarttable" xmlns:f="sap.f"
 	xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
 	<Dialog id="idOperationListDialog" title="{i18n>tit.addOperation}" class="sapUiTinyMargin" draggable="true" resizable="true"
-		verticalScrolling="false" horizontalScrolling="true" contentHeight="100%" contentWidth="auto">
+		verticalScrolling="false" horizontalScrolling="true" contentHeight="100%" contentWidth="100%">
 		<content>
 			<core:ExtensionPoint name="DialogExtP|OperationList|PlanItemsSet|Content|Before"/>
 			<core:ExtensionPoint name="DialogExtP|OperationList|PlanItemsSet|Content|Instead">

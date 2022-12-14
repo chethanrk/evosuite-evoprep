@@ -96,7 +96,7 @@
 								tooltip="{/PlanItemsSet/ALLOW_REPROCESS/##com.sap.vocabularies.Common.v1.Label/String}"/>
 							<table:customData>
 								<core:CustomData key="p13nData"
-									value='\{"columnKey": "ALLOW_REPROCESS", "leadingProperty":"ALLOW_REPROCESS", "filterProperty":"ALLOW_REPROCESS", "sortProperty":"ALLOW_REPROCESS", "columnIndex":"3"}'/>
+									value='\{"columnKey": "ALLOW_REPROCESS", "leadingProperty":"ALLOW_REPROCESS", "filterProperty":"ALLOW_REPROCESS", "sortProperty":"ALLOW_REPROCESS", "columnIndex":"1"}'/>
 							</table:customData>
 							<table:template>
 								<core:Icon src="sap-icon://alert" visible="{= ${ALLOW_REPROCESS} === 'X' }"

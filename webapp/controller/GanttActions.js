@@ -42,12 +42,12 @@ sap.ui.define([
 							oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
 							aProperty = oEntityType ? oEntityType.property : [];
 						aProperty.forEach(function (property) {
-							if (oPayloadData[property.name]) {
+							if (oPayloadData[property.name] || property.type === "Edm.Byte") {
 								obj[property.name] = oPayloadData[property.name];
 							}
 						});
-						sPath = "/GanttHierarchySet('" + oPayloadData.ObjectKey + "')";
-						this._oView.getModel().update(sPath, oPayloadData, mParameters);
+						sPath = "/GanttHierarchySet('" + obj.ObjectKey + "')";
+						this._oView.getModel().update(sPath, obj, mParameters);
 					}.bind(this));
 				}.bind(this));
 				resolve(aPayloadArray);

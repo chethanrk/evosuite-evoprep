@@ -30,7 +30,7 @@
 						</gnt2:ContainerToolbar>
 					</gnt2:toolbar>
 					<gnt2:GanttChartWithTable id="idPlanningGanttChartTable" shapeSelectionMode="MultiWithKeyboard" dragOrientation="Horizontal"
-						shapePress="onShapePress" ghostAlignment="Start" adhocLineLayer="Bottom" nowLineInUTC="false" dragStart="onShapeDragStart"
+						shapePress="onPlanningShaprePress" ghostAlignment="Start" adhocLineLayer="Bottom" nowLineInUTC="false" dragStart="onShapeDragStart"
 						shapeDrop="onShapeDrop" shapeMouseEnter="onShapeMouseEnter" shapeResize="onShapeResize"
 						shapeSelectionSettings="{color: '#808080', strokeWidth: 1, strokeDasharray: '5,2'}" selectionPanelSize="{viewModel>/ganttSelectionPane}"
 						shapeDoubleClick="onDoubleClickPlanningGantt">
@@ -78,9 +78,9 @@
 													<core:CustomData key="Function" value="COLLAPSE"/>
 												</customData>
 											</Button>
+											<ToolbarSpacer/>
 											<Text text="{i18n>lbl.Utilization}"/>
 											<Switch id="idCalculateUtilization" change="onChangeCalculateUtilization"/>
-											<ToolbarSpacer/>
 										</content>
 									</OverflowToolbar>
 								</table:extension>

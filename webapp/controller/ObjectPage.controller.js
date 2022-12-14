@@ -162,6 +162,10 @@ sap.ui.define([
 				if (data && data.results) {
 					data.results = this.formatTableData(data.results);
 
+					this._getCollapsedData(deepClone(data.results));
+
+					this.getModel("compareModel").setProperty("/compareOriginal", data.results);
+
 					this.getModel("compareModel").setProperty("/compare", data.results);
 					this.getModel("compareModel").setProperty("/compareProperty", [data.results[0]]);
 
@@ -356,6 +360,26 @@ sap.ui.define([
 				aMain.push(oItemCopy);
 			}.bind(this));
 			return aMain;
+		},
+
+		/**
+		 * Manage collapse and expand data
+		 * @param [aData] compare plan data
+		 */
+		_getCollapsedData: function (aData) {
+			var aWcr = [];
+			return new Promise(function (resolve) {
+				aData.forEach(function (oPlan) {
+					oPlan.PlanCmprGeneralToPlanCmprWorkCenter.results.forEach(function (oItem) {
+						if (!oItem.MODE) {
+							aWcr.push(oItem);
+						}
+					}.bind(this));
+					oPlan.PlanCmprGeneralToPlanCmprWorkCenter.results = aWcr;
+					aWcr = [];
+				});
+				this.getModel("compareModel").setProperty("/compareCollapsed", aData);
+			}.bind(this));
 		},
 
 		/**

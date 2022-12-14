@@ -14,6 +14,11 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
+				},
+				onClickExpandCollapse: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
@@ -36,6 +41,23 @@ sap.ui.define([
 			BaseController.prototype.onPressClose.apply(this, arguments);
 			this.getModel("compareModel").setProperty("/compare", []);
 			this.getModel("compareModel").setProperty("/compare0", []);
+		},
+
+		/**
+		 * collapse and expand the based on mode
+		 */
+		onClickExpandCollapse: function (oEvent) {
+			var oButton = oEvent.getSource(),
+				oCustomData = oButton.getCustomData(),
+				oCompareModel = this.getModel("compareModel");
+
+			if (oCustomData[0].getValue() === "EXPAND") {
+				oCompareModel.setProperty("/compare", oCompareModel.getProperty("/compareOriginal"));
+				oCompareModel.setProperty("/compareProperty", [oCompareModel.getProperty("/compareOriginal")[0]]);
+			} else {
+				oCompareModel.setProperty("/compare", oCompareModel.getProperty("/compareCollapsed"));
+				oCompareModel.setProperty("/compareProperty", [oCompareModel.getProperty("/compareCollapsed")[0]]);
+			}
 		}
 
 	});

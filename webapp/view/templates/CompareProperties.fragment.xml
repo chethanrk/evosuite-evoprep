@@ -51,6 +51,24 @@
 															<Table growing="true"
 																items="{path:'compareModel>PlanCmprGeneralToPlanCmprWorkCenter/results',templateShareable: true,sorter : [{ path: 'WORKCENTRE', descending: false },{ path: 'MODE', descending: false }]}"
 																headerText="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}">
+																<headerToolbar>
+																	<OverflowToolbar>
+																		<content>
+																			<Title text="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}"/>
+																			<ToolbarSpacer/>
+																			<Button icon="sap-icon://expand-all" press="onClickExpandCollapse" type="Transparent" tooltip="{i18n>xbut.expandAll}">
+																				<customData>
+																					<core:CustomData key="Function" value="EXPAND"/>
+																				</customData>
+																			</Button>
+																			<Button icon="sap-icon://collapse-all" press="onClickExpandCollapse" type="Transparent" tooltip="{i18n>xbut.collapseAll}">
+																				<customData>
+																					<core:CustomData key="Function" value="COLLAPSE"/>
+																				</customData>
+																			</Button>
+																		</content>
+																	</OverflowToolbar>
+																</headerToolbar>
 																<columns>
 																	<template:repeat list="{path:'tempProps>/WorkcenterConfigs/lineItems'}" var="lineItem">
 																		<Column demandPopin="true">

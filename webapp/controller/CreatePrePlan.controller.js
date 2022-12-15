@@ -110,6 +110,7 @@ sap.ui.define([
 		 */
 		onPressOperationListCancel: function (oEvent) {
 			this.onPressOperationSelectCancel();
+			this.destroyOperationListFragment();
 		},
 
 		/**

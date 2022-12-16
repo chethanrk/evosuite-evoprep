@@ -100,7 +100,9 @@ sap.ui.define([
 				aAllSelectedOperations: [], //handle select all,
 				bMaterialsDemandsBlock: false, // handle the enable and disable of finalize button in the demands table
 				bEnableFinalizeBtn: false, // handle the enable or disable of finalize button of the operations 
-				validateIW32Auth: true // SAP standard check 
+				validateIW32Auth: true, // SAP standard check
+				bEnableApplyFilter: false,
+				filtersExist: false
 			};
 
 			//GetSystemInformation Call

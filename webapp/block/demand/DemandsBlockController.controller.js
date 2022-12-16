@@ -4,8 +4,9 @@ sap.ui.define([
 	"sap/base/util/isEmptyObject",
 	"sap/ui/core/Fragment",
 	"sap/ui/core/mvc/OverrideExecution",
-	"sap/f/library"
-], function (OperationTableController, Controller, isEmptyObject, Fragment, OverrideExecution, library) {
+	"sap/f/library",
+	"sap/ui/model/Filter"
+], function (OperationTableController, Controller, isEmptyObject, Fragment, OverrideExecution, library, Filter) {
 	"use strict";
 
 	return OperationTableController.extend("com.evorait.evosuite.evoprep.block.demand.DemandsBlockController", {
@@ -33,9 +34,21 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
+				},
+				fnApplyFilterToGraphic: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onTableUpdating: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
+
+		allFiltersNotCopied: false,
 
 		/* =========================================================== */
 		/* Lifecycle methods                                           */
@@ -226,6 +239,48 @@ sap.ui.define([
 				sKey: sObjectKeyId
 			});
 
+		},
+
+		/**
+		 * Apply selected filter to Graphic planning
+		 */
+		fnApplyFilterToGraphic: function (oEvent) {
+			var eventBus = sap.ui.getCore().getEventBus();
+			if (this.allFiltersNotCopied) {
+				this.showMessageToast(this.getResourceBundle().getText("msg.allFiltersNotApplied"));
+			}
+			eventBus.publish("GanttChart", "applyFiltersFromOperations");
+		},
+
+		/**
+		 * Prepare filters from operations table to be applied on graphic planning
+		 */
+		onTableUpdating: function (oEvent) {
+			var aFilters = oEvent.getParameter("bindingParams").filters,
+				aLineItems = this.getModel("templateProperties").getData().ganttConfigs.lineItems;
+			var aResFilter = [];
+			var aCheckFields = ["ORDER_NUMBER", "OPERATION_DESCRIPTION", "OPERATION_NUMBER", "SYSTEM_STATUS", "USER_STATUS"];
+			if (aFilters && aFilters.length > 0) {
+				this.getModel("viewModel").setProperty("/bEnableApplyFilter", true);
+				aFilters.forEach(function (oFilter) {
+					if (aCheckFields.indexOf(oFilter.sPath) > -1) {
+						aLineItems.forEach(function (oItem) {
+							if (oFilter.sPath.indexOf(oItem.Value.Path) > -1) {
+								oFilter.sPath = oItem.Value.Path;
+								aResFilter.push(oFilter);
+							}
+						});
+					}
+				});
+			} else {
+				this.getModel("viewModel").setProperty("/bEnableApplyFilter", false);
+			}
+			if (aFilters.length > aResFilter.length) {
+				this.allFiltersNotCopied = true;
+			} else {
+				this.allFiltersNotCopied = false;
+			}
+			this.getModel("viewModel").setProperty("/filtersToGraphicPlanning", aResFilter);
 		},
 
 		/* =========================================================== */

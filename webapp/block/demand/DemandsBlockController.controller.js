@@ -257,8 +257,8 @@ sap.ui.define([
 		 */
 		onTableUpdating: function (oEvent) {
 			var aFilters = oEvent.getParameter("bindingParams").filters,
-				aLineItems = this.getModel("templateProperties").getData().ganttConfigs.lineItems;
-			var aResFilter = [];
+				aLineItems = this.getModel("templateProperties").getData().ganttConfigs.lineItems,
+				aResFilter = [];
 			var aCheckFields = ["ORDER_NUMBER", "OPERATION_DESCRIPTION", "OPERATION_NUMBER", "SYSTEM_STATUS", "USER_STATUS"];
 			if (aFilters && aFilters.length > 0) {
 				this.getModel("viewModel").setProperty("/bEnableApplyFilter", true);

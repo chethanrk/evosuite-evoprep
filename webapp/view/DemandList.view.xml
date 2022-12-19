@@ -103,7 +103,7 @@
 									tooltip="{/PlanItemsSet/ALLOW_REPROCESS/##com.sap.vocabularies.Common.v1.Label/String}"/>
 							</table:template>
 						</table:Column>
-						<table:Column hAlign="Center" sortProperty="MATERIAL_STATUS" filterProperty="MATERIAL_STATUS" width="8rem">
+						<table:Column hAlign="Center" sortProperty="MATERIAL_STATUS" filterProperty="MATERIAL_STATUS" width="8rem" visible="{user>/ENABLE_MATERIAL_AVAILABILITY}">
 							<Label text="{/PlanItemsSet/MATERIAL_STATUS/##com.sap.vocabularies.Common.v1.Label/String}"
 								tooltip="{/PlanItemsSet/MATERIAL_STATUS/##com.sap.vocabularies.Common.v1.Label/String}"/>
 							<table:customData>

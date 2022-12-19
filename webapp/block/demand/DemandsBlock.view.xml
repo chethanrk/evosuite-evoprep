@@ -33,7 +33,7 @@
 		<Table mode="{= ${viewModel>/bOperationTableMode} ? 'None' : 'MultiSelect'}" selectionChange="handleSelectionChangeOperation"
 			growingThreshold="100">
 			<columns>
-				<Column width="6rem">
+				<Column width="6rem" visible="{user>/ENABLE_MATERIAL_AVAILABILITY}">
 					<customData>
 						<core:CustomData key="p13nData"
 							value='\{"columnKey": "MATERIAL_STATUS", "leadingProperty":"MATERIAL_STATUS", "filterProperty":"MATERIAL_STATUS", "sortProperty":"MATERIAL_STATUS", "columnIndex":"4"}'/>
@@ -51,7 +51,7 @@
 			</columns>
 			<ColumnListItem press="onClickTableRow">
 				<cells>
-					<HBox>
+					<HBox >
 						<ObjectStatus class="sapUiTinyMargin" tooltip="{MATERIAL_STATUS_DESC}" text="{MATERIAL_STATUS_DESC}" visible="{ path:'COMPONENT_EXISTS' }"
 							icon="{MATERIAL_STATUS_ICON}" state="{path:'MATERIAL_STATUS_STATE',formatter:'.formatter.getDemandState'}"/>
 					</HBox>

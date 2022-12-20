@@ -39,7 +39,12 @@ sap.ui.define([
 		onCloseLog: function () {
 			this.getView().unbindElement();
 			var oViewModel = this.getModel("viewModel");
-			oViewModel.setProperty("/layout", this._detailPageLayout());
+			if (oViewModel.getProperty("/fullscreen")) {
+				oViewModel.setProperty("/layout", this._detailPageLayout());
+			} else {
+				oViewModel.setProperty("/layout", library.LayoutType.MidColumnFullScreen);
+			}
+
 		},
 
 		/* =========================================================== */

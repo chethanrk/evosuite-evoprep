@@ -6,7 +6,8 @@
 		persistencyKey="com.evorait.evosuite.evoprep.DetailDemandTable" enableAutoBinding="true" demandPopin="true" customData:useSmartField="true"
 		customData:useSmartToggle="true" fieldChange="onFieldChange"
 		editTogglable="{parts: [ {path:'ALLOW_FINAL'}, {path:'user>/ENABLE_ITEM_UPDATE'}, {path:'viewModel>/validateIW32Auth'}], formatter:'.formatter.showOperationEditDel'}"
-		editToggled="onPressEdit" tableBindingPath="PlanHeaderToPlanItems" initiallyVisibleFields="COMPONENT_EXISTS"
+		editToggled="onPressEdit" tableBindingPath="PlanHeaderToPlanItems" beforeRebindTable="onTableUpdating"
+		initiallyVisibleFields="COMPONENT_EXISTS"
 		requestAtLeastFields="ObjectKey,HeaderObjectKey,MATERIAL_STATUS,MATERIAL_STATUS_DESC,COMPONENT_EXISTS,MATERIAL_STATUS_ICON,MATERIAL_STATUS_STATE,SYSTEM_STATUS_CODE,ALLOW_EDIT">
 		<!--layout data used to make the table growing but the filter bar fixed-->
 		<smartTable:layoutData>
@@ -15,6 +16,8 @@
 		<smartTable:customToolbar>
 			<Toolbar>
 				<ToolbarSpacer/>
+				<Button text="{i18n>btn.applyFilter}" press="fnApplyFilterToGraphic" tooltip="{i18n>btn.applyFilter}"
+					enabled="{viewModel>/bEnableApplyFilter}"/>
 				<Button icon="sap-icon://add" press="onPressAddOperations" tooltip="{i18n>btn.addOper}"
 					visible="{parts: [{path:'user>/ENABLE_ITEM_UPDATE'}, {path:'ALLOW_FINAL'}, {path:'user>/ENABLE_ITEM_ADD'} ], formatter:'.formatter.showOperationAdd'}"
 					enabled="{viewModel>/validateIW32Auth}"/>
@@ -33,7 +36,7 @@
 		<Table mode="{= ${viewModel>/bOperationTableMode} ? 'None' : 'MultiSelect'}" selectionChange="handleSelectionChangeOperation"
 			growingThreshold="100">
 			<columns>
-				<Column width="6rem">
+				<Column width="6rem" visible="{user>/ENABLE_MATERIAL_AVAILABILITY}">
 					<customData>
 						<core:CustomData key="p13nData"
 							value='\{"columnKey": "MATERIAL_STATUS", "leadingProperty":"MATERIAL_STATUS", "filterProperty":"MATERIAL_STATUS", "sortProperty":"MATERIAL_STATUS", "columnIndex":"4"}'/>
@@ -51,7 +54,7 @@
 			</columns>
 			<ColumnListItem press="onClickTableRow">
 				<cells>
-					<HBox>
+					<HBox >
 						<ObjectStatus class="sapUiTinyMargin" tooltip="{MATERIAL_STATUS_DESC}" text="{MATERIAL_STATUS_DESC}" visible="{ path:'COMPONENT_EXISTS' }"
 							icon="{MATERIAL_STATUS_ICON}" state="{path:'MATERIAL_STATUS_STATE',formatter:'.formatter.getDemandState'}"/>
 					</HBox>

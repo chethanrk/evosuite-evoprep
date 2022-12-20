@@ -129,6 +129,11 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
+				},
+				onClrFilters: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
@@ -150,6 +155,7 @@ sap.ui.define([
 			eventBus.subscribe("TemplateRendererEvoPrep", "changedBinding", this._changedBinding, this);
 			eventBus.subscribe("BaseController", "refreshFullGantt", this._loadGanttData, this);
 			eventBus.subscribe("BaseController", "refreshUtilizationGantt", this._loadUtilizationGantt, this);
+			eventBus.subscribe("GanttChart", "applyFiltersFromOperations", this._fnFiltersOnGraphic, this);
 
 			//Initializing GanttActions.js
 			this.GanttActions = this.getOwnerComponent().GanttActions;
@@ -182,6 +188,7 @@ sap.ui.define([
 			eventBus.unsubscribe("TemplateRendererEvoPrep", "changedBinding", this._changedBinding, this);
 			eventBus.unsubscribe("BaseController", "refreshFullGantt", this._loadGanttData, this);
 			eventBus.unsubscribe("BaseController", "refreshUtilizationGantt", this._loadUtilizationGantt, this);
+			eventBus.unsubscribe("GanttChart", "applyFiltersFromOperations", this._fnFiltersOnGraphic, this);
 
 			if (this._actionSheetStatus) {
 				this._actionSheetStatus.destroy(true);
@@ -656,6 +663,16 @@ sap.ui.define([
 			}
 		},
 
+		/**
+		 * Clear all filters applied on Graphic planning
+		 */
+		onClrFilters: function () {
+			var oViewModel = this.getModel("viewModel"),
+				binding = this.getView().byId("idPlanningGanttTreeTable").getBinding("rows");
+			binding.filter([], null);
+			oViewModel.setProperty("/filtersExist", false);
+		},
+
 		/* =========================================================== */
 		/* public methods                                              */
 		/* =========================================================== */
@@ -1089,6 +1106,18 @@ sap.ui.define([
 				this._UtilizationSelectView.setSelectedKey(this.getModel("user").getProperty("/DEFAULT_VIEW_MODE"));
 			}
 			this.getView().byId("idCalculateUtilization").setState(false);
+		},
+
+		_fnFiltersOnGraphic: function (sChannel, sEvent, oData) {
+			if (sChannel === "GanttChart" && sEvent === "applyFiltersFromOperations") {
+				var oViewModel = this.getModel("viewModel"),
+					aFilters = oViewModel.getProperty("/filtersToGraphicPlanning"),
+					binding = this.getView().byId("idPlanningGanttTreeTable").getBinding("rows");
+				if (aFilters && aFilters.length > 0) {
+					oViewModel.setProperty("/filtersExist", true);
+					binding.filter(aFilters, "Application");
+				}
+			}
 		}
 	});
 

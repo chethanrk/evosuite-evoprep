@@ -44,7 +44,16 @@
 													<Text text="{path:'lineItem>Value/Path', formatter:'.evoAH.getOperationDate'}"/>
 												</template:then>
 												<template:else>
-													<Text text="{= '{CreateModel>' + ${path : 'lineItem>Value/Path'} + '}' }"/>
+													<HBox>
+														<Text text="{= '{CreateModel>' + ${path : 'lineItem>Value/Path'} + '}' }"/>
+														<template:if
+															test="{= ${parts:[{path:'tabItem>entitySet'},{path:'lineItem>Value/Path'},{path:'tempProps>/'}], formatter:'.evoAH.getUnitField'} }">
+															<template:then>
+																<Text text="{= ${parts:[{path:'tabItem>entitySet'},{path:'lineItem>Value/Path'},{path:'tempProps>/'}], formatter:'.evoAH.getUnitDetails'} }"
+																	class="sapUiSmallMarginBegin sapUiTinyMarginEnd"/>
+															</template:then>
+														</template:if>
+													</HBox>
 												</template:else>
 											</template:if>
 										</template:repeat>

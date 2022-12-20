@@ -257,6 +257,44 @@ sap.ui.define([],
 		var getOperationDate = function (sProp) {
 			return "{path:'CreateModel>" + sProp + "'" + "," + "formatter:'.formatter.formatDate'" + "}";
 		};
+		
+		/**
+		 * Validate the unit filed 
+		 * @{param} - sEntity - entiry name
+		 * @{param} - sProp   - Property name
+		 * @{param} - oTempModelData - metadomdel reference
+		*/
+		var getUnitField = function (sEntity, sProp, oTempModelData) {
+			var oMetaModel = oTempModelData.metaModel,
+				oEntitySet = oMetaModel.getODataEntitySet(sEntity),
+				oEntityType = oMetaModel.getODataEntityType(oEntitySet.entityType),
+				sFieldName = sProp;
+
+			var oProperty = oMetaModel.getODataProperty(oEntityType, sFieldName);
+			if (oProperty && oProperty.hasOwnProperty("sap:unit")) {
+				return true;
+			}
+			return false;
+		};
+		
+		/**
+		 * Prepare unit field path 
+		 * @{param} - sEntity - entiry name
+		 * @{param} - sProp   - Property name
+		 * @{param} - oTempModelData - metadomdel reference
+		*/
+		var getUnitDetails = function (sEntity, sProp, oTempModelData) {
+			var oMetaModel = oTempModelData.metaModel,
+				oEntitySet = oMetaModel.getODataEntitySet(sEntity),
+				oEntityType = oMetaModel.getODataEntityType(oEntitySet.entityType),
+				sFieldName = sProp;
+			
+			var oProperty = oMetaModel.getODataProperty(oEntityType, sFieldName);
+			if (oProperty && oProperty.hasOwnProperty("sap:unit")) {
+				return "{path:'CreateModel>" + oProperty["Org.OData.Measures.V1.Unit"].Path + "'}";
+			}
+			return "";
+		};
 
 		/*Format compare screen dates*/
 		var getCompareDate = function (sProp) {
@@ -280,7 +318,9 @@ sap.ui.define([],
 			getExtPoint: getExtPoint,
 			getOperationDate: getOperationDate,
 			getCompareDate: getCompareDate,
-			hasTabNameMatch: hasTabNameMatch
+			hasTabNameMatch: hasTabNameMatch,
+			getUnitField: getUnitField,
+			getUnitDetails: getUnitDetails
 		};
 
 	},

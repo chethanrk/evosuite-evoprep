@@ -67,6 +67,8 @@
 							tooltip="{i18n>btn.materialStatus}" visible="{user>/ENABLE_MATERIAL_AVAILABILITY}" press="onMaterialStatusPress"/>
 						<Button text="{i18n>btn.materialInfoButton}" tooltip="{i18n>btn.materialInfoButton}" icon="sap-icon://message-information"
 							press="onMaterialInfoButtonPress" enabled="{viewModel>/bMaterialsDemandsBlock}" visible="{user>/ENABLE_MATERIAL_AVAILABILITY}"></Button>
+						<Button text="{i18n>btn.Reprocess}" tooltip="{i18n>btn.Reprocess}" press="onReprocessBtnPressed" enabled="{viewModel>/bOperationReprocess}"
+							icon="sap-icon://repost"></Button>
 						<core:ExtensionPoint name="TableExtP|DemandList|PlanItemsSet|CustomToolbar"/>
 					</Toolbar>
 				</smartTable:customToolbar>
@@ -103,7 +105,8 @@
 									tooltip="{/PlanItemsSet/ALLOW_REPROCESS/##com.sap.vocabularies.Common.v1.Label/String}"/>
 							</table:template>
 						</table:Column>
-						<table:Column hAlign="Center" sortProperty="MATERIAL_STATUS" filterProperty="MATERIAL_STATUS" width="8rem" visible="{user>/ENABLE_MATERIAL_AVAILABILITY}">
+						<table:Column hAlign="Center" sortProperty="MATERIAL_STATUS" filterProperty="MATERIAL_STATUS" width="8rem"
+							visible="{user>/ENABLE_MATERIAL_AVAILABILITY}">
 							<Label text="{/PlanItemsSet/MATERIAL_STATUS/##com.sap.vocabularies.Common.v1.Label/String}"
 								tooltip="{/PlanItemsSet/MATERIAL_STATUS/##com.sap.vocabularies.Common.v1.Label/String}"/>
 							<table:customData>

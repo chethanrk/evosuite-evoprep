@@ -102,7 +102,8 @@ sap.ui.define([
 				bEnableFinalizeBtn: false, // handle the enable or disable of finalize button of the operations 
 				validateIW32Auth: true, // SAP standard check
 				bEnableApplyFilter: false,
-				filtersExist: false
+				filtersExist: false,
+				bOperationReprocess:false  // handle enable and disable of reprocess for operations
 			};
 
 			//GetSystemInformation Call

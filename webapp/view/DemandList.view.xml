@@ -54,13 +54,13 @@
 						<Text text="{i18n>xbut.SelectAll}" wrapping="false"/>
 						<Switch id="idSwitchSelectAll" change="onChangeSelectAll" enabled="{viewModel>/validateIW32Auth}"/>
 						<ToolbarSpacer/>
-						<Button press="onPressCreatePrePlanButton" tooltip="{i18n>tit.createPrePlan}" text="{i18n>tit.createPrePlan}"
+						<Button icon="sap-icon://add" press="onPressCreatePrePlanButton" tooltip="{i18n>xbut.create}"
 							visible="{= ${user>/ENABLE_PREPLAN_CREATE} === 'X'}"
 							enabled="{parts: ['viewModel>/allowPrePlanCreate', 'viewModel>/validateIW32Auth'], formatter:'.formatter.enableEditToggleBtn'}"/>
-						<Button press="onPressAddExistingPlan" tooltip="{i18n>tit.addExistingPlan}" text="{i18n>tit.addExistingPlan}"
+						<Button icon="sap-icon://add-activity-2" press="onPressAddExistingPlan" tooltip="{i18n>tit.addExistingPlan}"
 							visible="{= ${user>/ENABLE_PREPLAN_ITEM_ADD} === 'X'}"
 							enabled="{= ${viewModel>/allowPrePlanCreate} &amp;&amp; ${viewModel>/bEnableAddOperations} &amp;&amp; ${viewModel>/validateIW32Auth} }"/>
-						<Button text="{i18n>btn.finalize}" tooltip="{i18n>btn.finalize}" press="onFinalizeBtnPress"
+						<Button icon="sap-icon://complete" tooltip="{i18n>btn.finalize}" press="onFinalizeBtnPress"
 							enabled="{parts: ['viewModel>/bEnableFinalizeBtn', 'viewModel>/validateIW32Auth'], formatter:'.formatter.enableEditToggleBtn'}"
 							visible="{= ${user>/ENABLE_ITEM_FINAL} === 'X'}"/>
 						<Button icon="sap-icon://synchronize" enabled="{viewModel>/bMaterialsDemandsBlock}" text="{i18n>btn.materialStatus}"
@@ -103,7 +103,8 @@
 									tooltip="{/PlanItemsSet/ALLOW_REPROCESS/##com.sap.vocabularies.Common.v1.Label/String}"/>
 							</table:template>
 						</table:Column>
-						<table:Column hAlign="Center" sortProperty="MATERIAL_STATUS" filterProperty="MATERIAL_STATUS" width="8rem" visible="{user>/ENABLE_MATERIAL_AVAILABILITY}">
+						<table:Column hAlign="Center" sortProperty="MATERIAL_STATUS" filterProperty="MATERIAL_STATUS" width="8rem"
+							visible="{user>/ENABLE_MATERIAL_AVAILABILITY}">
 							<Label text="{/PlanItemsSet/MATERIAL_STATUS/##com.sap.vocabularies.Common.v1.Label/String}"
 								tooltip="{/PlanItemsSet/MATERIAL_STATUS/##com.sap.vocabularies.Common.v1.Label/String}"/>
 							<table:customData>

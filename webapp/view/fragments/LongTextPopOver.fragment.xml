@@ -1,0 +1,10 @@
+<core:FragmentDefinition xmlns:core="sap.ui.core" xmlns:smartTable="sap.ui.comp.smarttable" xmlns="sap.m">
+	<ResponsivePopover
+		title="{= ${viewModel>/bLongTextField}? ${/#PlanItemsSet/ORDER_LONG_TEXT/@sap:label} : ${/#PlanItemsSet/OPERATION_LONG_TEXT/@sap:label}}"
+		class="sapUiPopupWithPadding" placement="Auto" contentWidth="auto" contentHeight="auto" verticalScrolling="false"
+		beforeOpen="onBeforeOpenLongText" afterClose="onAfterCloseLongText">
+		<content>
+			<TextArea editable="false" cols="80" rows="14" value="{viewModel>/sPopoverLongText}"></TextArea>
+		</content>
+	</ResponsivePopover>
+</core:FragmentDefinition>

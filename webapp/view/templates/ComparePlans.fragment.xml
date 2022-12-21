@@ -45,7 +45,12 @@
 																<items>
 																	<ColumnListItem>
 																		<cells>
-																			<Title text="{compareModel>UTILIZATION}" titleStyle="{= ${compareModel>MODE} !== ''? 'H6':'H4'}"/>
+																			<FlexBox justifyContent="Center">
+																				<Title text="{compareModel>UTILIZATION}" visible="{= ${compareModel>MODE} === ''? true:false}" titleStyle="H6"/>
+																				<core:HTML
+																					content='&lt;span style=&quot;color:{compareModel>COLOR}&quot; class=&quot;content&quot;&gt;&lt;text&gt;{compareModel>UTILIZATION}&lt;/text&gt; &lt;/span&gt;'
+																					visible="{= ${compareModel>MODE} === ''? false:true}"/>
+																			</FlexBox>
 																		</cells>
 																	</ColumnListItem>
 																</items>

@@ -347,28 +347,13 @@ sap.ui.define([
 				this.showMessageToast(this.getResourceBundle().getText("msg.operationReprocessValidation"));
 				return;
 			}
-			oViewModel.setProperty("/busy", true);
 			for (let x in aSelectedContext) {
 				let oPrams = {
 					OperationGuid: aSelectedContext[x].getProperty("ObjectKey")
 				};
-				aPromises.push(new Promise((resolve, reject) => {
-					oViewModel.setProperty("/busy", true);
-					oModel.callFunction("/" + "ReprocessItem", {
-						method: "POST",
-						urlParameters: oPrams,
-						refreshAfterChange: false,
-						success: function (oData) {
-							oViewModel.setProperty("/busy", false);
-							resolve();
-						}.bind(this),
-						error: function (oError) {
-							//Handle Error
-							oViewModel.setProperty("/busy", false);
-							reject();
-						}.bind(this)
-					});
-				}));
+				aPromises.push(new Promise(function(resolve, reject){
+					this.callFunctionImport(oPrams,"ReprocessItem","POST",resolve);
+				}.bind(this)));
 			}
 			Promise.all(aPromises).then(function () {
 				oViewModel.setProperty("/busy", false);

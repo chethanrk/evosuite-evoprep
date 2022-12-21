@@ -271,21 +271,21 @@ sap.ui.define([
 		 * plan is successfully created.
 		 */
 		_showSuccessMessage: function (oResponce) {
-			var oResourceBundle = this.getResourceBundle();
-			var sMsg = oResourceBundle.getText("msg.prePlanSubmitSuccess", oResponce["PLAN_ID"]);
-			var othat = this;
-			MessageBox.confirm(
-				sMsg, {
-					styleClass: this.getOwnerComponent().getContentDensityClass(),
-					actions: [oResourceBundle.getText("btn.successMsgBxBtnBack"), oResourceBundle.getText("btn.successMsgBxBtnPlanDetail")],
-					onClose: function (oAction) {
-						if (oAction === oResourceBundle.getText("btn.successMsgBxBtnBack")) {
-							this.onNavBack();
-						} else if (oAction === oResourceBundle.getText("btn.successMsgBxBtnPlanDetail")) {
-							this.navToDetail(oResponce["ObjectKey"]);
-						}
-					}.bind(othat)
-				});
+			var oResourceBundle = this.getResourceBundle(),
+			sMsg = oResourceBundle.getText("msg.prePlanSubmitSuccess", oResponce["PLAN_ID"]),
+			sTitle = oResourceBundle.getText("xtit.confirm"),
+			backToPreviousAction = oResourceBundle.getText("btn.successMsgBxBtnBack"),
+			sPlanDetailAction = oResourceBundle.getText("btn.successMsgBxBtnPlanDetail");
+			
+			var backToPrevious = function(){
+				this.onNavBack();
+			};
+			var planDetailFn = function(){
+				this.navToDetail(oResponce["ObjectKey"]);
+			};
+			
+			this.showConfirmDialog(sTitle, sMsg, backToPrevious.bind(this), planDetailFn.bind(this), "None", backToPreviousAction,
+					sPlanDetailAction);
 		},
 
 		/**

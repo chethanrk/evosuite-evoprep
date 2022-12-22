@@ -105,7 +105,7 @@ sap.ui.define([
 				filtersExist: false,
 				sPopoverLongText:"",  //Field for display long text in Popover
 				bLongTextField:"", // To identify whether its Order/Operation Long Text
-                
+                bOperationReprocess:false
 			};
 
 			//GetSystemInformation Call

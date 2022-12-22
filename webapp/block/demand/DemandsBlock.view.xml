@@ -8,24 +8,25 @@
 		editTogglable="{parts: [ {path:'ALLOW_FINAL'}, {path:'user>/ENABLE_ITEM_UPDATE'}, {path:'viewModel>/validateIW32Auth'}], formatter:'.formatter.showOperationEditDel'}"
 		editToggled="onPressEdit" tableBindingPath="PlanHeaderToPlanItems" beforeRebindTable="onTableUpdating"
 		initiallyVisibleFields="COMPONENT_EXISTS"
-		requestAtLeastFields="ObjectKey,HeaderObjectKey,MATERIAL_STATUS,MATERIAL_STATUS_DESC,COMPONENT_EXISTS,MATERIAL_STATUS_ICON,MATERIAL_STATUS_STATE,SYSTEM_STATUS_CODE,ALLOW_EDIT">
+		requestAtLeastFields="ObjectKey,HeaderObjectKey,MATERIAL_STATUS,MATERIAL_STATUS_DESC,COMPONENT_EXISTS,MATERIAL_STATUS_ICON,MATERIAL_STATUS_STATE,SYSTEM_STATUS_CODE,ALLOW_EDIT,LONG_TEXT_ICON">
 		<!--layout data used to make the table growing but the filter bar fixed-->
 		<smartTable:layoutData>
 			<FlexItemData growFactor="1" baseSize="0%"/>
 		</smartTable:layoutData>
 		<smartTable:customToolbar>
 			<Toolbar>
-				<ToolbarSpacer/>
 				<Button text="{i18n>btn.applyFilter}" press="fnApplyFilterToGraphic" tooltip="{i18n>btn.applyFilter}"
 					enabled="{viewModel>/bEnableApplyFilter}"/>
+				<ToolbarSpacer/>
 				<Button icon="sap-icon://add" press="onPressAddOperations" tooltip="{i18n>btn.addOper}"
 					visible="{parts: [{path:'user>/ENABLE_ITEM_UPDATE'}, {path:'ALLOW_FINAL'}, {path:'user>/ENABLE_ITEM_ADD'} ], formatter:'.formatter.showOperationAdd'}"
 					enabled="{viewModel>/validateIW32Auth}"/>
 				<Button icon="sap-icon://delete" press="onPressDeleteOperations" tooltip="{i18n>btn.remove}"
-					visible="{parts: [{path:'ALLOW_FINAL'}, {path:'user>/ENABLE_ITEM_DELETE'} ], formatter:'.formatter.showOperationEditDel'}"
+					visible="{parts: [{path:'user>/ENABLE_ITEM_UPDATE'}, {path:'ALLOW_FINAL'}, {path:'user>/ENABLE_ITEM_DELETE'} ], formatter:'.formatter.showOperationAdd'}"
 					enabled="{parts: ['viewModel>/bEnableOperationDelete', 'viewModel>/validateIW32Auth'], formatter:'.formatter.enableEditToggleBtn'}"/>
-				<Button text="{i18n>btn.finalize}" tooltip="{i18n>btn.finalize}" press="onFinalizeBtnPress" enabled="{viewModel>/bEnableFinalizeBtn}"
-					visible="{= ${user>/ENABLE_PLAN_OPRN_FINAL} === 'X'}"/>
+				<Button icon="sap-icon://complete" tooltip="{i18n>btn.finalize}" press="onFinalizeBtnPress"
+					visible="{= ${user>/ENABLE_PLAN_OPRN_FINAL} === 'X'}"
+					enabled="{parts: ['viewModel>/bEnableFinalizeBtn', 'viewModel>/validateIW32Auth'], formatter:'.formatter.enableEditToggleBtn'}"/>
 				<Button icon="sap-icon://synchronize" enabled="{viewModel>/bMaterialsDemandsBlock}" text="{i18n>btn.materialStatus}"
 					tooltip="{i18n>btn.materialStatus}" visible="{user>/ENABLE_MATERIAL_AVAILABILITY}" press="onMaterialStatusPress"/>
 				<Button text="{i18n>btn.materialInfoButton}" tooltip="{i18n>btn.materialInfoButton}" icon="sap-icon://message-information"
@@ -51,16 +52,35 @@
 					<Label text="{/PlanItemsSet/CHANGE_INDICATOR/##com.sap.vocabularies.Common.v1.Label/String}"
 						tooltip="{/PlanItemsSet/CHANGE_INDICATOR/##com.sap.vocabularies.Common.v1.Label/String}"/>
 				</Column>
+				<Column width="6rem" visible="{user>/ENABLE_LONG_TEXT}">
+					<customData>
+						<core:CustomData key="p13nData"
+							value='\{"columnKey": "ORDER_LONG_TEXT", "leadingProperty":"ORDER_LONG_TEXT", "filterProperty":"ORDER_LONG_TEXT", "sortProperty":"ORDER_LONG_TEXT", "columnIndex":"6"}'/>
+					</customData>
+					<Label text="{/PlanItemsSet/ORDER_LONG_TEXT/##com.sap.vocabularies.Common.v1.Label/String}"
+						tooltip="{/PlanItemsSet/ORDER_LONG_TEXT/##com.sap.vocabularies.Common.v1.Label/String}"/>
+				</Column>
+				<Column width="6rem" visible="{user>/ENABLE_LONG_TEXT}">
+					<customData>
+						<core:CustomData key="p13nData"
+							value='\{"columnKey": "OPERATION_LONG_TEXT", "leadingProperty":"OPERATION_LONG_TEXT", "filterProperty":"OPERATION_LONG_TEXT", "sortProperty":"OPERATION_LONG_TEXT", "columnIndex":"7"}'/>
+					</customData>
+					<Label text="{/PlanItemsSet/OPERATION_LONG_TEXT/##com.sap.vocabularies.Common.v1.Label/String}"
+						tooltip="{/PlanItemsSet/OPERATION_LONG_TEXT/##com.sap.vocabularies.Common.v1.Label/String}"/>
+				</Column>
 			</columns>
 			<ColumnListItem press="onClickTableRow">
 				<cells>
-					<HBox >
+					<HBox>
 						<ObjectStatus class="sapUiTinyMargin" tooltip="{MATERIAL_STATUS_DESC}" text="{MATERIAL_STATUS_DESC}" visible="{ path:'COMPONENT_EXISTS' }"
 							icon="{MATERIAL_STATUS_ICON}" state="{path:'MATERIAL_STATUS_STATE',formatter:'.formatter.getDemandState'}"/>
 					</HBox>
 				</cells>
 				<cells>
 					<core:Icon src="sap-icon://alert" visible="{CHANGE_INDICATOR}" press="fnChangeIconClick" color="Default"/>
+					<Button icon="{LONG_TEXT_ICON}" tooltip="{ORDER_LONG_TEXT}" visible="{= ${ORDER_LONG_TEXT} !== '' }" press="onPressOrderLongText"/>
+					<Button icon="{LONG_TEXT_ICON}" tooltip="{OPERATION_LONG_TEXT}" visible="{= ${OPERATION_LONG_TEXT} !== '' }"
+						press="onPressOperationLongText"/>
 				</cells>
 			</ColumnListItem>
 		</Table>

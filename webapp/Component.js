@@ -103,7 +103,9 @@ sap.ui.define([
 				validateIW32Auth: true, // SAP standard check
 				bEnableApplyFilter: false,
 				filtersExist: false,
-				bOperationReprocess:false  // handle enable and disable of reprocess for operations
+				sPopoverLongText:"",  //Field for display long text in Popover
+				bLongTextField:"", // To identify whether its Order/Operation Long Text
+                
 			};
 
 			//GetSystemInformation Call

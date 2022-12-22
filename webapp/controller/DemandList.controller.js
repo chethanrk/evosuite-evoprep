@@ -216,6 +216,10 @@ sap.ui.define([
 		 * Navigate to the create preplan page
 		 */
 		onPressCreatePrePlanButton: function (oEvent) {
+			//Clearing Create Model After Each Navigation
+			this.oCreateModel.setData({
+				results: []
+			});
 			var oTable = this.oTable,
 				aSelectedIndices = oTable.getSelectedIndices(),
 				oOperationData = this.oCreateModel.getData(),

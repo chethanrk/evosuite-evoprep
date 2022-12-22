@@ -221,6 +221,21 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
+				},
+				onPressOrderLongText: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onPressOperationLongText: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onOpenLongTextPopOver: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
@@ -1092,9 +1107,9 @@ sap.ui.define([
 				bUserSelectAll = oEvent.getParameter("selectAll"),
 				iNoOfSelected = 0,
 				oOperationData;
-				
+
 			//check for create or detail
-			if(this.oCreateModel){
+			if (this.oCreateModel) {
 				oOperationData = this.oCreateModel.getData();
 			}
 
@@ -1110,7 +1125,50 @@ sap.ui.define([
 				oSelectedItem.setSelected(false);
 			}
 		},
-
+		
+		/**
+		 * OnPress Operation list Order Long Text
+		 */
+		onPressOrderLongText: function (oEvent) {
+			var oSource = oEvent.getSource(),
+				oContext = oEvent.getSource().getBindingContext(),
+				sOrderLongText = oContext.getProperty("ORDER_LONG_TEXT");
+			this.getView().getModel("viewModel").setProperty("/sPopoverLongText", sOrderLongText);
+			this.getView().getModel("viewModel").setProperty("/bLongTextField", true);
+			this.onOpenLongTextPopOver(oSource);
+		},
+		
+		/**
+		 * OnPress Operation list Operation Long Text
+		 */
+		onPressOperationLongText: function (oEvent) {
+			var oSource = oEvent.getSource(),
+				oContext = oEvent.getSource().getBindingContext(),
+				sOperationLongText = oContext.getProperty("OPERATION_LONG_TEXT");
+			this.getView().getModel("viewModel").setProperty("/sPopoverLongText", sOperationLongText);
+			this.getView().getModel("viewModel").setProperty("/bLongTextField", false);
+			this.onOpenLongTextPopOver(oSource);
+		},
+		
+		/**
+		 * Opening Long Text PopOver in Operation List
+		 * For OrderLongText and OperationLongText
+		 */
+		onOpenLongTextPopOver: function (oSource) {
+			if (!this._oLongTextPopOver) {
+				Fragment.load({
+					name: "com.evorait.evosuite.evoprep.view.fragments.LongTextPopOver",
+					controller: this
+				}).then(function (pPopover) {
+					this._oLongTextPopOver = pPopover;
+					this.getView().addDependent(this._oLongTextPopOver);
+					this._oLongTextPopOver.openBy(oSource);
+				}.bind(this));
+			} else {
+				this._oLongTextPopOver.openBy(oSource);
+			}
+		},
+		
 		/* =========================================================== */
 		/* Private methods                                              */
 		/* =========================================================== */

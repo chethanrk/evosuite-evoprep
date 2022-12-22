@@ -43,7 +43,7 @@
 				smartFilterId="demandListSmartFilterBar" customData:useSmartField="true" customData:useSmartToggle="true"
 				editTogglable="{parts: ['user>/ENABLE_ITEM_UPDATE', 'viewModel>/validateIW32Auth'], formatter:'.formatter.enableEditToggleBtn'}"
 				editToggled="onPressEdit"
-				requestAtLeastFields="ObjectKey,NO_OF_PLAN_ID,NO_OF_NW_KEY,ALLOW_EDIT,MATERIAL_STATUS_DESC,COMPONENT_EXISTS,MATERIAL_STATUS_ICON,MATERIAL_STATUS_STATE"
+				requestAtLeastFields="ObjectKey,NO_OF_PLAN_ID,NO_OF_NW_KEY,ALLOW_EDIT,MATERIAL_STATUS_DESC,COMPONENT_EXISTS,MATERIAL_STATUS_ICON,MATERIAL_STATUS_STATE,LONG_TEXT_ICON"
 				beforeRebindTable="onOperationListDataReceived">
 				<!-- layout data used to make the table growing but the filter bar fixed -->
 				<smartTable:layoutData>
@@ -128,6 +128,7 @@
 								<Link text="{NO_OF_NW_KEY}" press="onPressNetworkKey"/>
 							</table:template>
 						</table:Column>
+						<core:Fragment fragmentName="com.evorait.evosuite.evoprep.view.fragments.LongTextColumn" type="XML"/>
 						<core:ExtensionPoint name="PageExtP|DemandList|PlanItemsSet|SmartTable|Columns"/>
 					</table:columns>
 				</table:Table>

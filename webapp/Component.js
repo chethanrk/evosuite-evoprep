@@ -102,7 +102,9 @@ sap.ui.define([
 				bEnableFinalizeBtn: false, // handle the enable or disable of finalize button of the operations 
 				validateIW32Auth: true, // SAP standard check
 				bEnableApplyFilter: false,
-				filtersExist: false
+				filtersExist: false,
+				sPopoverLongText:"",  //Field for display long text in Popover
+				bLongTextField:"" // To identify whether its Order/Operation Long Text
 			};
 
 			//GetSystemInformation Call

@@ -175,7 +175,7 @@ sap.ui.define([
 				bUserInteraction = oEvent.getParameter("userInteraction"),
 				isEnabledPrePlanreate = false,
 				aSelecteOperationIndice = this.oTable.getSelectedIndices(),
-				bCheckSelectAll, bEnableAddOperations, 
+				bCheckSelectAll, bEnableAddOperations,
 				iNoOfSelected;
 			if (aSelecteOperationIndice.length > 0) {
 				isEnabledPrePlanreate = true;
@@ -195,14 +195,20 @@ sap.ui.define([
 			if (!this.bSelectAll) {
 				//handle finalise and material releated button enable
 				this._handleOprCommonBtnEnable();
+				// check reprocess functionality
+				if (this._returnPropertyContext(this.oTable, "ALLOW_REPROCESS").length > 0) {
+					this.oViewModel.setProperty("/bOperationReprocess", true);
+				} else {
+					this.oViewModel.setProperty("/bOperationReprocess", false);
+				}
 			}
-			
+
 			//handle messageToast for select all using table checkbox
-			if(bCheckSelectAll){
+			if (bCheckSelectAll) {
 				iNoOfSelected = this.getSelectedItemsCount(this.oTable);
 				this.showMessageToast(this.getResourceBundle().getText("ymsg.maxRowSelection", [iNoOfSelected]));
 			}
-			
+
 		},
 
 		/**

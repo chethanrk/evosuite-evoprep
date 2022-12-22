@@ -53,6 +53,11 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
+				},
+				onReprocessBtnPressed: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
@@ -311,13 +316,57 @@ sap.ui.define([
 		 * @param mParam is the event object
 		 * @mParam mProperty is the model property
 		 */
-		validateEditFinalizeOperation: function (mParam,mProperty) {
+		validateEditFinalizeOperation: function (mParam, mProperty) {
 			var oContext = mParam.getParameter("changeEvent").getSource().getBindingContext();
 			var sValue = oContext.getProperty(mProperty);
 			if (!sValue) {
 				this.getView().getModel().resetChanges([oContext.getPath()]);
 				this.showMessageToast(this.getResourceBundle().getText("msg.operationEditFinalizeValidation"));
 			}
+		},
+		/**
+		 * Method called on the press of reprocess button press on the 
+		 * operations table in the operation list
+		 */
+		onReprocessBtnPressed: function () {
+			var oTable = this.oTable,
+				oViewModel = this.getModel("viewModel"),
+				oModel = this.getModel(),
+				iTotalSelections,
+				aSelectedContext = this._returnPropertyContext(oTable, "ALLOW_REPROCESS"),
+				sPath,
+				aPromises = [],
+				othat = this;
+			// validating the selected context
+			if (oTable.getAggregation("items")) {
+				iTotalSelections = oTable.getSelectedItems();
+			} else {
+				iTotalSelections = oTable.getSelectedIndices();
+			}
+			if (iTotalSelections.length !== aSelectedContext.length) {
+				this.showMessageToast(this.getResourceBundle().getText("msg.operationReprocessValidation"));
+				return;
+			}
+			for (let x in aSelectedContext) {
+				let oPrams = {
+					OperationGuid: aSelectedContext[x].getProperty("ObjectKey")
+				};
+				aPromises.push(new Promise(function(resolve, reject){
+					this.callFunctionImport(oPrams,"ReprocessItem","POST",resolve);
+				}.bind(this)));
+			}
+			Promise.all(aPromises).then(function () {
+				oViewModel.setProperty("/busy", false);
+				if (oTable.getAggregation("items")) {
+					oTable.removeSelections();
+				} else {
+					oTable.clearSelection(true);
+				}
+				oViewModel.setProperty("/bOperationReprocess", false);
+				this.getModel().refresh();
+				this.oSmartTable.rebindTable(true);
+				this.getModel().resetChanges();
+			}.bind(this));
 		},
 
 		/** Method to get the context of selected items in the 

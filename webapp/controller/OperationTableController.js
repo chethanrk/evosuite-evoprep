@@ -79,6 +79,10 @@ sap.ui.define([
 			this.oViewModel = this.getModel("viewModel");
 		},
 
+		/* =========================================================== */
+		/* Public methods                                              */
+		/* =========================================================== */
+
 		/**
 		 * Prepare function import parameter ready
 		 * check for the order number and operation number 
@@ -351,8 +355,8 @@ sap.ui.define([
 				let oPrams = {
 					OperationGuid: aSelectedContext[x].getProperty("ObjectKey")
 				};
-				aPromises.push(new Promise(function(resolve, reject){
-					this.callFunctionImport(oPrams,"ReprocessItem","POST",resolve);
+				aPromises.push(new Promise(function (resolve, reject) {
+					this.callFunctionImport(oPrams, "ReprocessItem", "POST", resolve);
 				}.bind(this)));
 			}
 			Promise.all(aPromises).then(function () {
@@ -368,6 +372,10 @@ sap.ui.define([
 				this.getModel().resetChanges();
 			}.bind(this));
 		},
+
+		/* =========================================================== */
+		/* Internal methods                                            */
+		/* =========================================================== */
 
 		/** Method to get the context of selected items in the 
 		 * demands table which has component_exist true for 

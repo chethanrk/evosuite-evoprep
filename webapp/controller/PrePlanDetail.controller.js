@@ -35,6 +35,11 @@ sap.ui.define([
 					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
+				onPressCopyPrePlanHeader: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
 				oPressDetailDelete: {
 					public: true,
 					final: false,

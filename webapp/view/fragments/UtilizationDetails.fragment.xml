@@ -1,33 +1,38 @@
-<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core"
-	xmlns:smartTable="sap.ui.comp.smarttable">
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:smartTable="sap.ui.comp.smarttable">
 	<ResponsivePopover title="{i18n>xtit.UtilizationDetails}" class="sapUiContentPadding" showHeader="false" contentWidth="25%"
-			contentHeight="auto" placement="Left">
+		contentHeight="auto" placement="Left">
 		<content>
-			<smartTable:SmartTable id="idUtilizationDetailsSmartTable" height="100%" width="100%" entitySet="WCUtilizationDetailSet"
-				header="{i18n>xtit.UtilizationDetails}" tableType="ResponsiveTable" useExportToExcel="false" useVariantManagement="false"
-				showTablePersonalisation="false" useTablePersonalisation="false" showRowCount="false" enableAutoBinding="true" demandPopin="true"
-				requestAtLeastFields="ICON,COLOR" beforeRebindTable="onBeforeRebindUtilizationDetails">
-				<!-- layout data used to make the table growing but the filter bar fixed -->
-				<smartTable:layoutData>
-					<FlexItemData growFactor="1" baseSize="0%"/>
-				</smartTable:layoutData>
-				<Table growing="true">
-					<columns>
-						<Column width="7%">
-							<customData>
-								<core:CustomData key="p13nData" value='\{"columnKey": "ICON", "leadingProperty": "ICON", "columnIndex": 0}'/>
-							</customData>
-						</Column>
-					</columns>
-					<items>
-						<ColumnListItem>
-							<cells>
-								<core:Icon src="{ICON}" color="{COLOR}"></core:Icon>
-							</cells>
-						</ColumnListItem>
-					</items>
-				</Table>
-			</smartTable:SmartTable>
+			<core:ExtensionPoint name="DialogExtP|UtilizationDetails|WCUtilizationDetailSet|Content|Before"/>
+			<core:ExtensionPoint name="DialogExtP|UtilizationDetails|WCUtilizationDetailSet|Content|Instead">
+				<smartTable:SmartTable id="idUtilizationDetailsSmartTable" height="100%" width="100%" entitySet="WCUtilizationDetailSet"
+					header="{i18n>xtit.UtilizationDetails}" tableType="ResponsiveTable" useExportToExcel="false" useVariantManagement="false"
+					showTablePersonalisation="false" useTablePersonalisation="false" showRowCount="false" enableAutoBinding="true" demandPopin="true"
+					requestAtLeastFields="ICON,COLOR" beforeRebindTable="onBeforeRebindUtilizationDetails">
+					<!-- layout data used to make the table growing but the filter bar fixed -->
+					<smartTable:layoutData>
+						<FlexItemData growFactor="1" baseSize="0%"/>
+					</smartTable:layoutData>
+					<Table growing="true">
+						<columns>
+							<core:ExtensionPoint name="TableExtP|UtilizationDetails|WCUtilizationDetailSet|CustomColumn"/>
+							<Column width="7%">
+								<customData>
+									<core:CustomData key="p13nData" value='\{"columnKey": "ICON", "leadingProperty": "ICON", "columnIndex": 0}'/>
+								</customData>
+							</Column>
+						</columns>
+						<items>
+							<ColumnListItem>
+								<cells>
+									<core:ExtensionPoint name="TableExtP|UtilizationDetails|WCUtilizationDetailSet|CustomCell"/>
+									<core:Icon src="{ICON}" color="{COLOR}"></core:Icon>
+								</cells>
+							</ColumnListItem>
+						</items>
+					</Table>
+				</smartTable:SmartTable>
+			</core:ExtensionPoint>
+			<core:ExtensionPoint name="DialogExtP|UtilizationDetails|WCUtilizationDetailSet|Content|After"/>
 		</content>
 	</ResponsivePopover>
 </core:FragmentDefinition>

@@ -25,6 +25,21 @@ sap.ui.define([
 					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
+				onPressOperationListCancel: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				handleSelectionChangeOperation: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onPressDeleteOperations: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
 				onFieldChange: {
 					public: true,
 					final: false,

@@ -61,6 +61,11 @@ sap.ui.define([
 					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
+				onBeforeRebindTablePlanList: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
 				onListNetworkItemPress: {
 					public: true,
 					final: false,

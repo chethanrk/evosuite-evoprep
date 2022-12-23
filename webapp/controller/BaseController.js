@@ -200,6 +200,10 @@ sap.ui.define([
 					public: true,
 					final: true
 				},
+				getViewUniqueName: {
+					public: true,
+					final: true
+				},
 				onPressSmartField: {
 					public: true,
 					final: true
@@ -1125,7 +1129,7 @@ sap.ui.define([
 				oSelectedItem.setSelected(false);
 			}
 		},
-		
+
 		/**
 		 * OnPress Operation list Order Long Text
 		 */
@@ -1137,7 +1141,7 @@ sap.ui.define([
 			this.getView().getModel("viewModel").setProperty("/bLongTextField", true);
 			this.onOpenLongTextPopOver(oSource);
 		},
-		
+
 		/**
 		 * OnPress Operation list Operation Long Text
 		 */
@@ -1149,7 +1153,7 @@ sap.ui.define([
 			this.getView().getModel("viewModel").setProperty("/bLongTextField", false);
 			this.onOpenLongTextPopOver(oSource);
 		},
-		
+
 		/**
 		 * Opening Long Text PopOver in Operation List
 		 * For OrderLongText and OperationLongText
@@ -1168,7 +1172,7 @@ sap.ui.define([
 				this._oLongTextPopOver.openBy(oSource);
 			}
 		},
-		
+
 		/* =========================================================== */
 		/* Private methods                                              */
 		/* =========================================================== */

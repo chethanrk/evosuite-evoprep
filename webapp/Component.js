@@ -103,9 +103,9 @@ sap.ui.define([
 				validateIW32Auth: true, // SAP standard check
 				bEnableApplyFilter: false,
 				filtersExist: false,
-				sPopoverLongText:"",  //Field for display long text in Popover
-				bLongTextField:"", // To identify whether its Order/Operation Long Text
-                bOperationReprocess:false
+				sPopoverLongText: "", //Field for display long text in Popover
+				bLongTextField: "", // To identify whether its Order/Operation Long Text
+				bOperationReprocess: false
 			};
 
 			//GetSystemInformation Call
@@ -122,7 +122,14 @@ sap.ui.define([
 
 			//Creating the Global Gantt Model for PlanningGanttChart
 			this.setModel(models.createHelperModel(), "ganttModel");
-			this.setModel(models.createHelperModel(), "compareModel");
+			//Creating compare model
+			var oCompareObj = {
+				compareOriginal: [],
+				compareCollapsed: [],
+				compare: [],
+				compareProperty: []
+			};
+			this.setModel(models.createHelperModel(oCompareObj), "compareModel");
 
 			this._getTemplateProps();
 

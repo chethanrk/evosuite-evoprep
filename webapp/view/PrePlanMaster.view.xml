@@ -42,6 +42,7 @@
 							enabled="{parts: ['viewModel>/isPrePlanSelected', 'viewModel>/validateIW32Auth'], formatter:'.formatter.enableEditToggleBtn'}"
 							visible="{parts:[{path:'user>/ENABLE_PLAN_DELETE'},{path:'viewModel>/layout'}],formatter:'.formatter.showDeleteMasterList'}"/>
 						<Button type="Ghost" icon="sap-icon://copy" id="idBtnCopyPrePlan" press="onCopyPrePlanPress" visible="{= ${user>/ENABLE_PLAN_COPY} === 'X'}"
+							tooltip="{i18n>xbut.copy}"
 							enabled="{parts: ['viewModel>/bCopyEnabled', 'viewModel>/validateIW32Auth'], formatter:'.formatter.enableEditToggleBtn'}"/>
 						<Button type="Ghost" icon="sap-icon://compare" id="idBtnComaprePrePlan" tooltip="{i18n>xbut.comapre}" press="onPressComapre"
 							visible="{= ${user>/ENABLE_PLAN_COMPARE} === 'X'}" enabled="{viewModel>/validateIW32Auth}"/>

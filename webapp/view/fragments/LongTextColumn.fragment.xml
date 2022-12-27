@@ -7,7 +7,7 @@
 				value='\{"columnKey": "ORDER_LONG_TEXT", "leadingProperty":"ORDER_LONG_TEXT", "filterProperty":"ORDER_LONG_TEXT", "sortProperty":"OPERATION_LONG_TEXT", "columnIndex":"6"}'/>
 		</table:customData>
 		<table:template>
-			<Button icon="{LONG_TEXT_ICON}" visible="{= ${ORDER_LONG_TEXT} !== '' }" press="onPressOrderLongText"/>
+			<Button icon="{ORDER_LONG_TEXT_ICON}" press="onPressOrderLongText"/>
 		</table:template>
 	</table:Column>
 	<table:Column hAlign="Center" sortProperty="OPERATION_LONG_TEXT" filterProperty="OPERATION_LONG_TEXT" width="5rem" visible="{user>/ENABLE_LONG_TEXT}">
@@ -18,7 +18,7 @@
 				value='\{"columnKey": "OPERATION_LONG_TEXT", "leadingProperty":"OPERATION_LONG_TEXT", "filterProperty":"OPERATION_LONG_TEXT", "sortProperty":"OPERATION_LONG_TEXT", "columnIndex":"7"}'/>
 		</table:customData>
 		<table:template>
-			<Button icon="{LONG_TEXT_ICON}" visible="{= ${OPERATION_LONG_TEXT} !== '' }" press="onPressOperationLongText"/>
+			<Button icon="{LONG_TEXT_ICON}"  press="onPressOperationLongText"/>
 		</table:template>
 	</table:Column>
 </core:FragmentDefinition>

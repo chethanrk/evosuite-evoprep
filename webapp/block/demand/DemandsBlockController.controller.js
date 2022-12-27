@@ -248,12 +248,13 @@ sap.ui.define([
 		fnChangeIconClick: function (oEvent) {
 			var oBindCon = oEvent.getSource().getBindingContext(),
 				sObjectKeyId = oBindCon.getProperty("ObjectKey");
-			var oEventBus = sap.ui.getCore().getEventBus();
-			this.oViewModel.setProperty("/layout", library.LayoutType.ThreeColumnsMidExpanded);
-			oEventBus.publish("ChangeLogs", "routeMatched", {
-				sKey: sObjectKeyId
-			});
-
+			if (oBindCon.getProperty("CHANGE_INDICATOR")) {
+				var oEventBus = sap.ui.getCore().getEventBus();
+				this.oViewModel.setProperty("/layout", library.LayoutType.ThreeColumnsMidExpanded);
+				oEventBus.publish("ChangeLogs", "routeMatched", {
+					sKey: sObjectKeyId
+				});
+			}
 		},
 
 		/**

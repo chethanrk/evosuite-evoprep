@@ -1137,9 +1137,11 @@ sap.ui.define([
 			var oSource = oEvent.getSource(),
 				oContext = oEvent.getSource().getBindingContext(),
 				sOrderLongText = oContext.getProperty("ORDER_LONG_TEXT");
-			this.getView().getModel("viewModel").setProperty("/sPopoverLongText", sOrderLongText);
-			this.getView().getModel("viewModel").setProperty("/bLongTextField", true);
-			this.onOpenLongTextPopOver(oSource);
+			if (sOrderLongText !== "") {
+				this.getView().getModel("viewModel").setProperty("/sPopoverLongText", sOrderLongText);
+				this.getView().getModel("viewModel").setProperty("/bLongTextField", true);
+				this.onOpenLongTextPopOver(oSource);
+			}
 		},
 
 		/**
@@ -1149,9 +1151,11 @@ sap.ui.define([
 			var oSource = oEvent.getSource(),
 				oContext = oEvent.getSource().getBindingContext(),
 				sOperationLongText = oContext.getProperty("OPERATION_LONG_TEXT");
-			this.getView().getModel("viewModel").setProperty("/sPopoverLongText", sOperationLongText);
-			this.getView().getModel("viewModel").setProperty("/bLongTextField", false);
-			this.onOpenLongTextPopOver(oSource);
+			if (sOperationLongText !== "") {
+				this.getView().getModel("viewModel").setProperty("/sPopoverLongText", sOperationLongText);
+				this.getView().getModel("viewModel").setProperty("/bLongTextField", false);
+				this.onOpenLongTextPopOver(oSource);
+			}
 		},
 
 		/**

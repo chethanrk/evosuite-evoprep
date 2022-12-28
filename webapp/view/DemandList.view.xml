@@ -43,7 +43,7 @@
 				smartFilterId="demandListSmartFilterBar" customData:useSmartField="true" customData:useSmartToggle="true"
 				editTogglable="{parts: ['user>/ENABLE_ITEM_UPDATE', 'viewModel>/validateIW32Auth'], formatter:'.formatter.enableEditToggleBtn'}"
 				editToggled="onPressEdit"
-				requestAtLeastFields="ObjectKey,NO_OF_PLAN_ID,NO_OF_NW_KEY,ALLOW_EDIT,MATERIAL_STATUS_DESC,COMPONENT_EXISTS,MATERIAL_STATUS_ICON,MATERIAL_STATUS_STATE,LONG_TEXT_ICON"
+				requestAtLeastFields="ObjectKey,NO_OF_PLAN_ID,NO_OF_NW_KEY,ALLOW_EDIT,MATERIAL_STATUS_DESC,COMPONENT_EXISTS,MATERIAL_STATUS_ICON,MATERIAL_STATUS_STATE,LONG_TEXT_ICON,ORDER_LONG_TEXT_ICON,SYNC_ICON"
 				beforeRebindTable="onOperationListDataReceived">
 				<!-- layout data used to make the table growing but the filter bar fixed -->
 				<smartTable:layoutData>
@@ -101,7 +101,7 @@
 									value='\{"columnKey": "ALLOW_REPROCESS", "leadingProperty":"ALLOW_REPROCESS", "filterProperty":"ALLOW_REPROCESS", "sortProperty":"ALLOW_REPROCESS", "columnIndex":"1"}'/>
 							</table:customData>
 							<table:template>
-								<core:Icon src="sap-icon://alert" visible="{= ${ALLOW_REPROCESS} === 'X' }"
+								<core:Icon src="{SYNC_ICON}"
 									tooltip="{/PlanItemsSet/ALLOW_REPROCESS/##com.sap.vocabularies.Common.v1.Label/String}"/>
 							</table:template>
 						</table:Column>
@@ -115,7 +115,7 @@
 							</table:customData>
 							<table:template>
 								<HBox>
-									<ObjectStatus class="sapUiTinyMargin" tooltip="{MATERIAL_STATUS_DESC}" text="{MATERIAL_STATUS_DESC}" visible="{ path:'COMPONENT_EXISTS' }"
+									<ObjectStatus class="sapUiTinyMargin" tooltip="{MATERIAL_STATUS_DESC}" text="{MATERIAL_STATUS_DESC}" 
 										icon="{MATERIAL_STATUS_ICON}" state="{path:'MATERIAL_STATUS_STATE',formatter:'.formatter.getDemandState'}"/>
 								</HBox>
 							</table:template>

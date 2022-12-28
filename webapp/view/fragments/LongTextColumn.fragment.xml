@@ -1,5 +1,6 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:table="sap.ui.table">
-	<table:Column hAlign="Center" sortProperty="ORDER_LONG_TEXT" filterProperty="ORDER_LONG_TEXT" width="5rem" visible="{user>/ENABLE_LONG_TEXT}">
+	<table:Column hAlign="Center" sortProperty="ORDER_LONG_TEXT" filterProperty="ORDER_LONG_TEXT" width="5rem"
+		visible="{user>/ENABLE_LONG_TEXT}">
 		<Label text="{/PlanItemsSet/ORDER_LONG_TEXT/##com.sap.vocabularies.Common.v1.Label/String}"
 			tooltip="{/PlanItemsSet/ORDER_LONG_TEXT/##com.sap.vocabularies.Common.v1.Label/String}"/>
 		<table:customData>
@@ -7,10 +8,15 @@
 				value='\{"columnKey": "ORDER_LONG_TEXT", "leadingProperty":"ORDER_LONG_TEXT", "filterProperty":"ORDER_LONG_TEXT", "sortProperty":"OPERATION_LONG_TEXT", "columnIndex":"6"}'/>
 		</table:customData>
 		<table:template>
-			<Button icon="{ORDER_LONG_TEXT_ICON}" press="onPressOrderLongText"/>
+			<Button icon="{ORDER_LONG_TEXT_ICON}" press="onPressLongText">
+				<customData>
+					<core:CustomData key="ORDER_LONG_TEXT" value="ORDER_LONG_TEXT"/>
+				</customData>
+			</Button>
 		</table:template>
 	</table:Column>
-	<table:Column hAlign="Center" sortProperty="OPERATION_LONG_TEXT" filterProperty="OPERATION_LONG_TEXT" width="5rem" visible="{user>/ENABLE_LONG_TEXT}">
+	<table:Column hAlign="Center" sortProperty="OPERATION_LONG_TEXT" filterProperty="OPERATION_LONG_TEXT" width="5rem"
+		visible="{user>/ENABLE_LONG_TEXT}">
 		<Label text="{/PlanItemsSet/OPERATION_LONG_TEXT/##com.sap.vocabularies.Common.v1.Label/String}"
 			tooltip="{/PlanItemsSet/OPERATION_LONG_TEXT/##com.sap.vocabularies.Common.v1.Label/String}"/>
 		<table:customData>
@@ -18,7 +24,11 @@
 				value='\{"columnKey": "OPERATION_LONG_TEXT", "leadingProperty":"OPERATION_LONG_TEXT", "filterProperty":"OPERATION_LONG_TEXT", "sortProperty":"OPERATION_LONG_TEXT", "columnIndex":"7"}'/>
 		</table:customData>
 		<table:template>
-			<Button icon="{LONG_TEXT_ICON}"  press="onPressOperationLongText"/>
+			<Button icon="{LONG_TEXT_ICON}" press="onPressLongText">
+				<customData>
+					<core:CustomData key="OPERATION_LONG_TEXT" value="OPERATION_LONG_TEXT"/>
+				</customData>
+			</Button>
 		</table:template>
 	</table:Column>
 </core:FragmentDefinition>

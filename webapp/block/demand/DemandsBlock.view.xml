@@ -72,15 +72,22 @@
 			<ColumnListItem press="onClickTableRow">
 				<cells>
 					<HBox>
-						<ObjectStatus class="sapUiTinyMargin" tooltip="{MATERIAL_STATUS_DESC}" text="{MATERIAL_STATUS_DESC}"
-							icon="{MATERIAL_STATUS_ICON}" state="{path:'MATERIAL_STATUS_STATE',formatter:'.formatter.getDemandState'}"/>
+						<ObjectStatus class="sapUiTinyMargin" tooltip="{MATERIAL_STATUS_DESC}" text="{MATERIAL_STATUS_DESC}" icon="{MATERIAL_STATUS_ICON}"
+							state="{path:'MATERIAL_STATUS_STATE',formatter:'.formatter.getDemandState'}"/>
 					</HBox>
 				</cells>
 				<cells>
-					<core:Icon src="{CHANGE_LOG_ICON}"  press="fnChangeIconClick" color="Default"/>
-					<Button icon="{ORDER_LONG_TEXT_ICON}" tooltip="{ORDER_LONG_TEXT}" press="onPressOrderLongText"/>
-					<Button icon="{LONG_TEXT_ICON}" tooltip="{OPERATION_LONG_TEXT}"
-						press="onPressOperationLongText"/>
+					<core:Icon src="{CHANGE_LOG_ICON}" press="fnChangeIconClick" color="Default"/>
+					<Button icon="{ORDER_LONG_TEXT_ICON}" tooltip="{ORDER_LONG_TEXT}" press="onPressLongText">
+						<customData>
+							<core:CustomData key="ORDER_LONG_TEXT" value="ORDER_LONG_TEXT"/>
+						</customData>
+					</Button>
+					<Button icon="{LONG_TEXT_ICON}" tooltip="{OPERATION_LONG_TEXT}" press="onPressLongText">
+						<customData>
+							<core:CustomData key="OPERATION_LONG_TEXT" value="OPERATION_LONG_TEXT"/>
+						</customData>
+					</Button>
 				</cells>
 			</ColumnListItem>
 		</Table>

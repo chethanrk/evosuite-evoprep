@@ -226,12 +226,7 @@ sap.ui.define([
 					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
-				onPressOrderLongText: {
-					public: true,
-					final: false,
-					overrideExecution: OverrideExecution.Instead
-				},
-				onPressOperationLongText: {
+				onPressLongText: {
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
@@ -240,7 +235,7 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
-				}
+				},
 			}
 		},
 
@@ -1131,29 +1126,22 @@ sap.ui.define([
 		},
 
 		/**
-		 * OnPress Operation list Order Long Text
+		 * OnPress Operation list Order Long Text and Operation Long Text
+		 * @param oEvent
 		 */
-		onPressOrderLongText: function (oEvent) {
+		onPressLongText: function (oEvent) {
 			var oSource = oEvent.getSource(),
-				oContext = oEvent.getSource().getBindingContext(),
-				sOrderLongText = oContext.getProperty("ORDER_LONG_TEXT");
-			if (sOrderLongText !== "") {
-				this.getView().getModel("viewModel").setProperty("/sPopoverLongText", sOrderLongText);
-				this.getView().getModel("viewModel").setProperty("/bLongTextField", true);
-				this.onOpenLongTextPopOver(oSource);
-			}
-		},
-
-		/**
-		 * OnPress Operation list Operation Long Text
-		 */
-		onPressOperationLongText: function (oEvent) {
-			var oSource = oEvent.getSource(),
-				oContext = oEvent.getSource().getBindingContext(),
-				sOperationLongText = oContext.getProperty("OPERATION_LONG_TEXT");
-			if (sOperationLongText !== "") {
-				this.getView().getModel("viewModel").setProperty("/sPopoverLongText", sOperationLongText);
-				this.getView().getModel("viewModel").setProperty("/bLongTextField", false);
+				oContext = oSource.getBindingContext(),
+				oSelectedItem = oSource.getCustomData()[0],
+				sSelectedKey = oSelectedItem.getKey(),
+				sLongText = oContext.getProperty(sSelectedKey),
+				bLongText = true;
+			if (sLongText !== "") {
+				if (sSelectedKey === "OPERATION_LONG_TEXT") {
+					bLongText = false;
+				}
+				this.getView().getModel("viewModel").setProperty("/sPopoverLongText", sLongText);
+				this.getView().getModel("viewModel").setProperty("/bLongTextField", bLongText);
 				this.onOpenLongTextPopOver(oSource);
 			}
 		},
@@ -1161,6 +1149,7 @@ sap.ui.define([
 		/**
 		 * Opening Long Text PopOver in Operation List
 		 * For OrderLongText and OperationLongText
+		 * @param oSource
 		 */
 		onOpenLongTextPopOver: function (oSource) {
 			if (!this._oLongTextPopOver) {

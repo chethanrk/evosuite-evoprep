@@ -45,11 +45,12 @@
 													<layoutData>
 														<FlexItemData growFactor="1" shrinkFactor="0"/>
 													</layoutData>
+													<core:ExtensionPoint name="CompareExtP|ComparePlanProperty|{:= ${detailTabs>Core.LongDescription/String} }|Before"/>
 													<template:if
 														test="{:= ${parts: [{value:'UtilizationTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameMatch'} }">
 														<template:then>
 															<Table growing="true"
-																items="{path:'compareModel>PlanCmprGeneralToPlanCmprWorkCenter/results',templateShareable: true,sorter : [{ path: 'WORKCENTRE', descending: false },{ path: 'MODE', descending: false }]}"
+																items="{path:'compareModel>PlanCmprGeneralToPlanCmprWorkCenter/results',templateShareable: true}"
 																headerText="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}">
 																<headerToolbar>
 																	<OverflowToolbar>
@@ -104,7 +105,7 @@
 														<template:elseif
 															test="{:= ${parts: [{value:'DurationTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameMatch'} }">
 															<Table growing="true"
-																items="{path:'compareModel>PlanCmprGeneralToPlanCmprOperation/results',templateShareable: true,sorter : { path : 'PLAN_ID' }}"
+																items="{path:'compareModel>PlanCmprGeneralToPlanCmprOperation/results',templateShareable: true}"
 																headerText="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}">
 																<columns>
 																	<template:repeat list="{path:'tempProps>/OperationConfigs/lineItems'}" var="lineItem">
@@ -134,6 +135,7 @@
 															</Table>
 														</template:elseif>
 													</template:if>
+													<core:ExtensionPoint name="CompareExtP|ComparePlanProperty|{:= ${detailTabs>Core.LongDescription/String} }|After"/>
 												</VBox>
 											</template:elseif>
 										</template:if>

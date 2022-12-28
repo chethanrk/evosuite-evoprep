@@ -37,10 +37,13 @@ sap.ui.define([
 		 */
 		onPressClose: function (oEvent) {
 			//enabling the below property as it is getting disabled on click of compare
+			var oCompareModel = this.getModel("compareModel");
 			this.getModel("viewModel").setProperty("/fullscreenGantt", true);
 			BaseController.prototype.onPressClose.apply(this, arguments);
-			this.getModel("compareModel").setProperty("/compare", []);
-			this.getModel("compareModel").setProperty("/compare0", []);
+			oCompareModel.setProperty("/compare", []);
+			oCompareModel.setProperty("/compare0", []);
+			oCompareModel.setProperty("/compareOriginal", []);
+			oCompareModel.setProperty("/compareCollapsed", []);
 		},
 
 		/**

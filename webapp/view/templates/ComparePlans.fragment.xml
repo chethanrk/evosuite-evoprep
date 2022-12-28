@@ -31,11 +31,11 @@
 													<layoutData>
 														<FlexItemData growFactor="1" shrinkFactor="0"/>
 													</layoutData>
+													<core:ExtensionPoint name="CompareExtP|ComparePlanValue|{:= ${detailTabs>Core.LongDescription/String} }|Before"/>
 													<template:if
 														test="{:= ${parts: [{value:'UtilizationTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameMatch'} }">
 														<template:then>
-															<Table growing="true"
-																items="{path:'compareModel>PlanCmprGeneralToPlanCmprWorkCenter/results',templateShareable: true, sorter : [{ path: 'WORKCENTRE', descending: false },{ path: 'MODE', descending: false }]}"
+															<Table growing="true" items="{path:'compareModel>PlanCmprGeneralToPlanCmprWorkCenter/results',templateShareable: true}"
 																headerText="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}">
 																<columns>
 																	<Column demandPopin="true" hAlign="Center">
@@ -50,6 +50,7 @@
 																				<core:HTML
 																					content='&lt;span style=&quot;color:{compareModel>COLOR}&quot; class=&quot;content&quot;&gt;&lt;text&gt;{compareModel>UTILIZATION}&lt;/text&gt; &lt;/span&gt;'
 																					visible="{= ${compareModel>MODE} === ''? false:true}"/>
+																				<Text text="-" visible="{= ${compareModel>UTILIZATION} === ''}"/>
 																			</FlexBox>
 																		</cells>
 																	</ColumnListItem>
@@ -58,8 +59,7 @@
 														</template:then>
 														<template:elseif
 															test="{:= ${parts: [{value:'DurationTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameMatch'} }">
-															<Table growing="true"
-																items="{path:'compareModel>PlanCmprGeneralToPlanCmprOperation/results',templateShareable: true, sorter : { path: 'PLAN_ID', descending: false }}"
+															<Table growing="true" items="{path:'compareModel>PlanCmprGeneralToPlanCmprOperation/results',templateShareable: true}"
 																headerText="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}">
 																<columns>
 																	<Column demandPopin="true" hAlign="Center">
@@ -76,6 +76,7 @@
 															</Table>
 														</template:elseif>
 													</template:if>
+													<core:ExtensionPoint name="CompareExtP|ComparePlanValue|{:= ${detailTabs>Core.LongDescription/String} }|After"/>
 												</VBox>
 											</template:elseif>
 										</template:if>

@@ -867,8 +867,6 @@ sap.ui.define([
 			this.oViewModel.setProperty("/editMode", true);
 			this.oViewModel.setProperty("/layout", library.LayoutType.TwoColumnsMidExpanded);
 			this.oViewModel.setProperty("/fullscreen", true);
-			//this._loadUtilizationGantt();
-			//this._loadGanttData();
 			this.oViewModel.setProperty("/bDependencyCall", true);
 			this.oViewModel.setProperty("/ganttSettings/bUtilizationCall", true);
 		},

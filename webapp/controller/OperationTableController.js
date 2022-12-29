@@ -339,8 +339,7 @@ sap.ui.define([
 				iTotalSelections,
 				aSelectedContext = this._returnPropertyContext(oTable, "ALLOW_REPROCESS"),
 				sPath,
-				aPromises = [],
-				othat = this;
+				aPromises = [];
 			// validating the selected context
 			if (oTable.getAggregation("items")) {
 				iTotalSelections = oTable.getSelectedItems();
@@ -351,8 +350,8 @@ sap.ui.define([
 				this.showMessageToast(this.getResourceBundle().getText("msg.operationReprocessValidation"));
 				return;
 			}
-			for (let x in aSelectedContext) {
-				let oPrams = {
+			for (var x in aSelectedContext) {
+				var oPrams = {
 					OperationGuid: aSelectedContext[x].getProperty("ObjectKey")
 				};
 				aPromises.push(new Promise(function (resolve, reject) {
@@ -365,11 +364,11 @@ sap.ui.define([
 					oTable.removeSelections();
 				} else {
 					oTable.clearSelection(true);
+					this.oSmartTable.rebindTable(true);
 				}
 				oViewModel.setProperty("/bOperationReprocess", false);
-				this.getModel().refresh();
-				this.oSmartTable.rebindTable(true);
 				this.getModel().resetChanges();
+				this.refreshGantChartData(this.getModel("viewModel"));
 			}.bind(this));
 		},
 
@@ -441,12 +440,11 @@ sap.ui.define([
 				oTable.removeSelections();
 			} else {
 				oTable.clearSelection(true);
+				this.oSmartTable.rebindTable(true);
 			}
 			this.getModel("viewModel").setProperty("/bEnableFinalizeBtn", false);
-			this.getModel().refresh();
-			this.oSmartTable.rebindTable(true);
 			this.getModel().resetChanges();
-			this.refreshGantChartData();
+			this.refreshGantChartData(this.getModel("viewModel"));
 		}
 	});
 

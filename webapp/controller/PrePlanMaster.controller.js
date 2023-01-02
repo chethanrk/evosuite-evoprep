@@ -63,13 +63,22 @@ sap.ui.define([
 		 * @memberOf com.evorait.evosuite.evoprep.view.PrePlanMaster
 		 */
 		onInit: function () {
-			this.getModel("viewModel").setProperty("/busy", false);
+			var eventBus = sap.ui.getCore().getEventBus();
 			this.oSmartTable = this.getView().byId("idPagePrePlanSmartTable");
 			this.oViewModel = this.getModel("viewModel");
-			var oRouter = this.getRouter();
-			//route for page create new order
-			oRouter.getRoute("PrePlanMaster").attachMatched(this._routeMatchedMaster, this);
-			oRouter.getRoute("PrePlanDetail").attachMatched(this._routeMatchedDetail, this);
+			this.oViewModel.setProperty("/busy", false);
+
+			//refresh plan list
+			eventBus.subscribe("RefreshEvoPrepPlanList", "planlistrefresh", this._refreshPlanTable, this);
+		},
+
+		/**
+		 * Called when a controller is destroyed 
+		 * @memberOf com.evorait.evosuite.evoprep.view.PrePlanMaster
+		 */
+		onExit: function () {
+			var eventBus = sap.ui.getCore().getEventBus();
+			eventBus.unsubscribe("RefreshEvoPrepPlanList", "planlistrefresh", this._refreshPlanTable, this);
 		},
 
 		/* =========================================================== */
@@ -96,7 +105,6 @@ sap.ui.define([
 				oTable = this.oSmartTable.getTable();
 			oSource.setSelected(true);
 			oTable.fireSelectionChange(oSource);
-			this.getModel("viewModel").setProperty("/loadMaster", true);
 			var sobjectKeyId = oSource.getBindingContext().getProperty("ObjectKey");
 			if (sobjectKeyId) {
 				this.navToDetail(sobjectKeyId);
@@ -204,28 +212,12 @@ sap.ui.define([
 		/* =========================================================== */
 		/* Private methods                                              */
 		/* =========================================================== */
-		/**
-		 * Handle master route match 
-		 * load table data
-		 */
-		_routeMatchedMaster: function (data) {
-			if (this.oSmartTable) {
-				this.getModel().metadataLoaded().then(function () {
-					this.oSmartTable.rebindTable();
-					this._removeTableSelection();
-				}.bind(this));
-			}
-		},
 
 		/**
-		 * Handle detail route match 
-		 * load table data
+		 * refresh Plan list forcefully
 		 */
-		_routeMatchedDetail: function (data) {
-			var oParam = data.getParameter("arguments");
-			if (this.oSmartTable && !this.getModel("viewModel").getProperty("/loadMaster")) {
-				this.oSmartTable.rebindTable();
-			}
+		_refreshPlanTable: function () {
+			this.oSmartTable.rebindTable();
 		},
 
 		/**

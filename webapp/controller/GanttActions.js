@@ -64,12 +64,7 @@ sap.ui.define([
 				.then(function (oData) {
 					MessageToast.show(this._oView.getModel('i18n').getResourceBundle().getText("msg.OperationSaveSuccess"));
 					this._oView.getModel("viewModel").setProperty("/ganttSettings/busy", false);
-					this._oView.getModel().refresh();
-					var oEventBus = sap.ui.getCore().getEventBus();
-					oEventBus.publish("BaseController", "refreshFullGantt");
-					oEventBus.publish("BaseController", "refreshUtilizationGantt");
-					this._oView.getModel("viewModel").setProperty("/bDependencyCall", true);
-					this._oView.getModel("viewModel").setProperty("/ganttSettings/bUtilizationCall", true);
+					this.refreshGantChartData(this._oView.getModel("viewModel"));
 					this._oView.byId("idPlanningGanttChartTable").getSelection().clear(true);
 					this.resetDeferredGroupToChanges(this._oView);
 				}.bind(this));

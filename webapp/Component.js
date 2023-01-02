@@ -70,7 +70,6 @@ sap.ui.define([
 				isPrePlanSelected: false,
 				showStatusButton: false,
 				editMode: true,
-				loadMaster: false,
 				launchMode: Constants.LAUNCH_MODE.BSP,
 				bEnableSave: false,
 				orderListEditMode: false,

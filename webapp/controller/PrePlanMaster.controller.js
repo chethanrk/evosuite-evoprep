@@ -125,7 +125,7 @@ sap.ui.define([
 				this.getModel("viewModel").setProperty("/fullscreenGantt", false);
 				this.getRouter().navTo("PrePlanCompare", {
 					layout: library.LayoutType.MidColumnFullScreen,
-					plans: JSON.stringify(aPlans)
+					plans: window.encodeURIComponent(JSON.stringify(aPlans))
 				});
 			} else {
 				this.showMessageToast(this.getResourceBundle().getText("msg.maxPlanSelectionToCompare"));

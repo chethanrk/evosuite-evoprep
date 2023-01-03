@@ -121,7 +121,7 @@ sap.ui.define([
 		 * pre plan compare page
 		 */
 		_setPrePlanComparePageInfo: function (sRouteName, oArgs) {
-			var aPlans = JSON.parse(oArgs.plans),
+			var aPlans = JSON.parse(window.decodeURIComponent(oArgs.plans)),
 				sViewName = "";
 
 			this.oViewModel.setProperty("/layout", oArgs.layout);

@@ -839,7 +839,7 @@ sap.ui.define([
 		navToDetail: function (sPlanObject) {
 			this.getRouter().navTo("PrePlanDetail", {
 				layout: this._detailPageLayout(),
-				plan: sPlanObject
+				plan:  window.encodeURIComponent(sPlanObject)
 			});
 		},
 

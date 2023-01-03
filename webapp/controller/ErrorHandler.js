@@ -294,7 +294,6 @@
  		 * @private
  		 */
  		_extractError: function (oResponse) {
- 			console.log(oResponse);
  			if (!oResponse) {
  				return this._oResourceBundle.getText("errorText");
  			}

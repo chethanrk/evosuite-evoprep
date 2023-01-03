@@ -160,6 +160,7 @@ sap.ui.define([
 			eventBus.subscribe("TemplateRendererEvoPrep", "changedBinding", this._changedBinding, this);
 			eventBus.subscribe("BaseController", "refreshFullGantt", this._loadGanttData, this);
 			eventBus.subscribe("BaseController", "refreshUtilizationGantt", this._loadUtilizationGantt, this);
+			eventBus.subscribe("RefreshEvoPrepDetailHeader", "refreshDetailHeader", this._refrshDetailHeader, this);
 			eventBus.subscribe("GanttChart", "applyFiltersFromOperations", this._fnFiltersOnGraphic, this);
 
 			//Initializing GanttActions.js
@@ -194,6 +195,7 @@ sap.ui.define([
 			eventBus.unsubscribe("BaseController", "refreshFullGantt", this._loadGanttData, this);
 			eventBus.unsubscribe("BaseController", "refreshUtilizationGantt", this._loadUtilizationGantt, this);
 			eventBus.unsubscribe("GanttChart", "applyFiltersFromOperations", this._fnFiltersOnGraphic, this);
+			eventBus.unsubscribe("RefreshEvoPrepDetailHeader", "refreshDetailHeader", this._refrshDetailHeader, this);
 
 			if (this._actionSheetStatus) {
 				this._actionSheetStatus.destroy(true);
@@ -797,12 +799,8 @@ sap.ui.define([
 			var msg = this.getResourceBundle().getText("msg.saveSuccess");
 			this.showMessageToast(msg);
 
-			this.getOwnerComponent().readData(this._oContext.getPath()).then(function (mResult) {
-				if (mResult) {
-					this._rebindPage();
-					this._setStatusButtonVisibility(mResult);
-				}
-			}.bind(this));
+			this.refreshGantChartData(this.getModel("viewModel"));
+			this.refreshPlanList();
 		},
 		/**
 		 * when view was integrated set additional page parameters
@@ -855,6 +853,8 @@ sap.ui.define([
 		_saveSuccess: function () {
 			var oResourceBundle = this.getResourceBundle();
 			sap.m.MessageBox.success(oResourceBundle.getText("ymsg.saveSuccessPrePlanHeaderEdit"));
+			this.refreshGantChartData(this.getModel("viewModel"));
+			this.refreshPlanList();
 			this._clearData();
 		},
 
@@ -867,8 +867,6 @@ sap.ui.define([
 			this.oViewModel.setProperty("/editMode", true);
 			this.oViewModel.setProperty("/layout", library.LayoutType.TwoColumnsMidExpanded);
 			this.oViewModel.setProperty("/fullscreen", true);
-			this._loadUtilizationGantt();
-			this._loadGanttData();
 			this.oViewModel.setProperty("/bDependencyCall", true);
 			this.oViewModel.setProperty("/ganttSettings/bUtilizationCall", true);
 		},
@@ -1056,6 +1054,13 @@ sap.ui.define([
 				this._setUtilizationGanttFilter(sKey);
 				this.GanttActions._createUtilizationGanttHorizon(this._UtilizationAxisTime, this._oContext, sKey);
 			}
+		},
+
+		/**
+		 * Refresh detail header forcefully
+		 */
+		_refrshDetailHeader: function () {
+			this.getOwnerComponent().readData(this._oContext.getPath());
 		},
 
 		/**

@@ -24,50 +24,52 @@
 			</f:DynamicPageHeader>
 		</f:header>
 		<f:content>
-			<smartTable:SmartTable id="idPagePrePlanSmartTable" placeToolbarInTable="true" height="100%" width="100%" entitySet="PlanHeaderSet"
-				header="{i18n>tit.plan}" smartFilterId="idPagePrePlanSmartFilterBar" tableType="ResponsiveTable" useExportToExcel="true"
-				useVariantManagement="true" useTablePersonalisation="true" showRowCount="true" persistencyKey="com.evorait.evosuite.evoprep.PrePlanTable"
-				enableAutoBinding="false" demandPopin="true" customData:useSmartField="true" customData:useSmartToggle="true" fieldChange="onFieldChange"
-				beforeRebindTable="onBeforeRebindTable" afterVariantInitialise="onInitializedSmartVariant" requestAtLeastFields="NOTES,ObjectKey,FUNCTION">
-				<!-- layout data used to make the table growing but the filter bar fixed -->
-				<smartTable:layoutData>
-					<FlexItemData growFactor="1" baseSize="0%"/>
-				</smartTable:layoutData>
-				<smartTable:customToolbar>
-					<OverflowToolbar class="prePlanListToolbar">
-						<ToolbarSpacer/>
-						<Button type="Ghost" icon="sap-icon://add" id="idBtnCreatePrePlan" tooltip="{i18n>xbut.create}" press="onCreatePrePlanPress"
-							visible="{= ${user>/ENABLE_PREPLAN_CREATE} === 'X'}" enabled="{viewModel>/validateIW32Auth}"/>
-						<Button type="Ghost" icon=" sap-icon://delete" id="idBtnDeletePrePlan" tooltip="{i18n>xbut.delete}" press="onDeletePrePlanPress"
-							enabled="{parts: ['viewModel>/isPrePlanSelected', 'viewModel>/validateIW32Auth'], formatter:'.formatter.enableEditToggleBtn'}"
-							visible="{parts:[{path:'user>/ENABLE_PLAN_DELETE'},{path:'viewModel>/layout'}],formatter:'.formatter.showDeleteMasterList'}"/>
-						<Button type="Ghost" icon="sap-icon://copy" id="idBtnCopyPrePlan" press="onCopyPrePlanPress" visible="{= ${user>/ENABLE_PLAN_COPY} === 'X'}"
-							tooltip="{i18n>xbut.copy}"
-							enabled="{parts: ['viewModel>/bCopyEnabled', 'viewModel>/validateIW32Auth'], formatter:'.formatter.enableEditToggleBtn'}"/>
-						<Button type="Ghost" icon="sap-icon://compare" id="idBtnComaprePrePlan" tooltip="{i18n>xbut.comapre}" press="onPressComapre"
-							visible="{= ${user>/ENABLE_PLAN_COMPARE} === 'X'}" enabled="{viewModel>/validateIW32Auth}"/>
-					</OverflowToolbar>
-					<core:ExtensionPoint name="TableExtP|PrePlanMaster|PlanHeaderSet|CustomToolbar"/>
-				</smartTable:customToolbar>
-				<Table id="idPageMasterPageSmartTableTable" growing="true" mode="MultiSelect" sticky="ColumnHeaders,HeaderToolbar"
-					selectionChange="onWPrePlanListSelectionChange">
-					<columns>
-						<core:ExtensionPoint name="TableExtP|PrePlanMaster|PlanHeaderSet|CustomColumn"/>
-						<Column width="6rem">
-							<customData>
-								<core:CustomData key="p13nData" value='\{"columnKey": "NOTES", "columnIndex":"6"}'/>
-							</customData>
-							<Text text="{i18n>tit.showLongText}"></Text>
-						</Column>
-					</columns>
-					<ColumnListItem type="Navigation" press="onClickTableRow">
-						<cells>
-							<core:ExtensionPoint name="TableExtP|PrePlanMaster|PlanHeaderSet|CustomCell"/>
-							<Button icon="sap-icon://show-edit" type="Default" press="showLongText" visible="{= ${NOTES} !== '' }"/>
-						</cells>
-					</ColumnListItem>
-				</Table>
-			</smartTable:SmartTable>
+			<ScrollContainer height="100%" width="100%" vertical="true">
+				<smartTable:SmartTable id="idPagePrePlanSmartTable" placeToolbarInTable="true" height="100%" width="100%" entitySet="PlanHeaderSet"
+					header="{i18n>tit.plan}" smartFilterId="idPagePrePlanSmartFilterBar" tableType="ResponsiveTable" useExportToExcel="true"
+					useVariantManagement="true" useTablePersonalisation="true" showRowCount="true" persistencyKey="com.evorait.evosuite.evoprep.PrePlanTable"
+					enableAutoBinding="true" demandPopin="true" customData:useSmartField="true" customData:useSmartToggle="true" fieldChange="onFieldChange"
+					beforeRebindTable="onBeforeRebindTable" afterVariantInitialise="onInitializedSmartVariant" requestAtLeastFields="NOTES,ObjectKey,FUNCTION">
+					<!-- layout data used to make the table growing but the filter bar fixed -->
+					<smartTable:layoutData>
+						<FlexItemData growFactor="1" baseSize="0%"/>
+					</smartTable:layoutData>
+					<smartTable:customToolbar>
+						<OverflowToolbar class="prePlanListToolbar">
+							<ToolbarSpacer/>
+							<Button type="Ghost" icon="sap-icon://add" id="idBtnCreatePrePlan" tooltip="{i18n>xbut.create}" press="onCreatePrePlanPress"
+								visible="{= ${user>/ENABLE_PREPLAN_CREATE} === 'X'}" enabled="{viewModel>/validateIW32Auth}"/>
+							<Button type="Ghost" icon=" sap-icon://delete" id="idBtnDeletePrePlan" tooltip="{i18n>xbut.delete}" press="onDeletePrePlanPress"
+								enabled="{parts: ['viewModel>/isPrePlanSelected', 'viewModel>/validateIW32Auth'], formatter:'.formatter.enableEditToggleBtn'}"
+								visible="{parts:[{path:'user>/ENABLE_PLAN_DELETE'},{path:'viewModel>/layout'}],formatter:'.formatter.showDeleteMasterList'}"/>
+							<Button type="Ghost" icon="sap-icon://copy" id="idBtnCopyPrePlan" press="onCopyPrePlanPress" visible="{= ${user>/ENABLE_PLAN_COPY} === 'X'}"
+								tooltip="{i18n>xbut.copy}"
+								enabled="{parts: ['viewModel>/bCopyEnabled', 'viewModel>/validateIW32Auth'], formatter:'.formatter.enableEditToggleBtn'}"/>
+							<Button type="Ghost" icon="sap-icon://compare" id="idBtnComaprePrePlan" tooltip="{i18n>xbut.comapre}" press="onPressComapre"
+								visible="{= ${user>/ENABLE_PLAN_COMPARE} === 'X'}" enabled="{viewModel>/validateIW32Auth}"/>
+						</OverflowToolbar>
+						<core:ExtensionPoint name="TableExtP|PrePlanMaster|PlanHeaderSet|CustomToolbar"/>
+					</smartTable:customToolbar>
+					<Table id="idPageMasterPageSmartTableTable" growing="true" mode="MultiSelect" sticky="ColumnHeaders,HeaderToolbar"
+						selectionChange="onWPrePlanListSelectionChange">
+						<columns>
+							<core:ExtensionPoint name="TableExtP|PrePlanMaster|PlanHeaderSet|CustomColumn"/>
+							<Column width="6rem">
+								<customData>
+									<core:CustomData key="p13nData" value='\{"columnKey": "NOTES", "columnIndex":"6"}'/>
+								</customData>
+								<Text text="{i18n>tit.showLongText}"></Text>
+							</Column>
+						</columns>
+						<ColumnListItem type="Navigation" press="onClickTableRow">
+							<cells>
+								<core:ExtensionPoint name="TableExtP|PrePlanMaster|PlanHeaderSet|CustomCell"/>
+								<Button icon="sap-icon://show-edit" type="Default" press="showLongText" visible="{= ${NOTES} !== '' }"/>
+							</cells>
+						</ColumnListItem>
+					</Table>
+				</smartTable:SmartTable>
+			</ScrollContainer>
 		</f:content>
 	</f:DynamicPage>
 </mvc:View>

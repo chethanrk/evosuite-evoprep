@@ -236,6 +236,11 @@ sap.ui.define([
 					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
+				refreshPlanList: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				}
 			}
 		},
 
@@ -374,6 +379,7 @@ sap.ui.define([
 				oModel = this.getModel("viewModel");
 			oModel.setProperty("/layout", library.LayoutType.OneColumn);
 			oRouter.navTo("PrePlanMaster", {}, true);
+			this.refreshPlanList();
 		},
 
 		/**
@@ -833,7 +839,7 @@ sap.ui.define([
 		navToDetail: function (sPlanObject) {
 			this.getRouter().navTo("PrePlanDetail", {
 				layout: this._detailPageLayout(),
-				plan: sPlanObject
+				plan:  window.encodeURIComponent(sPlanObject)
 			});
 		},
 
@@ -1058,18 +1064,16 @@ sap.ui.define([
 		},
 		/**
 		 * Used to refresh gantt chart related data
-		 * @param oModel - viewModel instance, its a non mandatory param 
+		 * @param oModel - viewModel instance
 		 */
-		refreshGantChartData: function (oModel) {
+		refreshGantChartData: function (oViewModel) {
 			var oEventBus = sap.ui.getCore().getEventBus();
-			var oViewModel;
+
 			oEventBus.publish("BaseController", "refreshFullGantt");
 			oEventBus.publish("BaseController", "refreshUtilizationGantt");
-			if (oModel) {
-				oViewModel = oModel;
-			} else {
-				oViewModel = this.getModel("viewModel");
-			}
+			oEventBus.publish("RefreshEvoPrepDetailHeader", "refreshDetailHeader");
+			oEventBus.publish("RefreshEvoPrepDetailOPerationTable", "detailoperationrefresh");
+
 			oViewModel.setProperty("/bDependencyCall", true);
 			oViewModel.setProperty("/ganttSettings/bUtilizationCall", true);
 		},
@@ -1164,6 +1168,15 @@ sap.ui.define([
 			} else {
 				this._oLongTextPopOver.openBy(oSource);
 			}
+		},
+
+		/**
+		 * Refresh plan list forcefully
+		 * Trigger event bus
+		 */
+		refreshPlanList: function () {
+			var eventBus = sap.ui.getCore().getEventBus();
+			eventBus.publish("RefreshEvoPrepPlanList", "planlistrefresh");
 		},
 
 		/* =========================================================== */

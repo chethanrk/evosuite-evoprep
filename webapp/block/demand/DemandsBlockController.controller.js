@@ -76,8 +76,12 @@ sap.ui.define([
 		 */
 		onInit: function () {
 			OperationTableController.prototype.onInit.apply(this, arguments);
+			var eventBus = sap.ui.getCore().getEventBus();
 			this.oSmartTable = this.getView().byId("idDemandBlockSmartTable");
 			this.oTable = this.oSmartTable.getTable();
+
+			//refresh detail page operation list
+			eventBus.subscribe("RefreshEvoPrepDetailOPerationTable", "detailoperationrefresh", this._refreshDetailOperationTable, this);
 		},
 
 		/**
@@ -86,7 +90,9 @@ sap.ui.define([
 		 * @memberOf com.evorait.evosuite.evoprep.block.demand.DemandsBlocks
 		 */
 		onExit: function () {
+			var eventBus = sap.ui.getCore().getEventBus();
 			this.destroyOperationListFragment();
+			eventBus.unsubscribe("RefreshEvoPrepDetailOPerationTable", "detailoperationrefresh", this._refreshDetailOperationTable, this);
 		},
 
 		/* =========================================================== */
@@ -142,7 +148,7 @@ sap.ui.define([
 				this.saveChangesMain({
 					state: "success",
 					isCreate: false
-				}, this._afterSuccess.bind(this), this._afterError.bind(this), this._oSmartTable);
+				}, this._afterSuccess.bind(this), this._afterError.bind(this), this.getView());
 			}
 		},
 
@@ -304,13 +310,19 @@ sap.ui.define([
 		/* =========================================================== */
 
 		/**
+		 * Refresh detail page operation table forcefully
+		 */
+		_refreshDetailOperationTable: function () {
+			this.oSmartTable.rebindTable();
+		},
+
+		/**
 		 * After operation edit success callback
 		 */
 		_afterSuccess: function () {
 			this.showMessageToast(this.getResourceBundle().getText("msg.saveSuccess"));
-			this.getModel().refresh();
 			this.resetDeferredGroupToChanges(this.getView());
-			this.refreshGantChartData();
+			this.refreshGantChartData(this.getModel("viewModel"));
 		},
 
 		/**

@@ -339,6 +339,20 @@
  		_showInformationMsg: function (oDetails) {
  			var newMSg = JSON.parse(oDetails.response.headers["sap-message"]).message;
  			this._addInformationMessageToMessageManager(newMSg);
+ 			/* here we are checking if the responce from the backend has details and if there are any messages in the details array
+ 			we are showing them in the message bar in top right.*/
+ 			if (JSON.parse(oDetails.response.headers["sap-message"]).hasOwnProperty("details")) {
+ 				var aDetails = JSON.parse(oDetails.response.headers["sap-message"])["details"];
+ 				if (Array.isArray(aDetails)) {
+ 					if (aDetails.length > 0) {
+ 						for (var x = 0; x < aDetails.length; x++) {
+ 							if (aDetails[x].hasOwnProperty("message")) {
+ 								this._addInformationMessageToMessageManager((aDetails[x]["message"]));
+ 							}
+ 						}
+ 					}
+ 				}
+ 			}
  		}
  	});
  });

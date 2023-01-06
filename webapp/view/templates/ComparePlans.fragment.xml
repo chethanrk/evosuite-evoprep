@@ -35,7 +35,7 @@
 													<template:if
 														test="{:= ${parts: [{value:'UtilizationTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameMatch'} }">
 														<template:then>
-															<Table growing="true" items="{path:'compareModel>PlanCmprGeneralToPlanCmprWorkCenter/results',templateShareable: true}"
+															<Table growing="false" items="{path:'compareModel>PlanCmprGeneralToPlanCmprWorkCenter/results',templateShareable: true}"
 																headerText="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}">
 																<columns>
 																	<Column demandPopin="true" hAlign="Center">
@@ -59,7 +59,7 @@
 														</template:then>
 														<template:elseif
 															test="{:= ${parts: [{value:'DurationTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameMatch'} }">
-															<Table growing="true" items="{path:'compareModel>PlanCmprGeneralToPlanCmprOperation/results',templateShareable: true}"
+															<Table growing="false" items="{path:'compareModel>PlanCmprGeneralToPlanCmprOperation/results',templateShareable: true}"
 																headerText="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}">
 																<columns>
 																	<Column demandPopin="true" hAlign="Center">

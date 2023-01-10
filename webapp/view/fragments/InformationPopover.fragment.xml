@@ -8,8 +8,6 @@
 					<form:content>
 						<Label text="{i18n>xfld.username}"></Label>
 						<Text text="{user>/FULLNAME} ({user>/Username})"></Text>
-						<Label text="{/#SystemInformationSet/USER_PROFILE/@sap:label}"></Label>
-						<Text text="{user>/USER_PROFILE}"></Text>
 						<Label text="{i18n>xfld.evoprepVersion}"></Label>
 						<Text text="{InformationModel>/appVersion}"></Text>
 						<Label text="{i18n>xfld.coreVersion}"></Label>
@@ -24,6 +22,8 @@
 						<Text text="{user>/SYSTEMID}"></Text>
 						<Label text="{/#SystemInformationSet/CLIENT/@sap:label}"></Label>
 						<Text text="{user>/CLIENT}"></Text>
+						<Label text="{/#SystemInformationSet/USER_PROFILE/@sap:label}"></Label>
+						<Text text="{user>/USER_PROFILE}"></Text>
 					</form:content>
 				</form:SimpleForm>
 			</core:ExtensionPoint>

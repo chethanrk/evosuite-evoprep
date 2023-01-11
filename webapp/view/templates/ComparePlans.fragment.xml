@@ -47,9 +47,7 @@
 																		<cells>
 																			<FlexBox justifyContent="Center">
 																				<Title text="{compareModel>UTILIZATION}" visible="{= ${compareModel>MODE} === ''? true:false}" titleStyle="H6"/>
-																				<core:HTML
-																					content='&lt;span style=&quot;color:{compareModel>COLOR}&quot; class=&quot;content&quot;&gt;&lt;text&gt;{compareModel>UTILIZATION}&lt;/text&gt; &lt;/span&gt;'
-																					visible="{= ${compareModel>MODE} === ''? false:true}"/>
+																				<FormattedText visible="{= ${compareModel>MODE} === ''? false:true}" htmlText="&lt;span style=&quot;color:{compareModel>COLOR}&quot; class=&quot;content&quot;&gt;&lt;text&gt;{compareModel>UTILIZATION}&lt;/text&gt; &lt;/span&gt;"/>
 																				<Text text="-" visible="{= ${compareModel>UTILIZATION} === ''}"/>
 																			</FlexBox>
 																		</cells>

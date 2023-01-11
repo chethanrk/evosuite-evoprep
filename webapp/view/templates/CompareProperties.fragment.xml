@@ -72,16 +72,12 @@
 																</headerToolbar>
 																<columns>
 																	<template:repeat list="{path:'tempProps>/WorkcenterConfigs/lineItems'}" var="lineItem">
-																		<Column demandPopin="true">
+																		<Column demandPopin="true" hAlign="Center">
 																			<Text
 																				text="{:= '{/' + ${tempProps>/WorkcenterConfigs/entitySet} + '/' + ${lineItem>Value/Path} + '/##com.sap.vocabularies.Common.v1.Label/String}' }"
 																				wrapping="false"/>
 																		</Column>
 																	</template:repeat>
-																	<Column demandPopin="true" hAlign="Center">
-																		<Text text="{:= '{/' + ${tempProps>/WorkcenterConfigs/entitySet} + '/' + 'MODE' + '/##com.sap.vocabularies.Common.v1.Label/String}' }"
-																			wrapping="false"/>
-																	</Column>
 																</columns>
 																<items>
 																	<ColumnListItem>
@@ -93,10 +89,10 @@
 																					</template:then>
 																					<template:else>
 																						<Text text="{= '{compareModel>' + ${path : 'lineItem>Value/Path'} + '}' }" wrapping="false" visible="{= ${compareModel>MODE} === ''}"/>
+																						<Text text="{compareModel>MODE}" visible="{= ${compareModel>MODE} !== ''}"/>
 																					</template:else>
 																				</template:if>
 																			</template:repeat>
-																			<Text text="W-{compareModel>MODE}" visible="{= ${compareModel>MODE} !== ''}"/>
 																		</cells>
 																	</ColumnListItem>
 																</items>

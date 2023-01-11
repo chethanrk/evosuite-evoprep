@@ -45,7 +45,7 @@
 							<Button type="Ghost" icon="sap-icon://copy" id="idBtnCopyPrePlan" press="onCopyPrePlanPress" visible="{= ${user>/ENABLE_PLAN_COPY} === 'X'}"
 								tooltip="{i18n>xbut.copy}"
 								enabled="{parts: ['viewModel>/bCopyEnabled', 'viewModel>/validateIW32Auth'], formatter:'.formatter.enableEditToggleBtn'}"/>
-							<Button type="Ghost" icon="sap-icon://compare" id="idBtnComaprePrePlan" tooltip="{i18n>xbut.comapre}" press="onPressComapre"
+							<Button type="Ghost" icon="sap-icon://compare" id="idBtnComaprePrePlan" tooltip="{i18n>xbut.compare}" press="onPressComapre"
 								visible="{= ${user>/ENABLE_PLAN_COMPARE} === 'X'}" enabled="{viewModel>/validateIW32Auth}"/>
 						</OverflowToolbar>
 						<core:ExtensionPoint name="TableExtP|PrePlanMaster|PlanHeaderSet|CustomToolbar"/>

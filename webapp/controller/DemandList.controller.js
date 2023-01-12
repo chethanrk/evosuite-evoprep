@@ -206,6 +206,11 @@ sap.ui.define([
 				} else {
 					this.oViewModel.setProperty("/bOperationReprocess", false);
 				}
+				if (this._returnPropertyContext(this.oTable, "ALLOW_EDIT").length > 0) {
+					this.oViewModel.setProperty("/allowPrePlanCreate", true);
+				} else {
+					this.oViewModel.setProperty("/allowPrePlanCreate", false);
+				}
 			}
 
 			//handle messageToast for select all using table checkbox
@@ -228,7 +233,20 @@ sap.ui.define([
 			var oTable = this.oTable,
 				aSelectedIndices = oTable.getSelectedIndices(),
 				oOperationData = this.oCreateModel.getData(),
-				aAllOperationsSelected = [];
+				aAllOperationsSelected = [],
+				iTotalSelections,
+				aSelectedContext = this._returnPropertyContext(oTable, "ALLOW_EDIT");
+			/*	check and validate if all the operations are selected
+				not in the final status;*/
+			if (oTable.getAggregation("items")) {
+				iTotalSelections = oTable.getSelectedItems();
+			} else {
+				iTotalSelections = oTable.getSelectedIndices();
+			}
+			if (iTotalSelections.length !== aSelectedContext.length) {
+				this.showMessageToast(this.getResourceBundle().getText("msg.operationFinalValidation"));
+				return;
+			}
 			//When Select All Button is Clicked
 			if (this.bSelectAll && aSelectedIndices.length > 100) {
 				aAllOperationsSelected = this.aAllOperations;

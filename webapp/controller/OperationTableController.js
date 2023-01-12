@@ -376,44 +376,6 @@ sap.ui.define([
 		/* Internal methods                                            */
 		/* =========================================================== */
 
-		/** Method to get the context of selected items in the 
-		 * demands table which has component_exist true for 
-		 * checking the material information
-		 * This method is used in the DemandsBlock and DemandsList Views
-		 * @param oTable {object} table instance
-		 * @param sProperty {string} property name to be validate
-		 * @return aArrayPropertyContext {array}
-		 */
-		_returnPropertyContext: function (oTable, sProperty) {
-			var aSelectections, aContext, sDemandPath, bPropertyExist, aArrayPropertyContext = [];
-			if (oTable.getAggregation("items")) {
-				aSelectections = oTable.getSelectedItems();
-				for (var i = 0; i < aSelectections.length; i++) {
-					aContext = aSelectections[i].getBindingContext();
-					if (aContext) {
-						sDemandPath = aContext.getPath();
-						bPropertyExist = this.getModel().getProperty(sDemandPath + "/" + sProperty);
-						if (bPropertyExist) {
-							aArrayPropertyContext.push(aContext);
-						}
-					}
-				}
-			} else {
-				aSelectections = this.oTable.getSelectedIndices();
-				for (var j = 0; j < aSelectections.length; j++) {
-					aContext = this.oTable.getContextByIndex(aSelectections[j]);
-					if (aContext) {
-						sDemandPath = aContext.getPath();
-						bPropertyExist = this.getModel().getProperty(sDemandPath + "/" + sProperty);
-						if (bPropertyExist) {
-							aArrayPropertyContext.push(aContext);
-						}
-					}
-				}
-			}
-			return aArrayPropertyContext;
-		},
-
 		/**
 		 * Validate finalise and material button enable state
 		 */

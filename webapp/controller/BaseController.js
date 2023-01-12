@@ -839,7 +839,7 @@ sap.ui.define([
 		navToDetail: function (sPlanObject) {
 			this.getRouter().navTo("PrePlanDetail", {
 				layout: this._detailPageLayout(),
-				plan:  window.encodeURIComponent(sPlanObject)
+				plan: window.encodeURIComponent(sPlanObject)
 			});
 		},
 
@@ -1407,6 +1407,60 @@ sap.ui.define([
 				sLayout = library.LayoutType.MidColumnFullScreen;
 			}
 			return sLayout;
+		},
+		/** Method to get the context of selected items in the 
+		 * table which based on the odata property
+		 * @param oTable {object} table instance
+		 * @param sProperty {string} property name to be validate
+		 * @return aArrayPropertyContext {array}
+		 */
+		_returnPropertyContext: function (oTable, sProperty) {
+			var aSelectections, aContext, sDemandPath, bPropertyExist, aArrayPropertyContext = [];
+			if (oTable.getAggregation("items")) {
+				aSelectections = oTable.getSelectedItems();
+				for (var i = 0; i < aSelectections.length; i++) {
+					aContext = aSelectections[i].getBindingContext();
+					if (aContext) {
+						sDemandPath = aContext.getPath();
+						bPropertyExist = this.getModel().getProperty(sDemandPath + "/" + sProperty);
+						if (bPropertyExist) {
+							aArrayPropertyContext.push(aContext);
+						}
+					}
+				}
+			} else {
+				aSelectections = this.oTable.getSelectedIndices();
+				for (var j = 0; j < aSelectections.length; j++) {
+					aContext = this.oTable.getContextByIndex(aSelectections[j]);
+					if (aContext) {
+						sDemandPath = aContext.getPath();
+						bPropertyExist = this.getModel().getProperty(sDemandPath + "/" + sProperty);
+						if (bPropertyExist) {
+							aArrayPropertyContext.push(aContext);
+						}
+					}
+				}
+			}
+			return aArrayPropertyContext;
+		},
+		/** Method to check if any operation exist which has user status
+		 *  finalized
+		 * @param oTable {object} table instance
+		 * @return {boolean}
+		 */
+		_CheckForFinalOpreation: function (oTable) {
+			var iTotalSelections,
+				aSelectedContext = this._returnPropertyContext(oTable, "ALLOW_EDIT");
+			if (oTable.getAggregation("items")) {
+				iTotalSelections = oTable.getSelectedItems();
+			} else {
+				iTotalSelections = oTable.getSelectedIndices();
+			}
+			if (iTotalSelections.length !== aSelectedContext.length) {
+				this.showMessageToast(this.getResourceBundle().getText("msg.operationFinalValidation"));
+				return false;
+			}
+			return true;
 		}
 
 	});

@@ -113,6 +113,9 @@ sap.ui.define([
 				this.showMessageToast(this.getResourceBundle().getText("msg.selectAtleast"));
 				return;
 			}
+			if (!this._CheckForFinalOpreation(oTable)) {
+				return;
+			}
 			//When All the Operations are Selected
 			if (this.bOperationSelectAll) {
 				aSelectedItems = this.aOprFrgAllOperations;

@@ -233,18 +233,10 @@ sap.ui.define([
 			var oTable = this.oTable,
 				aSelectedIndices = oTable.getSelectedIndices(),
 				oOperationData = this.oCreateModel.getData(),
-				aAllOperationsSelected = [],
-				iTotalSelections,
-				aSelectedContext = this._returnPropertyContext(oTable, "ALLOW_EDIT");
+				aAllOperationsSelected = [];
 			/*	check and validate if all the operations are selected
 				not in the final status;*/
-			if (oTable.getAggregation("items")) {
-				iTotalSelections = oTable.getSelectedItems();
-			} else {
-				iTotalSelections = oTable.getSelectedIndices();
-			}
-			if (iTotalSelections.length !== aSelectedContext.length) {
-				this.showMessageToast(this.getResourceBundle().getText("msg.operationFinalValidation"));
+			if (!this._CheckForFinalOpreation(oTable)) {
 				return;
 			}
 			//When Select All Button is Clicked

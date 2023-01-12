@@ -206,11 +206,6 @@ sap.ui.define([
 				} else {
 					this.oViewModel.setProperty("/bOperationReprocess", false);
 				}
-				if (this._returnPropertyContext(this.oTable, "ALLOW_EDIT").length > 0) {
-					this.oViewModel.setProperty("/allowPrePlanCreate", true);
-				} else {
-					this.oViewModel.setProperty("/allowPrePlanCreate", false);
-				}
 			}
 
 			//handle messageToast for select all using table checkbox

@@ -13,6 +13,8 @@
 						<uxap:ObjectPageHeader objectTitle="{PLAN_NAME}" objectSubtitle="{PLAN_ID}"
 							visible="{= ${viewModel>/ganttFullMode} &amp;&amp; ${viewModel>/ganttUtilizationFullMode}}">
 							<uxap:actions>
+									<uxap:ObjectPageHeaderActionButton id="idBtnHdrReload" hideText="true" type="Default" icon="sap-icon://synchronize" tooltip="{i18n>xbut.sync}"
+									 press="onPressHeaderReload"/>
 								<uxap:ObjectPageHeaderActionButton id="idStatusEdit" hideText="true" type="Default" icon="sap-icon://edit" tooltip="{i18n>xbut.edit}"
 									visible="{parts: [{path:'user>/ENABLE_PREPLAN_UPDATE'},{path:'viewModel>/editMode'}, {path:'ALLOW_FINAL'} ], formatter:'.formatter.showDetailStatusEdit'}"
 									enabled="{viewModel>/validateIW32Auth}" press="onPressHeaderEdit"/>

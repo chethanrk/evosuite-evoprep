@@ -1116,6 +1116,7 @@ sap.ui.define([
 				this._UtilizationSelectView.setSelectedKey(this.getModel("user").getProperty("/DEFAULT_VIEW_MODE"));
 			}
 			this.getView().byId("idCalculateUtilization").setState(false);
+			this._axisTime.setZoomLevel(6);
 		},
 
 		_fnFiltersOnGraphic: function (sChannel, sEvent, oData) {

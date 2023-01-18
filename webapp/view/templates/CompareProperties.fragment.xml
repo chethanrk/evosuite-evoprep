@@ -49,8 +49,7 @@
 													<template:if
 														test="{:= ${parts: [{value:'UtilizationTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameMatch'} }">
 														<template:then>
-															<Table growing="false"
-																items="{path:'compareModel>PlanCmprGeneralToPlanCmprWorkCenter/results',templateShareable: true}"
+															<Table growing="false" items="{path:'compareModel>PlanCmprGeneralToPlanCmprWorkCenter/results',templateShareable: true}"
 																headerText="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}">
 																<headerToolbar>
 																	<OverflowToolbar>
@@ -87,9 +86,11 @@
 																					<template:then>
 																						<Text text="{path:'lineItem>Value/Path', formatter:'.evoAH.getOperationDate'}" wrapping="false"/>
 																					</template:then>
+																					<template:elseif test="{:= ${path: 'lineItem>Value/Path'} === 'MODE'}">
+																						<Text text="{compareModel>MODE}"/>
+																					</template:elseif>
 																					<template:else>
 																						<Text text="{= '{compareModel>' + ${path : 'lineItem>Value/Path'} + '}' }" wrapping="false" visible="{= ${compareModel>MODE} === ''}"/>
-																						<Text text="{compareModel>MODE}" visible="{= ${compareModel>MODE} !== ''}"/>
 																					</template:else>
 																				</template:if>
 																			</template:repeat>
@@ -100,8 +101,7 @@
 														</template:then>
 														<template:elseif
 															test="{:= ${parts: [{value:'DurationTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameMatch'} }">
-															<Table growing="false"
-																items="{path:'compareModel>PlanCmprGeneralToPlanCmprOperation/results',templateShareable: true}"
+															<Table growing="false" items="{path:'compareModel>PlanCmprGeneralToPlanCmprOperation/results',templateShareable: true}"
 																headerText="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}">
 																<columns>
 																	<template:repeat list="{path:'tempProps>/OperationConfigs/lineItems'}" var="lineItem">

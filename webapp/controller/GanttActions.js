@@ -95,6 +95,7 @@ sap.ui.define([
 		 */
 		_createGanttHorizon: function (oAxisTimeStrategy, oContext, oDateRange) {
 			var sPath = oContext.getPath(),
+				iZoomLevel = oAxisTimeStrategy.getZoomLevel(),
 				oHorizonDates;
 			if (oAxisTimeStrategy) {
 				oHorizonDates = this._getHorizonDates(sPath, oDateRange);
@@ -106,7 +107,7 @@ sap.ui.define([
 					startTime: oHorizonDates.visibleHorizon.startDate,
 					endTime: oHorizonDates.visibleHorizon.endDate
 				}));
-				oAxisTimeStrategy.setZoomLevel(6);
+				oAxisTimeStrategy.setZoomLevel(iZoomLevel);
 			}
 		},
 

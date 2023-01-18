@@ -27,10 +27,10 @@
 				<Button icon="sap-icon://complete" tooltip="{i18n>btn.finalize}" press="onFinalizeBtnPress"
 					visible="{= ${user>/ENABLE_PLAN_OPRN_FINAL} === 'X'}"
 					enabled="{parts: ['viewModel>/bEnableFinalizeBtn', 'viewModel>/validateIW32Auth'], formatter:'.formatter.enableEditToggleBtn'}"/>
-				<Button icon="sap-icon://synchronize" enabled="{viewModel>/bMaterialsDemandsBlock}" text="{i18n>btn.materialStatus}"
-					tooltip="{i18n>btn.materialStatus}" visible="{user>/ENABLE_MATERIAL_AVAILABILITY}" press="onMaterialStatusPress"/>
-				<Button text="{i18n>btn.materialInfoButton}" tooltip="{i18n>btn.materialInfoButton}" icon="sap-icon://message-information"
-					press="onMaterialInfoButtonPress" enabled="{viewModel>/bMaterialsDemandsBlock}" visible="{user>/ENABLE_MATERIAL_AVAILABILITY}"></Button>
+				<Button icon="sap-icon://synchronize" enabled="{viewModel>/bMaterialsDemandsBlock}" tooltip="{i18n>btn.materialStatus}"
+					visible="{user>/ENABLE_MATERIAL_AVAILABILITY}" press="onMaterialStatusPress"/>
+				<Button tooltip="{i18n>btn.materialInfoButton}" icon="sap-icon://message-information" press="onMaterialInfoButtonPress"
+					enabled="{viewModel>/bMaterialsDemandsBlock}" visible="{user>/ENABLE_MATERIAL_AVAILABILITY}"></Button>
 				<core:ExtensionPoint name="TableExtP|PrePlanDetail|PlanItemsSet|CustomToolbar"/>
 			</Toolbar>
 		</smartTable:customToolbar>

@@ -139,6 +139,11 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
+				},
+				onPressHeaderReload: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
@@ -680,6 +685,14 @@ sap.ui.define([
 			oViewModel.setProperty("/filtersExist", false);
 		},
 
+		/**
+		 * onPress Plan Detail Header Refresh Button 
+		 * Plan Detail page is refreshed
+		 */
+		onPressHeaderReload: function () {
+			this.refreshGantChartData(this.oViewModel);
+			this.resetDeferredGroupToChanges(this.getView());
+		},
 		/* =========================================================== */
 		/* public methods                                              */
 		/* =========================================================== */

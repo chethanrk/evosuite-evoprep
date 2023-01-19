@@ -63,12 +63,11 @@
 						<Button icon="sap-icon://complete" tooltip="{i18n>btn.finalize}" press="onFinalizeBtnPress"
 							enabled="{parts: ['viewModel>/bEnableFinalizeBtn', 'viewModel>/validateIW32Auth'], formatter:'.formatter.enableEditToggleBtn'}"
 							visible="{= ${user>/ENABLE_ITEM_FINAL} === 'X'}"/>
-						<Button icon="sap-icon://synchronize" enabled="{viewModel>/bMaterialsDemandsBlock}" text="{i18n>btn.materialStatus}"
-							tooltip="{i18n>btn.materialStatus}" visible="{user>/ENABLE_MATERIAL_AVAILABILITY}" press="onMaterialStatusPress"/>
-						<Button text="{i18n>btn.materialInfoButton}" tooltip="{i18n>btn.materialInfoButton}" icon="sap-icon://message-information"
-							press="onMaterialInfoButtonPress" enabled="{viewModel>/bMaterialsDemandsBlock}" visible="{user>/ENABLE_MATERIAL_AVAILABILITY}"></Button>
-						<Button text="{i18n>btn.Reprocess}" tooltip="{i18n>btn.Reprocess}" press="onReprocessBtnPressed" enabled="{viewModel>/bOperationReprocess}"
-							icon="sap-icon://repost"></Button>
+						<Button icon="sap-icon://synchronize" enabled="{viewModel>/bMaterialsDemandsBlock}" tooltip="{i18n>btn.materialStatus}"
+							visible="{user>/ENABLE_MATERIAL_AVAILABILITY}" press="onMaterialStatusPress"/>
+						<Button tooltip="{i18n>btn.materialInfoButton}" icon="sap-icon://message-information" press="onMaterialInfoButtonPress"
+							enabled="{viewModel>/bMaterialsDemandsBlock}" visible="{user>/ENABLE_MATERIAL_AVAILABILITY}"></Button>
+						<Button tooltip="{i18n>btn.Reprocess}" press="onReprocessBtnPressed" enabled="{viewModel>/bOperationReprocess}" icon="sap-icon://repost"></Button>
 						<core:ExtensionPoint name="TableExtP|DemandList|PlanItemsSet|CustomToolbar"/>
 					</Toolbar>
 				</smartTable:customToolbar>
@@ -101,8 +100,7 @@
 									value='\{"columnKey": "ALLOW_REPROCESS", "leadingProperty":"ALLOW_REPROCESS", "filterProperty":"ALLOW_REPROCESS", "sortProperty":"ALLOW_REPROCESS", "columnIndex":"1"}'/>
 							</table:customData>
 							<table:template>
-								<core:Icon src="{SYNC_ICON}"
-									tooltip="{/PlanItemsSet/ALLOW_REPROCESS/##com.sap.vocabularies.Common.v1.Label/String}"/>
+								<core:Icon src="{SYNC_ICON}" tooltip="{/PlanItemsSet/ALLOW_REPROCESS/##com.sap.vocabularies.Common.v1.Label/String}"/>
 							</table:template>
 						</table:Column>
 						<table:Column hAlign="Center" sortProperty="MATERIAL_STATUS" filterProperty="MATERIAL_STATUS" width="8rem"
@@ -115,8 +113,8 @@
 							</table:customData>
 							<table:template>
 								<HBox>
-									<ObjectStatus class="sapUiTinyMargin" tooltip="{MATERIAL_STATUS_DESC}" text="{MATERIAL_STATUS_DESC}" 
-										icon="{MATERIAL_STATUS_ICON}" state="{path:'MATERIAL_STATUS_STATE',formatter:'.formatter.getDemandState'}"/>
+									<ObjectStatus class="sapUiTinyMargin" tooltip="{MATERIAL_STATUS_DESC}" text="{MATERIAL_STATUS_DESC}" icon="{MATERIAL_STATUS_ICON}"
+										state="{path:'MATERIAL_STATUS_STATE',formatter:'.formatter.getDemandState'}"/>
 								</HBox>
 							</table:template>
 						</table:Column>

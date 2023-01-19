@@ -212,11 +212,9 @@ sap.ui.define([
 			if (!date || date === "") {
 				return "-";
 			}
-			if (!format) {
-				format = "MMM dd, yyyy";
-			}
-			var oDateFormat = DateFormat.getDateTimeInstance({
-				pattern: format
+
+			var oDateFormat = DateFormat.getDateInstance({
+				style: "medium"
 			});
 			return oDateFormat.format(new Date(date));
 		},

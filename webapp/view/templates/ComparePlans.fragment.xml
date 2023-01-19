@@ -39,7 +39,8 @@
 																headerText="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}">
 																<columns>
 																	<Column demandPopin="true" hAlign="Center">
-																		<Text text="{/ComparePlanWorkcenterSet/UTILIZATION/##com.sap.vocabularies.Common.v1.Label/String}"/>
+																		<Text text="{/ComparePlanWorkcenterSet/UTILIZATION/##com.sap.vocabularies.Common.v1.Label/String}"
+																			tooltip="{/ComparePlanWorkcenterSet/UTILIZATION/##com.sap.vocabularies.Common.v1.Label/String}"/>
 																	</Column>
 																</columns>
 																<items>
@@ -47,7 +48,8 @@
 																		<cells>
 																			<FlexBox justifyContent="Center">
 																				<Title text="{compareModel>UTILIZATION}" visible="{= ${compareModel>MODE} === ''? true:false}" titleStyle="H6"/>
-																				<FormattedText visible="{= ${compareModel>MODE} === ''? false:true}" htmlText="&lt;span style=&quot;color:{compareModel>COLOR}&quot; class=&quot;content&quot;&gt;&lt;text&gt;{compareModel>UTILIZATION}&lt;/text&gt; &lt;/span&gt;"/>
+																				<FormattedText visible="{= ${compareModel>MODE} === ''? false:true}"
+																					htmlText="&lt;span style=&quot;color:{compareModel>COLOR}&quot; class=&quot;content&quot;&gt;&lt;text&gt;{compareModel>UTILIZATION}&lt;/text&gt; &lt;/span&gt;"/>
 																				<Text text="-" visible="{= ${compareModel>UTILIZATION} === ''}"/>
 																			</FlexBox>
 																		</cells>
@@ -61,13 +63,14 @@
 																headerText="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}">
 																<columns>
 																	<Column demandPopin="true" hAlign="Center">
-																		<Text text="{/ComparePlanOperationSet/SUM_OPR_DURATION/##com.sap.vocabularies.Common.v1.Label/String}"/>
+																		<Text text="{/ComparePlanOperationSet/SUM_OPR_DURATION/##com.sap.vocabularies.Common.v1.Label/String}"
+																			tooltip="{/ComparePlanOperationSet/SUM_OPR_DURATION/##com.sap.vocabularies.Common.v1.Label/String}"/>
 																	</Column>
 																</columns>
 																<items>
 																	<ColumnListItem>
 																		<cells>
-																			<Text text="{compareModel>SUM_OPR_DURATION}"/>
+																			<Text text=" {compareModel>SUM_OPR_DURATION}"/>
 																		</cells>
 																	</ColumnListItem>
 																</items>

@@ -30,6 +30,7 @@
 																				<FlexItemData growFactor="1" shrinkFactor="0"/>
 																			</layoutData>
 																			<Text text="{:= '{/' + 'ComparePlanGeneralSet' + '/' + ${path : 'data>Value/Path'} + '/##com.sap.vocabularies.Common.v1.Label/String}' }"
+																				tooltip="{:= '{/' + 'ComparePlanGeneralSet' + '/' + ${path : 'data>Value/Path'} + '/##com.sap.vocabularies.Common.v1.Label/String}' }"
 																				wrapping="false"/>
 																		</VBox>
 																	</template:repeat>
@@ -74,6 +75,7 @@
 																		<Column demandPopin="true" hAlign="Center">
 																			<Text
 																				text="{:= '{/' + ${tempProps>/WorkcenterConfigs/entitySet} + '/' + ${lineItem>Value/Path} + '/##com.sap.vocabularies.Common.v1.Label/String}' }"
+																				tooltip="{:= '{/' + ${tempProps>/WorkcenterConfigs/entitySet} + '/' + ${lineItem>Value/Path} + '/##com.sap.vocabularies.Common.v1.Label/String}' }"
 																				wrapping="false"/>
 																		</Column>
 																	</template:repeat>
@@ -87,10 +89,12 @@
 																						<Text text="{path:'lineItem>Value/Path', formatter:'.evoAH.getOperationDate'}" wrapping="false"/>
 																					</template:then>
 																					<template:elseif test="{:= ${path: 'lineItem>Value/Path'} === 'MODE'}">
-																						<Text text="{compareModel>MODE}"/>
+																						<Text text="{= '{compareModel>' + ${path : 'lineItem>Value/Path'} + '}' }"
+																							tooltip="{= '{compareModel>' + ${path : 'lineItem>Value/Path'} + '}' }"/>
 																					</template:elseif>
 																					<template:else>
-																						<Text text="{= '{compareModel>' + ${path : 'lineItem>Value/Path'} + '}' }" wrapping="false" visible="{= ${compareModel>MODE} === ''}"/>
+																						<Text text="{= '{compareModel>' + ${path : 'lineItem>Value/Path'} + '}' }" wrapping="false" visible="{= ${compareModel>MODE} === ''}"
+																							tooltip="{= '{compareModel>' + ${path : 'lineItem>Value/Path'} + '}' }"/>
 																					</template:else>
 																				</template:if>
 																			</template:repeat>
@@ -108,6 +112,7 @@
 																		<Column demandPopin="true">
 																			<Text
 																				text="{:= '{/' + ${tempProps>/OperationConfigs/entitySet} + '/' + ${lineItem>Value/Path} + '/##com.sap.vocabularies.Common.v1.Label/String}' }"
+																				tooltip="{:= '{/' + ${tempProps>/OperationConfigs/entitySet} + '/' + ${lineItem>Value/Path} + '/##com.sap.vocabularies.Common.v1.Label/String}' }"
 																				wrapping="false"/>
 																		</Column>
 																	</template:repeat>
@@ -121,7 +126,8 @@
 																						<Text text="{path:'lineItem>Value/Path', formatter:'.evoAH.getOperationDate'}" wrapping="false"/>
 																					</template:then>
 																					<template:else>
-																						<Text text="{= '{compareModel>' + ${path : 'lineItem>Value/Path'} + '}' }" wrapping="false"/>
+																						<Text text="{= '{compareModel>' + ${path : 'lineItem>Value/Path'} + '}' }"
+																							tooltip="{= '{compareModel>' + ${path : 'lineItem>Value/Path'} + '}' }" wrapping="false"/>
 																					</template:else>
 																				</template:if>
 																			</template:repeat>

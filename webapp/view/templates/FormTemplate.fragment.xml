@@ -18,7 +18,8 @@
 												<template:if test="{:= (${path: 'data>EdmType'} === 'Edm.DateTime' || ${path: 'data>EdmType'} === 'Edm.Date')}">
 													<template:then>
 														<Text wrapping="false"
-															text="{path:'data>Value/Path', formatter:'.evoAH.getCompareDate'} - {path:'data>Core.LongDescription/Path', formatter:'.evoAH.getCompareDate'}"/>
+															text="{path:'data>Value/Path', formatter:'.evoAH.getCompareDate'} - {path:'data>Core.LongDescription/Path', formatter:'.evoAH.getCompareDate'}"
+															tooltip="{path:'data>Value/Path', formatter:'.evoAH.getCompareDate'} - {path:'data>Core.LongDescription/Path', formatter:'.evoAH.getCompareDate'}"/>
 													</template:then>
 													<template:elseif test="{:= (${data>Org.OData.Core.V1.Description/String} === 'Switch' || ${data>Core.Description/String} === 'Switch')}">
 														<tnt:InfoLabel text="{= '{compareModel>' + ${path : 'data>Value/Path'} + '}' }" displayOnly="true" colorScheme="5"/>
@@ -28,8 +29,10 @@
 															<layoutData>
 																<FlexItemData growFactor="1" shrinkFactor="0"/>
 															</layoutData>
-															<Text text="{= '{compareModel>' + ${path : 'data>Value/Path'} + '}' }" wrapping="false"/>
-															<Text text=" ( {= '{compareModel>' + ${path : 'data>Core.LongDescription/Path'} + '}' } ) " wrapping="false"/>
+															<Text text="{= '{compareModel>' + ${path : 'data>Value/Path'} + '}' }" wrapping="false"
+																tooltip="{= '{compareModel>' + ${path : 'data>Value/Path'} + '}' }"/>
+															<Text text=" ( {= '{compareModel>' + ${path : 'data>Core.LongDescription/Path'} + '}' } ) " wrapping="false"
+																tooltip="{= '{compareModel>' + ${path : 'dataCore.LongDescription/Path'} + '}' }"/>
 														</HBox>
 													</template:else>
 												</template:if>

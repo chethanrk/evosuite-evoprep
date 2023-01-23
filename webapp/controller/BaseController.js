@@ -839,7 +839,7 @@ sap.ui.define([
 		navToDetail: function (sPlanObject) {
 			this.getRouter().navTo("PrePlanDetail", {
 				layout: this._detailPageLayout(),
-				plan:  window.encodeURIComponent(sPlanObject)
+				plan: window.encodeURIComponent(sPlanObject)
 			});
 		},
 
@@ -1068,14 +1068,25 @@ sap.ui.define([
 		 */
 		refreshGantChartData: function (oViewModel) {
 			var oEventBus = sap.ui.getCore().getEventBus();
+			//Refreshing General Tab
+			if (oViewModel.getProperty("/refreshDetailTabs/General")) {
+				oEventBus.publish("RefreshEvoPrepDetailHeader", "refreshDetailHeader");
+			}
+			//Refreshing Utilization Tab
+			if (oViewModel.getProperty("/refreshDetailTabs/Capacity")) {
+				oEventBus.publish("BaseController", "refreshUtilizationGantt");
+			}
+			//Refreshing Graphic Planning Tab
+			if (oViewModel.getProperty("/refreshDetailTabs/Planning")) {
+				oEventBus.publish("BaseController", "refreshFullGantt");
+				oViewModel.setProperty("/bDependencyCall", true);
+				oViewModel.setProperty("/ganttSettings/bUtilizationCall", true);
+			}
+			//Refreshing Operations Tab
+			if (oViewModel.getProperty("/refreshDetailTabs/Operations")) {
+				oEventBus.publish("RefreshEvoPrepDetailOPerationTable", "detailoperationrefresh");
+			}
 
-			oEventBus.publish("BaseController", "refreshFullGantt");
-			oEventBus.publish("BaseController", "refreshUtilizationGantt");
-			oEventBus.publish("RefreshEvoPrepDetailHeader", "refreshDetailHeader");
-			oEventBus.publish("RefreshEvoPrepDetailOPerationTable", "detailoperationrefresh");
-
-			oViewModel.setProperty("/bDependencyCall", true);
-			oViewModel.setProperty("/ganttSettings/bUtilizationCall", true);
 		},
 
 		/**

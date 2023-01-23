@@ -104,7 +104,13 @@ sap.ui.define([
 				filtersExist: false,
 				sPopoverLongText: "", //Field for display long text in Popover
 				bLongTextField: "", // To identify whether its Order/Operation Long Text
-				bOperationReprocess: false
+				bOperationReprocess: false,
+				refreshDetailTabs: { //To handle refreshing tabs in detail page based on config
+					General: false,
+					Capacity: false,
+					Planning: false,
+					Operations: false
+				}
 			};
 
 			//GetSystemInformation Call
@@ -145,6 +151,8 @@ sap.ui.define([
 			this.GanttActions = new GanttActions();
 			this.materialInfoDialog = new MaterialInfoDialog();
 			this.materialInfoDialog.init();
+
+			this._getDetailTabsData("PlanHeaderSet");
 		},
 
 		/**
@@ -320,6 +328,39 @@ sap.ui.define([
 			if (bPMAuth) {
 				this.getModel("viewModel").setProperty("/validateIW32Auth", Boolean(bIW32Auth));
 			}
+		},
+
+		/**
+		 * Function to fetch enabled Plan Detail Tabs
+		 * to allow refresh based on config
+		 */
+		_getDetailTabsData: function (sEntitySet) {
+			var oModel = this.getModel();
+
+			//collect all tabs
+			oModel.getMetaModel().loaded().then(function () {
+				var oMetaModel = oModel.getMetaModel(),
+					oEntitySet = oMetaModel.getODataEntitySet(sEntitySet),
+					oEntityType = oMetaModel.getODataEntityType(oEntitySet.entityType),
+					aTabsData = oEntityType["com.sap.vocabularies.UI.v1.Facets#PrePlanDetailTabs"];
+				for (var a in aTabsData) {
+					if (aTabsData[a]["Core.Description"].String === Constants.DETAIL_TABS.TABS.FORM) {
+						//When General Tab is enabled
+						this.getModel("viewModel").setProperty("/refreshDetailTabs/General", true);
+					} else {
+						if (aTabsData[a]["Core.LongDescription"].String === Constants.DETAIL_TABS.CAPACITY) {
+							//When Utilization Tab is enabled
+							this.getModel("viewModel").setProperty("/refreshDetailTabs/Capacity", true);
+						} else if (aTabsData[a]["Core.LongDescription"].String === Constants.DETAIL_TABS.PLANNING) {
+							//When Graphic Planning Tab is enabled
+							this.getModel("viewModel").setProperty("/refreshDetailTabs/Planning", true);
+						} else if (aTabsData[a]["Core.LongDescription"].String === Constants.DETAIL_TABS.OPERATIONS) {
+							//When Operations Tab is enabled
+							this.getModel("viewModel").setProperty("/refreshDetailTabs/Operations", true);
+						}
+					}
+				}
+			}.bind(this));
 		}
 
 	});

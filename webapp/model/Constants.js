@@ -56,6 +56,16 @@ sap.ui.define([], function () {
 		ALLOWED_LINKS: {
 			EVOPLAN: "EVOPLAN",
 			EVOORDER: "EVOORDER"
+		},
+		DETAIL_TABS: {
+			TABS: {
+				FORM: "Form",
+				TABLE: "Table"
+			},
+			GENERAL: "General",
+			CAPACITY: "CapacityTab",
+			PLANNING: "PlanningTab",
+			OPERATIONS: "DemandsTab"
 		}
 	};
 

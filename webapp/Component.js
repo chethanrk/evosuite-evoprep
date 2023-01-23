@@ -335,11 +335,7 @@ sap.ui.define([
 		 * to allow refresh based on config
 		 */
 		_getDetailTabsData: function (sEntitySet) {
-			var bGeneralTab = false,
-				bCapacityTab = false,
-				bPlanningTab = false,
-				bOperationsTab = false,
-				oModel = this.getModel();
+			var oModel = this.getModel();
 
 			//collect all tabs
 			oModel.getMetaModel().loaded().then(function () {
@@ -350,26 +346,21 @@ sap.ui.define([
 				for (var a in aTabsData) {
 					if (aTabsData[a]["Core.Description"].String === Constants.DETAIL_TABS.TABS.FORM) {
 						//When General Tab is enabled
-						bGeneralTab = true;
+						this.getModel("viewModel").setProperty("/refreshDetailTabs/General", true);
 					} else {
 						if (aTabsData[a]["Core.LongDescription"].String === Constants.DETAIL_TABS.CAPACITY) {
 							//When Utilization Tab is enabled
-							bCapacityTab = true;
+							this.getModel("viewModel").setProperty("/refreshDetailTabs/Capacity", true);
 						} else if (aTabsData[a]["Core.LongDescription"].String === Constants.DETAIL_TABS.PLANNING) {
 							//When Graphic Planning Tab is enabled
-							bPlanningTab = true;
+							this.getModel("viewModel").setProperty("/refreshDetailTabs/Planning", true);
 						} else if (aTabsData[a]["Core.LongDescription"].String === Constants.DETAIL_TABS.OPERATIONS) {
 							//When Operations Tab is enabled
-							bOperationsTab = true;
+							this.getModel("viewModel").setProperty("/refreshDetailTabs/Operations", true);
 						}
 					}
 				}
-				this.getModel("viewModel").setProperty("/refreshDetailTabs/General", bGeneralTab);
-				this.getModel("viewModel").setProperty("/refreshDetailTabs/Capacity", bCapacityTab);
-				this.getModel("viewModel").setProperty("/refreshDetailTabs/Planning", bPlanningTab);
-				this.getModel("viewModel").setProperty("/refreshDetailTabs/Operations", bOperationsTab);
 			}.bind(this));
-
 		}
 
 	});

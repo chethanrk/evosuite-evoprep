@@ -1041,9 +1041,9 @@ sap.ui.define([
 				sFinalMessage, {
 					//details: typeof (sFinalMessage) === "string" ? sFinalMessage.replace(/\n/g, "<br/>") : sFinalMessage,
 					styleClass: this.getOwnerComponent().getContentDensityClass(),
-					actions: [MessageBox.Action.OK, MessageBox.Action.NO],
+					actions: [MessageBox.Action.YES, MessageBox.Action.NO],
 					onClose: function (oAction) {
-						if (oAction === "OK") {
+						if (oAction === "YES") {
 							var sPath = this._oContext.getPath();
 							this.getModel().setProperty(sPath + "/FUNCTION", this.sFunctionKey);
 							this.getModel().setProperty(sPath + "/SKIP_ERROR_ENTRY", "X");

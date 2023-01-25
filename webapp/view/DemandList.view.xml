@@ -118,7 +118,8 @@
 								</HBox>
 							</table:template>
 						</table:Column>
-						<table:Column hAlign="Center" sortProperty="NO_OF_NW_KEY" filterProperty="NO_OF_NW_KEY" width="9rem">
+						<table:Column hAlign="Center" sortProperty="NO_OF_NW_KEY" filterProperty="NO_OF_NW_KEY" width="9rem"
+						visible="{user>/ENABLE_NETWORK_KEY}">
 							<Label text="{/PlanItemsSet/NO_OF_NW_KEY/##com.sap.vocabularies.Common.v1.Label/String}"/>
 							<table:customData>
 								<core:CustomData key="p13nData"

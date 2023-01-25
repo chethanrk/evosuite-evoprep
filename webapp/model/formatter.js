@@ -263,15 +263,6 @@ sap.ui.define([
 		 * @returns {string}
 		 */
 		showRelationshipType: function (sRelationshipType) {
-			// if (sRelationshipType === "FS") {
-			// 	return "FinishToStart";
-			// } else if (sRelationshipType === "FF") {
-			// 	return "FinishToFinish";
-			// } else if (sRelationshipType === "SF") {
-			// 	return "StartToFinish";
-			// } else {
-			// 	return "StartToStart";
-			// }
 			if (sRelationshipType) {
 				if (sRelationshipType === "1") {
 					return "FinishToStart";

@@ -95,6 +95,7 @@ sap.ui.define([
 		 */
 		_createGanttHorizon: function (oAxisTimeStrategy, oContext, oDateRange) {
 			var sPath = oContext.getPath(),
+				iZoomLevel = oAxisTimeStrategy.getZoomLevel(),
 				oHorizonDates;
 			if (oAxisTimeStrategy) {
 				oHorizonDates = this._getHorizonDates(sPath, oDateRange);
@@ -106,7 +107,7 @@ sap.ui.define([
 					startTime: oHorizonDates.visibleHorizon.startDate,
 					endTime: oHorizonDates.visibleHorizon.endDate
 				}));
-				oAxisTimeStrategy.setZoomLevel(6);
+				oAxisTimeStrategy.setZoomLevel(iZoomLevel);
 			}
 		},
 
@@ -151,6 +152,8 @@ sap.ui.define([
 				if (sKey === "D") {
 					oAxisTimeStrategy.setZoomLevel(6);
 				}
+				oAxisTimeStrategy.setTimeLineOption(formatter.getTimeLineOptions(sKey));
+
 				oAxisTimeStrategy.setVisibleHorizon(new sap.gantt.config.TimeHorizon({
 					startTime: oHorizonDates.visibleHorizon.startDate,
 					endTime: oHorizonDates.visibleHorizon.endDate
@@ -159,7 +162,6 @@ sap.ui.define([
 					startTime: oHorizonDates.totalHorizon.startDate,
 					endTime: oHorizonDates.totalHorizon.endDate
 				}));
-				oAxisTimeStrategy.setTimeLineOption(formatter.getTimeLineOptions(sKey));
 			}
 		},
 

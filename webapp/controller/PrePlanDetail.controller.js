@@ -139,6 +139,11 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
+				},
+				onPressHeaderReload: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
@@ -680,6 +685,14 @@ sap.ui.define([
 			oViewModel.setProperty("/filtersExist", false);
 		},
 
+		/**
+		 * onPress Plan Detail Header Refresh Button 
+		 * Plan Detail page is refreshed
+		 */
+		onPressHeaderReload: function () {
+			this.refreshGantChartData(this.oViewModel);
+			this.resetDeferredGroupToChanges(this.getView());
+		},
 		/* =========================================================== */
 		/* public methods                                              */
 		/* =========================================================== */
@@ -996,41 +1009,32 @@ sap.ui.define([
 		 */
 		_updatePlanStatusError: function (oError) {
 			var oResourceBundle = this.getResourceBundle(),
-				sFinalMessage,
-				sErrortext = oResourceBundle.getText("errorText"),
-				sMessage = this._extractError(this._extractError(oError.__batchResponses[0].response)),
-				sMessageDoyouWantToContinue = oResourceBundle.getText("msg.errorHanlderFinalStatusConfmsg"); //errorHanlderFinalStatusConfmsg;
+				sFinalMessage = oResourceBundle.getText("ymsg.finalizeMessage"),
+				sMessage = this._extractError(this._extractError(oError.__batchResponses[0].response));
 			if (oError.__batchResponses[0].response.statusCode === "500") {
 				this._errorCallBackForPlanHeaderSet(oError);
 				return;
 			}
 			if (sMessage !== undefined && sMessage !== null) {
-				var parsedMessage, aInnerDetails, strError = "";
+				var parsedMessage, aInnerDetails;
 				parsedMessage = jQuery.sap.parseJS(sMessage);
 				aInnerDetails = parsedMessage.error.innererror.errordetails;
 				if (aInnerDetails.length > 0) {
 					for (var i = 0; i < aInnerDetails.length; i++) {
 						if (aInnerDetails[i].severity === "warning") {
 							this._addWarningMessageToMessageManager(aInnerDetails[i].message);
-						} else {
-							strError += String.fromCharCode("8226") + " " + aInnerDetails[i].message + "\n\n";
 						}
 					}
-				} else {
-					strError = parsedMessage.error.code + ": " + parsedMessage.error.message.value;
 				}
-				sFinalMessage = strError + String.fromCharCode("8226") + "  " + sMessageDoyouWantToContinue;
-			} else {
-				sFinalMessage = sMessage;
 			}
 
 			MessageBox.confirm(
 				sFinalMessage, {
 					//details: typeof (sFinalMessage) === "string" ? sFinalMessage.replace(/\n/g, "<br/>") : sFinalMessage,
 					styleClass: this.getOwnerComponent().getContentDensityClass(),
-					actions: [MessageBox.Action.OK, MessageBox.Action.NO],
+					actions: [MessageBox.Action.YES, MessageBox.Action.CANCEL],
 					onClose: function (oAction) {
-						if (oAction === "OK") {
+						if (oAction === "YES") {
 							var sPath = this._oContext.getPath();
 							this.getModel().setProperty(sPath + "/FUNCTION", this.sFunctionKey);
 							this.getModel().setProperty(sPath + "/SKIP_ERROR_ENTRY", "X");
@@ -1116,6 +1120,7 @@ sap.ui.define([
 				this._UtilizationSelectView.setSelectedKey(this.getModel("user").getProperty("/DEFAULT_VIEW_MODE"));
 			}
 			this.getView().byId("idCalculateUtilization").setState(false);
+			this._axisTime.setZoomLevel(6);
 		},
 
 		_fnFiltersOnGraphic: function (sChannel, sEvent, oData) {

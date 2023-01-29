@@ -30,6 +30,7 @@
 																				<FlexItemData growFactor="1" shrinkFactor="0"/>
 																			</layoutData>
 																			<Text text="{:= '{/' + 'ComparePlanGeneralSet' + '/' + ${path : 'data>Value/Path'} + '/##com.sap.vocabularies.Common.v1.Label/String}' }"
+																				tooltip="{:= '{/' + 'ComparePlanGeneralSet' + '/' + ${path : 'data>Value/Path'} + '/##com.sap.vocabularies.Common.v1.Label/String}' }"
 																				wrapping="false"/>
 																		</VBox>
 																	</template:repeat>
@@ -49,8 +50,7 @@
 													<template:if
 														test="{:= ${parts: [{value:'UtilizationTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameMatch'} }">
 														<template:then>
-															<Table growing="false"
-																items="{path:'compareModel>PlanCmprGeneralToPlanCmprWorkCenter/results',templateShareable: true}"
+															<Table growing="false" items="{path:'compareModel>PlanCmprGeneralToPlanCmprWorkCenter/results',templateShareable: true}"
 																headerText="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}">
 																<headerToolbar>
 																	<OverflowToolbar>
@@ -75,6 +75,7 @@
 																		<Column demandPopin="true" hAlign="Center">
 																			<Text
 																				text="{:= '{/' + ${tempProps>/WorkcenterConfigs/entitySet} + '/' + ${lineItem>Value/Path} + '/##com.sap.vocabularies.Common.v1.Label/String}' }"
+																				tooltip="{:= '{/' + ${tempProps>/WorkcenterConfigs/entitySet} + '/' + ${lineItem>Value/Path} + '/##com.sap.vocabularies.Common.v1.Label/String}' }"
 																				wrapping="false"/>
 																		</Column>
 																	</template:repeat>
@@ -87,9 +88,13 @@
 																					<template:then>
 																						<Text text="{path:'lineItem>Value/Path', formatter:'.evoAH.getOperationDate'}" wrapping="false"/>
 																					</template:then>
+																					<template:elseif test="{:= ${path: 'lineItem>Value/Path'} === 'MODE'}">
+																						<Text text="{= '{compareModel>' + ${path : 'lineItem>Value/Path'} + '}' }"
+																							tooltip="{= '{compareModel>' + ${path : 'lineItem>Value/Path'} + '}' }"/>
+																					</template:elseif>
 																					<template:else>
-																						<Text text="{= '{compareModel>' + ${path : 'lineItem>Value/Path'} + '}' }" wrapping="false" visible="{= ${compareModel>MODE} === ''}"/>
-																						<Text text="{compareModel>MODE}" visible="{= ${compareModel>MODE} !== ''}"/>
+																						<Text text="{= '{compareModel>' + ${path : 'lineItem>Value/Path'} + '}' }" wrapping="false" visible="{= ${compareModel>MODE} === ''}"
+																							tooltip="{= '{compareModel>' + ${path : 'lineItem>Value/Path'} + '}' }"/>
 																					</template:else>
 																				</template:if>
 																			</template:repeat>
@@ -100,14 +105,14 @@
 														</template:then>
 														<template:elseif
 															test="{:= ${parts: [{value:'DurationTab', model:'tempProps'},{path:'detailTabs>Core.LongDescription/String'},{path:'detailTabs>Org.OData.Core.V1.LongDescription/String'}], formatter:'.evoAH.hasTabNameMatch'} }">
-															<Table growing="false"
-																items="{path:'compareModel>PlanCmprGeneralToPlanCmprOperation/results',templateShareable: true}"
+															<Table growing="false" items="{path:'compareModel>PlanCmprGeneralToPlanCmprOperation/results',templateShareable: true}"
 																headerText="{path:'detailTabs>com.sap.vocabularies.Common.v1.Label',formatter:'.AH.format'}">
 																<columns>
 																	<template:repeat list="{path:'tempProps>/OperationConfigs/lineItems'}" var="lineItem">
 																		<Column demandPopin="true">
 																			<Text
 																				text="{:= '{/' + ${tempProps>/OperationConfigs/entitySet} + '/' + ${lineItem>Value/Path} + '/##com.sap.vocabularies.Common.v1.Label/String}' }"
+																				tooltip="{:= '{/' + ${tempProps>/OperationConfigs/entitySet} + '/' + ${lineItem>Value/Path} + '/##com.sap.vocabularies.Common.v1.Label/String}' }"
 																				wrapping="false"/>
 																		</Column>
 																	</template:repeat>
@@ -121,7 +126,8 @@
 																						<Text text="{path:'lineItem>Value/Path', formatter:'.evoAH.getOperationDate'}" wrapping="false"/>
 																					</template:then>
 																					<template:else>
-																						<Text text="{= '{compareModel>' + ${path : 'lineItem>Value/Path'} + '}' }" wrapping="false"/>
+																						<Text text="{= '{compareModel>' + ${path : 'lineItem>Value/Path'} + '}' }"
+																							tooltip="{= '{compareModel>' + ${path : 'lineItem>Value/Path'} + '}' }" wrapping="false"/>
 																					</template:else>
 																				</template:if>
 																			</template:repeat>

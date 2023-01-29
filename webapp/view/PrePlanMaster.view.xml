@@ -54,7 +54,7 @@
 						selectionChange="onWPrePlanListSelectionChange">
 						<columns>
 							<core:ExtensionPoint name="TableExtP|PrePlanMaster|PlanHeaderSet|CustomColumn"/>
-							<Column width="6rem">
+							<Column width="7rem">
 								<customData>
 									<core:CustomData key="p13nData" value='\{"columnKey": "NOTES", "columnIndex":"6"}'/>
 								</customData>

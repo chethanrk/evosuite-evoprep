@@ -212,11 +212,9 @@ sap.ui.define([
 			if (!date || date === "") {
 				return "-";
 			}
-			if (!format) {
-				format = "MMM dd, yyyy";
-			}
-			var oDateFormat = DateFormat.getDateTimeInstance({
-				pattern: format
+
+			var oDateFormat = DateFormat.getDateInstance({
+				style: "medium"
 			});
 			return oDateFormat.format(new Date(date));
 		},
@@ -263,15 +261,18 @@ sap.ui.define([
 		 * @returns {string}
 		 */
 		showRelationshipType: function (sRelationshipType) {
-			if (sRelationshipType === "FS") {
-				return "FinishToStart";
-			} else if (sRelationshipType === "FF") {
-				return "FinishToFinish";
-			} else if (sRelationshipType === "SF") {
-				return "StartToFinish";
-			} else {
-				return "StartToStart";
+			if (sRelationshipType) {
+				if (sRelationshipType === "1") {
+					return "FinishToStart";
+				} else if (sRelationshipType === "2") {
+					return "StartToStart";
+				} else if (sRelationshipType === "3") {
+					return "FinishToFinish";
+				} else if (sRelationshipType === "4") {
+					return "StartToFinish";
+				}
 			}
+			return "StartToFinish";
 		},
 
 		/**

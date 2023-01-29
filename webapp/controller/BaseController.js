@@ -1019,7 +1019,6 @@ sap.ui.define([
 					and: true
 				});
 				oParams.filters = oParams.filters.concat(oFilterFinalize);
-				//oParams.filters.concat(oFilterFinalize);
 			}
 			var aFilters = oParams.filters;
 			this.getOwnerComponent().readData("/PlanItemsSet", aFilters).then(function (oData) {

@@ -13,10 +13,12 @@ sap.ui.define([
 	"sap/base/util/deepClone",
 	"sap/f/library",
 	"sap/ui/core/Fragment",
-	"sap/ui/core/message/Message"
+	"sap/ui/core/message/Message",
+	"sap/ui/model/Filter",
+	"sap/ui/model/FilterOperator",
 ], function (Controller, Constants, History, Dialog, Button, Text, MessageToast, MessageBox, OverrideExecution, formatter, deepClone,
 	library,
-	Fragment, Message) {
+	Fragment, Message, Filter, FilterOperator) {
 	"use strict";
 
 	return Controller.extend("com.evorait.evosuite.evoprep.controller.BaseController", {
@@ -1008,8 +1010,18 @@ sap.ui.define([
 		onOperationListDataReceived: function (oEvent) {
 			var oSource = oEvent.getSource(),
 				oParams = oEvent.getParameter("bindingParams"),
-				aFilters = oParams.filters,
 				sId = oSource.getId();
+			if (sId === "idOperationListFragSmartTable") {
+				var oFilterFinalize = new Filter({
+					filters: [
+						new Filter("USER_STATUS_CODE", FilterOperator.NotContains, "FINL")
+					],
+					and: true
+				});
+				oParams.filters = oParams.filters.concat(oFilterFinalize);
+				//oParams.filters.concat(oFilterFinalize);
+			}
+			var aFilters = oParams.filters;
 			this.getOwnerComponent().readData("/PlanItemsSet", aFilters).then(function (oData) {
 				if (sId === "idOperationListFragSmartTable") {
 					this.aOprFrgAllOperations = oData.results;

@@ -128,9 +128,6 @@ sap.ui.define([
 				return;
 			}
 			var oOperationData = this.oCreateModel.getData();
-			if (!this._CheckForFinalOpreation(oTable)) {
-				return;
-			}
 			//When Select All is pressed
 			if (this.bOperationSelectAll) {
 				aAllOperationsSelected = this.aOprFrgAllOperations;

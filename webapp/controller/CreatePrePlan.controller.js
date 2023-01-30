@@ -145,7 +145,6 @@ sap.ui.define([
 			this.oViewModel.setProperty("/aAllSelectedOperations", aAllOperationsSelected);
 			this.oCreateModel.refresh();
 			this.onPressOperationListCancel();
-			//	this.bOperationSelectAll = false;
 		},
 
 		/**

@@ -145,7 +145,6 @@ sap.ui.define([
 			this.oViewModel.setProperty("/aAllSelectedOperations", aAllOperationsSelected);
 			this.oCreateModel.refresh();
 			this.onPressOperationListCancel();
-		//	this.bOperationSelectAll = false;
 		},
 
 		/**
@@ -272,20 +271,20 @@ sap.ui.define([
 		 */
 		_showSuccessMessage: function (oResponce) {
 			var oResourceBundle = this.getResourceBundle(),
-			sMsg = oResourceBundle.getText("msg.prePlanSubmitSuccess", oResponce["PLAN_ID"]),
-			sTitle = oResourceBundle.getText("xtit.confirm"),
-			backToPreviousAction = oResourceBundle.getText("btn.successMsgBxBtnBack"),
-			sPlanDetailAction = oResourceBundle.getText("btn.successMsgBxBtnPlanDetail");
-			
-			var backToPrevious = function(){
+				sMsg = oResourceBundle.getText("msg.prePlanSubmitSuccess", oResponce["PLAN_ID"]),
+				sTitle = oResourceBundle.getText("xtit.confirm"),
+				backToPreviousAction = oResourceBundle.getText("btn.successMsgBxBtnBack"),
+				sPlanDetailAction = oResourceBundle.getText("btn.successMsgBxBtnPlanDetail");
+
+			var backToPrevious = function () {
 				this.onNavBack();
 			};
-			var planDetailFn = function(){
+			var planDetailFn = function () {
 				this.navToDetail(oResponce["ObjectKey"]);
 			};
-			
+
 			this.showConfirmDialog(sTitle, sMsg, backToPrevious.bind(this), planDetailFn.bind(this), "None", backToPreviousAction,
-					sPlanDetailAction);
+				sPlanDetailAction);
 		},
 
 		/**

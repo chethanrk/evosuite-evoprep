@@ -229,6 +229,11 @@ sap.ui.define([
 				aSelectedIndices = oTable.getSelectedIndices(),
 				oOperationData = this.oCreateModel.getData(),
 				aAllOperationsSelected = [];
+			/*	check and validate if all the operations are selected
+				not in the final status;*/
+			if (!this._CheckForFinalOpreation(oTable)) {
+				return;
+			}
 			//When Select All Button is Clicked
 			if (this.bSelectAll && aSelectedIndices.length > 100) {
 				aAllOperationsSelected = this.aAllOperations;

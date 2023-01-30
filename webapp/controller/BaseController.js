@@ -13,10 +13,12 @@ sap.ui.define([
 	"sap/base/util/deepClone",
 	"sap/f/library",
 	"sap/ui/core/Fragment",
-	"sap/ui/core/message/Message"
+	"sap/ui/core/message/Message",
+	"sap/ui/model/Filter",
+	"sap/ui/model/FilterOperator",
 ], function (Controller, Constants, History, Dialog, Button, Text, MessageToast, MessageBox, OverrideExecution, formatter, deepClone,
 	library,
-	Fragment, Message) {
+	Fragment, Message, Filter, FilterOperator) {
 	"use strict";
 
 	return Controller.extend("com.evorait.evosuite.evoprep.controller.BaseController", {
@@ -1008,8 +1010,17 @@ sap.ui.define([
 		onOperationListDataReceived: function (oEvent) {
 			var oSource = oEvent.getSource(),
 				oParams = oEvent.getParameter("bindingParams"),
-				aFilters = oParams.filters,
 				sId = oSource.getId();
+			if (sId === "idOperationListFragSmartTable") {
+				var oFilterFinalize = new Filter({
+					filters: [
+						new Filter("USER_STATUS_CODE", FilterOperator.NotContains, "FINL")
+					],
+					and: true
+				});
+				oParams.filters = oParams.filters.concat(oFilterFinalize);
+			}
+			var aFilters = oParams.filters;
 			this.getOwnerComponent().readData("/PlanItemsSet", aFilters).then(function (oData) {
 				if (sId === "idOperationListFragSmartTable") {
 					this.aOprFrgAllOperations = oData.results;
@@ -1418,6 +1429,60 @@ sap.ui.define([
 				sLayout = library.LayoutType.MidColumnFullScreen;
 			}
 			return sLayout;
+		},
+		/** Method to get the context of selected items in the 
+		 * table which based on the odata property
+		 * @param oTable {object} table instance
+		 * @param sProperty {string} property name to be validate
+		 * @return aArrayPropertyContext {array}
+		 */
+		_returnPropertyContext: function (oTable, sProperty) {
+			var aSelectections, aContext, sDemandPath, bPropertyExist, aArrayPropertyContext = [];
+			if (oTable.getAggregation("items")) {
+				aSelectections = oTable.getSelectedItems();
+				for (var i = 0; i < aSelectections.length; i++) {
+					aContext = aSelectections[i].getBindingContext();
+					if (aContext) {
+						sDemandPath = aContext.getPath();
+						bPropertyExist = this.getModel().getProperty(sDemandPath + "/" + sProperty);
+						if (bPropertyExist) {
+							aArrayPropertyContext.push(aContext);
+						}
+					}
+				}
+			} else {
+				aSelectections = this.oTable.getSelectedIndices();
+				for (var j = 0; j < aSelectections.length; j++) {
+					aContext = this.oTable.getContextByIndex(aSelectections[j]);
+					if (aContext) {
+						sDemandPath = aContext.getPath();
+						bPropertyExist = this.getModel().getProperty(sDemandPath + "/" + sProperty);
+						if (bPropertyExist) {
+							aArrayPropertyContext.push(aContext);
+						}
+					}
+				}
+			}
+			return aArrayPropertyContext;
+		},
+		/** Method to check if any operation exist which has user status
+		 *  finalized
+		 * @param oTable {object} table instance
+		 * @return {boolean}
+		 */
+		_CheckForFinalOpreation: function (oTable) {
+			var iTotalSelections,
+				aSelectedContext = this._returnPropertyContext(oTable, "ALLOW_EDIT");
+			if (oTable.getAggregation("items")) {
+				iTotalSelections = oTable.getSelectedItems();
+			} else {
+				iTotalSelections = oTable.getSelectedIndices();
+			}
+			if (iTotalSelections.length !== aSelectedContext.length) {
+				this.showMessageToast(this.getResourceBundle().getText("msg.operationFinalValidation"));
+				return false;
+			}
+			return true;
 		}
 
 	});

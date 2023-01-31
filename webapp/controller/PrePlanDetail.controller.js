@@ -531,19 +531,24 @@ sap.ui.define([
 		onUtilizationShapeDoubleClick: function (oEvent) {
 			var mParams = oEvent.getParameters(),
 				oShape = mParams.shape;
-			this._oUtilizationShapeContext = oShape.getBindingContext();
-			if (!this._oUtilizationPopover) {
-				Fragment.load({
-					name: "com.evorait.evosuite.evoprep.view.fragments.UtilizationDetails",
-					controller: this
-				}).then(function (pPopover) {
-					this._oUtilizationPopover = pPopover;
-					this.getView().addDependent(this._oUtilizationPopover);
+			if (oShape) {
+				this._oUtilizationShapeContext = oShape.getBindingContext();
+				if (!this._oUtilizationPopover) {
+					Fragment.load({
+						name: "com.evorait.evosuite.evoprep.view.fragments.UtilizationDetails",
+						controller: this
+					}).then(function (pPopover) {
+						this._oUtilizationPopover = pPopover;
+						this.getView().addDependent(this._oUtilizationPopover);
+						this._oUtilizationPopover.openBy(oShape);
+					}.bind(this));
+				} else {
 					this._oUtilizationPopover.openBy(oShape);
-				}.bind(this));
+					sap.ui.getCore().byId("idUtilizationDetailsSmartTable").rebindTable();
+				}
 			} else {
-				this._oUtilizationPopover.openBy(oShape);
-				sap.ui.getCore().byId("idUtilizationDetailsSmartTable").rebindTable();
+				//When clicked on No Shift icon is pressed toast msg will be displayed
+				this.showMessageToast(this.getResourceBundle().getText("msg.noShifts"));
 			}
 		},
 

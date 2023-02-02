@@ -64,6 +64,16 @@
 												tooltip="{ganttModel>UTILIZATION}"></core:Icon>
 										</table:template>
 									</table:Column>
+									<table:Column width="2.5rem" class="sapUiNoContentPadding">
+										<table:customData>
+											<core:CustomData key="p13nData" value='\{"columnKey": "NodeType", "leadingProperty": "NodeType"}'/>
+										</table:customData>
+										<table:template>
+											<HBox>
+												<CheckBox enabled="true" select="onChangeSelectResource" selected="{ganttModel>IsSelected}" visible="{= ${ganttModel>HIERARCHY_LEVEL} !== 0 }"/>
+											</HBox>
+										</table:template>
+									</table:Column>
 								</table:columns>
 								<table:extension>
 									<OverflowToolbar>
@@ -81,6 +91,10 @@
 											<Button id="clrFilters" type="Emphasized" icon="sap-icon://clear-filter" tooltip="{i18n>btn.clrFilter}" enabled="{viewModel>/filtersExist}"
 												press="onClrFilters"/>
 											<ToolbarSpacer/>
+											<Button icon="sap-icon://synchronize" enabled="{viewModel>/bMaterialsDemandsBlock}" tooltip="{i18n>btn.materialStatus}"
+												visible="{user>/ENABLE_MATERIAL_AVAILABILITY}" press="onMaterialStatusPress"/>
+											<Button tooltip="{i18n>btn.materialInfoButton}" icon="sap-icon://message-information" press="onMaterialInfoButtonPress"
+												enabled="{viewModel>/bMaterialsDemandsBlock}" visible="{user>/ENABLE_MATERIAL_AVAILABILITY}"></Button>
 											<Text text="{i18n>lbl.Utilization}"/>
 											<Switch id="idCalculateUtilization" change="onChangeCalculateUtilization"/>
 										</content>

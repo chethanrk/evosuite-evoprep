@@ -144,6 +144,16 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
+				},
+				onMaterialStatusPressGraphicPlan: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onMaterialInfoButtonPressGraphicPlan: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
@@ -698,6 +708,45 @@ sap.ui.define([
 			this.refreshGantChartData(this.oViewModel);
 			this.resetDeferredGroupToChanges(this.getView());
 		},
+		/**
+		 * On Refresh Material Status Button press in Demand/Operations Table
+		 * used in the for table in graphic planning
+		 */
+		onMaterialStatusPressGraphicPlan: function (oEvent) {
+			var oTable = this.getView().byId("idPlanningGanttTreeTable");
+			var a = this._ReturnPropContextTreeTable(oTable, "DURATION");
+		},
+		onMaterialInfoButtonPressGraphicPlan: function () {
+			var oTable = this.oTable;
+			var aSelectedItems = this._ReturnPropContextTreeTable(oTable, "DURATION");
+			var aSelectedItemsPath = [];
+			for (var i = 0; i < aSelectedItems.length; i++) {
+				aSelectedItemsPath.push({
+					sPath: "/" + aSelectedItemsPath["GUID"]
+				});
+			}
+			if (aSelectedItemsPath.length > 0) {
+				this.getOwnerComponent().materialInfoDialog.open(this.getView(), aSelectedItemsPath);
+			}
+		},
+		onChangeSelectOperation:function(oEvent){
+			var oBindingContext=oEvent.getSource().getBindingContext("ganttModel")
+			var oModel =  oBindingContext.getModel("ganttModel");
+			oModel.setProperty(oBindingContext.getPath()+"/IsSelected",oEvent.getParameter("selected"));
+			console.log(oModel);
+		},
+		_ReturnPropContextTreeTable: function (oTable, sProp) {
+			var oBindingRows = oTable.getBinding("rows"),
+				sPath = oBindingRows.getPath(),
+				oTableData = oBindingRows.getModel().getProperty(sPath)["children"],
+				aResults = [];
+			oTableData.forEach(function (elem) {
+				aResults = [].concat(elem["children"].filter(function (obj) {
+					return obj[sProp] === "20.0";
+				}), aResults);
+			});
+			return aResults;
+		},
 		/* =========================================================== */
 		/* public methods                                              */
 		/* =========================================================== */
@@ -919,6 +968,7 @@ sap.ui.define([
 					this.oOriginData = deepClone(this.oGanttModel.getProperty("/"));
 					this.iNumberOfLines = this._countLineItems(this.oOriginData);
 					this.getModel("viewModel").setProperty("/ganttSettings/busy", false);
+
 				}.bind(this));
 		},
 
@@ -964,9 +1014,11 @@ sap.ui.define([
 					} else {
 						this.oGanttModel.setProperty("/data/children", oData.results);
 					}
+					console.log(this.oGanttModel);
 					resolve(iLevel + 1);
 				}.bind(this));
 			}.bind(this));
+
 		},
 
 		/**

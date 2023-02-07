@@ -2,7 +2,7 @@
 	xmlns:smartTable="sap.ui.comp.smarttable" xmlns:f="sap.f"
 	xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
 	<Dialog id="idOperationListDialog" title="{i18n>tit.addOperation}" class="sapUiTinyMargin" draggable="true" resizable="true"
-		verticalScrolling="false" horizontalScrolling="true" contentHeight="100%" contentWidth="auto">
+		verticalScrolling="false" horizontalScrolling="true" contentHeight="100%" contentWidth="100%">
 		<content>
 			<core:ExtensionPoint name="DialogExtP|OperationList|PlanItemsSet|Content|Before"/>
 			<core:ExtensionPoint name="DialogExtP|OperationList|PlanItemsSet|Content|Instead">
@@ -28,12 +28,21 @@
 					<f:content>
 						<smartTable:SmartTable id="idOperationListFragSmartTable" height="100%" width="100%" entitySet="PlanItemsSet" header="{i18n>tit.operations}"
 							smartFilterId="idOperationListFragSmartFilterBar" tableType="ResponsiveTable" useExportToExcel="true" useVariantManagement="false"
-							useTablePersonalisation="true" showRowCount="true" enableAutoBinding="false" demandPopin="true" requestAtLeastFields="ObjectKey">
+							useTablePersonalisation="true" showRowCount="true" enableAutoBinding="false" demandPopin="true" requestAtLeastFields="ObjectKey"
+							beforeRebindTable="onOperationListDataReceived" placeToolbarInTable="true">
 							<!-- layout data used to make the table growing but the filter bar fixed -->
 							<smartTable:layoutData>
 								<FlexItemData growFactor="1" baseSize="0%"/>
 							</smartTable:layoutData>
-							<Table growing="true" mode="MultiSelect" sticky="ColumnHeaders,HeaderToolbar,InfoToolbar" selectionChange="onOprListSelectionChange"/>
+							<smartTable:customToolbar>
+								<Toolbar>
+									<Text text="{i18n>xbut.SelectAll}" wrapping="false"/>
+									<Switch id="idOprSwitchSelectAll" change="onChangeOperationSelectAll"/>
+									<ToolbarSpacer/>
+								</Toolbar>
+							</smartTable:customToolbar>
+							<Table growing="true" growingThreshold="100" mode="MultiSelect" sticky="ColumnHeaders,HeaderToolbar"
+								selectionChange="onOprListSelectionChange"/>
 						</smartTable:SmartTable>
 					</f:content>
 				</f:DynamicPage>

@@ -2,7 +2,8 @@
 	xmlns:smartFilterBar="sap.ui.comp.smartfilterbar" xmlns:smartTable="sap.ui.comp.smarttable" xmlns:table="sap.ui.table"
 	xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
 	controllerName="com.evorait.evosuite.evoprep.controller.DemandList" xmlns:html="http://www.w3.org/1999/xhtml">
-	<f:DynamicPage id="demandListPage" headerExpanded="true" preserveHeaderStateOnScroll="true" showFooter="false" class="sapUiNoContentPadding">
+	<f:DynamicPage id="demandListPage" headerExpanded="true" preserveHeaderStateOnScroll="true" showFooter="false" class="sapUiNoContentPadding"
+		busy="{viewModel>/busy}" busyIndicatorDelay="{viewModel>/delay}">
 		<f:title>
 			<f:DynamicPageTitle>
 				<f:heading>
@@ -38,24 +39,41 @@
 		<f:content>
 			<smartTable:SmartTable id="demandListSmartTable" height="100%" width="100%" entitySet="PlanItemsSet" header="{i18n>tit.OperationsTable}"
 				tableType="Table" useExportToExcel="true" useVariantManagement="true" persistencyKey="com.evorait.evosuite.evoprep.DemandListTable"
-				useTablePersonalisation="true" showRowCount="true" enableAutoBinding="true" demandPopin="false" smartFilterId="demandListSmartFilterBar"
-				customData:useSmartField="true" customData:useSmartToggle="true" editTogglable="{= ${user>/ENABLE_ITEM_UPDATE} === 'X'}"
-				editToggled="onPressEdit" requestAtLeastFields="ObjectKey,NO_OF_PLAN_ID,NO_OF_NW_KEY">
+				fieldChange="onFieldChangeOperationsList" useTablePersonalisation="true" showRowCount="true" enableAutoBinding="true" demandPopin="false"
+				smartFilterId="demandListSmartFilterBar" customData:useSmartField="true" customData:useSmartToggle="true"
+				editTogglable="{parts: ['user>/ENABLE_ITEM_UPDATE', 'viewModel>/validateIW32Auth'], formatter:'.formatter.enableEditToggleBtn'}"
+				editToggled="onPressEdit"
+				requestAtLeastFields="ObjectKey,NO_OF_PLAN_ID,NO_OF_NW_KEY,ALLOW_EDIT,MATERIAL_STATUS_DESC,COMPONENT_EXISTS,MATERIAL_STATUS_ICON,MATERIAL_STATUS_STATE,LONG_TEXT_ICON,ORDER_LONG_TEXT_ICON,SYNC_ICON"
+				beforeRebindTable="onOperationListDataReceived">
 				<!-- layout data used to make the table growing but the filter bar fixed -->
 				<smartTable:layoutData>
 					<FlexItemData growFactor="1" baseSize="0%"/>
 				</smartTable:layoutData>
 				<smartTable:customToolbar>
 					<Toolbar>
+						<Text text="{i18n>xbut.SelectAll}" wrapping="false"/>
+						<Switch id="idSwitchSelectAll" change="onChangeSelectAll" enabled="{viewModel>/validateIW32Auth}"/>
 						<ToolbarSpacer/>
-						<Button press="onPressCreatePrePlanButton" tooltip="{i18n>tit.createPrePlan}" text="{i18n>tit.createPrePlan}"
-							visible="{= ${user>/ENABLE_PREPLAN_CREATE} === 'X'}" enabled="{viewModel>/allowPrePlanCreate}"/>
+						<Button icon="sap-icon://add" press="onPressCreatePrePlanButton" tooltip="{i18n>xbut.create}"
+							visible="{= ${user>/ENABLE_PREPLAN_CREATE} === 'X'}"
+							enabled="{parts: ['viewModel>/allowPrePlanCreate', 'viewModel>/validateIW32Auth'], formatter:'.formatter.enableEditToggleBtn'}"/>
+						<Button icon="sap-icon://add-activity-2" press="onPressAddExistingPlan" tooltip="{i18n>tit.addExistingPlan}"
+							visible="{= ${user>/ENABLE_PREPLAN_ITEM_ADD} === 'X'}"
+							enabled="{= ${viewModel>/allowPrePlanCreate} &amp;&amp; ${viewModel>/bEnableAddOperations} &amp;&amp; ${viewModel>/validateIW32Auth} }"/>
+						<Button icon="sap-icon://complete" tooltip="{i18n>btn.finalize}" press="onFinalizeBtnPress"
+							enabled="{parts: ['viewModel>/bEnableFinalizeBtn', 'viewModel>/validateIW32Auth'], formatter:'.formatter.enableEditToggleBtn'}"
+							visible="{= ${user>/ENABLE_ITEM_FINAL} === 'X'}"/>
+						<Button icon="sap-icon://synchronize" enabled="{viewModel>/bMaterialsDemandsBlock}" tooltip="{i18n>btn.materialStatus}"
+							visible="{user>/ENABLE_MATERIAL_AVAILABILITY}" press="onMaterialStatusPress"/>
+						<Button tooltip="{i18n>btn.materialInfoButton}" icon="sap-icon://message-information" press="onMaterialInfoButtonPress"
+							enabled="{viewModel>/bMaterialsDemandsBlock}" visible="{user>/ENABLE_MATERIAL_AVAILABILITY}"></Button>
+						<Button tooltip="{i18n>btn.Reprocess}" press="onReprocessBtnPressed" enabled="{viewModel>/bOperationReprocess}" icon="sap-icon://repost"></Button>
 						<core:ExtensionPoint name="TableExtP|DemandList|PlanItemsSet|CustomToolbar"/>
 					</Toolbar>
 				</smartTable:customToolbar>
 				<table:Table id="demandListPageSmartTableTable" rowActionCount="{= ${viewModel>/orderListEditMode} ? 0 : 1}" visibleRowCountMode="Auto"
-					rowSelectionChange="handleDemandSelectionChange" enableSelectAll="false"
-					selectionMode="{= ${viewModel>/orderListEditMode} ? 'None' : 'MultiToggle'}">
+					rowSelectionChange="handleDemandSelectionChange" enableSelectAll="true"
+					selectionMode="{= ${viewModel>/orderListEditMode} ? 'None' : 'MultiToggle'}" threshold="100">
 					<table:rowActionTemplate>
 						<table:RowAction visible="{parts: [{path:'templateProperties>/navLinks'}], formatter:'.formatter.showDemandRowAction'}">
 							<table:items>
@@ -68,22 +86,50 @@
 							<Label text="{/PlanItemsSet/NO_OF_PLAN_ID/##com.sap.vocabularies.Common.v1.Label/String}"/>
 							<table:customData>
 								<core:CustomData key="p13nData"
-									value='\{"columnKey": "NO_OF_PLAN_ID", "leadingProperty":"NO_OF_PLAN_ID", "filterProperty":"NO_OF_PLAN_ID", "sortProperty":"NO_OF_PLAN_ID", "columnIndex":"4"}'/>
+									value='\{"columnKey": "NO_OF_PLAN_ID", "leadingProperty":"NO_OF_PLAN_ID", "filterProperty":"NO_OF_PLAN_ID", "sortProperty":"NO_OF_PLAN_ID", "columnIndex":"0"}'/>
 							</table:customData>
 							<table:template>
 								<Link text="{NO_OF_PLAN_ID}" press="onPressPlanNumber"/>
 							</table:template>
 						</table:Column>
-						<table:Column hAlign="Center" sortProperty="NO_OF_NW_KEY" filterProperty="NO_OF_NW_KEY" width="9rem">
+						<table:Column hAlign="Center" sortProperty="ALLOW_REPROCESS" filterProperty="ALLOW_REPROCESS" width="5rem">
+							<Label text="{/PlanItemsSet/ALLOW_REPROCESS/##com.sap.vocabularies.Common.v1.Label/String}"
+								tooltip="{/PlanItemsSet/ALLOW_REPROCESS/##com.sap.vocabularies.Common.v1.Label/String}"/>
+							<table:customData>
+								<core:CustomData key="p13nData"
+									value='\{"columnKey": "ALLOW_REPROCESS", "leadingProperty":"ALLOW_REPROCESS", "filterProperty":"ALLOW_REPROCESS", "sortProperty":"ALLOW_REPROCESS", "columnIndex":"1"}'/>
+							</table:customData>
+							<table:template>
+								<core:Icon src="{SYNC_ICON}" tooltip="{/PlanItemsSet/ALLOW_REPROCESS/##com.sap.vocabularies.Common.v1.Label/String}"/>
+							</table:template>
+						</table:Column>
+						<table:Column hAlign="Center" sortProperty="MATERIAL_STATUS" filterProperty="MATERIAL_STATUS" width="8rem"
+							visible="{user>/ENABLE_MATERIAL_AVAILABILITY}">
+							<Label text="{/PlanItemsSet/MATERIAL_STATUS/##com.sap.vocabularies.Common.v1.Label/String}"
+								tooltip="{/PlanItemsSet/MATERIAL_STATUS/##com.sap.vocabularies.Common.v1.Label/String}"/>
+							<table:customData>
+								<core:CustomData key="p13nData"
+									value='\{"columnKey": "MATERIAL_STATUS", "leadingProperty":"MATERIAL_STATUS", "filterProperty":"MATERIAL_STATUS", "sortProperty":"MATERIAL_STATUS", "columnIndex":"4"}'/>
+							</table:customData>
+							<table:template>
+								<HBox>
+									<ObjectStatus class="sapUiTinyMargin" tooltip="{MATERIAL_STATUS_DESC}" text="{MATERIAL_STATUS_DESC}" icon="{MATERIAL_STATUS_ICON}"
+										state="{path:'MATERIAL_STATUS_STATE',formatter:'.formatter.getDemandState'}"/>
+								</HBox>
+							</table:template>
+						</table:Column>
+						<table:Column hAlign="Center" sortProperty="NO_OF_NW_KEY" filterProperty="NO_OF_NW_KEY" width="9rem"
+						visible="{user>/ENABLE_NETWORK_KEY}">
 							<Label text="{/PlanItemsSet/NO_OF_NW_KEY/##com.sap.vocabularies.Common.v1.Label/String}"/>
 							<table:customData>
 								<core:CustomData key="p13nData"
-									value='\{"columnKey": "NO_OF_NW_KEY", "leadingProperty":"NO_OF_NW_KEY", "filterProperty":"NO_OF_NW_KEY", "sortProperty":"NO_OF_NW_KEY", "columnIndex":"4"}'/>
+									value='\{"columnKey": "NO_OF_NW_KEY", "leadingProperty":"NO_OF_NW_KEY", "filterProperty":"NO_OF_NW_KEY", "sortProperty":"NO_OF_NW_KEY", "columnIndex":"5"}'/>
 							</table:customData>
 							<table:template>
 								<Link text="{NO_OF_NW_KEY}" press="onPressNetworkKey"/>
 							</table:template>
 						</table:Column>
+						<core:Fragment fragmentName="com.evorait.evosuite.evoprep.view.fragments.LongTextColumn" type="XML"/>
 						<core:ExtensionPoint name="PageExtP|DemandList|PlanItemsSet|SmartTable|Columns"/>
 					</table:columns>
 				</table:Table>

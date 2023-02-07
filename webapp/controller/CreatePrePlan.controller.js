@@ -1,8 +1,9 @@
 sap.ui.define([
 	"com/evorait/evosuite/evoprep/controller/BaseController",
 	"sap/ui/core/Fragment",
+	"sap/m/MessageBox",
 	"sap/ui/core/mvc/OverrideExecution"
-], function (BaseController, Fragment, OverrideExecution) {
+], function (BaseController, Fragment, MessageBox, OverrideExecution) {
 	"use strict";
 
 	return BaseController.extend("com.evorait.evosuite.evoprep.controller.CreatePrePlan", {
@@ -46,12 +47,6 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
-				},
-
-				onOprListSelectionChange: {
-					public: true,
-					final: false,
-					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
@@ -65,6 +60,7 @@ sap.ui.define([
 		onInit: function () {
 			this.oViewModel = this.getModel("viewModel");
 			this.oCreateModel = this.getModel("CreateModel");
+			this.oViewModel.setProperty("/busy", false);
 
 			var oRouter = this.getRouter();
 			//route for page create new preplan
@@ -72,7 +68,6 @@ sap.ui.define([
 				this._initializeView();
 			}, this);
 		},
-
 		/**
 		 * Called when the View has been rendered (so its HTML is part of the document). Post-rendering manipulations of the HTML could be done here.
 		 * This hook is the same one that SAPUI5 controls get after being rendered.
@@ -115,6 +110,7 @@ sap.ui.define([
 		 */
 		onPressOperationListCancel: function (oEvent) {
 			this.onPressOperationSelectCancel();
+			this.destroyOperationListFragment();
 		},
 
 		/**
@@ -124,18 +120,29 @@ sap.ui.define([
 		onPressAdd: function (oEvent) {
 			var oSmartTable = sap.ui.getCore().byId("idOperationListFragSmartTable"),
 				oTable = oSmartTable.getTable(),
-				aSelectedItems = oTable.getSelectedItems();
+				aSelectedItems = oTable.getSelectedItems(),
+				aAllOperationsSelected = [];
 
 			if (aSelectedItems.length === 0) {
 				this.showMessageToast(this.getResourceBundle().getText("msg.selectAtleast"));
 				return;
 			}
 			var oOperationData = this.oCreateModel.getData();
-			aSelectedItems.forEach(function (oItem) {
-				var oSelObject = oItem.getBindingContext().getObject();
-				delete oSelObject.__metadata;
-				oOperationData.results.push(oSelObject);
-			}.bind(this));
+			//When Select All is pressed
+			if (this.bOperationSelectAll) {
+				aAllOperationsSelected = this.aOprFrgAllOperations;
+				aAllOperationsSelected.forEach(function (oSelObject) {
+					delete oSelObject.__metadata;
+					oOperationData.results.push(oSelObject);
+				}.bind(this));
+			} else {
+				aSelectedItems.forEach(function (oItem) {
+					var oSelObject = oItem.getBindingContext().getObject();
+					delete oSelObject.__metadata;
+					oOperationData.results.push(oSelObject);
+				}.bind(this));
+			}
+			this.oViewModel.setProperty("/aAllSelectedOperations", aAllOperationsSelected);
 			this.oCreateModel.refresh();
 			this.onPressOperationListCancel();
 		},
@@ -171,7 +178,7 @@ sap.ui.define([
 							oPayloadData.PlanHeaderToPlanItems = this.oCreateModel.getProperty("/results");
 							oPayloadData.FUNCTION = this.getModel("user").getProperty("/DEFAULT_FUNCTION");
 
-							this.CreatePrePlan(oPayloadData, this._createSuccess.bind(this));
+							this.CreatePrePlan(oPayloadData, this._createSuccess.bind(this), this._errorCallBackForPlanHeaderSet.bind(this));
 						}
 					}.bind(this));
 				}
@@ -197,22 +204,6 @@ sap.ui.define([
 						this._triggerFunctionImport(oPreparedData);
 					}
 				}.bind(this));
-			}
-		},
-
-		/**
-		 * Operation list fragment selection change
-		 * validate to duplicate operation selection
-		 */
-		onOprListSelectionChange: function (oEvent) {
-			var oSelectedItem = oEvent.getParameter("listItem"),
-				oContext = oSelectedItem.getBindingContext(),
-				oOperationData = this.oCreateModel.getData();
-
-			//validate for the duplicate
-			if (!this.checkDuplicate(oOperationData.results, oContext.getProperty("ObjectKey"))) {
-				this.showMessageToast(this.getResourceBundle().getText("ymsg.duplicateValidation"));
-				oSelectedItem.setSelected(false);
 			}
 		},
 
@@ -252,19 +243,18 @@ sap.ui.define([
 				}.bind(this));
 			}.bind(this));
 		},
-
 		/**
 		 * Called when create request sussessfully saved in backend
 		 * @{param} oResponse - response from the backend
 		 * unbind old context and bind new context
 		 * Set default values
 		 */
+
 		_createSuccess: function (oResponse) {
 			if (oResponse) {
 				//Bind new context
 				this.getView().unbindElement();
-				var oContext = this.getView().getModel().createEntry("/PlanHeaderSet");
-				this.getView().setBindingContext(oContext);
+
 				this.getModel("CreateModel").getData().results = [];
 				this.getModel("CreateModel").refresh();
 				this.getModel().resetChanges();
@@ -272,10 +262,29 @@ sap.ui.define([
 				var oNewEntryContext = new sap.ui.model.Context(this.getModel(), "/PlanHeaderSet('" + oResponse.ObjectKey +
 					"')");
 				this.getView().getModel().deleteCreatedEntry(oNewEntryContext);
-
-				// defaulting values
-				this._initializeView();
+				this._showSuccessMessage(oResponse);
 			}
+		},
+		/**
+		 * This method is used to show sucess dialog that comes after the
+		 * plan is successfully created.
+		 */
+		_showSuccessMessage: function (oResponce) {
+			var oResourceBundle = this.getResourceBundle(),
+				sMsg = oResourceBundle.getText("msg.prePlanSubmitSuccess", oResponce["PLAN_ID"]),
+				sTitle = oResourceBundle.getText("xtit.confirm"),
+				backToPreviousAction = oResourceBundle.getText("btn.successMsgBxBtnBack"),
+				sPlanDetailAction = oResourceBundle.getText("btn.successMsgBxBtnPlanDetail");
+
+			var backToPrevious = function () {
+				this.onNavBack();
+			};
+			var planDetailFn = function () {
+				this.navToDetail(oResponce["ObjectKey"]);
+			};
+
+			this.showConfirmDialog(sTitle, sMsg, backToPrevious.bind(this), planDetailFn.bind(this), "None", backToPreviousAction,
+				sPlanDetailAction);
 		},
 
 		/**
@@ -286,13 +295,27 @@ sap.ui.define([
 		_getValidationParameters: function (aItems) {
 			return new Promise(function (resolve) {
 				var oPrepData = {
-					"sOrder": undefined,
-					"sOpr": undefined
-				};
+						"sOrder": undefined,
+						"sOpr": undefined
+					},
+					bCheckAllSelected = false;
+				//If All Items are Selected, All the rows data will be populated
+				if (this.oViewModel.getProperty("/aAllSelectedOperations").length !== 0) {
+					aItems = this.oViewModel.getProperty("/aAllSelectedOperations");
+					bCheckAllSelected = true;
+					this.oViewModel.setProperty("/operationTableCount", this.getResourceBundle().getText("tit.opr", (aItems.length).toString()));
+				}
 				aItems.forEach(function (oItem) {
-					var sordnum = oItem.getBindingContext("CreateModel").getProperty("ORDER_NUMBER"),
+					var sordnum, soprnum;
+					//When it's SelectAll data is fetched from stored Json
+					if (bCheckAllSelected) {
+						sordnum = oItem.ORDER_NUMBER;
+						soprnum = oItem.OPERATION_NUMBER;
+					} else {
+						//Data is feteched only from selected context's
+						sordnum = oItem.getBindingContext("CreateModel").getProperty("ORDER_NUMBER");
 						soprnum = oItem.getBindingContext("CreateModel").getProperty("OPERATION_NUMBER");
-
+					}
 					if (typeof oPrepData.sOrder === "undefined") {
 						oPrepData.sOrder = sordnum;
 					} else {
@@ -339,7 +362,6 @@ sap.ui.define([
 
 			this.callFunctionImport(oParams, sFunctionName, "GET", callbackfunction);
 		}
-
 	});
 
 });

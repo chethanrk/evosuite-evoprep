@@ -1,0 +1,12 @@
+<core:FragmentDefinition xmlns="sap.ui.table" xmlns:core="sap.ui.core" xmlns:gnt2="sap.gantt.simple">
+	<gnt2:BaseConditionalShape activeShape="{= ${NO_SHIFT} === 'N' ? 1 : 0}">
+		<gnt2:shapes>
+			<gnt2:BaseRectangle shapeId="{ObjectKey}" hoverable="true" showTitle="true" tooltip="{UTILIZATION}%" height="19" fill="{COLOR}"
+				title="{UTILIZATION}%" time="{parts:['BARSTART_DATE','BARSTART_TIME'],formatter:'.formatter.mergeDateTime'}"
+				endTime="{parts:['BAREND_DATE','BAREND_TIME'],formatter:'.formatter.mergeDateTime'}"/>
+			<gnt2:BaseImage src="{ICON}" fill="{COLOR}" height="19"
+				time="{parts:['BARSTART_DATE','BARSTART_TIME'],formatter:'.formatter.mergeDateTime'}"
+				endTime="{parts:['BAREND_DATE','BAREND_TIME'],formatter:'.formatter.mergeDateTime'}"></gnt2:BaseImage>
+		</gnt2:shapes>
+	</gnt2:BaseConditionalShape>
+</core:FragmentDefinition>

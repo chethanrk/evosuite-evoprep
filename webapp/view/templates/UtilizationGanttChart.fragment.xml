@@ -1,0 +1,78 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:layout="sap.ui.layout" xmlns:u="sap.ui.unified"
+	xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+	xmlns:template="http://schemas.sap.com/sapui5/extension/sap.ui.core.template/1" xmlns:gnt2="sap.gantt.simple" xmlns:tnt="sap.tnt"
+	xmlns:axistime="sap.gantt.axistime" xmlns:config="sap.gantt.config" xmlns:table="sap.ui.table">
+	<template:alias name=".AH" value="sap.ui.model.odata.AnnotationHelper">
+		<template:alias name=".evoAH" value="com.evorait.evosuite.evoprep.model.AnnotationHelper">
+			<template:with path="templateProperties>/" var="tempProps">
+				<gnt2:GanttChartContainer id="idUtilizationGanttChartContainer" busy="{viewModel>/ganttUtilization/busy}" enableCursorLine="false"
+					enableTimeScrollSync="false" height="300px" class="sapUiNoContentPadding">
+					<gnt2:toolbar>
+						<gnt2:ContainerToolbar zoomControlType="None" alignCustomContentToRight="true" style="Clear">
+							<gnt2:content>
+								<ToolbarSpacer/>
+								<Label
+									text="{i18n>lbl.lastSyn} {path:'viewModel>/ganttUtilization/dLastSync', type:'sap.ui.model.type.DateTime', formatOptions : { style:'medium'}}"/>
+								<Text text="|"/>
+								<Select id="idUtilizationSelect" forceSelection="true" change="onUtilizationSelectionChange">
+									<core:Item key="D" text="{i18n>lbl.daily}"/>
+									<core:Item key="W" text="{i18n>lbl.weekly}"/>
+									<core:Item key="M" text="{i18n>lbl.monthly}"/>
+								</Select>
+								<core:ExtensionPoint name="GanttExtP|UtilizationGantt|WorkCenterSet|ContainerToolbar|Before"/>
+								<Button icon="sap-icon://synchronize" tooltip="{i18n>xbut.sync}" press="onPressUtilizationSync"/>
+								<Button icon="{path:'viewModel>/fullscreenGantt',formatter:'.formatter.fullScreenGanttVisibility'}"
+									press="onPressUtilizationGanttFullScreen"/>
+								<core:ExtensionPoint name="GanttExtP|UtilizationGantt|WorkCenterSet|ContainerToolbar|After"/>
+							</gnt2:content>
+							<gnt2:legendContainer>
+								<gnt2:LegendContainer></gnt2:LegendContainer>
+							</gnt2:legendContainer>
+						</gnt2:ContainerToolbar>
+					</gnt2:toolbar>
+					<gnt2:GanttChartWithTable id="idUtilizationGanttChartTable" shapeSelectionMode="Single" ghostAlignment="Start"
+						adhocLineLayer="Bottom" nowLineInUTC="false" 
+						shapeDoubleClick="onUtilizationShapeDoubleClick" 
+						shapeSelectionSettings="{color: '#808080', strokeWidth: 1, strokeDasharray: '5,2'}" selectionPanelSize="{viewModel>/ganttUtilization/ganttSelectionPane}">
+						<gnt2:axisTimeStrategy>
+							<axistime:StepwiseZoomStrategy id="idUtilizationGanttZoom" zoomLevels="3"></axistime:StepwiseZoomStrategy>
+						</gnt2:axisTimeStrategy>
+						<gnt2:table>
+							<table:Table id="idUtilizationGanttTreeTable" selectionMode="Single" visibleRowCountMode="Auto" rowActionCount="2" threshold="10"
+								enableColumnReordering="true" enableBusyIndicator="true" enableCellFilter="false" columnHeaderVisible="true" selectionBehavior="RowOnly"
+								busyStateChanged="onBusyStateChanged"
+								rows="{ path: '/WorkCenterSet', parameters: {operationMode: 'Server', numberOfExpandedLevels: 1, expand: 'WorkCenterToUtilization', groupId: 'GanttTree' } }">
+								<table:columns>
+									<template:repeat list="{path:'tempProps>ganttUtilizationConfigs/lineItems/'}" var="lineItem">
+										<table:Column sortProperty="{= ${path:'lineItem>Value/Path'}}" filterProperty="{= ${path:'lineItem>Value/Path'}}"
+											tooltip="{:= '{/' + ${tempProps>ganttUtilizationConfigs/entitySet} + '/' + ${lineItem>Value/Path} + '/##com.sap.vocabularies.Common.v1.Label/String}' }">
+											<Label
+												text="{:= '{/' + ${tempProps>ganttUtilizationConfigs/entitySet} + '/' + ${lineItem>Value/Path} + '/##com.sap.vocabularies.Common.v1.Label/String}' }"/>
+											<table:template>
+												<Label text="{= '{' + ${path:'lineItem>Value/Path'} + '}' }"/>
+											</table:template>
+										</table:Column>
+									</template:repeat>
+								</table:columns>
+								<table:extension>
+									<OverflowToolbar>
+										<content>
+											<Label text="{i18n>lbl.UtilizationHeader} {viewModel>/ganttUtilization/iCount}" design="Bold"/>
+											</content>
+									</OverflowToolbar>
+								</table:extension>
+								<table:rowSettingsTemplate>
+									<gnt2:GanttRowSettings rowId="{ObjectKey}" shapes1="{ path:'WorkCenterToUtilization', templateShareable:true }">
+										<gnt2:shapes1>
+											<core:Fragment fragmentName="com.evorait.evosuite.evoprep.view.fragments.UtilizationShapes" type="XML"/>
+										</gnt2:shapes1>
+									</gnt2:GanttRowSettings>
+								</table:rowSettingsTemplate>
+							</table:Table>
+						</gnt2:table>
+					</gnt2:GanttChartWithTable>
+				</gnt2:GanttChartContainer>
+			</template:with>
+		</template:alias>
+	</template:alias>
+</core:FragmentDefinition>

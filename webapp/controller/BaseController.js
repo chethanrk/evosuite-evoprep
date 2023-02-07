@@ -13,10 +13,12 @@ sap.ui.define([
 	"sap/base/util/deepClone",
 	"sap/f/library",
 	"sap/ui/core/Fragment",
-	"sap/ui/core/message/Message"
+	"sap/ui/core/message/Message",
+	"sap/ui/model/Filter",
+	"sap/ui/model/FilterOperator",
 ], function (Controller, Constants, History, Dialog, Button, Text, MessageToast, MessageBox, OverrideExecution, formatter, deepClone,
 	library,
-	Fragment, Message) {
+	Fragment, Message, Filter, FilterOperator) {
 	"use strict";
 
 	return Controller.extend("com.evorait.evosuite.evoprep.controller.BaseController", {
@@ -76,7 +78,7 @@ sap.ui.define([
 					public: true,
 					final: true
 				},
-				open: {
+				openDialog: {
 					public: true,
 					final: true
 				},
@@ -103,7 +105,8 @@ sap.ui.define([
 				},
 				onPressClose: {
 					public: true,
-					final: true
+					final: false,
+					overrideExecution: OverrideExecution.after
 				},
 				getAllSmartForms: {
 					public: true,
@@ -175,7 +178,8 @@ sap.ui.define([
 				},
 				onPressAddOperations: {
 					public: true,
-					final: true
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				},
 				onPressOperationSelectCancel: {
 					public: true,
@@ -184,6 +188,60 @@ sap.ui.define([
 				destroyOperationListFragment: {
 					public: true,
 					final: true
+				},
+				copySelectedPlan: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onOperationListDataReceived: {
+					public: true,
+					final: true
+				},
+				onChangeOperationSelectAll: {
+					public: true,
+					final: true
+				},
+				getViewUniqueName: {
+					public: true,
+					final: true
+				},
+				onPressSmartField: {
+					public: true,
+					final: true
+				},
+				resetDeferredGroupToChanges: {
+					public: true,
+					final: true
+				},
+				refreshGantChartData: {
+					public: true,
+					final: true
+				},
+				getSelectedItemsCount: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.After
+				},
+				onOprListSelectionChange: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onPressLongText: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onOpenLongTextPopOver: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				refreshPlanList: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
@@ -191,6 +249,8 @@ sap.ui.define([
 		formatter: formatter,
 		oViewModel: null,
 		oCreateModel: null,
+		aAllOperations: null,
+		bOperationSelectAll: false,
 
 		onInit: function () {
 			//Bind the message model to the view and register it
@@ -310,8 +370,7 @@ sap.ui.define([
 				this.getModel("CreateModel").refresh();
 			};
 
-			var cancelCallback = function () {};
-			this.showConfirmDialog(sTitle, sMsg, successcallback.bind(this), cancelCallback.bind(this));
+			this.showConfirmDialog(sTitle, sMsg, successcallback.bind(this));
 		},
 
 		/**
@@ -322,6 +381,7 @@ sap.ui.define([
 				oModel = this.getModel("viewModel");
 			oModel.setProperty("/layout", library.LayoutType.OneColumn);
 			oRouter.navTo("PrePlanMaster", {}, true);
+			this.refreshPlanList();
 		},
 
 		/**
@@ -336,10 +396,10 @@ sap.ui.define([
 					controller: this
 				}).then(function (oDialog) {
 					this._infoDialog = oDialog;
-					this.open(oDialog);
+					this.openDialog(oDialog);
 				}.bind(this));
 			} else {
-				this.open(this._infoDialog);
+				this.openDialog(this._infoDialog);
 			}
 		},
 
@@ -347,7 +407,7 @@ sap.ui.define([
 		 * Open information popover 
 		 * @param {oDialog}  -- information dialog instance
 		 */
-		open: function (oDialog) {
+		openDialog: function (oDialog) {
 			var oView = this.getView();
 			oDialog.addStyleClass(this.getOwnerComponent().getContentDensityClass());
 			oView.addDependent(oDialog);
@@ -410,6 +470,7 @@ sap.ui.define([
 		 * onpress detail page close
 		 */
 		onPressClose: function (oEvent) {
+			this.getView().unbindElement();
 			this.nav2Master();
 		},
 
@@ -537,7 +598,7 @@ sap.ui.define([
 		 * @param successCallback
 		 * @param cancelCallback
 		 */
-		showConfirmDialog: function (sTitle, sMsg, successCallback, cancelCallback, sState) {
+		showConfirmDialog: function (sTitle, sMsg, successCallback, cancelCallback, sState, beginAction, endAction) {
 			var dialog = new sap.m.Dialog({
 				title: sTitle,
 				type: "Message",
@@ -546,7 +607,7 @@ sap.ui.define([
 					text: sMsg
 				}),
 				beginButton: new sap.m.Button({
-					text: this.getResourceBundle().getText("btn.confirm"),
+					text: beginAction || this.getResourceBundle().getText("btn.confirm"),
 					press: function () {
 						dialog.close();
 						if (successCallback) {
@@ -555,7 +616,7 @@ sap.ui.define([
 					}.bind(this)
 				}),
 				endButton: new sap.m.Button({
-					text: this.getResourceBundle().getText("btn.no"),
+					text: endAction || this.getResourceBundle().getText("btn.no"),
 					press: function () {
 						if (cancelCallback) {
 							cancelCallback();
@@ -594,7 +655,7 @@ sap.ui.define([
 			var oBundle = this.getModel("i18n").getResourceBundle();
 			var sTitle = oBundle.getText("errorTitle");
 			var sMsg = oBundle.getText("errorText");
-			var sBtn = oBundle.getText("close");
+			var sBtn = oBundle.getText("btn.close");
 
 			var dialog = new Dialog({
 				title: sTitle,
@@ -626,8 +687,7 @@ sap.ui.define([
 		 */
 		callFunctionImport: function (oParams, sFuncName, sMethod, fCallback) {
 			var oModel = this.getModel(),
-				oViewModel = this.getModel("viewModel"),
-				oResourceBundle = this.getResourceBundle();
+				oViewModel = this.getModel("viewModel");
 			oViewModel.setProperty("/busy", true);
 			oModel.callFunction("/" + sFuncName, {
 				method: sMethod || "POST",
@@ -686,6 +746,7 @@ sap.ui.define([
 		 * @param errorFn
 		 */
 		deleteEntries: function (aSelected, oTable) {
+
 			return new Promise(function (resolve) {
 				var oModel = this.getModel(),
 					aContext = [];
@@ -696,7 +757,6 @@ sap.ui.define([
 						aContext.push(oContext);
 					}
 				}.bind(this));
-
 				this.saveChangesMain({
 					state: "success",
 					isDelete: true,
@@ -707,7 +767,7 @@ sap.ui.define([
 						oTable.rebindTable();
 					}
 					resolve();
-				}.bind(this), null, oTable);
+				}.bind(this), this._errorCallBackForPlanHeaderSet.bind(this), oTable);
 			}.bind(this));
 		},
 
@@ -725,9 +785,9 @@ sap.ui.define([
 				this.getModel().submitChanges({
 					success: function (oResponse) {
 						this._setBusyWhileSaving(oCtrl, false);
-
-						if (oResponse.__batchResponses && oResponse.__batchResponses[0].response && oResponse.__batchResponses[0].response.statusCode ===
-							"400") {
+						if (oResponse.__batchResponses && oResponse.__batchResponses[0].response && (oResponse.__batchResponses[0].response.statusCode ===
+								"400" || oResponse.__batchResponses[0].response.statusCode ===
+								"500")) {
 							if (oErrorCallback) {
 								oErrorCallback(oResponse);
 							}
@@ -742,6 +802,7 @@ sap.ui.define([
 						if (mParams.isDelete) {
 							this._deleteCreatedLocalDeleteEntry(mParams);
 						}
+						this.getModel().resetChanges();
 					}.bind(this),
 					error: function (oError) {
 						this.getModel().resetChanges();
@@ -779,8 +840,8 @@ sap.ui.define([
 		 */
 		navToDetail: function (sPlanObject) {
 			this.getRouter().navTo("PrePlanDetail", {
-				layout: library.LayoutType.TwoColumnsMidExpanded,
-				plan: sPlanObject
+				layout: this._detailPageLayout(),
+				plan: window.encodeURIComponent(sPlanObject)
 			});
 		},
 
@@ -860,7 +921,7 @@ sap.ui.define([
 				}).then(function (oDialog) {
 					this._addOperationsDetail = oDialog;
 					this.getView().addDependent(oDialog);
-					this.open(oDialog);
+					this.openDialog(oDialog);
 					this._addOperationsDetail.attachAfterOpen(function () {
 						var oOpSmartTable = sap.ui.getCore().byId("idOperationListFragSmartTable");
 						oOpSmartTable.getTable().removeSelections();
@@ -868,8 +929,10 @@ sap.ui.define([
 					}.bind(this));
 				}.bind(this));
 			} else {
-				this.open(this._addOperationsDetail);
+				this.openDialog(this._addOperationsDetail);
 			}
+			this.bOperationSelectAll = false;
+			sap.ui.getCore().byId("idOprSwitchSelectAll").setState(false);
 		},
 
 		/**
@@ -889,6 +952,253 @@ sap.ui.define([
 				this._addOperationsDetail.destroy(true);
 				this._addOperationsDetail = null;
 			}
+		},
+
+		/**
+		 * Used in both master and detail for copying the selected plan
+		 * @Params GUID - Old GUID used for copying it
+		 * */
+
+		copySelectedPlan: function (sGuid, oTable) {
+			//getting the GUID of selected Plan
+			var oResourceBundle = this.getModel("i18n").getResourceBundle(),
+				sFunctionName = "CopyPlan",
+				oParams = {
+					OldPlanGuid: sGuid
+				},
+				newPlanGuid;
+			var sTitle = oResourceBundle.getText("xtit.confirm"),
+				sContinueAction = oResourceBundle.getText("btn.successMsgBxBtnContinueEditing"),
+				sPlanDetailAction = oResourceBundle.getText("btn.successMsgBxBtnPlanDetail"),
+				sConfirmationCopy = oResourceBundle.getText("msg.confirmCopySelectedPlan"),
+				sAcceptCopy = oResourceBundle.getText("msg.accept"),
+				sDeclineCopy = oResourceBundle.getText("msg.decline"),
+				sMsg;
+
+			var fnContinueCallBack = function () {
+				if (oTable) {
+					oTable.rebindTable();
+				}
+			};
+
+			var fnPlanDetailCallBack = function (oData) {
+				this.navToDetail(newPlanGuid);
+			};
+
+			var callBackFunction = function (oData) {
+				this._setBusyWhileSaving(oTable, false);
+				sMsg = oData.Messagebap;
+				newPlanGuid = oData.NewPlanGuid;
+				this.showConfirmDialog(sTitle, sMsg, fnContinueCallBack.bind(this), fnPlanDetailCallBack.bind(this), "None", sContinueAction,
+					sPlanDetailAction);
+			}.bind(this);
+
+			var fnCopyPlan = function () {
+				this._setBusyWhileSaving(oTable, true);
+				this.callFunctionImport(oParams, sFunctionName, "GET", callBackFunction);
+			};
+
+			this.showConfirmDialog(sTitle, sConfirmationCopy, fnCopyPlan.bind(this), null, "None", sAcceptCopy,
+				sDeclineCopy);
+
+		},
+		/**
+		 * Operation Table beforeRebindTable event 
+		 * Opertaion Table Data fetching and storing in local
+		 * @param oEvent
+		 */
+		onOperationListDataReceived: function (oEvent) {
+			var oSource = oEvent.getSource(),
+				oParams = oEvent.getParameter("bindingParams"),
+				sId = oSource.getId();
+			if (sId === "idOperationListFragSmartTable") {
+				var oFilterFinalize = new Filter({
+					filters: [
+						new Filter("USER_STATUS_CODE", FilterOperator.NotContains, "FINL")
+					],
+					and: true
+				});
+				oParams.filters = oParams.filters.concat(oFilterFinalize);
+			}
+			var aFilters = oParams.filters;
+			this.getOwnerComponent().readData("/PlanItemsSet", aFilters).then(function (oData) {
+				if (sId === "idOperationListFragSmartTable") {
+					this.aOprFrgAllOperations = oData.results;
+				} else {
+					this.aAllOperations = oData.results;
+				}
+			}.bind(this));
+		},
+
+		/**
+		 * onPress of Select All in Operation List Fragment
+		 * All the rows data is selected from a GET call and Create Plan is allowed  
+		 * @param oEvent
+		 */
+		onChangeOperationSelectAll: function (oEvent) {
+			var oSmartTable = sap.ui.getCore().byId("idOperationListFragSmartTable"),
+				oTable = oSmartTable.getTable();
+			if (oEvent.getSource().getState()) {
+				this.bOperationSelectAll = true;
+				oTable.selectAll(true);
+			} else {
+				this.bOperationSelectAll = false;
+				oTable.removeSelections();
+			}
+		},
+
+		/**
+		 * gets unique view id setted by TemplateRenderer
+		 * @return string
+		 */
+		getViewUniqueName: function () {
+			var sViewId = this.getView().getId(),
+				sViewName = this.getView().getViewName();
+			return sViewName + "#" + sViewId;
+		},
+
+		/**
+		 * when SmartField is visible as link
+		 * show app to app navigation popup
+		 */
+		onPressSmartField: function (oEvent) {
+			var oSource = oEvent.getSource();
+			this.openApp2AppPopover(oSource, oSource.getUrl());
+		},
+		/**
+		 * Change the deferred group of the odata model
+		 * to changes.
+		 * @param oView - This is the view instance 
+		 */
+		resetDeferredGroupToChanges: function (oView) {
+			oView.getModel().setDeferredGroups(["changes"]);
+		},
+		/**
+		 * Used to refresh gantt chart related data
+		 * @param oModel - viewModel instance
+		 */
+		refreshGantChartData: function (oViewModel) {
+			var oEventBus = sap.ui.getCore().getEventBus();
+			//Refreshing General Tab
+			if (oViewModel.getProperty("/refreshDetailTabs/General")) {
+				oEventBus.publish("RefreshEvoPrepDetailHeader", "refreshDetailHeader");
+			}
+			//Refreshing Utilization Tab
+			if (oViewModel.getProperty("/refreshDetailTabs/Capacity")) {
+				oEventBus.publish("BaseController", "refreshUtilizationGantt");
+			}
+			//Refreshing Graphic Planning Tab
+			if (oViewModel.getProperty("/refreshDetailTabs/Planning")) {
+				oEventBus.publish("BaseController", "refreshFullGantt");
+				oViewModel.setProperty("/bDependencyCall", true);
+				oViewModel.setProperty("/ganttSettings/bUtilizationCall", true);
+			}
+			//Refreshing Operations Tab
+			if (oViewModel.getProperty("/refreshDetailTabs/Operations")) {
+				oEventBus.publish("RefreshEvoPrepDetailOPerationTable", "detailoperationrefresh");
+			}
+
+		},
+
+		/**
+		 * Used for getting the number of items selected using table select All checkbox
+		 * @param oTable - takes table as a parameter
+		 * Returns the Number of Items selected
+		 */
+		getSelectedItemsCount: function (oTable) {
+			var sTableType = oTable.getMetadata().getName(),
+				aSelectedIndice, iNoOfSelected = 0;
+			if (sTableType === "sap.m.Table") {
+				iNoOfSelected = oTable.getSelectedContextPaths().length;
+			} else {
+				aSelectedIndice = oTable.getSelectedIndices();
+				aSelectedIndice.forEach(function (iIndex) {
+					var oItem = oTable.getContextByIndex(iIndex);
+					if (oItem) {
+						iNoOfSelected++;
+					}
+				}.bind(this));
+			}
+			return iNoOfSelected;
+		},
+
+		/**
+		 * Operation list fragment selection change
+		 * validate to duplicate operation selection
+		 */
+		onOprListSelectionChange: function (oEvent) {
+			var oSelectedItem = oEvent.getParameter("listItem"),
+				oContext = oSelectedItem.getBindingContext(),
+				bUserSelectAll = oEvent.getParameter("selectAll"),
+				iNoOfSelected = 0,
+				oOperationData;
+
+			//check for create or detail
+			if (this.oCreateModel) {
+				oOperationData = this.oCreateModel.getData();
+			}
+
+			//handle messageToast for select all using table checkbox
+			if (bUserSelectAll) {
+				iNoOfSelected = this.getSelectedItemsCount(oEvent.getSource().getParent().getTable());
+				this.showMessageToast(this.getResourceBundle().getText("ymsg.maxRowSelection", [iNoOfSelected]));
+			}
+
+			//validate for the duplicate
+			if (!this.checkDuplicate(oOperationData.results, oContext.getProperty("ObjectKey"))) {
+				this.showMessageToast(this.getResourceBundle().getText("ymsg.duplicateValidation"));
+				oSelectedItem.setSelected(false);
+			}
+		},
+
+		/**
+		 * OnPress Operation list Order Long Text and Operation Long Text
+		 * @param oEvent
+		 */
+		onPressLongText: function (oEvent) {
+			var oSource = oEvent.getSource(),
+				oContext = oSource.getBindingContext(),
+				oSelectedItem = oSource.getCustomData()[0],
+				sSelectedKey = oSelectedItem.getKey(),
+				sLongText = oContext.getProperty(sSelectedKey),
+				bLongText = true;
+			if (sLongText !== "") {
+				if (sSelectedKey === "OPERATION_LONG_TEXT") {
+					bLongText = false;
+				}
+				this.getView().getModel("viewModel").setProperty("/sPopoverLongText", sLongText);
+				this.getView().getModel("viewModel").setProperty("/bLongTextField", bLongText);
+				this.onOpenLongTextPopOver(oSource);
+			}
+		},
+
+		/**
+		 * Opening Long Text PopOver in Operation List
+		 * For OrderLongText and OperationLongText
+		 * @param oSource
+		 */
+		onOpenLongTextPopOver: function (oSource) {
+			if (!this._oLongTextPopOver) {
+				Fragment.load({
+					name: "com.evorait.evosuite.evoprep.view.fragments.LongTextPopOver",
+					controller: this
+				}).then(function (pPopover) {
+					this._oLongTextPopOver = pPopover;
+					this.getView().addDependent(this._oLongTextPopOver);
+					this._oLongTextPopOver.openBy(oSource);
+				}.bind(this));
+			} else {
+				this._oLongTextPopOver.openBy(oSource);
+			}
+		},
+
+		/**
+		 * Refresh plan list forcefully
+		 * Trigger event bus
+		 */
+		refreshPlanList: function () {
+			var eventBus = sap.ui.getCore().getEventBus();
+			eventBus.publish("RefreshEvoPrepPlanList", "planlistrefresh");
 		},
 
 		/* =========================================================== */
@@ -1028,7 +1338,7 @@ sap.ui.define([
 		 */
 		_extractError: function (oResponse) {
 			if (!oResponse) {
-				return this._oResourceBundle.getText("errorText");
+				return this.getResourceBundle().getText("errorText");
 			}
 			if (oResponse.responseText) {
 				var parsedJSError = null;
@@ -1063,6 +1373,116 @@ sap.ui.define([
 				return oResponse.body;
 			}
 			return oResponse;
+		},
+
+		/**
+		 * Display the error messages from the backend for the
+		 * PlanHeaderSet entity set incase some error is returned
+		 * from backend
+		 * @param oError - This is a error object returned from backend. 
+		 * @private
+		 */
+		_errorCallBackForPlanHeaderSet: function (oError) {
+			var oResourceBundle = this.getResourceBundle(),
+				sErrortext = oResourceBundle.getText("errorText"),
+				sMessage = this._extractError(oError.response),
+				sFinalMessage;
+			if (oError.hasOwnProperty("__batchResponses")) {
+				sMessage = this._extractError(this._extractError(oError.__batchResponses[0].response));
+				var parsedMessage, aInnerDetails, strError = "";
+				parsedMessage = jQuery.sap.parseJS(sMessage);
+				aInnerDetails = parsedMessage.error.innererror.errordetails;
+				if (aInnerDetails.length > 0) {
+					for (var i = 0; i < aInnerDetails.length; i++) {
+						if (aInnerDetails[i].severity === "warning") {
+							this._addWarningMessageToMessageManager(aInnerDetails[i].message);
+						} else {
+							strError += String.fromCharCode("8226") + " " + aInnerDetails[i].message + "\n\n";
+						}
+					}
+				} else {
+					strError = parsedMessage.error.code + ": " + parsedMessage.error.message.value;
+				}
+				sFinalMessage = strError;
+			} else {
+				sFinalMessage = sMessage;
+			}
+			MessageBox.error(
+				sErrortext, {
+					details: typeof (sFinalMessage) === "string" ? sFinalMessage.replace(/\n/g, "<br/>") : sFinalMessage,
+					styleClass: this.getOwnerComponent().getContentDensityClass(),
+					actions: [MessageBox.Action.CLOSE],
+					onClose: function () {
+
+					}.bind(this)
+				}
+			);
+		},
+
+		/**
+		 * Decides layout of detail page based on global config
+		 * @private
+		 */
+		_detailPageLayout: function () {
+			var sLayout = library.LayoutType.TwoColumnsMidExpanded;
+			if (this.getModel("user").getProperty("/DEFAULT_PLAN_DET_FULLSC")) {
+				sLayout = library.LayoutType.MidColumnFullScreen;
+			}
+			return sLayout;
+		},
+		/** Method to get the context of selected items in the 
+		 * table which based on the odata property
+		 * @param oTable {object} table instance
+		 * @param sProperty {string} property name to be validate
+		 * @return aArrayPropertyContext {array}
+		 */
+		_returnPropertyContext: function (oTable, sProperty) {
+			var aSelectections, aContext, sDemandPath, bPropertyExist, aArrayPropertyContext = [];
+			if (oTable.getAggregation("items")) {
+				aSelectections = oTable.getSelectedItems();
+				for (var i = 0; i < aSelectections.length; i++) {
+					aContext = aSelectections[i].getBindingContext();
+					if (aContext) {
+						sDemandPath = aContext.getPath();
+						bPropertyExist = this.getModel().getProperty(sDemandPath + "/" + sProperty);
+						if (bPropertyExist) {
+							aArrayPropertyContext.push(aContext);
+						}
+					}
+				}
+			} else {
+				aSelectections = this.oTable.getSelectedIndices();
+				for (var j = 0; j < aSelectections.length; j++) {
+					aContext = this.oTable.getContextByIndex(aSelectections[j]);
+					if (aContext) {
+						sDemandPath = aContext.getPath();
+						bPropertyExist = this.getModel().getProperty(sDemandPath + "/" + sProperty);
+						if (bPropertyExist) {
+							aArrayPropertyContext.push(aContext);
+						}
+					}
+				}
+			}
+			return aArrayPropertyContext;
+		},
+		/** Method to check if any operation exist which has user status
+		 *  finalized
+		 * @param oTable {object} table instance
+		 * @return {boolean}
+		 */
+		_CheckForFinalOpreation: function (oTable) {
+			var iTotalSelections,
+				aSelectedContext = this._returnPropertyContext(oTable, "ALLOW_EDIT");
+			if (oTable.getAggregation("items")) {
+				iTotalSelections = oTable.getSelectedItems();
+			} else {
+				iTotalSelections = oTable.getSelectedIndices();
+			}
+			if (iTotalSelections.length !== aSelectedContext.length) {
+				this.showMessageToast(this.getResourceBundle().getText("msg.operationFinalValidation"));
+				return false;
+			}
+			return true;
 		}
 
 	});

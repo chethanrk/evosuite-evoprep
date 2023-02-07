@@ -45,6 +45,12 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
+				},
+
+				onCopyPrePlanPress: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
@@ -57,11 +63,22 @@ sap.ui.define([
 		 * @memberOf com.evorait.evosuite.evoprep.view.PrePlanMaster
 		 */
 		onInit: function () {
+			var eventBus = sap.ui.getCore().getEventBus();
 			this.oSmartTable = this.getView().byId("idPagePrePlanSmartTable");
-			var oRouter = this.getRouter();
-			//route for page create new order
-			oRouter.getRoute("PrePlanMaster").attachMatched(this._routeMatchedMaster, this);
-			oRouter.getRoute("PrePlanDetail").attachMatched(this._routeMatchedDetail, this);
+			this.oViewModel = this.getModel("viewModel");
+			this.oViewModel.setProperty("/busy", false);
+
+			//refresh plan list
+			eventBus.subscribe("RefreshEvoPrepPlanList", "planlistrefresh", this._refreshPlanTable, this);
+		},
+
+		/**
+		 * Called when a controller is destroyed 
+		 * @memberOf com.evorait.evosuite.evoprep.view.PrePlanMaster
+		 */
+		onExit: function () {
+			var eventBus = sap.ui.getCore().getEventBus();
+			eventBus.unsubscribe("RefreshEvoPrepPlanList", "planlistrefresh", this._refreshPlanTable, this);
 		},
 
 		/* =========================================================== */
@@ -88,11 +105,11 @@ sap.ui.define([
 				oTable = this.oSmartTable.getTable();
 			oSource.setSelected(true);
 			oTable.fireSelectionChange(oSource);
-			this.getModel("viewModel").setProperty("/loadMaster", true);
 			var sobjectKeyId = oSource.getBindingContext().getProperty("ObjectKey");
 			if (sobjectKeyId) {
 				this.navToDetail(sobjectKeyId);
 			}
+			this.getModel("viewModel").setProperty("/bCopyEnabled", false); //added so that copy is disabled even after coming from different view
 		},
 
 		/**
@@ -100,12 +117,39 @@ sap.ui.define([
 		 * simulate to reouting 
 		 */
 		onPressComapre: function (oEvent) {
-			//unselect all the selected rows
+			var oTable = this.oSmartTable.getTable(),
+				aListItems = oTable.getSelectedItems(),
+				aPlans = [];
+
+			if (aListItems.length === 0 || aListItems.length === 1) {
+				this.showMessageToast(this.getResourceBundle().getText("msg.selectatleastTwoPlans"));
+			} else if (aListItems.length > 1 && aListItems.length < 4) {
+				aListItems.forEach(function (oItem) {
+					aPlans.push(oItem.getBindingContext().getObject().ObjectKey);
+				});
+
+				//unselect all the selected rows
+				this._removeTableSelection();
+				this.getModel("viewModel").setProperty("/fullscreenGantt", false);
+				this.getRouter().navTo("PrePlanCompare", {
+					layout: library.LayoutType.MidColumnFullScreen,
+					plans: window.encodeURIComponent(JSON.stringify(aPlans))
+				});
+			} else {
+				this.showMessageToast(this.getResourceBundle().getText("msg.maxPlanSelectionToCompare"));
+			}
+		},
+
+		/** 
+		 * Sending a call to backend for copy with the selected Plan's GuID on click of copy. 
+		 * */
+		onCopyPrePlanPress: function () {
+			var oSelectedItem = this.oSmartTable.getTable().getSelectedItem(),
+				sGuid = oSelectedItem.getBindingContext().getProperty("ObjectKey");
+
+			this.copySelectedPlan(sGuid, this.oSmartTable);
 			this._removeTableSelection();
-			this.getRouter().navTo("PrePlanCompare", {
-				layout: library.LayoutType.TwoColumnsMidExpanded,
-				plans: "01"
-			});
+			this.getModel("viewModel").setProperty("/bCopyEnabled", false);
 		},
 
 		/**
@@ -124,13 +168,26 @@ sap.ui.define([
 		 * @param oEvent
 		 */
 		onWPrePlanListSelectionChange: function (oEvent) {
-			var isPreplanDeletEnabled = false;
-			this.selectedFunction = "";
-			var oSelectedPrePlanContext = this.oSmartTable.getTable().getSelectedContexts();
+			var isPreplanDeletEnabled = false,
+				oSelectedPrePlanContext = this.oSmartTable.getTable().getSelectedContexts(),
+				sStatus;
 			if (oSelectedPrePlanContext.length > 0) {
 				isPreplanDeletEnabled = true;
 			}
+
+			if (oSelectedPrePlanContext.length === 1) {
+				//enable the copy button only for New & In Progress Status
+				sStatus = oSelectedPrePlanContext[0].getProperty("STATUS_SHORT");
+				if (sStatus === "INPR" || sStatus === "NEW")
+					this.getModel("viewModel").setProperty("/bCopyEnabled", true);
+			} else {
+				//disable the copy button
+				this.getModel("viewModel").setProperty("/bCopyEnabled", false);
+			}
+
 			this.getModel("viewModel").setProperty("/isPrePlanSelected", isPreplanDeletEnabled);
+			this.oViewModel.setProperty("/bMaterialsDemandsBlock", false);
+			this.oViewModel.setProperty("/bEnableFinalizeBtn", false);
 		},
 
 		/**
@@ -155,27 +212,12 @@ sap.ui.define([
 		/* =========================================================== */
 		/* Private methods                                              */
 		/* =========================================================== */
-		/**
-		 * Handle master route match 
-		 * load table data
-		 */
-		_routeMatchedMaster: function (data) {
-			if (this.oSmartTable) {
-				this.getModel().metadataLoaded().then(function () {
-					this.oSmartTable.rebindTable();
-				}.bind(this));
-			}
-		},
 
 		/**
-		 * Handle detail route match 
-		 * load table data
+		 * refresh Plan list forcefully
 		 */
-		_routeMatchedDetail: function (data) {
-			var oParam = data.getParameter("arguments");
-			if (this.oSmartTable && !this.getModel("viewModel").getProperty("/loadMaster")) {
-				this.oSmartTable.rebindTable();
-			}
+		_refreshPlanTable: function () {
+			this.oSmartTable.rebindTable();
 		},
 
 		/**

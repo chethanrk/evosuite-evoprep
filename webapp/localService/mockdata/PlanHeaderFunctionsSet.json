@@ -1,0 +1,32 @@
+{
+	"d": {
+		"results": [{
+			"__metadata": {
+				"id": "https://ed1.evorait.net:50103/sap/opu/odata/EVORA/EPP_MAIN_SRV/PlanHeaderFunctionsSet(FunctionType='I',Function='ARCHIVE')",
+				"uri": "https://ed1.evorait.net:50103/sap/opu/odata/EVORA/EPP_MAIN_SRV/PlanHeaderFunctionsSet(FunctionType='I',Function='ARCHIVE')",
+				"type": "com.evorait.evoprep.PlanHeaderFunctions"
+			},
+			"FunctionType": "I",
+			"Function": "ARCHIVE",
+			"Description": "Archive"
+		}, {
+			"__metadata": {
+				"id": "https://ed1.evorait.net:50103/sap/opu/odata/EVORA/EPP_MAIN_SRV/PlanHeaderFunctionsSet(FunctionType='I',Function='FINAL')",
+				"uri": "https://ed1.evorait.net:50103/sap/opu/odata/EVORA/EPP_MAIN_SRV/PlanHeaderFunctionsSet(FunctionType='I',Function='FINAL')",
+				"type": "com.evorait.evoprep.PlanHeaderFunctions"
+			},
+			"FunctionType": "I",
+			"Function": "FINAL",
+			"Description": "Final"
+		}, {
+			"__metadata": {
+				"id": "https://ed1.evorait.net:50103/sap/opu/odata/EVORA/EPP_MAIN_SRV/PlanHeaderFunctionsSet(FunctionType='I',Function='INPROGRESS')",
+				"uri": "https://ed1.evorait.net:50103/sap/opu/odata/EVORA/EPP_MAIN_SRV/PlanHeaderFunctionsSet(FunctionType='I',Function='INPROGRESS')",
+				"type": "com.evorait.evoprep.PlanHeaderFunctions"
+			},
+			"FunctionType": "I",
+			"Function": "INPROGRESS",
+			"Description": "In Progress"
+		}]
+	}
+}

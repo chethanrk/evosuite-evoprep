@@ -1,13 +1,15 @@
 sap.ui.define([
-	"com/evorait/evosuite/evoprep/controller/BaseController",
+	"com/evorait/evosuite/evoprep/controller/OperationTableController",
 	"sap/ui/core/mvc/Controller",
 	"sap/base/util/isEmptyObject",
 	"sap/ui/core/Fragment",
-	"sap/ui/core/mvc/OverrideExecution"
-], function (BaseController, Controller, isEmptyObject, Fragment, OverrideExecution) {
+	"sap/ui/core/mvc/OverrideExecution",
+	"sap/f/library",
+	"sap/ui/model/Filter"
+], function (OperationTableController, Controller, isEmptyObject, Fragment, OverrideExecution, library, Filter) {
 	"use strict";
 
-	return BaseController.extend("com.evorait.evosuite.evoprep.block.demand.DemandsBlockController", {
+	return OperationTableController.extend("com.evorait.evosuite.evoprep.block.demand.DemandsBlockController", {
 
 		metadata: {
 			// extension can declare the public methods
@@ -23,7 +25,37 @@ sap.ui.define([
 					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
+				onPressOperationListCancel: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				handleSelectionChangeOperation: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onPressDeleteOperations: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
 				onFieldChange: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				fnChangeIconClick: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				fnApplyFilterToGraphic: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onTableUpdating: {
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
@@ -31,9 +63,8 @@ sap.ui.define([
 			}
 		},
 
-		_oSmartTable: null,
-		_oTable: null,
-		_oOperationContext: null,
+		allFiltersNotCopied: false,
+
 		/* =========================================================== */
 		/* Lifecycle methods                                           */
 		/* =========================================================== */
@@ -44,8 +75,13 @@ sap.ui.define([
 		 * @memberOf com.evorait.evosuite.evoprep.block.demand.DemandsBlock
 		 */
 		onInit: function () {
-			this._oSmartTable = this.getView().byId("idDemandBlockSmartTable");
-			this._oTable = this._oSmartTable.getTable();
+			OperationTableController.prototype.onInit.apply(this, arguments);
+			var eventBus = sap.ui.getCore().getEventBus();
+			this.oSmartTable = this.getView().byId("idDemandBlockSmartTable");
+			this.oTable = this.oSmartTable.getTable();
+
+			//refresh detail page operation list
+			eventBus.subscribe("RefreshEvoPrepDetailOPerationTable", "detailoperationrefresh", this._refreshDetailOperationTable, this);
 		},
 
 		/**
@@ -54,7 +90,9 @@ sap.ui.define([
 		 * @memberOf com.evorait.evosuite.evoprep.block.demand.DemandsBlocks
 		 */
 		onExit: function () {
+			var eventBus = sap.ui.getCore().getEventBus();
 			this.destroyOperationListFragment();
+			eventBus.unsubscribe("RefreshEvoPrepDetailOPerationTable", "detailoperationrefresh", this._refreshDetailOperationTable, this);
 		},
 
 		/* =========================================================== */
@@ -68,16 +106,23 @@ sap.ui.define([
 		onPressAdd: function (oEvent) {
 			var oSmartTable = sap.ui.getCore().byId("idOperationListFragSmartTable"),
 				oTable = oSmartTable.getTable(),
-				aSelectedItems = oTable.getSelectedItems();
+				aSelectedItems = oTable.getSelectedItems(),
+				aAllOperationsSelected = [];
 
 			if (aSelectedItems.length === 0) {
 				this.showMessageToast(this.getResourceBundle().getText("msg.selectAtleast"));
 				return;
 			}
-			this._getValidationParameters(aSelectedItems).then(function (oPreparedData) {
+			//When All the Operations are Selected
+			if (this.bOperationSelectAll) {
+				aSelectedItems = this.aOprFrgAllOperations;
+				aAllOperationsSelected = this.aOprFrgAllOperations;
+			}
+			this.getModel("viewModel").setProperty("/aAllSelectedOperations", aAllOperationsSelected);
+			this.getValidationParameters(aSelectedItems).then(function (oPreparedData) {
 				if (oPreparedData && oPreparedData.sOrder && oPreparedData.sOpr) {
 					oPreparedData.sPrepPlan = this.getView().getBindingContext().getProperty("PLAN_ID");
-					this._triggerFunctionImport(oPreparedData, aSelectedItems);
+					this.triggerFunctionImport(oPreparedData, aSelectedItems, this._afterSuccess.bind(this), this._afterError.bind(this));
 				}
 			}.bind(this));
 			this.onPressOperationListCancel();
@@ -97,11 +142,13 @@ sap.ui.define([
 		 */
 		onPressEdit: function (oEvent) {
 			var bEdit = oEvent.getParameter("editable");
+			this.getModel("viewModel").setProperty("/bOperationTableMode", bEdit);
+			this.getModel("viewModel").setProperty("/bEnableOperationDelete", false);
 			if (!bEdit && !isEmptyObject(this.getModel().getPendingChanges())) {
 				this.saveChangesMain({
 					state: "success",
 					isCreate: false
-				}, this._afterSuccess.bind(this), this._afterError.bind(this), this._oSmartTable);
+				}, this._afterSuccess.bind(this), this._afterError.bind(this), this.getView());
 			}
 		},
 
@@ -109,37 +156,61 @@ sap.ui.define([
 		 *  Selection Change event on table 
 		 */
 		handleSelectionChangeOperation: function (oEvent) {
-			this._oOperationContext = oEvent.getParameter("listItem").getBindingContext();
-		},
+			var oSource = oEvent.getSource(),
+				aSelectedItems = oSource.getSelectedItems();
+			if (aSelectedItems.length >
+				0) {
+				this.getModel("viewModel").setProperty("/bEnableOperationDelete", true);
+			} else {
+				this.getModel("viewModel").setProperty("/bEnableOperationDelete", false);
+			}
 
+			//handle finalise and material releated button enable
+			this._handleOprCommonBtnEnable();
+
+		},
 		/**
 		 * Handle Object list delete operation
 		 */
 		onPressDeleteOperations: function () {
 			var sTitle = this.getResourceBundle().getText("tit.confirmDelete"),
-				sMsg = this.getResourceBundle().getText("msg.confirmDeletePrepLan");
+				aSelectedItems = this.oTable.getSelectedItems(),
+				sMsg;
 
 			var successFn = function () {
-				this.getModel().setProperty(this._oOperationContext.getPath() + "/DELETE_ENTRY", "X");
+				var aContext = [];
+				this.getModel().setDeferredGroups(["changes"]);
+				aSelectedItems.forEach(function (oItem) {
+					var oContext = oItem.getPath ? oItem : oItem.getBindingContext();
+					if (oContext) {
+						this.getModel().setProperty(oContext.getPath() + "/DELETE_ENTRY", "X");
+						aContext.push(oContext);
+					}
+				}.bind(this));
 				this.saveChangesMain({
 					state: "success",
-					isCreate: false
+					isDelete: true,
+					aContext: aContext
 				}, this._afterSuccess.bind(this), this._afterError.bind(this), this.getView());
-				this._oTable.removeSelections();
-				this._oOperationContext = null;
+				this.oTable.removeSelections();
+				this.getModel("viewModel").setProperty("/bEnableOperationDelete", false);
 			};
 
 			var declineFn = function () {
-				this._oTable.removeSelections();
-				this._oOperationContext = null;
+				this.oTable.removeSelections();
+				this.getModel("viewModel").setProperty("/bEnableOperationDelete", false);
 			};
 
-			if (this._oOperationContext) {
-				if (this._oTable.getItems().length === 1) {
-					sTitle = this.getResourceBundle().getText("tit.confirmDelete");
+			if (aSelectedItems.length > 0) {
+				if (this.oTable.getItems().length === 1) {
 					sMsg = this.getResourceBundle().getText("msg.confirmDeleteLastOperation");
+				} else if (this.oTable.getItems().length === aSelectedItems.length) {
+					sMsg = this.getResourceBundle().getText("msg.confirmDeleteAllOperation");
+				} else if (aSelectedItems.length === 1) {
+					sMsg = this.getResourceBundle().getText("msg.confirmDeleteSelectedOperation");
+				} else {
+					sMsg = this.getResourceBundle().getText("msg.confirmDeleteSelectedOperations");
 				}
-
 				this.showConfirmDialog(sTitle, sMsg, successFn.bind(this), declineFn.bind(this));
 			} else {
 				var msgs = this.getView().getModel("i18n").getResourceBundle().getText("msg.selectAtleast");
@@ -169,7 +240,69 @@ sap.ui.define([
 			if (result) {
 				this.showMessageToast(sMsg);
 				this.getModel().resetChanges();
+				return;
 			}
+			// check the validation for the finalized operation change
+			this.validateEditFinalizeOperation(oEvent, "ALLOW_EDIT");
+
+		},
+
+		/**
+		 * On click of CHange Icon show Change Logs page
+		 * @param oEvent
+		 */
+		fnChangeIconClick: function (oEvent) {
+			var oBindCon = oEvent.getSource().getBindingContext(),
+				sObjectKeyId = oBindCon.getProperty("ObjectKey");
+			if (oBindCon.getProperty("CHANGE_INDICATOR")) {
+				var oEventBus = sap.ui.getCore().getEventBus();
+				this.oViewModel.setProperty("/layout", library.LayoutType.ThreeColumnsMidExpanded);
+				oEventBus.publish("ChangeLogs", "routeMatched", {
+					sKey: sObjectKeyId
+				});
+			}
+		},
+
+		/**
+		 * Apply selected filter to Graphic planning
+		 */
+		fnApplyFilterToGraphic: function (oEvent) {
+			var eventBus = sap.ui.getCore().getEventBus();
+			if (this.allFiltersNotCopied) {
+				this.showMessageToast(this.getResourceBundle().getText("msg.allFiltersNotApplied"));
+			}
+			eventBus.publish("GanttChart", "applyFiltersFromOperations");
+		},
+
+		/**
+		 * Prepare filters from operations table to be applied on graphic planning
+		 */
+		onTableUpdating: function (oEvent) {
+			var aFilters = oEvent.getParameter("bindingParams").filters,
+				aLineItems = this.getModel("templateProperties").getData().ganttConfigs.lineItems,
+				aResFilter = [];
+			var aCheckFields = ["ORDER_NUMBER", "OPERATION_DESCRIPTION", "OPERATION_NUMBER", "SYSTEM_STATUS", "USER_STATUS"];
+			if (aFilters && aFilters.length > 0) {
+				this.getModel("viewModel").setProperty("/bEnableApplyFilter", true);
+				aFilters.forEach(function (oFilter) {
+					if (aCheckFields.indexOf(oFilter.sPath) > -1) {
+						aLineItems.forEach(function (oItem) {
+							if (oFilter.sPath.indexOf(oItem.Value.Path) > -1) {
+								oFilter.sPath = oItem.Value.Path;
+								aResFilter.push(oFilter);
+							}
+						});
+					}
+				});
+			} else {
+				this.getModel("viewModel").setProperty("/bEnableApplyFilter", false);
+			}
+			if (aFilters.length > aResFilter.length) {
+				this.allFiltersNotCopied = true;
+			} else {
+				this.allFiltersNotCopied = false;
+			}
+			this.getModel("viewModel").setProperty("/filtersToGraphicPlanning", aResFilter);
 		},
 
 		/* =========================================================== */
@@ -177,13 +310,19 @@ sap.ui.define([
 		/* =========================================================== */
 
 		/**
+		 * Refresh detail page operation table forcefully
+		 */
+		_refreshDetailOperationTable: function () {
+			this.oSmartTable.rebindTable();
+		},
+
+		/**
 		 * After operation edit success callback
 		 */
 		_afterSuccess: function () {
 			this.showMessageToast(this.getResourceBundle().getText("msg.saveSuccess"));
-			this.getModel().refresh();
-			var oEventBus = sap.ui.getCore().getEventBus();
-			oEventBus.publish("BaseController", "refreshFullGantt", this._loadGanttData, this);
+			this.resetDeferredGroupToChanges(this.getView());
+			this.refreshGantChartData(this.getModel("viewModel"));
 		},
 
 		/**
@@ -191,129 +330,7 @@ sap.ui.define([
 		 */
 		_afterError: function () {
 			this.getModel().resetChanges();
-		},
-
-		/**
-		 * Prepare function import parameter ready
-		 * check for the order number and operation number 
-		 * @[param] - aItems - operationlist items
-		 */
-		_getValidationParameters: function (aItems) {
-			return new Promise(function (resolve) {
-				var oPrepData = {
-					"sOrder": undefined,
-					"sOpr": undefined
-				};
-				aItems.forEach(function (oItem) {
-					var oContext = oItem.getBindingContext();
-					var sordnum = oContext.getProperty("ORDER_NUMBER"),
-						soprnum = oContext.getProperty("OPERATION_NUMBER");
-
-					if (typeof oPrepData.sOrder === "undefined") {
-						oPrepData.sOrder = sordnum;
-					} else {
-						oPrepData.sOrder += "|" + sordnum;
-					}
-					if (typeof oPrepData.sOpr === "undefined") {
-						oPrepData.sOpr = soprnum;
-					} else {
-						oPrepData.sOpr += "|" + soprnum;
-					}
-				});
-				resolve(oPrepData);
-			}.bind(this));
-		},
-
-		/**
-		 * Trigger function import with url parameters
-		 * @{param} oParam - Url parameter
-		 * @{param} -aSelectedItems - Selected operations from the operation list 
-		 */
-		_triggerFunctionImport: function (oParam, aSelectedItems) {
-			var oParams = {
-					PlanID: oParam.sPrepPlan,
-					OrderNumber: oParam.sOrder,
-					OperationNumber: oParam.sOpr
-				},
-				sFunctionName = "CalculateDate";
-
-			var callbackfunction = function (oImportedData) {
-				this._confirmDateChange(aSelectedItems);
-			}.bind(this);
-
-			this.callFunctionImport(oParams, sFunctionName, "GET", callbackfunction);
-		},
-
-		/**
-		 * Confirm before add operations to table
-		 * @{param} -aSelectedItems - Selected operations from the operation list 
-		 */
-		_confirmDateChange: function (aSelectedItems) {
-			var sTitle = this.getResourceBundle().getText("xtit.confirm"),
-				sMsg = this.getResourceBundle().getText("msg.operationUpdateConfirm");
-
-			var successFn = function () {
-				this._triggerItemMergerequest(aSelectedItems, this._afterSuccess.bind(this), this._afterError.bind(this));
-			};
-			this.showConfirmDialog(sTitle, sMsg, successFn.bind(this));
-		},
-
-		/**
-		 * Prepare the payload for the merge call with selected operation for the add operation
-		 * @{param} -aSelectedItems - Selected operations from the operation list 
-		 */
-		_triggerItemMergerequest: function (aSelectedItems, oSuccessCallback, oErrorCallback) {
-			var mParameters = {
-				groupId: "batchSave",
-				success: oSuccessCallback,
-				error: oErrorCallback
-			};
-			this._preparePayload(mParameters, aSelectedItems).then(function (oData) {
-				if (oData.length > 0) {
-					this.saveChangesMain({
-						state: "success",
-						isCreate: true
-					}, this._afterSuccess.bind(this), this._afterError.bind(this), this.getView());
-				}
-			}.bind(this));
-		},
-
-		/**
-		 * Preapre payload for the create new assigmentes 
-		 * Create changeset
-		 * used deferredgroups
-		 * @Param {mParameters} - details to odata model
-		 * @{param} -aSelectedItems - Selected operations from the operation list 
-		 */
-		_preparePayload: function (mParameters, aSelectedItems) {
-			return new Promise(function (resolve) {
-				this.getModel().setDeferredGroups(["batchSave"]);
-				aSelectedItems.forEach(function (oItem) {
-					var oRowData = oItem.getBindingContext().getObject(),
-						singleentry = {
-							groupId: "batchSave"
-						},
-						obj = {},
-						entitySet = "PlanItemsSet";
-					//collect all assignment properties who allowed for create
-					this.getModel().getMetaModel().loaded().then(function () {
-						var oMetaModel = this.getModel().getMetaModel(),
-							oEntitySet = oMetaModel.getODataEntitySet(entitySet),
-							oEntityType = oEntitySet ? oMetaModel.getODataEntityType(oEntitySet.entityType) : null,
-							aProperty = oEntityType ? oEntityType.property : [];
-
-						aProperty.forEach(function (property) {
-							if (oRowData.hasOwnProperty(property.name) && oRowData[property.name]) {
-								obj[property.name] = oRowData[property.name];
-							}
-						});
-						obj.PLAN_ID = this.getView().getBindingContext().getProperty("PLAN_ID");
-						singleentry.properties = obj;
-						this.getModel().createEntry("/" + entitySet, singleentry);
-					}.bind(this));
-				}.bind(this));
-				resolve(aSelectedItems);
-			}.bind(this));
+			this.resetDeferredGroupToChanges(this.getView());
 		}
 	});
 });

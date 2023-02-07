@@ -268,6 +268,10 @@ sap.ui.define([
 				return;
 			}
 
+			if (oView.getElementBinding()) {
+				var sElementBindingPath = oView.getElementBinding().getPath();
+				oView.getModel().resetChanges([sElementBindingPath]);
+			}
 			oView.unbindElement();
 			oView.bindElement({
 				path: sPath,

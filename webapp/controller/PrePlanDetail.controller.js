@@ -7,8 +7,9 @@ sap.ui.define([
 	"sap/ui/model/FilterOperator",
 	"sap/base/util/deepClone",
 	"com/evorait/evosuite/evoprep/model/formatter",
-	"sap/gantt/misc/Utility"
-], function (BaseController, Fragment, OverrideExecution, library, Filter, FilterOperator, deepClone, formatter, Utility) {
+	"sap/gantt/misc/Utility",
+	"sap/m/MessageBox"
+], function (BaseController, Fragment, OverrideExecution, library, Filter, FilterOperator, deepClone, formatter, Utility, MessageBox) {
 	"use strict";
 
 	return BaseController.extend("com.evorait.evosuite.evoprep.controller.PrePlanDetail", {
@@ -21,17 +22,22 @@ sap.ui.define([
 			methods: {
 				onPressHeaderEdit: {
 					public: true,
-					final: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
 				onPressGanttFullScreen: {
 					public: true,
-					final: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
 				onPressCancelPrePlanHeader: {
 					public: true,
-					final: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onPressCopyPrePlanHeader: {
+					public: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
 				oPressDetailDelete: {
@@ -51,38 +57,97 @@ sap.ui.define([
 				},
 				onClickExpandCollapse: {
 					public: true,
-					final: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
 				onShowDependencies: {
 					public: true,
-					final: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
 				onShapeDrop: {
 					public: true,
-					final: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
 				onShapeResize: {
 					public: true,
-					final: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
 				onPressShapesEdit: {
 					public: true,
-					final: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
 				onPressSavePrePlanHeader: {
 					public: true,
-					final: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				navBack: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onPressUtilizationSync: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onUtilizationSelectionChange: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onPressUtilizationGanttFullScreen: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onUtilizationShapeDoubleClick: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onDoubleClickPlanningGantt: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onPlanningShaprePress: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onBeforeRebindUtilizationDetails: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onPlanningGanttChangeDateRange: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onChangeCalculateUtilization: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onClrFilters: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onPressHeaderReload: {
+					public: true,
+					final: false,
 					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
 
-		oViewModel: null,
 		_oContext: null,
 
 		/**
@@ -92,10 +157,16 @@ sap.ui.define([
 		 */
 		onInit: function () {
 			this.oViewModel = this.getModel("viewModel");
+			this.oViewModel.setProperty("/busy", false);
 			var eventBus = sap.ui.getCore().getEventBus();
+
+			this.oViewModel.setProperty("/busy", false);
 			//Binnding has changed in TemplateRenderController.js
 			eventBus.subscribe("TemplateRendererEvoPrep", "changedBinding", this._changedBinding, this);
 			eventBus.subscribe("BaseController", "refreshFullGantt", this._loadGanttData, this);
+			eventBus.subscribe("BaseController", "refreshUtilizationGantt", this._loadUtilizationGantt, this);
+			eventBus.subscribe("RefreshEvoPrepDetailHeader", "refreshDetailHeader", this._refrshDetailHeader, this);
+			eventBus.subscribe("GanttChart", "applyFiltersFromOperations", this._fnFiltersOnGraphic, this);
 
 			//Initializing GanttActions.js
 			this.GanttActions = this.getOwnerComponent().GanttActions;
@@ -103,6 +174,11 @@ sap.ui.define([
 
 			this._treeTable = this.getView().byId("idPlanningGanttTreeTable");
 			this._axisTime = this.getView().byId("idPlanningGanttZoom");
+			this._planningGanttContainer = this.getView().byId("idPlanningGanttChartContainer");
+			this._utilizationGanttContainer = this.getView().byId("idUtilizationGanttChartContainer");
+
+			this._UtilizationAxisTime = this.getView().byId("idUtilizationGanttZoom");
+			this._UtilizationSelectView = this.getView().byId("idUtilizationSelect");
 		},
 		/**
 		 * Called when the View has been rendered (so its HTML is part of the document). Post-rendering manipulations of the HTML could be done here.
@@ -115,11 +191,16 @@ sap.ui.define([
 		/**
 		 * Called when a controller is destroyed
 		 * Object on exit
+		 * Unsubscribe the subscribed events
 		 */
 		onExit: function () {
 			this.getView().unbindElement();
 			var eventBus = sap.ui.getCore().getEventBus();
 			eventBus.unsubscribe("TemplateRendererEvoPrep", "changedBinding", this._changedBinding, this);
+			eventBus.unsubscribe("BaseController", "refreshFullGantt", this._loadGanttData, this);
+			eventBus.unsubscribe("BaseController", "refreshUtilizationGantt", this._loadUtilizationGantt, this);
+			eventBus.unsubscribe("GanttChart", "applyFiltersFromOperations", this._fnFiltersOnGraphic, this);
+			eventBus.unsubscribe("RefreshEvoPrepDetailHeader", "refreshDetailHeader", this._refrshDetailHeader, this);
 
 			if (this._actionSheetStatus) {
 				this._actionSheetStatus.destroy(true);
@@ -150,9 +231,12 @@ sap.ui.define([
 				oViewModel = this.getModel("viewModel");
 			if (oSource.getIcon() === "sap-icon://full-screen") {
 				oViewModel.setProperty("/layout", library.LayoutType.MidColumnFullScreen);
-				oViewModel.setProperty("/ganttFullMode", false);
+				oViewModel.setProperty("/ganttFullMode", true);
+				oViewModel.setProperty("/ganttUtilizationFullMode", false);
 				this.oViewModel.setProperty("/fullscreenGantt", false);
 				oSource.setType("Emphasized");
+				oEvent.getSource().getParent().getParent().getParent().getParent().addStyleClass("sapUxAPObjectPageSubSectionFitContainer");
+				this._planningGanttContainer.setHeight("100%");
 			} else {
 				if (oViewModel.getProperty("/fullscreen")) {
 					oViewModel.setProperty("/layout", library.LayoutType.TwoColumnsMidExpanded);
@@ -160,8 +244,11 @@ sap.ui.define([
 					oViewModel.setProperty("/layout", library.LayoutType.MidColumnFullScreen);
 				}
 				oViewModel.setProperty("/ganttFullMode", true);
+				oViewModel.setProperty("/ganttUtilizationFullMode", true);
 				this.oViewModel.setProperty("/fullscreenGantt", true);
 				oSource.setType("Default");
+				oEvent.getSource().getParent().getParent().getParent().getParent().removeStyleClass("sapUxAPObjectPageSubSectionFitContainer");
+				this._planningGanttContainer.setHeight("500px");
 			}
 		},
 
@@ -188,7 +275,7 @@ sap.ui.define([
 				//if form is valid save created entry
 				if (mErrors.state === "success") {
 					if (oModel.hasPendingChanges()) {
-						this.saveChangesMain(mErrors, this._saveSuccess.bind(this));
+						this.saveChangesMain(mErrors, this._saveSuccess.bind(this), this._errorCallBackForPlanHeaderSet.bind(this));
 					} else {
 						sap.m.MessageToast.show(oResourceBundle.getText("ymsg.noChangesPrePlanHeaderEdit"));
 					}
@@ -203,7 +290,7 @@ sap.ui.define([
 		 */
 		oPressDetailDelete: function () {
 			var sTitle = this.getResourceBundle().getText("tit.confirmDelete"),
-				sMsg = this.getResourceBundle().getText("msg.confirmDeleteSelectedPrepLan");
+				sMsg = this.getResourceBundle().getText("msg.confirmDeletePrepLan");
 
 			if (this._oContext) {
 				var successFn = function () {
@@ -213,6 +300,14 @@ sap.ui.define([
 				};
 				this.showConfirmDialog(sTitle, sMsg, successFn.bind(this));
 			}
+		},
+
+		/**
+		 * Copy the opened plan
+		 * */
+		onPressCopyPrePlanHeader: function () {
+			var sGuid = this._oContext.getProperty("ObjectKey");
+			this.copySelectedPlan(sGuid);
 		},
 
 		/**
@@ -245,7 +340,6 @@ sap.ui.define([
 			var oSource = oEvent.getSource(),
 				oItem = oEvent.getParameter("item");
 			this.sFunctionKey = oItem ? oItem.data("key") : oSource.data("key");
-
 			this._updateStatus();
 		},
 
@@ -272,6 +366,10 @@ sap.ui.define([
 			var oSource = oEvent.getSource(),
 				sButtonText = oSource.getText(),
 				oResourceBundle = this.getResourceBundle();
+			//Service Call while clicking on Show Dependencies Button for First Time
+			if (this.oViewModel.getProperty("/bDependencyCall")) {
+				this._loadGanttData();
+			}
 			if (sButtonText === oResourceBundle.getText("xbut.hideDependencies")) {
 				this.getModel("viewModel").setProperty("/bShowDependencies", false);
 				oSource.setText(oResourceBundle.getText("xbut.showDependencies"));
@@ -289,35 +387,40 @@ sap.ui.define([
 		onShapeDrop: function (oEvent) {
 			var oParams = oEvent.getParameters(),
 				aDraggedShapes = oParams.draggedShapeDates,
+				sLastDraggedShapeUid = oParams.lastDraggedShapeUid,
+				dOldStartDateTime = aDraggedShapes[sLastDraggedShapeUid].time,
 				oTargetContext = oParams.targetRow ? oParams.targetRow.getBindingContext("ganttModel") : null,
 				sNewStartDate = oParams.newDateTime,
-				sNewEndDate, sDateDifference, oDraggedData, sPath, sStartDateTime, sEndDateTime;
+				aShapeData = [],
+				sDateDifference = sNewStartDate.getTime() - dOldStartDateTime.getTime(),
+				sNewEndDate, oDraggedData, sStartDateTime, sEndDateTime, sSourcePath;
+
 			if (!oTargetContext) {
 				oTargetContext = oParams.targetShape.getParent().getParent().getBindingContext("ganttModel");
 			}
+
 			for (var i in aDraggedShapes) {
-				var sSourcePath = Utility.parseUid(i).shapeDataName,
-					sTargetPath = oTargetContext.getPath();
-				if (sSourcePath !== sTargetPath) {
+				sSourcePath = Utility.parseUid(i).shapeDataName;
+				oDraggedData = this.getModel("ganttModel").getProperty(sSourcePath);
+
+				//Validate the past date for header bar
+				if (moment(sNewStartDate).isBefore(moment()) && oDraggedData.HIERARCHY_LEVEL === 0 && !oDraggedData.ENABLE_PAST_DATE) {
+					this.showMessageToast(this.getResourceBundle().getText("msg.orderPastDateValidation"));
 					return;
 				}
-				oDraggedData = this.getModel("ganttModel").getProperty(sSourcePath);
-				sPath = "/GanttHierarchySet('" + oDraggedData.ObjectKey + "')";
 				sStartDateTime = formatter.mergeDateTime(oDraggedData.START_DATE, oDraggedData.START_TIME);
 				sEndDateTime = formatter.mergeDateTime(oDraggedData.END_DATE, oDraggedData.END_TIME);
-				sDateDifference = moment(sEndDateTime).diff(sStartDateTime);
-				if (sDateDifference < 0) {
-					sDateDifference = sDateDifference * -1;
-				}
-				sNewEndDate = new Date(moment(sNewStartDate).add(sDateDifference));
+				sNewStartDate = new Date(moment(sStartDateTime).add(sDateDifference));
+				sNewEndDate = new Date(moment(sEndDateTime).add(sDateDifference));
 				oDraggedData.START_TIME.ms = sNewStartDate.getTime();
 				oDraggedData.END_TIME.ms = sNewEndDate.getTime();
-
 				this.getModel("ganttModel").setProperty(sSourcePath + "/START_DATE", sNewStartDate);
 				this.getModel("ganttModel").setProperty(sSourcePath + "/END_DATE", sNewEndDate);
-
-				this.GanttActions._prepareGanttOpeartionPayload(oDraggedData).then(function (oPayload) {
-					this.GanttActions._proceedToGanttOperationUpdate(sPath, oPayload);
+				aShapeData.push(oDraggedData);
+			}
+			if (aShapeData.length) {
+				this.GanttActions._prepareGanttOpeartionPayload(aShapeData).then(function (aPayload) {
+					this.GanttActions._proceedToGanttOperationUpdate();
 				}.bind(this));
 			}
 		},
@@ -330,8 +433,7 @@ sap.ui.define([
 		onShapeResize: function (oEvent) {
 			var oParams = oEvent.getParameters(),
 				oRowContext = oParams.shape.getBindingContext("ganttModel"),
-				oData = this.getModel("ganttModel").getProperty(oRowContext.getPath()),
-				sPath = "/GanttHierarchySet('" + oData.ObjectKey + "')";
+				oData = this.getModel("ganttModel").getProperty(oRowContext.getPath());
 			//Adjusting End Date and Time after resize
 			if (oParams.newTime[0] === oParams.oldTime[0]) {
 				this.getModel("ganttModel").setProperty(oRowContext.getPath() + "/START_DATE", oData.START_DATE);
@@ -350,8 +452,8 @@ sap.ui.define([
 				this.getModel("ganttModel").setProperty(oRowContext.getPath() + "/START_TIME", oData.START_TIME);
 				oData.START_DATE = moment(oData.START_DATE).endOf('day').subtract(999, 'milliseconds').toDate();
 			}
-			this.GanttActions._prepareGanttOpeartionPayload(oData).then(function (oPayload) {
-				this.GanttActions._proceedToGanttOperationUpdate(sPath, oPayload);
+			this.GanttActions._prepareGanttOpeartionPayload([oData]).then(function (aPayload) {
+				this.GanttActions._proceedToGanttOperationUpdate();
 			}.bind(this));
 		},
 
@@ -371,6 +473,231 @@ sap.ui.define([
 			}
 		},
 
+		/**
+		 * Go back to Plan list from Plan details
+		 */
+		navBack: function () {
+			this.onNavBack();
+		},
+
+		/**
+		 * On click on Sync button in Utilization Gantt Chart
+		 */
+		onPressUtilizationSync: function () {
+			this._loadUtilizationGantt();
+		},
+
+		/**
+		 * On Selection Change of View Mode in Utilization Gantt Chart 
+		 */
+		onUtilizationSelectionChange: function () {
+			this._loadUtilizationGantt();
+		},
+
+		/*On Press of Full Screen Button in Utilization Gantt Chart
+		 * @param oEvent
+		 */
+		onPressUtilizationGanttFullScreen: function (oEvent) {
+			var oSource = oEvent.getSource(),
+				oViewModel = this.getModel("viewModel");
+			if (oSource.getIcon() === "sap-icon://full-screen") {
+				oViewModel.setProperty("/layout", library.LayoutType.MidColumnFullScreen);
+				oViewModel.setProperty("/ganttUtilizationFullMode", true);
+				oViewModel.setProperty("/ganttFullMode", false);
+				this.oViewModel.setProperty("/fullscreenGantt", false);
+				oSource.setType("Emphasized");
+				oEvent.getSource().getParent().getParent().getParent().getParent().addStyleClass("sapUxAPObjectPageSubSectionFitContainer");
+				this._utilizationGanttContainer.setHeight("100%");
+			} else {
+				if (oViewModel.getProperty("/fullscreen")) {
+					oViewModel.setProperty("/layout", library.LayoutType.TwoColumnsMidExpanded);
+				} else {
+					oViewModel.setProperty("/layout", library.LayoutType.MidColumnFullScreen);
+				}
+				oViewModel.setProperty("/ganttUtilizationFullMode", true);
+				oViewModel.setProperty("/ganttFullMode", true);
+				this.oViewModel.setProperty("/fullscreenGantt", true);
+				oSource.setType("Default");
+				oEvent.getSource().getParent().getParent().getParent().getParent().removeStyleClass("sapUxAPObjectPageSubSectionFitContainer");
+				this._utilizationGanttContainer.setHeight("300px");
+			}
+			oViewModel.setProperty("/ganttUtilization/ganttSelectionPane", "30%");
+		},
+
+		/*On Press of Shape Double Click in Utilization Gantt Chart
+		 * Displaying Utilization Details in PopOver
+		 * @param oEvent
+		 */
+		onUtilizationShapeDoubleClick: function (oEvent) {
+			var mParams = oEvent.getParameters(),
+				oShape = mParams.shape;
+			if (oShape) {
+				this._oUtilizationShapeContext = oShape.getBindingContext();
+				if (!this._oUtilizationPopover) {
+					Fragment.load({
+						name: "com.evorait.evosuite.evoprep.view.fragments.UtilizationDetails",
+						controller: this
+					}).then(function (pPopover) {
+						this._oUtilizationPopover = pPopover;
+						this.getView().addDependent(this._oUtilizationPopover);
+						this._oUtilizationPopover.openBy(oShape);
+					}.bind(this));
+				} else {
+					this._oUtilizationPopover.openBy(oShape);
+					sap.ui.getCore().byId("idUtilizationDetailsSmartTable").rebindTable();
+				}
+			} else {
+				//When clicked on No Shift icon is pressed toast msg will be displayed
+				this.showMessageToast(this.getResourceBundle().getText("msg.noShifts"));
+			}
+		},
+
+		/**
+		 * Called when double click on shapes
+		 * collectes the annotations and view details
+		 * @param oEvent
+		 */
+		onDoubleClickPlanningGantt: function (oEvent) {
+			var oShape = oEvent.getParameter("shape"),
+				oContext = oShape.getBindingContext("ganttModel"),
+				oHeaderContext = this.getView().getBindingContext(),
+				mParams = {},
+				bValidate = formatter.checkGanttEditability(this.getModel("user").getProperty("/ENABLE_PREPLAN_UPDATE"), oContext.getProperty(
+					"READ_ONLY"), this.oViewModel.getProperty("/bEnableGanttShapesEdit"), oHeaderContext.getProperty("ALLOW_FINAL"));
+
+			if (oContext && oContext.getProperty("OPERATION_NUMBER") !== "") {
+				mParams = {
+					viewName: "com.evorait.evosuite.evoprep.view.templates.DialogContentWrapper#EditOperations",
+					annotationPath: "com.sap.vocabularies.UI.v1.Facets#EditOperations",
+					entitySet: "GanttHierarchySet",
+					controllerName: "EditOperation",
+					title: "tit.editOperation",
+					type: "Edit",
+					saveButtonVisible: bValidate, //Validate the edit feature based on syatem info/operation status/plan status and edit gantt indicator
+					sPath: "/GanttHierarchySet('" + oContext.getProperty("ObjectKey") + "')"
+				};
+				this.getOwnerComponent().DialogTemplateRenderer.open(this.getView(), mParams);
+			}
+		},
+
+		/**
+		 * Triigers when shape selection change 
+		 * To validate the header selection to avaid multiple select
+		 * @param {oEvent}
+		 */
+		onPlanningShaprePress: function (oEvent) {
+			var oShape = oEvent.getParameter("shape"),
+				oShapeContext = {},
+				aSelectedShapesIds = this.getView().byId("idPlanningGanttChartTable").getSelectedShapeUid(),
+				oRowDetails = {},
+				oRowObject = {},
+				bValidate = false;
+			if (!oShape) {
+				return;
+			}
+			oShapeContext = oShape.getBindingContext("ganttModel");
+			if (!oShape.getSelected()) {
+				aSelectedShapesIds.forEach(function (sid) {
+					oRowDetails = Utility.parseUid(sid);
+					oRowObject = this.getModel("ganttModel").getProperty(oRowDetails.shapeDataName);
+					if (oRowObject && (oRowObject.HIERARCHY_LEVEL === 0 || oShapeContext.getProperty("HIERARCHY_LEVEL") === 0)) {
+						bValidate = true;
+					}
+				}.bind(this));
+			}
+			if (bValidate) {
+				if (aSelectedShapesIds.length === 2) {
+					oEvent.preventDefault();
+					this.showMessageToast(this.getResourceBundle().getText("msg.shapeSelectionValidation"));
+					return;
+				} else {
+					this.getView().byId("idPlanningGanttChartTable").getSelection().clear(true);
+					return;
+				}
+			}
+		},
+
+		/**
+		 * Utilization Details PopOver 
+		 * Passing selected shape filter
+		 * @param oEvent
+		 */
+		onBeforeRebindUtilizationDetails: function (oEvent) {
+			var sPlanID = this.getModel().getProperty(this._oContext.getPath() + "/PLAN_ID"),
+				bBlockByPlan = this.getModel().getProperty(this._oContext.getPath() + "/BLOCKED_BY_PLAN"),
+				sKey = this._UtilizationSelectView.getSelectedKey(),
+				mBindingParams = oEvent.getParameter("bindingParams"),
+				aFilters = new Filter({
+					filters: [
+						new Filter("PLAN_ID", FilterOperator.EQ, sPlanID),
+						new Filter("CELL_START_DATE", FilterOperator.EQ, this._oUtilizationShapeContext.getProperty("BARSTART_DATE")),
+						new Filter("CELL_END_DATE", FilterOperator.EQ, this._oUtilizationShapeContext.getProperty("BAREND_DATE")),
+						new Filter("VIEW_MODE", FilterOperator.EQ, sKey),
+						new Filter("BLOCKED_BY_PLAN", FilterOperator.EQ, bBlockByPlan),
+						new Filter("WORKCENTRE", FilterOperator.EQ, this._oUtilizationShapeContext.getProperty("WORKCENTRE"))
+					],
+					and: true
+				});
+			mBindingParams.filters = mBindingParams.filters.concat(aFilters);
+		},
+
+		/**
+		 * on changing Graphic Planning DateRange
+		 * Updating Gantt Chart Horizon
+		 * @param oEvent
+		 */
+		onPlanningGanttChangeDateRange: function (oEvent) {
+			var oSource = oEvent.getSource(),
+				dStartDate = oSource.getDateValue(),
+				dEndDate = oSource.getSecondDateValue(),
+				dPlanStartDate = this.getModel().getProperty(this._oContext.getPath() + "/START_DATE"),
+				dPlanEndDate = this.getModel().getProperty(this._oContext.getPath() + "/END_DATE"),
+				bCheckStartDate = dPlanStartDate < dEndDate && dPlanStartDate > dStartDate,
+				bCheckEndDate = dPlanEndDate < dEndDate && dPlanEndDate > dStartDate;
+			//Condition to check if the selected date range included Plan Start and End Dates or not
+			if (!bCheckStartDate && !bCheckEndDate) {
+				var sMsg = this.getResourceBundle().getText("msg.ganttDateCheck");
+				this.showMessageToast(sMsg);
+				oSource.setDateValue(dPlanStartDate);
+				oSource.setSecondDateValue(dPlanEndDate);
+			}
+			this.GanttActions._createGanttHorizon(this._axisTime, this._oContext, oSource);
+		},
+
+		/**
+		 * on show Utilization Column in Graphic Planning 
+		 * @param oEvent
+		 */
+		onChangeCalculateUtilization: function (oEvent) {
+			if (oEvent.getSource().getState()) {
+				this.oViewModel.setProperty("/ganttSettings/bShowUtilization", true);
+				//Service Call while Utilization on for First Time
+				if (this.oViewModel.getProperty("/ganttSettings/bUtilizationCall")) {
+					this._loadGanttData();
+				}
+			} else {
+				this.oViewModel.setProperty("/ganttSettings/bShowUtilization", false);
+			}
+		},
+
+		/**
+		 * Clear all filters applied on Graphic planning
+		 */
+		onClrFilters: function () {
+			var oViewModel = this.getModel("viewModel"),
+				binding = this.getView().byId("idPlanningGanttTreeTable").getBinding("rows");
+			binding.filter([], null);
+			oViewModel.setProperty("/filtersExist", false);
+		},
+
+		/**
+		 * onPress Plan Detail Header Refresh Button 
+		 * Plan Detail page is refreshed
+		 */
+		onPressHeaderReload: function () {
+			this.refreshGantChartData(this.oViewModel);
+			this.resetDeferredGroupToChanges(this.getView());
+		},
 		/* =========================================================== */
 		/* public methods                                              */
 		/* =========================================================== */
@@ -392,7 +719,12 @@ sap.ui.define([
 
 				if (oData.viewNameId === sViewName) {
 					this._oContext = this.getView().getBindingContext();
+					if (!this._oContext) {
+						return;
+					}
+					this._resetGlobalValues(); //Called to reset all the global values
 					this._rebindPage();
+					this._loadUtilizationGantt();
 					this._loadGanttData();
 				}
 			}
@@ -459,10 +791,18 @@ sap.ui.define([
 
 			if (oData["ALLOW_" + this.sFunctionKey]) {
 				this.getModel().setProperty(sPath + "/FUNCTION", this.sFunctionKey);
-				this.saveChangesMain({
-					state: "success",
-					isCreate: false
-				}, this._afterUpdateStatus.bind(this));
+				if (this.sFunctionKey === "FINAL") {
+					this.saveChangesMain({
+						state: "success",
+						isCreate: false
+					}, this._afterUpdateStatus.bind(this), this._updatePlanStatusError.bind(this));
+				} else {
+					this.saveChangesMain({
+						state: "success",
+						isCreate: false
+					}, this._afterUpdateStatus.bind(this), this._errorCallBackForPlanHeaderSet.bind(this));
+				}
+
 			} else {
 				message = this.getResourceBundle().getText("msg.workorderSubmitFail", oData.PLAN_ID);
 				this.addMsgToMessageManager(this.mMessageType.Error, message, "/PreplanList");
@@ -477,12 +817,8 @@ sap.ui.define([
 			var msg = this.getResourceBundle().getText("msg.saveSuccess");
 			this.showMessageToast(msg);
 
-			this.getOwnerComponent().readData(this._oContext.getPath()).then(function (mResult) {
-				if (mResult) {
-					this._rebindPage();
-					this._setStatusButtonVisibility(mResult);
-				}
-			}.bind(this));
+			this.refreshGantChartData(this.getModel("viewModel"));
+			this.refreshPlanList();
 		},
 		/**
 		 * when view was integrated set additional page parameters
@@ -535,6 +871,8 @@ sap.ui.define([
 		_saveSuccess: function () {
 			var oResourceBundle = this.getResourceBundle();
 			sap.m.MessageBox.success(oResourceBundle.getText("ymsg.saveSuccessPrePlanHeaderEdit"));
+			this.refreshGantChartData(this.getModel("viewModel"));
+			this.refreshPlanList();
 			this._clearData();
 		},
 
@@ -547,7 +885,8 @@ sap.ui.define([
 			this.oViewModel.setProperty("/editMode", true);
 			this.oViewModel.setProperty("/layout", library.LayoutType.TwoColumnsMidExpanded);
 			this.oViewModel.setProperty("/fullscreen", true);
-			this._loadGanttData();
+			this.oViewModel.setProperty("/bDependencyCall", true);
+			this.oViewModel.setProperty("/ganttSettings/bUtilizationCall", true);
 		},
 
 		/**
@@ -578,6 +917,7 @@ sap.ui.define([
 				.then(function () {
 					//backup original data
 					this.oOriginData = deepClone(this.oGanttModel.getProperty("/"));
+					this.iNumberOfLines = this._countLineItems(this.oOriginData);
 					this.getModel("viewModel").setProperty("/ganttSettings/busy", false);
 				}.bind(this));
 		},
@@ -593,13 +933,26 @@ sap.ui.define([
 			return new Promise(function (resolve) {
 				var sEntitySet = "/GanttHierarchySet",
 					aFilters = [],
+					mParams = "",
+					sPath = this._oContext.getPath(),
+					bUtilizationOn = this.getView().byId("idCalculateUtilization").getState();
+
+				//Passing Expand Call Only while Clicking on Show Dependecies for First Time
+				if (this.oViewModel.getProperty("/bDependencyCall") && this.oViewModel.getProperty("/bShowDependencies")) {
 					mParams = {
 						"$expand": "GanttHierarchyToDependency"
-					},
-					sPath = this._oContext.getPath();
+					};
+					this.oViewModel.setProperty("/bDependencyCall", false);
+				}
 				var sHeaderKey = this.getModel().getProperty(sPath + "/ObjectKey");
 				aFilters.push(new Filter("HIERARCHY_LEVEL", FilterOperator.EQ, iLevel));
 				aFilters.push(new Filter("HeaderObjectKey", FilterOperator.EQ, sHeaderKey));
+
+				//Passing Utilization filter only when Utilization Switch is On
+				if (bUtilizationOn && iLevel === 1 && this.oViewModel.getProperty("/ganttSettings/bUtilizationCall")) {
+					aFilters.push(new Filter("REQUEST_UTILIZATION", FilterOperator.EQ, bUtilizationOn));
+					this.oViewModel.setProperty("/ganttSettings/bUtilizationCall", false);
+				}
 
 				this.getModel("viewModel").setProperty("/ganttSettings/sStartDate", this.getModel().getProperty(sPath + "/START_DATE"));
 				this.getModel("viewModel").setProperty("/ganttSettings/sEndDate", this.getModel().getProperty(sPath + "/END_DATE"));
@@ -634,6 +987,158 @@ sap.ui.define([
 			aChildren = this._recurseChildren2Level(aChildren, iLevel, callbackFn);
 			this.oGanttModel.setProperty("/data/children", aChildren);
 		},
+
+		/**
+		 * Count the number of line items in the result for visible row count
+		 * @Athour Rahul
+		 * @param {Object} data Data of gantt chart 
+		 * @version 2301
+		 * @private
+		 */
+		_countLineItems: function (data) {
+			var iLength = 0;
+			iLength = data.data.children.length;
+			for (var i in data.data.children) {
+				iLength = iLength + data.data.children[i].children.length;
+			}
+			return iLength;
+		},
+
+		/**
+		 * Display the error messages from the backend for the
+		 * PlanHeaderSet entity set specific in case we change
+		 * the status to final as this method helps to display the 
+		 * confirmation dialog box
+		 * @param oError - This is a error object returned from backend. 
+		 * @private
+		 */
+		_updatePlanStatusError: function (oError) {
+			var oResourceBundle = this.getResourceBundle(),
+				sFinalMessage = oResourceBundle.getText("ymsg.finalizeMessage"),
+				sMessage = this._extractError(this._extractError(oError.__batchResponses[0].response));
+			if (oError.__batchResponses[0].response.statusCode === "500") {
+				this._errorCallBackForPlanHeaderSet(oError);
+				return;
+			}
+			if (sMessage !== undefined && sMessage !== null) {
+				var parsedMessage, aInnerDetails;
+				parsedMessage = jQuery.sap.parseJS(sMessage);
+				aInnerDetails = parsedMessage.error.innererror.errordetails;
+				if (aInnerDetails.length > 0) {
+					for (var i = 0; i < aInnerDetails.length; i++) {
+						if (aInnerDetails[i].severity === "warning") {
+							this._addWarningMessageToMessageManager(aInnerDetails[i].message);
+						}
+					}
+				}
+			}
+
+			MessageBox.confirm(
+				sFinalMessage, {
+					//details: typeof (sFinalMessage) === "string" ? sFinalMessage.replace(/\n/g, "<br/>") : sFinalMessage,
+					styleClass: this.getOwnerComponent().getContentDensityClass(),
+					actions: [MessageBox.Action.YES, MessageBox.Action.CANCEL],
+					onClose: function (oAction) {
+						if (oAction === "YES") {
+							var sPath = this._oContext.getPath();
+							this.getModel().setProperty(sPath + "/FUNCTION", this.sFunctionKey);
+							this.getModel().setProperty(sPath + "/SKIP_ERROR_ENTRY", "X");
+							this.saveChangesMain({
+								state: "success",
+								isCreate: false
+							}, this._afterUpdateStatus.bind(this), this._errorCallBackForPlanHeaderSet.bind(this));
+						}
+
+					}.bind(this)
+				}
+			);
+		},
+
+		/**
+		 * Loading Utilization Gantt Chart
+		 **/
+		_loadUtilizationGantt: function () {
+			if (this._UtilizationSelectView) {
+				var sKey = this._UtilizationSelectView.getSelectedKey();
+				this._setUtilizationGanttFilter(sKey);
+				this.GanttActions._createUtilizationGanttHorizon(this._UtilizationAxisTime, this._oContext, sKey);
+			}
+		},
+
+		/**
+		 * Refresh detail header forcefully
+		 */
+		_refrshDetailHeader: function () {
+			this.getOwnerComponent().readData(this._oContext.getPath());
+		},
+
+		/**
+		 * set filters and read data for Utilization Gantt Chart
+		 *  @param sKey - View Mode Key
+		 **/
+		_setUtilizationGanttFilter: function (sKey) {
+			var aFilters = this._getUtilizationGanttFilters(sKey);
+			var binding = this.getView().byId("idUtilizationGanttTreeTable").getBinding("rows");
+			binding.filter(aFilters, "Application");
+
+			binding.attachDataRequested(function () {
+				this.oViewModel.setProperty("/ganttUtilization/busy", true);
+			}.bind(this));
+
+			binding.attachDataReceived(function (aData) {
+				var iCount = 0;
+				if (aData.getParameters().data) {
+					iCount = aData.getParameters().data.results.length;
+				}
+				this.oViewModel.setProperty("/ganttUtilization/dLastSync", new Date());
+				this.oViewModel.setProperty("/ganttUtilization/busy", false);
+				this.oViewModel.setProperty("/ganttUtilization/iCount", iCount);
+				this.oViewModel.setProperty("/ganttUtilization/ganttSelectionPane", "30%");
+			}.bind(this));
+		},
+
+		/**
+		 * set filters values for Utilization Gantt Chart
+		 *  @param sKey - View Mode Key
+		 * @returns [aFilters]
+		 **/
+		_getUtilizationGanttFilters: function (sKey) {
+			var aFilters = [],
+				sPath = this._oContext.getPath(),
+				sHeaderKey = this.getModel().getProperty(sPath + "/ObjectKey");
+			aFilters.push(new Filter("HeaderObjectKey", FilterOperator.EQ, sHeaderKey));
+			aFilters.push(new Filter("VIEW_MODE", FilterOperator.EQ, sKey));
+			return aFilters;
+		},
+
+		/**
+		 * To reset all the global values after each navigation
+		 **/
+		_resetGlobalValues: function () {
+			this.oViewModel.setProperty("/bShowDependencies", false); //Disabling Dependencies in Graphic Planning GanttChart
+			this.oViewModel.setProperty("/bDependencyCall", true);
+			this.oViewModel.setProperty("/ganttSettings/bUtilizationCall", true);
+			this.oViewModel.setProperty("/ganttSettings/bShowUtilization", false);
+			this.oViewModel.setProperty("/ganttSettings/sStartDate", this.getModel().getProperty(this._oContext.getPath() + "/START_DATE"));
+			this.oViewModel.setProperty("/ganttSettings/sEndDate", this.getModel().getProperty(this._oContext.getPath() + "/END_DATE"));
+			if (this._UtilizationSelectView) {
+				this._UtilizationSelectView.setSelectedKey(this.getModel("user").getProperty("/DEFAULT_VIEW_MODE"));
+			}
+			this.getView().byId("idCalculateUtilization").setState(false);
+			this._axisTime.setZoomLevel(6);
+		},
+
+		_fnFiltersOnGraphic: function (sChannel, sEvent, oData) {
+			if (sChannel === "GanttChart" && sEvent === "applyFiltersFromOperations") {
+				var oViewModel = this.getModel("viewModel"),
+					aFilters = oViewModel.getProperty("/filtersToGraphicPlanning"),
+					binding = this.getView().byId("idPlanningGanttTreeTable").getBinding("rows");
+				if (aFilters && aFilters.length > 0) {
+					oViewModel.setProperty("/filtersExist", true);
+					binding.filter(aFilters, "Application");
+				}
+			}
+		}
 	});
 
 });

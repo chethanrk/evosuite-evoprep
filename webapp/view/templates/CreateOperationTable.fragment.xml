@@ -5,7 +5,7 @@
 		<template:alias name=".evoAH" value="com.evorait.evosuite.evoprep.model.AnnotationHelper">
 			<template:with path="templateProperties>/" var="tempProps">
 				<Table id="idTable--{:= ${path:'createTabs>Core.LongDescription/String'} || ${createTabs>Org.OData.Core.V1.LongDescription/String} }"
-					items="{path:'CreateModel>/results'}" growing="true" updateFinished="onUpdateFinished">
+					items="{path:'CreateModel>/results'}" growing="true" growingThreshold="100" updateFinished="onUpdateFinished">
 					<headerToolbar>
 						<OverflowToolbar design="Transparent">
 							<Title text="{viewModel>/operationTableCount}" level="H2"/>
@@ -44,7 +44,16 @@
 													<Text text="{path:'lineItem>Value/Path', formatter:'.evoAH.getOperationDate'}"/>
 												</template:then>
 												<template:else>
-													<Text text="{= '{CreateModel>' + ${path : 'lineItem>Value/Path'} + '}' }"/>
+													<HBox>
+														<Text text="{= '{CreateModel>' + ${path : 'lineItem>Value/Path'} + '}' }"/>
+														<template:if
+															test="{= ${parts:[{path:'tabItem>entitySet'},{path:'lineItem>Value/Path'},{path:'tempProps>/'}], formatter:'.evoAH.getUnitField'} }">
+															<template:then>
+																<Text text="{= ${parts:[{path:'tabItem>entitySet'},{path:'lineItem>Value/Path'},{path:'tempProps>/'}], formatter:'.evoAH.getUnitDetails'} }"
+																	class="sapUiSmallMarginBegin sapUiTinyMarginEnd"/>
+															</template:then>
+														</template:if>
+													</HBox>
 												</template:else>
 											</template:if>
 										</template:repeat>

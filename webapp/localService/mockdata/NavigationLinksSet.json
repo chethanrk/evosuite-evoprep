@@ -1,0 +1,115 @@
+{
+	"d": {
+		"results": [{
+			"__metadata": {
+				"id": "https://ed1.evorait.net:50103/sap/opu/odata/EVORA/EPP_MAIN_SRV/NavigationLinksSet(ApplicationId='EVOEQUIP',LaunchMode='BSP')",
+				"uri": "https://ed1.evorait.net:50103/sap/opu/odata/EVORA/EPP_MAIN_SRV/NavigationLinksSet(ApplicationId='EVOEQUIP',LaunchMode='BSP')",
+				"type": "com.evorait.evoprep.NavigationLinks"
+			},
+			"ApplicationId": "EVOEQUIP",
+			"LaunchMode": "BSP",
+			"Value1": "/sap/bc/ui5_ui5/evora/ee_ui5/index.html?sap-client=800&EQUIPMENT_NUMBER=\\\\place_h1\\\\",
+			"Value2": "EQUIPMENT_NUMBER",
+			"ApplicationName": "EvoEquipment"
+		}, {
+			"__metadata": {
+				"id": "https://ed1.evorait.net:50103/sap/opu/odata/EVORA/EPP_MAIN_SRV/NavigationLinksSet(ApplicationId='EVOEQUIP',LaunchMode='LAUNCHPAD')",
+				"uri": "https://ed1.evorait.net:50103/sap/opu/odata/EVORA/EPP_MAIN_SRV/NavigationLinksSet(ApplicationId='EVOEQUIP',LaunchMode='LAUNCHPAD')",
+				"type": "com.evorait.evoprep.NavigationLinks"
+			},
+			"ApplicationId": "EVOEQUIP",
+			"LaunchMode": "LAUNCHPAD",
+			"Value1": "evoequipment2ui5\\\\_\\\\Display\\\\_\\\\EQUIPMENT_NUMBER",
+			"Value2": "EQUIPMENT_NUMBER",
+			"ApplicationName": "EvoEquipment"
+		}, {
+			"__metadata": {
+				"id": "https://ed1.evorait.net:50103/sap/opu/odata/EVORA/EPP_MAIN_SRV/NavigationLinksSet(ApplicationId='EVOFLOC',LaunchMode='BSP')",
+				"uri": "https://ed1.evorait.net:50103/sap/opu/odata/EVORA/EPP_MAIN_SRV/NavigationLinksSet(ApplicationId='EVOFLOC',LaunchMode='BSP')",
+				"type": "com.evorait.evoprep.NavigationLinks"
+			},
+			"ApplicationId": "EVOFLOC",
+			"LaunchMode": "BSP",
+			"Value1": "/sap/bc/ui5_ui5/evora/ef_ui5/index.html?sap-client=800&FUNCTIONAL_LOCATION_INTERNAL=\\\\place_h1\\\\",
+			"Value2": "FUNCTIONAL_LOCATION",
+			"ApplicationName": "EvoLocation"
+		}, {
+			"__metadata": {
+				"id": "https://ed1.evorait.net:50103/sap/opu/odata/EVORA/EPP_MAIN_SRV/NavigationLinksSet(ApplicationId='EVOFLOC',LaunchMode='LAUNCHPAD')",
+				"uri": "https://ed1.evorait.net:50103/sap/opu/odata/EVORA/EPP_MAIN_SRV/NavigationLinksSet(ApplicationId='EVOFLOC',LaunchMode='LAUNCHPAD')",
+				"type": "com.evorait.evoprep.NavigationLinks"
+			},
+			"ApplicationId": "EVOFLOC",
+			"LaunchMode": "LAUNCHPAD",
+			"Value1": "evofuncloc2ui5\\\\_\\\\Display\\\\_\\\\FUNCTIONAL_LOCATION_INTERNAL",
+			"Value2": "FUNCTIONAL_LOCATION",
+			"ApplicationName": "EvoLocation"
+		}, {
+			"__metadata": {
+				"id": "https://ed1.evorait.net:50103/sap/opu/odata/EVORA/EPP_MAIN_SRV/NavigationLinksSet(ApplicationId='EVOORDER',LaunchMode='BSP')",
+				"uri": "https://ed1.evorait.net:50103/sap/opu/odata/EVORA/EPP_MAIN_SRV/NavigationLinksSet(ApplicationId='EVOORDER',LaunchMode='BSP')",
+				"type": "com.evorait.evoprep.NavigationLinks"
+			},
+			"ApplicationId": "EVOORDER",
+			"LaunchMode": "BSP",
+			"Value1": "/sap/bc/ui5_ui5/evora/eo_ui5/index.html?sap-client=800&ORDER_NUMBER=\\\\place_h1\\\\",
+			"Value2": "ORDER_NUMBER",
+			"ApplicationName": "EvoOrder"
+		}, {
+			"__metadata": {
+				"id": "https://ed1.evorait.net:50103/sap/opu/odata/EVORA/EPP_MAIN_SRV/NavigationLinksSet(ApplicationId='EVOORDER',LaunchMode='LAUNCHPAD')",
+				"uri": "https://ed1.evorait.net:50103/sap/opu/odata/EVORA/EPP_MAIN_SRV/NavigationLinksSet(ApplicationId='EVOORDER',LaunchMode='LAUNCHPAD')",
+				"type": "com.evorait.evoprep.NavigationLinks"
+			},
+			"ApplicationId": "EVOORDER",
+			"LaunchMode": "LAUNCHPAD",
+			"Value1": "evoorder2ui5\\\\_\\\\Display\\\\_\\\\ORDER_NUMBER",
+			"Value2": "ORDER_NUMBER",
+			"ApplicationName": "EvoOrder"
+		}, {
+			"__metadata": {
+				"id": "https://ed1.evorait.net:50103/sap/opu/odata/EVORA/EPP_MAIN_SRV/NavigationLinksSet(ApplicationId='EVOPLAN',LaunchMode='BSP')",
+				"uri": "https://ed1.evorait.net:50103/sap/opu/odata/EVORA/EPP_MAIN_SRV/NavigationLinksSet(ApplicationId='EVOPLAN',LaunchMode='BSP')",
+				"type": "com.evorait.evoprep.NavigationLinks"
+			},
+			"ApplicationId": "EVOPLAN",
+			"LaunchMode": "BSP",
+			"Value1": "/sap/bc/ui5_ui5/evora/ep_ui5/index.html?sap-client=800&ORDERID=\\\\place_h1\\\\",
+			"Value2": "Orderid",
+			"ApplicationName": "EvoPlan"
+		}, {
+			"__metadata": {
+				"id": "https://ed1.evorait.net:50103/sap/opu/odata/EVORA/EPP_MAIN_SRV/NavigationLinksSet(ApplicationId='EVOPLAN',LaunchMode='LAUNCHPAD')",
+				"uri": "https://ed1.evorait.net:50103/sap/opu/odata/EVORA/EPP_MAIN_SRV/NavigationLinksSet(ApplicationId='EVOPLAN',LaunchMode='LAUNCHPAD')",
+				"type": "com.evorait.evoprep.NavigationLinks"
+			},
+			"ApplicationId": "EVOPLAN",
+			"LaunchMode": "LAUNCHPAD",
+			"Value1": "evoPlan\\\\_\\\\Display\\\\_\\\\ORDERID",
+			"Value2": "Orderid",
+			"ApplicationName": "EvoPlan"
+		}, {
+			"__metadata": {
+				"id": "https://ed1.evorait.net:50103/sap/opu/odata/EVORA/EPP_MAIN_SRV/NavigationLinksSet(ApplicationId='EVORELATE',LaunchMode='BSP')",
+				"uri": "https://ed1.evorait.net:50103/sap/opu/odata/EVORA/EPP_MAIN_SRV/NavigationLinksSet(ApplicationId='EVORELATE',LaunchMode='BSP')",
+				"type": "com.evorait.evoprep.NavigationLinks"
+			},
+			"ApplicationId": "EVORELATE",
+			"LaunchMode": "BSP",
+			"Value1": "/sap/bc/ui5_ui5/evora/eor_ui5/index.html?sap-client=800&NETWORK_KEY=\\\\place_h1\\\\",
+			"Value2": "NETWORK_KEY",
+			"ApplicationName": "EvoOrderRelate"
+		}, {
+			"__metadata": {
+				"id": "https://ed1.evorait.net:50103/sap/opu/odata/EVORA/EPP_MAIN_SRV/NavigationLinksSet(ApplicationId='EVORELATE',LaunchMode='LAUNCHPAD')",
+				"uri": "https://ed1.evorait.net:50103/sap/opu/odata/EVORA/EPP_MAIN_SRV/NavigationLinksSet(ApplicationId='EVORELATE',LaunchMode='LAUNCHPAD')",
+				"type": "com.evorait.evoprep.NavigationLinks"
+			},
+			"ApplicationId": "EVORELATE",
+			"LaunchMode": "LAUNCHPAD",
+			"Value1": "evoorderrelate2ui5\\\\_\\\\Display\\\\_\\\\NETWORK_KEY",
+			"Value2": "NETWORK_KEY",
+			"ApplicationName": "EvoOrderRelate"
+		}]
+	}
+}

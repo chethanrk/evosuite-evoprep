@@ -26,17 +26,17 @@ sap.ui.define([
 			oRouter.getRoute("CreatePrePlan").attachMatched(this._routeMatchedCreatePlan, this);
 
 		},
-		
+
 		/**
 		 * Route match for the create plan page
-		*/
+		 */
 		_routeMatchedCreatePlan: function () {
 			this.getModel("viewModel").setProperty("/isCreatePage", true);
 		},
-		
+
 		/**
 		 * Route match for the other than the create plan page
-		*/
+		 */
 		_routeMatchedPlan: function () {
 			this.getModel("viewModel").setProperty("/isCreatePage", false);
 		}

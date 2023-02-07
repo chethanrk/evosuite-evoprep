@@ -1,6 +1,7 @@
 sap.ui.define([
-	"com/evorait/evosuite/evoprep/controller/BaseController"
-], function (BaseController) {
+	"com/evorait/evosuite/evoprep/controller/BaseController",
+	"sap/ui/core/mvc/OverrideExecution"
+], function (BaseController, OverrideExecution) {
 	"use strict";
 
 	return BaseController.extend("com.evorait.evosuite.evoprep.controller.PrePlanCompare", {
@@ -9,7 +10,16 @@ sap.ui.define([
 			// extension can declare the public methods
 			// in general methods that start with "_" are private
 			methods: {
-
+				onPressClose: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onClickExpandCollapse: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				}
 			}
 		},
 
@@ -19,34 +29,39 @@ sap.ui.define([
 		 * @memberOf com.evorait.evosuite.evoprep.view.PrePlanCompare
 		 */
 		onInit: function () {
-
+			this.getModel("viewModel").setProperty("/busy", false);
 		},
 
 		/**
-		 * Similar to onAfterRendering, but this hook is invoked before the controller's View is re-rendered
-		 * (NOT before the first rendering! onInit() is used for that one!).
-		 * @memberOf com.evorait.evosuite.evoprep.view.PrePlanCompare
+		 * Called when close comapre page 
 		 */
-		//	onBeforeRendering: function() {
-		//
-		//	},
+		onPressClose: function (oEvent) {
+			//enabling the below property as it is getting disabled on click of compare
+			var oCompareModel = this.getModel("compareModel");
+			this.getModel("viewModel").setProperty("/fullscreenGantt", true);
+			BaseController.prototype.onPressClose.apply(this, arguments);
+			oCompareModel.setProperty("/compare", []);
+			oCompareModel.setProperty("/compare0", []);
+			oCompareModel.setProperty("/compareOriginal", []);
+			oCompareModel.setProperty("/compareCollapsed", []);
+		},
 
 		/**
-		 * Called when the View has been rendered (so its HTML is part of the document). Post-rendering manipulations of the HTML could be done here.
-		 * This hook is the same one that SAPUI5 controls get after being rendered.
-		 * @memberOf com.evorait.evosuite.evoprep.view.PrePlanCompare
+		 * collapse and expand the based on mode
 		 */
-		//	onAfterRendering: function() {
-		//
-		//	},
+		onClickExpandCollapse: function (oEvent) {
+			var oButton = oEvent.getSource(),
+				oCustomData = oButton.getCustomData(),
+				oCompareModel = this.getModel("compareModel");
 
-		/**
-		 * Called when the Controller is destroyed. Use this one to free resources and finalize activities.
-		 * @memberOf com.evorait.evosuite.evoprep.view.PrePlanCompare
-		 */
-		//	onExit: function() {
-		//
-		//	}
+			if (oCustomData[0].getValue() === "EXPAND") {
+				oCompareModel.setProperty("/compare", oCompareModel.getProperty("/compareOriginal"));
+				oCompareModel.setProperty("/compareProperty", [oCompareModel.getProperty("/compareOriginal")[0]]);
+			} else {
+				oCompareModel.setProperty("/compare", oCompareModel.getProperty("/compareCollapsed"));
+				oCompareModel.setProperty("/compareProperty", [oCompareModel.getProperty("/compareCollapsed")[0]]);
+			}
+		}
 
 	});
 

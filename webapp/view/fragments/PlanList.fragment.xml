@@ -1,0 +1,50 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:smartFilterBar="sap.ui.comp.smartfilterbar"
+	xmlns:smartTable="sap.ui.comp.smarttable" xmlns:f="sap.f"
+	xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
+	<Dialog id="idPlanListDialog" title="{i18n>tit.addExistingPlan}" class="sapUiTinyMargin" draggable="true" resizable="true"
+		verticalScrolling="false" horizontalScrolling="true" contentHeight="100%" contentWidth="100%">
+		<content>
+			<core:ExtensionPoint name="DialogExtP|PlanList|PlanItemsSet|Content|Before"/>
+			<core:ExtensionPoint name="DialogExtP|PlanList|PlanItemsSet|Content|Instead">
+				<f:DynamicPage headerExpanded="true" preserveHeaderStateOnScroll="true" showFooter="true" class="sapUiNoContentPadding">
+					<f:header>
+						<f:DynamicPageHeader pinnable="true">
+							<f:content>
+								<smartFilterBar:SmartFilterBar id="idPlanListFragSmartFilterBar" entitySet="PlanHeaderSet" useDateRangeType="true">
+									<!-- layout data used to make the table growing but the filter bar fixed -->
+									<smartFilterBar:layoutData>
+										<FlexItemData shrinkFactor="0"/>
+									</smartFilterBar:layoutData>
+									<smartFilterBar:controlConfiguration>
+										<core:ExtensionPoint name="FilterExtP|PlanList|PlanHeaderSet|ControlConfiguration"/>
+									</smartFilterBar:controlConfiguration>
+									<smartFilterBar:groupConfiguration>
+										<core:ExtensionPoint name="FilterExtP|PlanList|PlanHeaderSet|GroupConfiguration"/>
+									</smartFilterBar:groupConfiguration>
+								</smartFilterBar:SmartFilterBar>
+							</f:content>
+						</f:DynamicPageHeader>
+					</f:header>
+					<f:content>
+						<smartTable:SmartTable id="idPlanListFragSmartTable" height="100%" width="100%" entitySet="PlanHeaderSet" header="{i18n>tit.plan}"
+							smartFilterId="idPlanListFragSmartFilterBar" tableType="ResponsiveTable" useExportToExcel="true" useVariantManagement="false"
+							useTablePersonalisation="true" showRowCount="true" enableAutoBinding="false" demandPopin="true" requestAtLeastFields="ObjectKey"
+							beforeRebindTable="onBeforeRebindTablePlanList">
+							<!-- layout data used to make the table growing but the filter bar fixed -->
+							<smartTable:layoutData>
+								<FlexItemData growFactor="1" baseSize="0%"/>
+							</smartTable:layoutData>
+							<Table growing="true" mode="SingleSelectLeft" sticky="ColumnHeaders,HeaderToolbar,InfoToolbar"/>
+						</smartTable:SmartTable>
+					</f:content>
+				</f:DynamicPage>
+			</core:ExtensionPoint>
+			<core:ExtensionPoint name="DialogExtP|OperationList|PlanHeaderSet|Content|After"/>
+		</content>
+		<buttons>
+			<Button text="{i18n>xbtn.save}" press="onPressOprPlanSave" type="Emphasized"/>
+			<Button text="{i18n>xbtn.cancel}" press="onPressPlanListCancel" type="Emphasized"/>
+			<core:ExtensionPoint name="DialogExtP|OperationList|PlanHeaderSet|Buttons"/>
+		</buttons>
+	</Dialog>
+</core:FragmentDefinition>

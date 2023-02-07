@@ -9,9 +9,11 @@ sap.ui.define([
 	"sap/ui/model/json/JSONModel",
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
-	"com/evorait/evosuite/evoprep/controller/GanttActions"
+	"com/evorait/evosuite/evoprep/controller/GanttActions",
+	"com/evorait/evosuite/evoprep/controller/MaterialInfoDialog",
+	"com/evorait/evosuite/evoprep/controller/DialogTemplateRenderController",
 ], function (UIComponent, Device, models, ErrorHandler, MessageManager, Constants, library, JSONModel, Filter, FilterOperator,
-	GanttActions) {
+	GanttActions, MaterialInfoDialog, DialogTemplateRenderController) {
 	"use strict";
 
 	var oMessageManager = sap.ui.getCore().getMessageManager();
@@ -51,6 +53,9 @@ sap.ui.define([
 			//Creating the Global message model for MessageManager
 			this.setModel(models.createMessageModel(), "messageManager");
 
+			//initialize dialog conroller
+			this.DialogTemplateRenderer = new DialogTemplateRenderController(this);
+
 			//Creating the Global User model
 			this.setModel(models.createUserModel(this), "user");
 
@@ -65,25 +70,53 @@ sap.ui.define([
 				isPrePlanSelected: false,
 				showStatusButton: false,
 				editMode: true,
-				loadMaster: false,
 				launchMode: Constants.LAUNCH_MODE.BSP,
 				bEnableSave: false,
 				orderListEditMode: false,
-				bShowDependencies: true,
+				bShowDependencies: false, //Enabling/Disabling Dependencies in Graphic Planning GanttChart
 				bEnableGanttShapesEdit: true,
 				ganttFullMode: true,
 				fullscreenGantt: true,
 				isCreatePage: false,
-				ganttSelectionPane:"30%", //Setting Gantt Pane Adjustment Percentage
+				ganttSelectionPane: "30%", //Setting Gantt Pane Adjustment Percentage
 				ganttSettings: {
 					busy: true,
 					sStartDate: null,
-					sEndDate: null
+					sEndDate: null,
+					bShowUtilization: false, //Utilization Column Visibility
+					bUtilizationCall: false //Utilization Service Call
+				},
+				bDependencyCall: false, //Restricting expand call in Graphic Planning GanttChart
+				bEnableOperationDelete: false, //Enabling/Disabling Delete Button in Plan Detail Operation Tab
+				bOperationTableMode: false, //Plan Detail Operation Table Selection Mode
+				bCopyEnabled: false, //disable the copy button by default
+				ganttUtilization: { //Utilization Gantt Chart Parameters
+					busy: true,
+					dLastSync: null,
+					iCount: 0,
+					ganttSelectionPane: "30%"
+				},
+				aAllSelectedOperations: [], //handle select all,
+				bMaterialsDemandsBlock: false, // handle the enable and disable of finalize button in the demands table
+				bEnableFinalizeBtn: false, // handle the enable or disable of finalize button of the operations 
+				validateIW32Auth: true, // SAP standard check
+				bEnableApplyFilter: false,
+				filtersExist: false,
+				sPopoverLongText: "", //Field for display long text in Popover
+				bLongTextField: "", // To identify whether its Order/Operation Long Text
+				bOperationReprocess: false,
+				refreshDetailTabs: { //To handle refreshing tabs in detail page based on config
+					General: false,
+					Capacity: false,
+					Planning: false,
+					Operations: false
 				}
 			};
 
 			//GetSystemInformation Call
 			this._getSystemInformation();
+
+			this.oSystemInfoProm.then(this._handleAuthorization.bind(this));
 
 			this.setModel(models.createHelperModel(viewModelObj), "viewModel");
 			this.setModel(models.createCreateModel(), "CreateModel");
@@ -94,6 +127,14 @@ sap.ui.define([
 
 			//Creating the Global Gantt Model for PlanningGanttChart
 			this.setModel(models.createHelperModel(), "ganttModel");
+			//Creating compare model
+			var oCompareObj = {
+				compareOriginal: [],
+				compareCollapsed: [],
+				compare: [],
+				compareProperty: []
+			};
+			this.setModel(models.createHelperModel(oCompareObj), "compareModel");
 
 			this._getTemplateProps();
 
@@ -108,6 +149,10 @@ sap.ui.define([
 
 			//initialize GanttActions.js with component
 			this.GanttActions = new GanttActions();
+			this.materialInfoDialog = new MaterialInfoDialog();
+			this.materialInfoDialog.init();
+
+			this._getDetailTabsData("PlanHeaderSet");
 		},
 
 		/**
@@ -272,6 +317,50 @@ sap.ui.define([
 			for (var n in mProps) {
 				mProps[n].btnVisibility = Object.values(Constants.ALLOWED_LINKS).indexOf(mProps[n].ApplicationId) !== -1 ? true : false;
 			}
+		},
+
+		/**
+		 * Handle SAP authorization
+		 */
+		_handleAuthorization: function () {
+			var bPMAuth = this.getModel("user").getProperty("/ENABLE_PM_AUTH_CHECK"),
+				bIW32Auth = this.getModel("user").getProperty("/ENABLE_IW32_AUTH_CHECK");
+			if (bPMAuth) {
+				this.getModel("viewModel").setProperty("/validateIW32Auth", Boolean(bIW32Auth));
+			}
+		},
+
+		/**
+		 * Function to fetch enabled Plan Detail Tabs
+		 * to allow refresh based on config
+		 */
+		_getDetailTabsData: function (sEntitySet) {
+			var oModel = this.getModel();
+
+			//collect all tabs
+			oModel.getMetaModel().loaded().then(function () {
+				var oMetaModel = oModel.getMetaModel(),
+					oEntitySet = oMetaModel.getODataEntitySet(sEntitySet),
+					oEntityType = oMetaModel.getODataEntityType(oEntitySet.entityType),
+					aTabsData = oEntityType["com.sap.vocabularies.UI.v1.Facets#PrePlanDetailTabs"];
+				for (var a in aTabsData) {
+					if (aTabsData[a]["Core.Description"].String === Constants.DETAIL_TABS.TABS.FORM) {
+						//When General Tab is enabled
+						this.getModel("viewModel").setProperty("/refreshDetailTabs/General", true);
+					} else {
+						if (aTabsData[a]["Core.LongDescription"].String === Constants.DETAIL_TABS.CAPACITY) {
+							//When Utilization Tab is enabled
+							this.getModel("viewModel").setProperty("/refreshDetailTabs/Capacity", true);
+						} else if (aTabsData[a]["Core.LongDescription"].String === Constants.DETAIL_TABS.PLANNING) {
+							//When Graphic Planning Tab is enabled
+							this.getModel("viewModel").setProperty("/refreshDetailTabs/Planning", true);
+						} else if (aTabsData[a]["Core.LongDescription"].String === Constants.DETAIL_TABS.OPERATIONS) {
+							//When Operations Tab is enabled
+							this.getModel("viewModel").setProperty("/refreshDetailTabs/Operations", true);
+						}
+					}
+				}
+			}.bind(this));
 		}
 
 	});

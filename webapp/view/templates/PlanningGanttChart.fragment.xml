@@ -6,16 +6,21 @@
 		<template:alias name=".evoAH" value="com.evorait.evosuite.evoprep.model.AnnotationHelper">
 			<template:with path="templateProperties>/" var="tempProps">
 				<gnt2:GanttChartContainer id="idPlanningGanttChartContainer" busy="{viewModel>/ganttSettings/busy}" enableCursorLine="false"
-					enableTimeScrollSync="false" height="400px">
+					enableTimeScrollSync="false" height="500px" class="sapUiNoContentPadding">
 					<gnt2:toolbar>
 						<gnt2:ContainerToolbar id="idGanttChartContainerToolbar" alignCustomContentToRight="true" style="Clear">
 							<gnt2:content>
 								<ToolbarSpacer/>
+								<DateRangeSelection id="idPlanningGanttDateRange" width="21%" dateValue="{viewModel>/ganttSettings/sStartDate}"
+									secondDateValue="{viewModel>/ganttSettings/sEndDate}" change="onPlanningGanttChangeDateRange" enabled="true"/>
 								<core:ExtensionPoint name="GanttExtP|PlanningGantt|GanttHierarchySet|ContainerToolbar|Before"/>
-								<Button text="{i18n>xbut.hideDependencies}" visible="{= ${user>/ENABLE_HIDE_DEPENDENCY} === 'X'}" press="onShowDependencies"/>
+								<Button text="{= ${viewModel>/bShowDependencies} === false ? ${i18n>xbut.showDependencies} : ${i18n>xbut.hideDependencies}}"
+									visible="{= ${user>/ENABLE_HIDE_DEPENDENCY} === 'X'}" press="onShowDependencies"
+									tooltip="{= ${viewModel>/bShowDependencies} === false ? ${i18n>xbut.showDependencies} : ${i18n>xbut.hideDependencies}}"/>
 								<Text text="|"/>
 								<Button icon="sap-icon://edit" tooltip="{i18n>xbut.edit}"
-									visible="{= ${user>/ENABLE_PREPLAN_UPDATE} === 'X' &amp;&amp; ${ALLOW_FINAL} === true}" press="onPressShapesEdit"/>
+									visible="{= ${user>/ENABLE_PREPLAN_UPDATE} === 'X' &amp;&amp; ${ALLOW_FINAL} === true}" enabled="{viewModel>/validateIW32Auth}"
+									press="onPressShapesEdit"/>
 								<Button icon="{path:'viewModel>/fullscreenGantt',formatter:'.formatter.fullScreenGanttVisibility'}" press="onPressGanttFullScreen"/>
 								<core:ExtensionPoint name="GanttExtP|PlanningGantt|GanttHierarchySet|ContainerToolbar|After"/>
 							</gnt2:content>
@@ -24,10 +29,11 @@
 							</gnt2:legendContainer>
 						</gnt2:ContainerToolbar>
 					</gnt2:toolbar>
-					<gnt2:GanttChartWithTable id="idPlanningGanttChartTable" shapeSelectionMode="Single" shapePress="onShapePress" ghostAlignment="Start"
-						adhocLineLayer="Bottom" nowLineInUTC="false" dragStart="onShapeDragStart" shapeDrop="onShapeDrop" shapeMouseEnter="onShapeMouseEnter"
-						shapeResize="onShapeResize" shapeSelectionSettings="{color: '#808080', strokeWidth: 1, strokeDasharray: '5,2'}"
-						selectionPanelSize="{viewModel>/ganttSelectionPane}">
+					<gnt2:GanttChartWithTable id="idPlanningGanttChartTable" shapeSelectionMode="MultiWithKeyboard" dragOrientation="Horizontal"
+						shapePress="onPlanningShaprePress" ghostAlignment="Start" adhocLineLayer="Bottom" nowLineInUTC="false" dragStart="onShapeDragStart"
+						shapeDrop="onShapeDrop" shapeMouseEnter="onShapeMouseEnter" shapeResize="onShapeResize"
+						shapeSelectionSettings="{color: '#808080', strokeWidth: 1, strokeDasharray: '5,2'}" selectionPanelSize="{viewModel>/ganttSelectionPane}"
+						shapeDoubleClick="onDoubleClickPlanningGantt">
 						<gnt2:axisTimeStrategy>
 							<axistime:StepwiseZoomStrategy id="idPlanningGanttZoom" zoomLevels="3"></axistime:StepwiseZoomStrategy>
 						</gnt2:axisTimeStrategy>
@@ -38,7 +44,8 @@
 								rows="{path: 'ganttModel>/data', parameters: { arrayNames: ['children'], numberOfExpandedLevels: 1, groupId: 'GanttTree'} }">
 								<table:columns>
 									<template:repeat list="{path:'tempProps>ganttConfigs/lineItems/'}" var="lineItem">
-										<table:Column>
+										<table:Column sortProperty="{= ${path:'lineItem>Value/Path'}}" filterProperty="{= ${path:'lineItem>Value/Path'}}"
+											tooltip="{:= '{/' + ${tempProps>ganttConfigs/entitySet} + '/' + ${lineItem>Value/Path} + '/##com.sap.vocabularies.Common.v1.Label/String}' }">
 											<Text
 												text="{:= '{/' + ${tempProps>ganttConfigs/entitySet} + '/' + ${lineItem>Value/Path} + '/##com.sap.vocabularies.Common.v1.Label/String}' }"/>
 											<table:template>
@@ -46,6 +53,17 @@
 											</table:template>
 										</table:Column>
 									</template:repeat>
+									<table:Column visible="{viewModel>/ganttSettings/bShowUtilization}" hAlign="Center">
+										<Text text="{/GanttHierarchySet/UTILIZATION/##com.sap.vocabularies.Common.v1.Label/String}"/>
+										<table:customData>
+											<core:CustomData key="p13nData"
+												value='\{"columnKey": "UTILIZATION", "leadingProperty":"UTILIZATION", "filterProperty":"UTILIZATION", "sortProperty":"UTILIZATION", "columnIndex":""}'/>
+										</table:customData>
+										<table:template>
+											<core:Icon src="{path:'ganttModel>ICON', formatter:'.formatter.setUtilizationIcon'}" color="{ganttModel>UTILIZATION_COLOR}"
+												tooltip="{ganttModel>UTILIZATION}"></core:Icon>
+										</table:template>
+									</table:Column>
 								</table:columns>
 								<table:extension>
 									<OverflowToolbar>
@@ -60,7 +78,11 @@
 													<core:CustomData key="Function" value="COLLAPSE"/>
 												</customData>
 											</Button>
+											<Button id="clrFilters" type="Emphasized" icon="sap-icon://clear-filter" tooltip="{i18n>btn.clrFilter}" enabled="{viewModel>/filtersExist}"
+												press="onClrFilters"/>
 											<ToolbarSpacer/>
+											<Text text="{i18n>lbl.Utilization}"/>
+											<Switch id="idCalculateUtilization" change="onChangeCalculateUtilization"/>
 										</content>
 									</OverflowToolbar>
 								</table:extension>

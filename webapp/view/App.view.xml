@@ -1,6 +1,6 @@
 <mvc:View controllerName="com.evorait.evosuite.evoprep.controller.App" xmlns:mvc="sap.ui.core.mvc" displayBlock="true" xmlns="sap.m"
 	xmlns:f="sap.f">
-	<App id="app">
+	<App id="app" busy="{viewModel>/busy}" busyIndicatorDelay="{viewModel>/delay}">
 		<NavContainer id="idNavContainer"/>
 	</App>
 </mvc:View>

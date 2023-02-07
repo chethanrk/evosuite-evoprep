@@ -734,6 +734,7 @@ sap.ui.define([
 			var oModel =  oBindingContext.getModel("ganttModel");
 			oModel.setProperty(oBindingContext.getPath()+"/IsSelected",oEvent.getParameter("selected"));
 			console.log(oModel);
+			//refreshGantChartData
 		},
 		_ReturnPropContextTreeTable: function (oTable, sProp) {
 			var oBindingRows = oTable.getBinding("rows"),

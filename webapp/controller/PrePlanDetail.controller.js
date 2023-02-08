@@ -1183,8 +1183,9 @@ sap.ui.define([
 		 * onFinalizeBtnPressGraphicPlan
 		 */
 		_afterSucessFinalizeGraphicPlan: function () {
-			this.getView().getModel("viewModel").setProperty("/bEnableFinalizeBtnGraphicPlan", false);
-			this.refreshGantChartData();
+			var oViewModel = this.getView().getModel("viewModel");
+			oViewModel.setProperty("/bEnableFinalizeBtnGraphicPlan", false);
+			this.refreshGantChartData(oViewModel);
 		}
 	});
 

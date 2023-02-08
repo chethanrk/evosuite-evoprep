@@ -144,6 +144,11 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
+				},
+				onFinalizeBtnPressGraphicPlan: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
@@ -604,6 +609,9 @@ sap.ui.define([
 					if (oRowObject && (oRowObject.HIERARCHY_LEVEL === 0 || oShapeContext.getProperty("HIERARCHY_LEVEL") === 0)) {
 						bValidate = true;
 					}
+					if (oRowObject.HIERARCHY_LEVEL === 1 && oRowObject.READ_ONLY === false) {
+						bValidadeFinal = true;
+					}
 				}.bind(this));
 			}
 			if (bValidate) {
@@ -619,11 +627,15 @@ sap.ui.define([
 			this.getView().getModel("viewModel").setProperty("/bEnableFinalizeBtnGraphicPlan", bValidadeFinal);
 			this.getView().getModel("viewModel").refresh();
 		},
-			onFinalizeBtnPressGanttPlaning: function (oEvent) {
+		/**
+		 * Method called on the press of finalize button press on the 
+		 * gantt chart in the graphic planning table
+		 *  @param oEvent
+		 */
+		onFinalizeBtnPressGraphicPlan: function (oEvent) {
 			var aSelectedShapesIds = this.getView().byId("idPlanningGanttChartTable").getSelectedShapeUid(),
 				oRowDetails = {},
 				oRowObject = {},
-				aPromises = [],
 				sEnittySet,
 				bSaveChanges = false;
 			aSelectedShapesIds.forEach(function (sid) {
@@ -631,7 +643,6 @@ sap.ui.define([
 				oRowObject = this.getModel("ganttModel").getProperty(oRowDetails.shapeDataName);
 				if (oRowObject.HIERARCHY_LEVEL === 1 && oRowObject.READ_ONLY === false) {
 					sEnittySet = oRowObject["__metadata"]["id"].split("/").pop();
-					console.log(oRowObject.OPERATION_DESCRIPTION, sEnittySet);
 					this.getModel().setProperty("/" + sEnittySet + "/FUNCTION", "OPER_FINAL");
 					bSaveChanges = true;
 				}
@@ -639,12 +650,12 @@ sap.ui.define([
 
 			if (bSaveChanges) {
 				this.saveChangesMain({
-					state: "success",
-					isCreate: false
-				});
+						state: "success",
+						isCreate: false
+					},
+					this._afterSucessFinalizeGraphicPlan.bind(this));
 			}
 		},
-
 		/**
 		 * Utilization Details PopOver 
 		 * Passing selected shape filter
@@ -1166,6 +1177,14 @@ sap.ui.define([
 					binding.filter(aFilters, "Application");
 				}
 			}
+		},
+		/**
+		 * Internal Function trigerred on the success of finlaize button pressed in the function
+		 * onFinalizeBtnPressGraphicPlan
+		 */
+		_afterSucessFinalizeGraphicPlan: function () {
+			this.getView().getModel("viewModel").setProperty("/bEnableFinalizeBtnGraphicPlan", false);
+			this.refreshGantChartData();
 		}
 	});
 

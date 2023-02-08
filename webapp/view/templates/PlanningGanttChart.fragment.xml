@@ -22,6 +22,9 @@
 									visible="{= ${user>/ENABLE_PREPLAN_UPDATE} === 'X' &amp;&amp; ${ALLOW_FINAL} === true}" enabled="{viewModel>/validateIW32Auth}"
 									press="onPressShapesEdit"/>
 								<Button icon="{path:'viewModel>/fullscreenGantt',formatter:'.formatter.fullScreenGanttVisibility'}" press="onPressGanttFullScreen"/>
+								<Button text="{i18n>btn.finalize}" tooltip="{i18n>btn.finalize}" press="onFinalizeBtnPressGanttPlaning"
+									enabled="{parts: ['viewModel>/bEnableFinalizeBtnGraphicPlan', 'viewModel>/validateIW32Auth'], formatter:'.formatter.enableEditToggleBtn'}"
+									visible="{= ${user>/ENABLE_ITEM_FINAL} === 'X'}"/>
 								<core:ExtensionPoint name="GanttExtP|PlanningGantt|GanttHierarchySet|ContainerToolbar|After"/>
 							</gnt2:content>
 							<gnt2:legendContainer>

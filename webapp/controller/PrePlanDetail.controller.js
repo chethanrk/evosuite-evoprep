@@ -591,7 +591,8 @@ sap.ui.define([
 				aSelectedShapesIds = this.getView().byId("idPlanningGanttChartTable").getSelectedShapeUid(),
 				oRowDetails = {},
 				oRowObject = {},
-				bValidate = false;
+				bValidate = false,
+				bValidadeFinal = false;
 			if (!oShape) {
 				return;
 			}
@@ -614,6 +615,33 @@ sap.ui.define([
 					this.getView().byId("idPlanningGanttChartTable").getSelection().clear(true);
 					return;
 				}
+			}
+			this.getView().getModel("viewModel").setProperty("/bEnableFinalizeBtnGraphicPlan", bValidadeFinal);
+			this.getView().getModel("viewModel").refresh();
+		},
+			onFinalizeBtnPressGanttPlaning: function (oEvent) {
+			var aSelectedShapesIds = this.getView().byId("idPlanningGanttChartTable").getSelectedShapeUid(),
+				oRowDetails = {},
+				oRowObject = {},
+				aPromises = [],
+				sEnittySet,
+				bSaveChanges = false;
+			aSelectedShapesIds.forEach(function (sid) {
+				oRowDetails = Utility.parseUid(sid);
+				oRowObject = this.getModel("ganttModel").getProperty(oRowDetails.shapeDataName);
+				if (oRowObject.HIERARCHY_LEVEL === 1 && oRowObject.READ_ONLY === false) {
+					sEnittySet = oRowObject["__metadata"]["id"].split("/").pop();
+					console.log(oRowObject.OPERATION_DESCRIPTION, sEnittySet);
+					this.getModel().setProperty("/" + sEnittySet + "/FUNCTION", "OPER_FINAL");
+					bSaveChanges = true;
+				}
+			}.bind(this));
+
+			if (bSaveChanges) {
+				this.saveChangesMain({
+					state: "success",
+					isCreate: false
+				});
 			}
 		},
 

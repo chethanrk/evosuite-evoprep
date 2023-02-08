@@ -110,7 +110,8 @@ sap.ui.define([
 					Capacity: false,
 					Planning: false,
 					Operations: false
-				}
+				},
+				bEnableFinalizeBtnGraphicPlan:false // To handle finalize operation in graphic planing.
 			};
 
 			//GetSystemInformation Call

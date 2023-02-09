@@ -36,7 +36,7 @@
 						shapePress="onPlanningShaprePress" ghostAlignment="Start" adhocLineLayer="Bottom" nowLineInUTC="false" dragStart="onShapeDragStart"
 						shapeDrop="onShapeDrop" shapeMouseEnter="onShapeMouseEnter" shapeResize="onShapeResize"
 						shapeSelectionSettings="{color: '#808080', strokeWidth: 1, strokeDasharray: '5,2'}" selectionPanelSize="{viewModel>/ganttSelectionPane}"
-						shapeDoubleClick="onDoubleClickPlanningGantt">
+						shapeDoubleClick="onDoubleClickPlanningGantt" shapeSelectionChange="onPlanningSelectionChange">
 						<gnt2:axisTimeStrategy>
 							<axistime:StepwiseZoomStrategy id="idPlanningGanttZoom" zoomLevels="3"></axistime:StepwiseZoomStrategy>
 						</gnt2:axisTimeStrategy>

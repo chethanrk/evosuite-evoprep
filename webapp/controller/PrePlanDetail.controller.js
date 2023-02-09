@@ -596,8 +596,7 @@ sap.ui.define([
 				aSelectedShapesIds = this.getView().byId("idPlanningGanttChartTable").getSelectedShapeUid(),
 				oRowDetails = {},
 				oRowObject = {},
-				bValidate = false,
-				bValidadeFinal = false;
+				bValidate = false;
 			if (!oShape) {
 				return;
 			}
@@ -608,9 +607,6 @@ sap.ui.define([
 					oRowObject = this.getModel("ganttModel").getProperty(oRowDetails.shapeDataName);
 					if (oRowObject && (oRowObject.HIERARCHY_LEVEL === 0 || oShapeContext.getProperty("HIERARCHY_LEVEL") === 0)) {
 						bValidate = true;
-					}
-					if (oRowObject.HIERARCHY_LEVEL === 1 && oRowObject.READ_ONLY === false) {
-						bValidadeFinal = true;
 					}
 				}.bind(this));
 			}
@@ -624,8 +620,38 @@ sap.ui.define([
 					return;
 				}
 			}
-			this.getView().getModel("viewModel").setProperty("/bEnableFinalizeBtnGraphicPlan", bValidadeFinal);
-			this.getView().getModel("viewModel").refresh();
+
+		},
+		/**
+		 * Triigers when shape selection change method
+		 * This method only helps to retrive the shapes that are selected at the moment.
+		 * @param {oEvent}
+		 */
+		onPlanningSelectionChange: function (oEvent) {
+			var aSelectedShapesIds = oEvent.getParameter("shapeUids"),
+				oRowDetails = {},
+				oRowObject = {},
+				bValidate = false,
+				bValidadeFinal = false,
+				oViewModel = this.getView().getModel("viewModel");
+		
+			for (var i in aSelectedShapesIds) {
+				oRowDetails = Utility.parseUid(aSelectedShapesIds[i]);
+				oRowObject = this.getModel("ganttModel").getProperty(oRowDetails.shapeDataName);
+				if (oRowObject && oRowObject.HIERARCHY_LEVEL === 0) {
+					bValidate = true;
+					bValidadeFinal = false;
+					break;
+				}
+				if (oRowObject.HIERARCHY_LEVEL === 1 && oRowObject.READ_ONLY === false) {
+					bValidadeFinal = true;
+				}
+			}
+			oViewModel.setProperty("/bEnableFinalizeBtnGraphicPlan", bValidadeFinal);
+			if (bValidate) {
+				// this validation to check multiple shapes is already handled by onPlanningShaprePress
+				return;
+			}
 		},
 		/**
 		 * Method called on the press of finalize button press on the 

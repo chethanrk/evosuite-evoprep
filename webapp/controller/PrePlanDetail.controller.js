@@ -149,6 +149,11 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
+				},
+				onPlanningSelectionChange:{
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
@@ -623,7 +628,7 @@ sap.ui.define([
 
 		},
 		/**
-		 * Triigers when shape selection change method
+		 * Triigers when shape selection change method of gantt chart
 		 * This method only helps to retrive the shapes that are selected at the moment.
 		 * @param {oEvent}
 		 */

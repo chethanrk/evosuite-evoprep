@@ -144,6 +144,16 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
+				},
+				onFinalizeBtnPressGraphicPlan: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onPlanningSelectionChange:{
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
@@ -615,8 +625,68 @@ sap.ui.define([
 					return;
 				}
 			}
-		},
 
+		},
+		/**
+		 * Triigers when shape selection change method of gantt chart
+		 * This method only helps to retrive the shapes that are selected at the moment.
+		 * @param {oEvent}
+		 */
+		onPlanningSelectionChange: function (oEvent) {
+			var aSelectedShapesIds = oEvent.getParameter("shapeUids"),
+				oRowDetails = {},
+				oRowObject = {},
+				bValidate = false,
+				bValidadeFinal = false,
+				oViewModel = this.getView().getModel("viewModel");
+		
+			for (var i in aSelectedShapesIds) {
+				oRowDetails = Utility.parseUid(aSelectedShapesIds[i]);
+				oRowObject = this.getModel("ganttModel").getProperty(oRowDetails.shapeDataName);
+				if (oRowObject && oRowObject.HIERARCHY_LEVEL === 0) {
+					bValidate = true;
+					bValidadeFinal = false;
+					break;
+				}
+				if (oRowObject.HIERARCHY_LEVEL === 1 && oRowObject.READ_ONLY === false) {
+					bValidadeFinal = true;
+				}
+			}
+			oViewModel.setProperty("/bEnableFinalizeBtnGraphicPlan", bValidadeFinal);
+			if (bValidate) {
+				// this validation to check multiple shapes is already handled by onPlanningShaprePress
+				return;
+			}
+		},
+		/**
+		 * Method called on the press of finalize button press on the 
+		 * gantt chart in the graphic planning table
+		 *  @param oEvent
+		 */
+		onFinalizeBtnPressGraphicPlan: function (oEvent) {
+			var aSelectedShapesIds = this.getView().byId("idPlanningGanttChartTable").getSelectedShapeUid(),
+				oRowDetails = {},
+				oRowObject = {},
+				sEnittySet,
+				bSaveChanges = false;
+			aSelectedShapesIds.forEach(function (sid) {
+				oRowDetails = Utility.parseUid(sid);
+				oRowObject = this.getModel("ganttModel").getProperty(oRowDetails.shapeDataName);
+				if (oRowObject.HIERARCHY_LEVEL === 1 && oRowObject.READ_ONLY === false) {
+					sEnittySet = oRowObject["__metadata"]["id"].split("/").pop();
+					this.getModel().setProperty("/" + sEnittySet + "/FUNCTION", "OPER_FINAL");
+					bSaveChanges = true;
+				}
+			}.bind(this));
+
+			if (bSaveChanges) {
+				this.saveChangesMain({
+						state: "success",
+						isCreate: false
+					},
+					this._afterSucessFinalizeGraphicPlan.bind(this));
+			}
+		},
 		/**
 		 * Utilization Details PopOver 
 		 * Passing selected shape filter
@@ -1138,6 +1208,15 @@ sap.ui.define([
 					binding.filter(aFilters, "Application");
 				}
 			}
+		},
+		/**
+		 * Internal Function trigerred on the success of finlaize button pressed in the function
+		 * onFinalizeBtnPressGraphicPlan
+		 */
+		_afterSucessFinalizeGraphicPlan: function () {
+			var oViewModel = this.getView().getModel("viewModel");
+			oViewModel.setProperty("/bEnableFinalizeBtnGraphicPlan", false);
+			this.refreshGantChartData(oViewModel);
 		}
 	});
 

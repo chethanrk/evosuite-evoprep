@@ -64,13 +64,26 @@
 												tooltip="{ganttModel>UTILIZATION}"></core:Icon>
 										</table:template>
 									</table:Column>
+									<table:Column class="sapUiNoContentPadding">
+										<Text text="{/GanttHierarchySet/MATERIAL_STATUS/##com.sap.vocabularies.Common.v1.Label/String}"/>
+										<table:customData>
+											<core:CustomData key="p13nData" value='\{"columnKey": "MATERIAL_STATUS", "leadingProperty": "MATERIAL_STATUS"}'/>
+										</table:customData>
+										<table:template>
+											<HBox>
+												<ObjectStatus class="sapUiTinyMargin" tooltip="{ganttModel>MATERIAL_STATUS_DESC}" text="{ganttModel>MATERIAL_STATUS_DESC}"
+													icon="{ganttModel>MATERIAL_STATUS_ICON}" state="{path:'ganttModel>MATERIAL_STATUS_STATE',formatter:'.formatter.getDemandState'}"/>
+											</HBox>
+										</table:template>
+									</table:Column>
 									<table:Column width="2.5rem" class="sapUiNoContentPadding">
 										<table:customData>
 											<core:CustomData key="p13nData" value='\{"columnKey": "NodeType", "leadingProperty": "NodeType"}'/>
 										</table:customData>
 										<table:template>
 											<HBox>
-												<CheckBox enabled="true" select="onChangeSelectOperation" selected="{ganttModel>IsSelected}" visible="{= ${ganttModel>HIERARCHY_LEVEL} !== 0 }"/>
+												<CheckBox enabled="true" select="onChangeSelectOperation" selected="{ganttModel>IsSelected}"
+													visible="{= ${ganttModel>HIERARCHY_LEVEL} !== 0 }"/>
 											</HBox>
 										</table:template>
 									</table:Column>

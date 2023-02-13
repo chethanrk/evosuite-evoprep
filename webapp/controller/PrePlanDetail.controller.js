@@ -791,7 +791,9 @@ sap.ui.define([
 				oBindingRows = oTable.getBinding("rows"),
 				sPath = oBindingRows.getPath(),
 				oTableData = oBindingRows.getModel().getProperty(sPath)["children"],
-				iIndex;
+				iIndex,
+				oViewModel = this.getModel("viewModel");
+			oViewModel.setProperty("/busy", true)
 			for (var i in aSelectedItems) {
 				sEnittySet = "/" + aSelectedItems[i]["__metadata"]["id"].split("/").pop()
 				aPromises.push(this.getOwnerComponent().readData(sEnittySet));
@@ -811,11 +813,12 @@ sap.ui.define([
 					}
 				}
 				oBindingRows.getModel().refresh();
+				oViewModel.setProperty("/busy", false)
 			});
 
 		},
 		/**
-		 * Method called on the press of material infromation button on the 
+		 * Method called on the press of material information button on the 
 		 * table in graphic planning table
 		 *  @param oEvent
 		 */

@@ -779,7 +779,7 @@ sap.ui.define([
 			this.resetDeferredGroupToChanges(this.getView());
 		},
 		/**
-		 * Method called on the press of material refresh button press on the 
+		 * Method called on the press of material refresh button on the 
 		 * table in graphic planning table
 		 *  @param oEvent
 		 */
@@ -815,7 +815,7 @@ sap.ui.define([
 
 		},
 		/**
-		 * Method called on the press of material infromation button press on the 
+		 * Method called on the press of material infromation button on the 
 		 * table in graphic planning table
 		 *  @param oEvent
 		 */
@@ -832,6 +832,11 @@ sap.ui.define([
 				this.getOwnerComponent().materialInfoDialog.open(this.getView(), aSelectedItemsPath);
 			}
 		},
+		/**
+		 * Method called on the check and uncheck of checkbox in the graphic 
+		 * planning table
+		 *  @param oEvent
+		 */
 		onChangeSelectOperation: function (oEvent) {
 			var oBindingContext = oEvent.getSource().getBindingContext("ganttModel")
 			var oModel = oBindingContext.getModel("ganttModel");

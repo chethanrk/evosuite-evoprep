@@ -1112,7 +1112,6 @@ sap.ui.define([
 					} else {
 						this.oGanttModel.setProperty("/data/children", oData.results);
 					}
-					console.log(this.oGanttModel);
 					resolve(iLevel + 1);
 				}.bind(this));
 			}.bind(this));

@@ -150,12 +150,12 @@ sap.ui.define([
 					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
-				onPlanningSelectionChange:{
+				onPlanningSelectionChange: {
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
 				},
-                onMaterialStatusPressGraphicPlan: {
+				onMaterialStatusPressGraphicPlan: {
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
@@ -649,7 +649,7 @@ sap.ui.define([
 				bValidate = false,
 				bValidadeFinal = false,
 				oViewModel = this.getView().getModel("viewModel");
-		
+
 			for (var i in aSelectedShapesIds) {
 				oRowDetails = Utility.parseUid(aSelectedShapesIds[i]);
 				oRowObject = this.getModel("ganttModel").getProperty(oRowDetails.shapeDataName);
@@ -779,14 +779,47 @@ sap.ui.define([
 			this.resetDeferredGroupToChanges(this.getView());
 		},
 		/**
-		 * On Refresh Material Status Button press in Demand/Operations Table
-		 * used in the for table in graphic planning
+		 * Method called on the press of material refresh button press on the 
+		 * table in graphic planning table
+		 *  @param oEvent
 		 */
 		onMaterialStatusPressGraphicPlan: function (oEvent) {
 			var oTable = this.getView().byId("idPlanningGanttTreeTable");
-			var a = this._ReturnPropContextTreeTable(oTable, "COMPONENT_EXISTS", true);
+			var aSelectedItems = this._ReturnPropContextTreeTable(oTable, "COMPONENT_EXISTS");
+			var aPromises = [],
+				sEnittySet,
+				oBindingRows = oTable.getBinding("rows"),
+				sPath = oBindingRows.getPath(),
+				oTableData = oBindingRows.getModel().getProperty(sPath)["children"],
+				iIndex;
+			for (var i in aSelectedItems) {
+				sEnittySet = "/" + aSelectedItems[i]["__metadata"]["id"].split("/").pop()
+				aPromises.push(this.getOwnerComponent().readData(sEnittySet));
+			};
+			Promise.all(aPromises).then(function (oResult) {
+				for (var i in oResult) {
+					if (oResult[i].hasOwnProperty("ObjectKey")) {
+						for (var x in oTableData) {
+							iIndex = oTableData[x]["children"].findIndex(r => r.ObjectKey === oResult[i]["ObjectKey"]);
+							if (iIndex >= 0) {
+								oResult[i]["IsSelected"] = true
+								oTableData[x]["children"][iIndex] = oResult[i];
+								break;
+							}
+						}
+
+					}
+				}
+				oBindingRows.getModel().refresh();
+			});
+
 		},
-		onMaterialInfoButtonPressGraphicPlan: function () {
+		/**
+		 * Method called on the press of material infromation button press on the 
+		 * table in graphic planning table
+		 *  @param oEvent
+		 */
+		onMaterialInfoButtonPressGraphicPlan: function (oEvent) {
 			var oTable = this.getView().byId("idPlanningGanttTreeTable");
 			var aSelectedItems = this._ReturnPropContextTreeTable(oTable, "COMPONENT_EXISTS");
 			var aSelectedItemsPath = [];
@@ -795,7 +828,6 @@ sap.ui.define([
 					sPath: "/PlanItemsSet('" + aSelectedItems[i].ObjectKey + "')"
 				});
 			}
-			console.log(aSelectedItemsPath);
 			if (aSelectedItemsPath.length > 0) {
 				this.getOwnerComponent().materialInfoDialog.open(this.getView(), aSelectedItemsPath);
 			}
@@ -812,22 +844,6 @@ sap.ui.define([
 				this.getView().getModel("viewModel").setProperty("/bEnableMaterialGraphicPlan", false);
 			}
 
-		},
-		_ReturnPropContextTreeTable: function (oTable, sProp, sPropValue) {
-			var oBindingRows = oTable.getBinding("rows"),
-				sPath = oBindingRows.getPath(),
-				oTableData = oBindingRows.getModel().getProperty(sPath)["children"],
-				aResults = [];
-			oTableData.forEach(function (elem) {
-				aResults = [].concat(elem["children"].filter(function (obj) {
-					if (obj[sProp]) {
-						if (obj["IsSelected"]) {
-							return obj;
-						}
-					}
-				}), aResults);
-			});
-			return aResults;
 		},
 		/* =========================================================== */
 		/* public methods                                              */
@@ -1281,7 +1297,31 @@ sap.ui.define([
 			var oViewModel = this.getView().getModel("viewModel");
 			oViewModel.setProperty("/bEnableFinalizeBtnGraphicPlan", false);
 			this.refreshGantChartData(oViewModel);
-		}
+		},
+		/**
+		 * Returns the array of values in graphic plan table 
+		 * for which a particular passed property value is true and 
+		 * that particular value is checked in the checkbox
+		 * @param {object} oTable - refrence of graphic plan tree table
+		 * @param {string} sProp - property value
+		 * @returns {array}
+		 **/
+		_ReturnPropContextTreeTable: function (oTable, sProp) {
+			var oBindingRows = oTable.getBinding("rows"),
+				sPath = oBindingRows.getPath(),
+				oTableData = oBindingRows.getModel().getProperty(sPath)["children"],
+				aResults = [];
+			oTableData.forEach(function (elem) {
+				aResults = [].concat(elem["children"].filter(function (obj) {
+					if (obj[sProp]) {
+						if (obj["IsSelected"]) {
+							return obj;
+						}
+					}
+				}), aResults);
+			});
+			return aResults;
+		},
 	});
 
 });

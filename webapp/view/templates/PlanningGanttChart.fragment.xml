@@ -22,6 +22,9 @@
 									visible="{= ${user>/ENABLE_PREPLAN_UPDATE} === 'X' &amp;&amp; ${ALLOW_FINAL} === true}" enabled="{viewModel>/validateIW32Auth}"
 									press="onPressShapesEdit"/>
 								<Button icon="{path:'viewModel>/fullscreenGantt',formatter:'.formatter.fullScreenGanttVisibility'}" press="onPressGanttFullScreen"/>
+								<Button icon="sap-icon://complete" tooltip="{i18n>btn.finalize}" press="onFinalizeBtnPressGraphicPlan"
+									enabled="{parts: ['viewModel>/bEnableFinalizeBtnGraphicPlan', 'viewModel>/validateIW32Auth'], formatter:'.formatter.enableEditToggleBtn'}"
+									visible="{= ${ALLOW_FINAL} === true}"/>
 								<core:ExtensionPoint name="GanttExtP|PlanningGantt|GanttHierarchySet|ContainerToolbar|After"/>
 							</gnt2:content>
 							<gnt2:legendContainer>
@@ -33,7 +36,7 @@
 						shapePress="onPlanningShaprePress" ghostAlignment="Start" adhocLineLayer="Bottom" nowLineInUTC="false" dragStart="onShapeDragStart"
 						shapeDrop="onShapeDrop" shapeMouseEnter="onShapeMouseEnter" shapeResize="onShapeResize"
 						shapeSelectionSettings="{color: '#808080', strokeWidth: 1, strokeDasharray: '5,2'}" selectionPanelSize="{viewModel>/ganttSelectionPane}"
-						shapeDoubleClick="onDoubleClickPlanningGantt">
+						shapeDoubleClick="onDoubleClickPlanningGantt" shapeSelectionChange="onPlanningSelectionChange">
 						<gnt2:axisTimeStrategy>
 							<axistime:StepwiseZoomStrategy id="idPlanningGanttZoom" zoomLevels="3"></axistime:StepwiseZoomStrategy>
 						</gnt2:axisTimeStrategy>

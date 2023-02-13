@@ -68,7 +68,7 @@
 					<Label text="{/PlanItemsSet/OPERATION_LONG_TEXT/##com.sap.vocabularies.Common.v1.Label/String}"
 						tooltip="{/PlanItemsSet/OPERATION_LONG_TEXT/##com.sap.vocabularies.Common.v1.Label/String}"/>
 				</Column>
-				<Column width="6rem" >
+				<Column width="6rem" visible="{user>/ENABLE_SYNC_FAILED}">
 					<customData>
 						<core:CustomData key="p13nData"
 							value='\{"columnKey": "ALLOW_REPROCESS", "leadingProperty":"ALLOW_REPROCESS", "columnIndex":"8"}'/>

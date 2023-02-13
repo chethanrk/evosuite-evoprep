@@ -111,7 +111,8 @@ sap.ui.define([
 					Planning: false,
 					Operations: false
 				},
-				bEnableMaterialGraphicPlan:false
+				bEnableFinalizeBtnGraphicPlan:false, // To handle finalize operation in graphic planing.
+                
 			};
 
 			//GetSystemInformation Call
@@ -154,6 +155,9 @@ sap.ui.define([
 			this.materialInfoDialog.init();
 
 			this._getDetailTabsData("PlanHeaderSet");
+
+			// For loading more than 100 data from associations
+			this.getModel().setSizeLimit(999999);
 		},
 
 		/**

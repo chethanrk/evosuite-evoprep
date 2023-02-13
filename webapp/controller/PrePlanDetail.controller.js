@@ -714,36 +714,47 @@ sap.ui.define([
 		 */
 		onMaterialStatusPressGraphicPlan: function (oEvent) {
 			var oTable = this.getView().byId("idPlanningGanttTreeTable");
-			var a = this._ReturnPropContextTreeTable(oTable, "DURATION");
+			var a = this._ReturnPropContextTreeTable(oTable, "COMPONENT_EXISTS", true);
 		},
 		onMaterialInfoButtonPressGraphicPlan: function () {
-			var oTable = this.oTable;
-			var aSelectedItems = this._ReturnPropContextTreeTable(oTable, "DURATION");
+			var oTable = this.getView().byId("idPlanningGanttTreeTable");
+			var aSelectedItems = this._ReturnPropContextTreeTable(oTable, "COMPONENT_EXISTS");
 			var aSelectedItemsPath = [];
 			for (var i = 0; i < aSelectedItems.length; i++) {
 				aSelectedItemsPath.push({
-					sPath: "/" + aSelectedItemsPath["GUID"]
+					sPath: "/PlanItemsSet('" + aSelectedItems[i].ObjectKey + "')"
 				});
 			}
+			console.log(aSelectedItemsPath);
 			if (aSelectedItemsPath.length > 0) {
 				this.getOwnerComponent().materialInfoDialog.open(this.getView(), aSelectedItemsPath);
 			}
 		},
-		onChangeSelectOperation:function(oEvent){
-			var oBindingContext=oEvent.getSource().getBindingContext("ganttModel")
-			var oModel =  oBindingContext.getModel("ganttModel");
-			oModel.setProperty(oBindingContext.getPath()+"/IsSelected",oEvent.getParameter("selected"));
-			console.log(oModel);
-			//refreshGantChartData
+		onChangeSelectOperation: function (oEvent) {
+			var oBindingContext = oEvent.getSource().getBindingContext("ganttModel")
+			var oModel = oBindingContext.getModel("ganttModel");
+			var oTable = this.getView().byId("idPlanningGanttTreeTable");
+			oModel.setProperty(oBindingContext.getPath() + "/IsSelected", oEvent.getParameter("selected"));
+			var aSelectedItems = this._ReturnPropContextTreeTable(oTable, "COMPONENT_EXISTS");
+			if (aSelectedItems.length > 0) {
+				this.getView().getModel("viewModel").setProperty("/bEnableMaterialGraphicPlan", true);
+			} else {
+				this.getView().getModel("viewModel").setProperty("/bEnableMaterialGraphicPlan", false);
+			}
+
 		},
-		_ReturnPropContextTreeTable: function (oTable, sProp) {
+		_ReturnPropContextTreeTable: function (oTable, sProp, sPropValue) {
 			var oBindingRows = oTable.getBinding("rows"),
 				sPath = oBindingRows.getPath(),
 				oTableData = oBindingRows.getModel().getProperty(sPath)["children"],
 				aResults = [];
 			oTableData.forEach(function (elem) {
 				aResults = [].concat(elem["children"].filter(function (obj) {
-					return obj[sProp] === "20.0";
+					if (obj[sProp]) {
+						if (obj["IsSelected"]) {
+							return obj;
+						}
+					}
 				}), aResults);
 			});
 			return aResults;

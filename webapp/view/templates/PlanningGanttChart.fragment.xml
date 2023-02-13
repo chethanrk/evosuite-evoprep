@@ -64,26 +64,26 @@
 												tooltip="{ganttModel>UTILIZATION}"></core:Icon>
 										</table:template>
 									</table:Column>
-									<table:Column class="sapUiNoContentPadding">
+									<table:Column class="sapUiNoContentPadding" visible="{user>/ENABLE_MATERIAL_CHECK}" >
 										<Text text="{/GanttHierarchySet/MATERIAL_STATUS/##com.sap.vocabularies.Common.v1.Label/String}"/>
 										<table:customData>
 											<core:CustomData key="p13nData" value='\{"columnKey": "MATERIAL_STATUS", "leadingProperty": "MATERIAL_STATUS"}'/>
 										</table:customData>
 										<table:template>
 											<HBox>
-												<ObjectStatus class="sapUiTinyMargin" tooltip="{ganttModel>MATERIAL_STATUS_DESC}" text="{ganttModel>MATERIAL_STATUS_DESC}"
+												<ObjectStatus class="sapUiTinyMargin" tooltip="{ganttModel>MATERIAL_STATUS_DESC}" text="{ganttModel>MATERIAL_STATUS_DESC}" 	visible="{= ${ganttModel>HIERARCHY_LEVEL} !== 0 }"
 													icon="{ganttModel>MATERIAL_STATUS_ICON}" state="{path:'ganttModel>MATERIAL_STATUS_STATE',formatter:'.formatter.getDemandState'}"/>
 											</HBox>
 										</table:template>
 									</table:Column>
-									<table:Column width="2.5rem" class="sapUiNoContentPadding">
+									<table:Column width="2.5rem" class="sapUiNoContentPadding" visible="{user>/ENABLE_MATERIAL_CHECK}" >
 										<table:customData>
 											<core:CustomData key="p13nData" value='\{"columnKey": "NodeType", "leadingProperty": "NodeType"}'/>
 										</table:customData>
 										<table:template>
 											<HBox>
 												<CheckBox enabled="true" select="onChangeSelectOperation" selected="{ganttModel>IsSelected}"
-													visible="{= ${ganttModel>HIERARCHY_LEVEL} !== 0 }"/>
+													visible="{= ${ganttModel>HIERARCHY_LEVEL} !== 0 &amp;&amp; ${ganttModel>COMPONENT_EXISTS} === true}"/>
 											</HBox>
 										</table:template>
 									</table:Column>
@@ -105,9 +105,9 @@
 												press="onClrFilters"/>
 											<ToolbarSpacer/>
 											<Button icon="sap-icon://synchronize" enabled="{viewModel>/bEnableMaterialGraphicPlan}" tooltip="{i18n>btn.materialStatus}"
-												visible="{user>/ENABLE_MATERIAL_AVAILABILITY}" press="onMaterialStatusPressGraphicPlan"/>
+												visible="{user>/ENABLE_MATERIAL_CHECK}" press="onMaterialStatusPressGraphicPlan"/>
 											<Button tooltip="{i18n>btn.materialInfoButton}" icon="sap-icon://message-information" press="onMaterialInfoButtonPressGraphicPlan"
-												enabled="{viewModel>/bEnableMaterialGraphicPlan}" visible="{user>/ENABLE_MATERIAL_AVAILABILITY}"></Button>
+												enabled="{viewModel>/bEnableMaterialGraphicPlan}" visible="{user>/ENABLE_MATERIAL_CHECK}"></Button>
 											<Text text="{i18n>lbl.Utilization}"/>
 											<Switch id="idCalculateUtilization" change="onChangeCalculateUtilization"/>
 										</content>

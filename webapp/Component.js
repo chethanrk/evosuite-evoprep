@@ -111,7 +111,7 @@ sap.ui.define([
 					Planning: false,
 					Operations: false
 				},
-				bEnableMaterialGraphicPlan:true
+				bEnableMaterialGraphicPlan:false
 			};
 
 			//GetSystemInformation Call

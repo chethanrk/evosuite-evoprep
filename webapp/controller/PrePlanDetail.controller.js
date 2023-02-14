@@ -786,27 +786,25 @@ sap.ui.define([
 		 *  @param oEvent
 		 */
 		onMaterialStatusPressGraphicPlan: function (oEvent) {
-			var oTable = this.getView().byId("idPlanningGanttTreeTable");
-			var aSelectedItems = this._ReturnPropContextTreeTable(oTable, "COMPONENT_EXISTS");
-			var aPromises = [],
+			var aSelectedItems = this._ReturnPropContextTreeTable(this._treeTable, "COMPONENT_EXISTS"),
+				aPromises = [],
 				sEnittySet,
-				oBindingRows = oTable.getBinding("rows"),
+				oBindingRows = this._treeTable.getBinding("rows"),
 				sPath = oBindingRows.getPath(),
 				oTableData = oBindingRows.getModel().getProperty(sPath)["children"],
-				iIndex,
-				oViewModel = this.getModel("viewModel");
-			oViewModel.setProperty("/busy", true)
+				iIndex;
+			this.oViewModel.setProperty("/busy", true);
 			for (var i in aSelectedItems) {
-				sEnittySet = "/" + aSelectedItems[i]["__metadata"]["id"].split("/").pop()
+				sEnittySet = "/" + aSelectedItems[i]["__metadata"]["id"].split("/").pop();
 				aPromises.push(this.getOwnerComponent().readData(sEnittySet));
-			};
+			}
 			Promise.all(aPromises).then(function (oResult) {
 				for (var i in oResult) {
 					if (oResult[i].hasOwnProperty("ObjectKey")) {
 						for (var x in oTableData) {
 							iIndex = oTableData[x]["children"].findIndex(r => r.ObjectKey === oResult[i]["ObjectKey"]);
 							if (iIndex >= 0) {
-								oResult[i]["IsSelected"] = true
+								oResult[i]["IsSelected"] = true;
 								oTableData[x]["children"][iIndex] = oResult[i];
 								break;
 							}
@@ -815,8 +813,8 @@ sap.ui.define([
 					}
 				}
 				oBindingRows.getModel().refresh();
-				oViewModel.setProperty("/busy", false)
-			});
+				this.oViewModel.setProperty("/busy", false);
+			}.bind(this));
 
 		},
 		/**
@@ -825,9 +823,8 @@ sap.ui.define([
 		 *  @param oEvent
 		 */
 		onMaterialInfoButtonPressGraphicPlan: function (oEvent) {
-			var oTable = this.getView().byId("idPlanningGanttTreeTable");
-			var aSelectedItems = this._ReturnPropContextTreeTable(oTable, "COMPONENT_EXISTS");
-			var aSelectedItemsPath = [];
+			var aSelectedItems = this._ReturnPropContextTreeTable(this._treeTable, "COMPONENT_EXISTS"),
+				aSelectedItemsPath = [];
 			for (var i = 0; i < aSelectedItems.length; i++) {
 				aSelectedItemsPath.push({
 					sPath: "/PlanItemsSet('" + aSelectedItems[i].ObjectKey + "')"
@@ -843,11 +840,12 @@ sap.ui.define([
 		 *  @param oEvent
 		 */
 		onChangeSelectOperation: function (oEvent) {
-			var oBindingContext = oEvent.getSource().getBindingContext("ganttModel")
-			var oModel = oBindingContext.getModel("ganttModel");
-			var oTable = this.getView().byId("idPlanningGanttTreeTable");
-			oModel.setProperty(oBindingContext.getPath() + "/IsSelected", oEvent.getParameter("selected"));
-			var aSelectedItems = this._ReturnPropContextTreeTable(oTable, "COMPONENT_EXISTS");
+			var oSource = oEvent.getSource(),
+				oBindingContext = oSource.getBindingContext("ganttModel"),
+				sPath = oBindingContext.getPath(),
+				oModel = oBindingContext.getModel("ganttModel");
+			oModel.setProperty(sPath + "/IsSelected", oEvent.getParameter("selected"));
+			var aSelectedItems = this._ReturnPropContextTreeTable(this._treeTable, "COMPONENT_EXISTS");
 			if (aSelectedItems.length > 0) {
 				this.getView().getModel("viewModel").setProperty("/bEnableMaterialGraphicPlan", true);
 			} else {

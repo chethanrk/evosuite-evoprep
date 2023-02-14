@@ -388,6 +388,7 @@ sap.ui.define([
 				oResourceBundle = this.getResourceBundle();
 			//Service Call while clicking on Show Dependencies Button for First Time
 			if (this.oViewModel.getProperty("/bDependencyCall")) {
+				this.oViewModel.setProperty("/ganttSettings/bUtilizationCall", true);
 				this._loadGanttData();
 			}
 			if (sButtonText === oResourceBundle.getText("xbut.hideDependencies")) {
@@ -753,6 +754,7 @@ sap.ui.define([
 				this.oViewModel.setProperty("/ganttSettings/bShowUtilization", true);
 				//Service Call while Utilization on for First Time
 				if (this.oViewModel.getProperty("/ganttSettings/bUtilizationCall")) {
+					this.oViewModel.setProperty("/bDependencyCall", true);
 					this._loadGanttData();
 				}
 			} else {

@@ -111,7 +111,8 @@ sap.ui.define([
 					Planning: false,
 					Operations: false
 				},
-				bEnableFinalizeBtnGraphicPlan:false // To handle finalize operation in graphic planing.
+				bEnableFinalizeBtnGraphicPlan:false, // To handle finalize operation in graphic planing.
+                bEnableMaterialGraphicPlan:false // To handle material information/refresh in graphic planing
 			};
 
 			//GetSystemInformation Call

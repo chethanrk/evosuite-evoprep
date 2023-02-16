@@ -24,7 +24,7 @@
 								<Button icon="{path:'viewModel>/fullscreenGantt',formatter:'.formatter.fullScreenGanttVisibility'}" press="onPressGanttFullScreen"/>
 								<Button icon="sap-icon://complete" tooltip="{i18n>btn.finalize}" press="onFinalizeBtnPressGraphicPlan"
 									enabled="{parts: ['viewModel>/bEnableFinalizeBtnGraphicPlan', 'viewModel>/validateIW32Auth'], formatter:'.formatter.enableEditToggleBtn'}"
-									visible="{= ${ALLOW_FINAL} === true}"/>
+									visible="{= ${user>/ENABLE_GANTT_FINAL} === 'X' &amp;&amp; ${ALLOW_FINAL} === true}"/>
 								<core:ExtensionPoint name="GanttExtP|PlanningGantt|GanttHierarchySet|ContainerToolbar|After"/>
 							</gnt2:content>
 							<gnt2:legendContainer>

@@ -724,6 +724,26 @@ sap.ui.define([
 		},
 
 		/**
+		 * check dulicate entires 
+		 * @{param} oData - create model operation data
+		 * @param aItem - item array to compare
+		 * @param compareProp - any property to compare
+		 */
+		checkMultipleDuplicates: function (oData, aItem) {
+			var bIndicator = true;
+			aItem.forEach(function (oTableItem) {
+				oData.forEach(function (oItem) {
+					if (oItem.ObjectKey === oTableItem.getBindingContext().getProperty("ObjectKey")) {
+						bIndicator = false;
+						return;
+					}
+				});
+			});
+
+			return bIndicator;
+		},
+
+		/**
 		 * send changes to backend
 		 */
 		saveChanges: function (oTable) {
@@ -1037,10 +1057,27 @@ sap.ui.define([
 		 */
 		onChangeOperationSelectAll: function (oEvent) {
 			var oSmartTable = sap.ui.getCore().byId("idOperationListFragSmartTable"),
-				oTable = oSmartTable.getTable();
+				oTable = oSmartTable.getTable(),
+				aItems = oTable.getItems(),
+				oOperationData;
+
+			//check for create or detail
+			if (this.oCreateModel) {
+				oOperationData = this.oCreateModel.getData();
+			}
+
 			if (oEvent.getSource().getState()) {
 				this.bOperationSelectAll = true;
 				oTable.selectAll(true);
+
+				//validate for the duplicate
+				if (!this.checkMultipleDuplicates(oOperationData.results, aItems)) {
+					this.bOperationSelectAll = false;
+					sap.ui.getCore().byId("idOprSwitchSelectAll").setState(false);
+					this.showMessageToast(this.getResourceBundle().getText("ymsg.duplicateValidation"));
+					oTable.removeSelections();
+				}
+
 			} else {
 				this.bOperationSelectAll = false;
 				oTable.removeSelections();

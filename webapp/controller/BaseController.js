@@ -144,6 +144,10 @@ sap.ui.define([
 					public: true,
 					final: true
 				},
+				checkMultipleDuplicates: {
+					public: true,
+					final: true
+				},
 				saveChanges: {
 					public: true,
 					final: true
@@ -724,7 +728,7 @@ sap.ui.define([
 		},
 
 		/**
-		 * check dulicate entires 
+		 * check duplicate entires 
 		 * @{param} oData - create model operation data
 		 * @param aItem - item array to compare
 		 * @param compareProp - any property to compare
@@ -733,18 +737,17 @@ sap.ui.define([
 		checkMultipleDuplicates: function (oData, oTable) {
 			var bIndicator = true,
 			aItem = oTable.getItems(),
-			exit = false;
+			aDuplicates;
 			
 			aItem.forEach(function (oTableItem, index) {
-				exit = false;
-				oData.forEach(function (oItem) {
-					if (oItem.ObjectKey === oTableItem.getBindingContext().getProperty("ObjectKey")) {
-						oTable.getItems()[index].setSelected(false);
-						bIndicator = false;
-						exit = true;
-					}
+				aDuplicates = oData.filter(function (elem) {
+					return elem.ObjectKey === oTableItem.getBindingContext().getProperty("ObjectKey");	
 				});
-				if(!exit){
+				
+				if(aDuplicates.length > 0){
+					oTable.getItems()[index].setSelected(false);
+					bIndicator = false;
+				} else {
 					oTable.getItems()[index].setSelected(true);
 				}
 			});

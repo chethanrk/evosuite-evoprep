@@ -46,7 +46,26 @@ sap.ui.define([
 		 * @param oEvent
 		 */
 		onChangeSmartField: function (oEvent) {
-			//any validation in edit opeation functioanlity
+			var oSource = oEvent.getSource(),
+				oBinding = oSource.getBindingInfo("value")["binding"],
+				newDate = new Date(oEvent.getParameter("newValue")),
+				sMsg = this.getView().getModel("i18n").getResourceBundle().getText("msg.oprDateValidation"),
+				oOrigData = this.getModel().getData(oBinding.getContext().getPath()),
+				sPath = oBinding.getPath(),
+				compareDate, result;
+
+			if (sPath === 'START_DATE') {
+				compareDate = oOrigData.EARLIEST_END_DATE;
+				result = Boolean(newDate > compareDate);
+			} else if (sPath === 'END_DATE') {
+				compareDate = oOrigData.EARLIEST_START_DATE;
+				result = Boolean(newDate < compareDate);
+			}
+			if (result) {
+				this.showMessageToast(sMsg);
+				this.getModel().resetChanges();
+				return;
+			}
 		},
 
 		/* =========================================================== */

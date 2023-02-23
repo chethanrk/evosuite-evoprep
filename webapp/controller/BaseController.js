@@ -728,16 +728,25 @@ sap.ui.define([
 		 * @{param} oData - create model operation data
 		 * @param aItem - item array to compare
 		 * @param compareProp - any property to compare
+		 * @param oTable - table object
 		 */
-		checkMultipleDuplicates: function (oData, aItem) {
-			var bIndicator = true;
-			aItem.forEach(function (oTableItem) {
+		checkMultipleDuplicates: function (oData, oTable) {
+			var bIndicator = true,
+			aItem = oTable.getItems(),
+			exit = false;
+			
+			aItem.forEach(function (oTableItem, index) {
+				exit = false;
 				oData.forEach(function (oItem) {
 					if (oItem.ObjectKey === oTableItem.getBindingContext().getProperty("ObjectKey")) {
+						oTable.getItems()[index].setSelected(false);
 						bIndicator = false;
-						return;
+						exit = true;
 					}
 				});
+				if(!exit){
+					oTable.getItems()[index].setSelected(true);
+				}
 			});
 
 			return bIndicator;
@@ -1058,7 +1067,6 @@ sap.ui.define([
 		onChangeOperationSelectAll: function (oEvent) {
 			var oSmartTable = sap.ui.getCore().byId("idOperationListFragSmartTable"),
 				oTable = oSmartTable.getTable(),
-				aItems = oTable.getItems(),
 				oOperationData;
 
 			//check for create or detail
@@ -1071,11 +1079,11 @@ sap.ui.define([
 				oTable.selectAll(true);
 
 				//validate for the duplicate
-				if (!this.checkMultipleDuplicates(oOperationData.results, aItems)) {
+				if (!this.checkMultipleDuplicates(oOperationData.results, oTable)) {
 					this.bOperationSelectAll = false;
 					sap.ui.getCore().byId("idOprSwitchSelectAll").setState(false);
 					this.showMessageToast(this.getResourceBundle().getText("ymsg.duplicateValidation"));
-					oTable.removeSelections();
+					// oTable.removeSelections();
 				}
 
 			} else {
@@ -1167,8 +1175,9 @@ sap.ui.define([
 			var oSelectedItem = oEvent.getParameter("listItem"),
 				oContext = oSelectedItem.getBindingContext(),
 				bUserSelectAll = oEvent.getParameter("selectAll"),
+				oTable = oEvent.getSource().getParent().getTable(),
 				iNoOfSelected = 0,
-				oOperationData;
+				oOperationData, aItems;
 
 			//check for create or detail
 			if (this.oCreateModel) {
@@ -1179,13 +1188,23 @@ sap.ui.define([
 			if (bUserSelectAll) {
 				iNoOfSelected = this.getSelectedItemsCount(oEvent.getSource().getParent().getTable());
 				this.showMessageToast(this.getResourceBundle().getText("ymsg.maxRowSelection", [iNoOfSelected]));
+				
+				//validate for multiple duplicates
+				if (!this.checkMultipleDuplicates(oOperationData.results, oTable)) {
+					this.bOperationSelectAll = false;
+					sap.ui.getCore().byId("idOprSwitchSelectAll").setState(false);
+					this.showMessageToast(this.getResourceBundle().getText("ymsg.duplicateValidation"));
+					// oTable.removeSelections();
+				}
+			} else {
+				//validate for the single duplicate
+				if (!this.checkDuplicate(oOperationData.results, oContext.getProperty("ObjectKey"))) {
+					this.showMessageToast(this.getResourceBundle().getText("ymsg.duplicateValidation"));
+					oSelectedItem.setSelected(false);
+				}
 			}
 
-			//validate for the duplicate
-			if (!this.checkDuplicate(oOperationData.results, oContext.getProperty("ObjectKey"))) {
-				this.showMessageToast(this.getResourceBundle().getText("ymsg.duplicateValidation"));
-				oSelectedItem.setSelected(false);
-			}
+			
 		},
 
 		/**

@@ -47,7 +47,8 @@
 																	<ColumnListItem>
 																		<cells>
 																			<FlexBox justifyContent="Center">
-																				<Title text="{compareModel>UTILIZATION_CLR}" visible="{= ${compareModel>MODE} === ''? true:false}" titleStyle="H6"/>
+																				<FormattedText visible="{= ${compareModel>MODE} === ''? true:false}"
+																					htmlText="&lt;span style=&quot;color:{compareModel>COLOR}; font-weight: bolder; &quot; class=&quot;content&quot;&gt;&lt;text&gt;{compareModel>UTILIZATION_CLR}&lt;/text&gt; &lt;/span&gt;"/>
 																				<FormattedText visible="{= ${compareModel>MODE} === ''? false:true}"
 																					htmlText="&lt;span style=&quot;color:{compareModel>COLOR}&quot; class=&quot;content&quot;&gt;&lt;text&gt;{compareModel>UTILIZATION_CLR}&lt;/text&gt; &lt;/span&gt;"/>
 																				<Text text="-" visible="{= ${compareModel>UTILIZATION_CLR} === ''}"/>

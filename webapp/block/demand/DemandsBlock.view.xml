@@ -8,7 +8,7 @@
 		editTogglable="{parts: [ {path:'ALLOW_FINAL'}, {path:'user>/ENABLE_ITEM_UPDATE'}, {path:'viewModel>/validateIW32Auth'}], formatter:'.formatter.showOperationEditDel'}"
 		editToggled="onPressEdit" tableBindingPath="PlanHeaderToPlanItems" beforeRebindTable="onTableUpdating"
 		initiallyVisibleFields="COMPONENT_EXISTS"
-		requestAtLeastFields="ObjectKey,HeaderObjectKey,MATERIAL_STATUS,MATERIAL_STATUS_DESC,COMPONENT_EXISTS,MATERIAL_STATUS_ICON,MATERIAL_STATUS_STATE,SYSTEM_STATUS_CODE,ALLOW_EDIT,LONG_TEXT_ICON,ORDER_LONG_TEXT_ICON,CHANGE_LOG_ICON,SYNC_ICON">
+		requestAtLeastFields="ObjectKey,HeaderObjectKey,MATERIAL_STATUS,MATERIAL_STATUS_DESC,COMPONENT_EXISTS,MATERIAL_STATUS_ICON,MATERIAL_STATUS_STATE,SYSTEM_STATUS_CODE,ALLOW_EDIT,LONG_TEXT_ICON,ORDER_LONG_TEXT_ICON,CHANGE_LOG_ICON,SYNC_ICON,OPERATION_NUMBER">
 		<!--layout data used to make the table growing but the filter bar fixed-->
 		<smartTable:layoutData>
 			<FlexItemData growFactor="1" baseSize="0%"/>
@@ -34,7 +34,7 @@
 				<core:ExtensionPoint name="TableExtP|PrePlanDetail|PlanItemsSet|CustomToolbar"/>
 			</Toolbar>
 		</smartTable:customToolbar>
-		<Table mode="{= ${viewModel>/bOperationTableMode} ? 'None' : 'MultiSelect'}" selectionChange="handleSelectionChangeOperation"
+		<Table id="idOperationTableBlock" mode="{= ${viewModel>/bOperationTableMode} ? 'None' : 'MultiSelect'}" selectionChange="handleSelectionChangeOperation"
 			growingThreshold="100">
 			<columns>
 				<Column width="6rem" visible="{user>/ENABLE_MATERIAL_AVAILABILITY}">

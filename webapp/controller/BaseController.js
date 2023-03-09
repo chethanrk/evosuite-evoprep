@@ -718,18 +718,18 @@ sap.ui.define([
 		 */
 		checkDuplicate: function (oData, oObject, selectionFrom) {
 			var bIndicator = true;
-			if(selectionFrom === "create"){
-				oData.results.forEach(function (oItem) {
-					if (oItem.ObjectKey === oObject.ObjectKey) {
-						bIndicator = false;
-						return;
-					}
-				});
-			} else {
+			if(selectionFrom === "detail"){
 				oData.forEach(function(oItem) {
 					var tempObject = oItem.getBindingContext().getObject();
 					if(tempObject.ORDER_NUMBER === oObject.ORDER_NUMBER && tempObject.OPERATION_NUMBER === oObject.OPERATION_NUMBER){
 						bIndicator = false;
+					}
+				});
+			} else {
+				oData.results.forEach(function (oItem) {
+					if (oItem.ObjectKey === oObject.ObjectKey) {
+						bIndicator = false;
+						return;
 					}
 				});
 			}

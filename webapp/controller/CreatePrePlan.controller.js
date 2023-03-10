@@ -52,6 +52,7 @@ sap.ui.define([
 		},
 
 		aSmartForms: [],
+		bDeleteOperation :false,
 		/**
 		 * Called when a controller is instantiated and its View controls (if available) are already created.
 		 * Can be used to modify the View before it is displayed, to bind event handlers and do other one-time initialization.
@@ -152,11 +153,12 @@ sap.ui.define([
 		 * removed data from the model
 		 */
 		removeOperation: function (oEvent) {
+			this.bDeleteOperation = true; //To identify deleted operations
 			var oSource = oEvent.getSource(),
 				oSelItem = oSource.getParent(),
 				oContext = oSelItem.getBindingContext("CreateModel"),
 				sPath = oContext.getPath().slice(-1);
-
+ 
 			this.oCreateModel.getData().results.splice(parseInt(sPath, 10), 1);
 			this.oCreateModel.refresh();
 		},
@@ -300,7 +302,7 @@ sap.ui.define([
 					},
 					bCheckAllSelected = false;
 				//If All Items are Selected, All the rows data will be populated
-				if (this.oViewModel.getProperty("/aAllSelectedOperations").length !== 0) {
+				if (this.oViewModel.getProperty("/aAllSelectedOperations").length !== 0 && 	!this.bDeleteOperation) {
 					aItems = this.oViewModel.getProperty("/aAllSelectedOperations");
 					bCheckAllSelected = true;
 					this.oViewModel.setProperty("/operationTableCount", this.getResourceBundle().getText("tit.opr", (aItems.length).toString()));

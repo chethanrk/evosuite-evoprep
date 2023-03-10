@@ -718,10 +718,10 @@ sap.ui.define([
 		 */
 		checkDuplicate: function (oData, oObject, selectionFrom) {
 			var bIndicator = true;
-			if(selectionFrom === "detail"){
-				oData.forEach(function(oItem) {
+			if (selectionFrom === "detail") {
+				oData.forEach(function (oItem) {
 					var tempObject = oItem.getBindingContext().getObject();
-					if(tempObject.ORDER_NUMBER === oObject.ORDER_NUMBER && tempObject.OPERATION_NUMBER === oObject.OPERATION_NUMBER){
+					if (tempObject.ORDER_NUMBER === oObject.ORDER_NUMBER && tempObject.OPERATION_NUMBER === oObject.OPERATION_NUMBER) {
 						bIndicator = false;
 					}
 				});
@@ -745,15 +745,15 @@ sap.ui.define([
 		 */
 		checkMultipleDuplicates: function (oData, oFragTable, selectionFrom) {
 			var bIndicator = true,
-			aItem = oFragTable.getItems(),
-			aDuplicates;
-			if(selectionFrom === "create"){
+				aItem = oFragTable.getItems(),
+				aDuplicates;
+			if (selectionFrom === "create") {
 				aItem.forEach(function (oTableItem, index) {
 					aDuplicates = oData.results.filter(function (oItem) {
-						return oItem.ObjectKey === oTableItem.getBindingContext().getProperty("ObjectKey");	
+						return oItem.ObjectKey === oTableItem.getBindingContext().getProperty("ObjectKey");
 					});
-					
-					if(aDuplicates.length > 0){
+
+					if (aDuplicates.length > 0) {
 						oFragTable.getItems()[index].setSelected(false);
 						bIndicator = false;
 					} else {
@@ -764,11 +764,11 @@ sap.ui.define([
 				aItem.forEach(function (oTableItem, index) {
 					aDuplicates = oData.filter(function (oItem) {
 						var tempObject = oItem.getBindingContext().getObject(),
-						tempFragObject = oTableItem.getBindingContext().getObject();
-						return (tempObject.ORDER_NUMBER === tempFragObject.ORDER_NUMBER && tempObject.OPERATION_NUMBER === tempFragObject.OPERATION_NUMBER);	
+							tempFragObject = oTableItem.getBindingContext().getObject();
+						return (tempObject.ORDER_NUMBER === tempFragObject.ORDER_NUMBER && tempObject.OPERATION_NUMBER === tempFragObject.OPERATION_NUMBER);
 					});
-					
-					if(aDuplicates.length > 0){
+
+					if (aDuplicates.length > 0) {
 						oFragTable.getItems()[index].setSelected(false);
 						bIndicator = false;
 					} else {
@@ -1228,8 +1228,11 @@ sap.ui.define([
 			//handle messageToast for select all using table checkbox
 			if (bUserSelectAll) {
 				iNoOfSelected = this.getSelectedItemsCount(oEvent.getSource().getParent().getTable());
-				this.showMessageToast(this.getResourceBundle().getText("ymsg.maxRowSelection", [iNoOfSelected]));
-				
+				if (this.bOperationSelectAll) {
+					this.showMessageToast(this.getResourceBundle().getText("ymsg.allOperationsSelected"));
+				} else {
+					this.showMessageToast(this.getResourceBundle().getText("ymsg.maxRowSelection", [iNoOfSelected]));
+				}
 				//validate for multiple duplicates
 				if (!this.checkMultipleDuplicates(oOperationData, oTable, selectionFrom)) {
 					this.bOperationSelectAll = false;
@@ -1245,7 +1248,6 @@ sap.ui.define([
 				}
 			}
 
-			
 		},
 
 		/**

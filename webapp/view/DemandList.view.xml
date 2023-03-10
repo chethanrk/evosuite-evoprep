@@ -92,24 +92,24 @@
 								<Link text="{NO_OF_PLAN_ID}" press="onPressPlanNumber"/>
 							</table:template>
 						</table:Column>
-						<table:Column hAlign="Center" sortProperty="ALLOW_REPROCESS" filterProperty="ALLOW_REPROCESS" width="5rem">
+						<table:Column hAlign="Center" width="5rem">
 							<Label text="{/PlanItemsSet/ALLOW_REPROCESS/##com.sap.vocabularies.Common.v1.Label/String}"
 								tooltip="{/PlanItemsSet/ALLOW_REPROCESS/##com.sap.vocabularies.Common.v1.Label/String}"/>
 							<table:customData>
 								<core:CustomData key="p13nData"
-									value='\{"columnKey": "ALLOW_REPROCESS", "leadingProperty":"ALLOW_REPROCESS", "filterProperty":"ALLOW_REPROCESS", "sortProperty":"ALLOW_REPROCESS", "columnIndex":"1"}'/>
+									value='\{"columnKey": "ALLOW_REPROCESS", "leadingProperty":"ALLOW_REPROCESS",  "columnIndex":"1"}'/>
 							</table:customData>
 							<table:template>
 								<core:Icon src="{SYNC_ICON}" tooltip="{/PlanItemsSet/ALLOW_REPROCESS/##com.sap.vocabularies.Common.v1.Label/String}"/>
 							</table:template>
 						</table:Column>
-						<table:Column hAlign="Center" sortProperty="MATERIAL_STATUS" filterProperty="MATERIAL_STATUS" width="8rem"
+						<table:Column hAlign="Center"  width="8rem"
 							visible="{user>/ENABLE_MATERIAL_AVAILABILITY}">
 							<Label text="{/PlanItemsSet/MATERIAL_STATUS/##com.sap.vocabularies.Common.v1.Label/String}"
 								tooltip="{/PlanItemsSet/MATERIAL_STATUS/##com.sap.vocabularies.Common.v1.Label/String}"/>
 							<table:customData>
 								<core:CustomData key="p13nData"
-									value='\{"columnKey": "MATERIAL_STATUS", "leadingProperty":"MATERIAL_STATUS", "filterProperty":"MATERIAL_STATUS", "sortProperty":"MATERIAL_STATUS", "columnIndex":"4"}'/>
+									value='\{"columnKey": "MATERIAL_STATUS", "leadingProperty":"MATERIAL_STATUS",  "columnIndex":"4"}'/>
 							</table:customData>
 							<table:template>
 								<HBox>

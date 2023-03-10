@@ -579,25 +579,27 @@ sap.ui.define([
 		 * @param oEvent
 		 */
 		onDoubleClickPlanningGantt: function (oEvent) {
-			var oShape = oEvent.getParameter("shape"),
-				oContext = oShape.getBindingContext("ganttModel"),
-				oHeaderContext = this.getView().getBindingContext(),
-				mParams = {},
-				bValidate = formatter.checkGanttEditability(this.getModel("user").getProperty("/ENABLE_PREPLAN_UPDATE"), oContext.getProperty(
-					"READ_ONLY"), this.oViewModel.getProperty("/bEnableGanttShapesEdit"), oHeaderContext.getProperty("ALLOW_FINAL"));
+			var oShape = oEvent.getParameter("shape");
+			if (oShape && oShape.sParentAggregationName !== "relationships") {
+				var oContext = oShape.getBindingContext("ganttModel"),
+					oHeaderContext = this.getView().getBindingContext(),
+					mParams = {},
+					bValidate = formatter.checkGanttEditability(this.getModel("user").getProperty("/ENABLE_PREPLAN_UPDATE"), oContext.getProperty(
+						"READ_ONLY"), this.oViewModel.getProperty("/bEnableGanttShapesEdit"), oHeaderContext.getProperty("ALLOW_FINAL"));
 
-			if (oContext && oContext.getProperty("OPERATION_NUMBER") !== "") {
-				mParams = {
-					viewName: "com.evorait.evosuite.evoprep.view.templates.DialogContentWrapper#EditOperations",
-					annotationPath: "com.sap.vocabularies.UI.v1.Facets#EditOperations",
-					entitySet: "GanttHierarchySet",
-					controllerName: "EditOperation",
-					title: "tit.editOperation",
-					type: "Edit",
-					saveButtonVisible: bValidate, //Validate the edit feature based on syatem info/operation status/plan status and edit gantt indicator
-					sPath: "/GanttHierarchySet('" + oContext.getProperty("ObjectKey") + "')"
-				};
-				this.getOwnerComponent().DialogTemplateRenderer.open(this.getView(), mParams);
+				if (oContext && oContext.getProperty("OPERATION_NUMBER") !== "") {
+					mParams = {
+						viewName: "com.evorait.evosuite.evoprep.view.templates.DialogContentWrapper#EditOperations",
+						annotationPath: "com.sap.vocabularies.UI.v1.Facets#EditOperations",
+						entitySet: "GanttHierarchySet",
+						controllerName: "EditOperation",
+						title: "tit.editOperation",
+						type: "Edit",
+						saveButtonVisible: bValidate, //Validate the edit feature based on syatem info/operation status/plan status and edit gantt indicator
+						sPath: "/GanttHierarchySet('" + oContext.getProperty("ObjectKey") + "')"
+					};
+					this.getOwnerComponent().DialogTemplateRenderer.open(this.getView(), mParams);
+				}
 			}
 		},
 

@@ -94,7 +94,9 @@ sap.ui.define([
 					busy: true,
 					dLastSync: null,
 					iCount: 0,
-					ganttSelectionPane: "30%"
+					ganttSelectionPane: "30%",
+					bDefaultUtilizationCall : false,
+					bAutoUpdateUtilization: false //For Auto Refresh of Utilization Tab
 				},
 				aAllSelectedOperations: [], //handle select all,
 				bMaterialsDemandsBlock: false, // handle the enable and disable of finalize button in the demands table
@@ -111,8 +113,8 @@ sap.ui.define([
 					Planning: false,
 					Operations: false
 				},
-				bEnableFinalizeBtnGraphicPlan:false, // To handle finalize operation in graphic planing.
-                bEnableMaterialGraphicPlan:false // To handle material information/refresh in graphic planing
+				bEnableFinalizeBtnGraphicPlan: false, // To handle finalize operation in graphic planing.
+				bEnableMaterialGraphicPlan: false // To handle material information/refresh in graphic planing
 			};
 
 			//GetSystemInformation Call

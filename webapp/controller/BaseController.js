@@ -1157,13 +1157,14 @@ sap.ui.define([
 		 * @param oModel - viewModel instance
 		 */
 		refreshGantChartData: function (oViewModel) {
+			oViewModel.setProperty("/ganttUtilization/bDefaultUtilizationCall", true);
 			var oEventBus = sap.ui.getCore().getEventBus();
 			//Refreshing General Tab
 			if (oViewModel.getProperty("/refreshDetailTabs/General")) {
 				oEventBus.publish("RefreshEvoPrepDetailHeader", "refreshDetailHeader");
 			}
 			//Refreshing Utilization Tab
-			if (oViewModel.getProperty("/refreshDetailTabs/Capacity")) {
+			if (oViewModel.getProperty("/refreshDetailTabs/Capacity") && oViewModel.getProperty("/ganttUtilization/bAutoUpdateUtilization")) {
 				oEventBus.publish("BaseController", "refreshUtilizationGantt");
 			}
 			//Refreshing Graphic Planning Tab

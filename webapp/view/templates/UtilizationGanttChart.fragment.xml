@@ -11,6 +11,8 @@
 						<gnt2:ContainerToolbar zoomControlType="None" alignCustomContentToRight="true" style="Clear">
 							<gnt2:content>
 								<ToolbarSpacer/>
+									<Text text="{i18n>lbl.refreshUtilization}"/>
+								<Switch id="idRefreshUtilization" change="onAutoRefreshUtilization"/>
 								<Label
 									text="{i18n>lbl.lastSyn} {path:'viewModel>/ganttUtilization/dLastSync', type:'sap.ui.model.type.DateTime', formatOptions : { style:'medium'}}"/>
 								<Text text="|"/>

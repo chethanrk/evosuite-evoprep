@@ -164,6 +164,11 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
+				},
+				onAutoRefreshUtilization: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
@@ -505,6 +510,7 @@ sap.ui.define([
 		 * On click on Sync button in Utilization Gantt Chart
 		 */
 		onPressUtilizationSync: function () {
+			this.oViewModel.setProperty("/ganttUtilization/bDefaultUtilizationCall", true);
 			this._loadUtilizationGantt();
 		},
 
@@ -512,6 +518,7 @@ sap.ui.define([
 		 * On Selection Change of View Mode in Utilization Gantt Chart 
 		 */
 		onUtilizationSelectionChange: function () {
+			this.oViewModel.setProperty("/ganttUtilization/bDefaultUtilizationCall", true);
 			this._loadUtilizationGantt();
 		},
 
@@ -836,6 +843,7 @@ sap.ui.define([
 				this.getOwnerComponent().materialInfoDialog.open(this.getView(), aSelectedItemsPath);
 			}
 		},
+
 		/**
 		 * Method called on the check and uncheck of checkbox in the graphic 
 		 * planning table
@@ -853,8 +861,19 @@ sap.ui.define([
 			} else {
 				this.getView().getModel("viewModel").setProperty("/bEnableMaterialGraphicPlan", false);
 			}
-
 		},
+
+		/**
+		 * Method called on press of Refresh Utilization Switch 
+		 * to refresh Utilization Tab on Updating in other tabs
+		 *  @param oEvent
+		 */
+		onAutoRefreshUtilization: function (oEvent) {
+			var oSource = oEvent.getSource(),
+				bState = oSource.getState();
+			this.oViewModel.setProperty("/ganttUtilization/bAutoUpdateUtilization", bState);
+		},
+
 		/* =========================================================== */
 		/* public methods                                              */
 		/* =========================================================== */
@@ -1265,8 +1284,11 @@ sap.ui.define([
 			var aFilters = [],
 				sPath = this._oContext.getPath(),
 				sHeaderKey = this.getModel().getProperty(sPath + "/ObjectKey");
-			aFilters.push(new Filter("HeaderObjectKey", FilterOperator.EQ, sHeaderKey));
-			aFilters.push(new Filter("VIEW_MODE", FilterOperator.EQ, sKey));
+			//Loading Utilization Tab Data by default only when this gloabal config is enabled 
+			if (this.oViewModel.getProperty("/ganttUtilization/bDefaultUtilizationCall")) {
+				aFilters.push(new Filter("HeaderObjectKey", FilterOperator.EQ, sHeaderKey));
+				aFilters.push(new Filter("VIEW_MODE", FilterOperator.EQ, sKey));
+			}
 			return aFilters;
 		},
 
@@ -1282,6 +1304,11 @@ sap.ui.define([
 			this.oViewModel.setProperty("/ganttSettings/sEndDate", this.getModel().getProperty(this._oContext.getPath() + "/END_DATE"));
 			if (this._UtilizationSelectView) {
 				this._UtilizationSelectView.setSelectedKey(this.getModel("user").getProperty("/DEFAULT_VIEW_MODE"));
+				var bRefreshUtilization = this.getModel("user").getProperty("/ENABLE_PLAN_DETAIL_UTIL_CALC") === "X" ? true : false;
+				this.getView().byId("idRefreshUtilization").setState(bRefreshUtilization);
+				this.oViewModel.setProperty("/ganttUtilization/bAutoUpdateUtilization", bRefreshUtilization);
+				this.oViewModel.setProperty("/ganttUtilization/bDefaultUtilizationCall", this.getModel("user").getProperty(
+					"/ENABLE_PLAN_OPEN_UTIL_CALC"));
 			}
 			this.getView().byId("idCalculateUtilization").setState(false);
 			this._axisTime.setZoomLevel(6);

@@ -451,6 +451,7 @@ sap.ui.define([
 			if (oEvent.getSource().getState()) {
 				this.bSelectAll = true;
 				this.oTable.selectAll(true);
+				this.showMessageToast(this.getResourceBundle().getText("ymsg.maxRowSelection", [this.aAllOperations.length]));
 			} else {
 				this.bSelectAll = false;
 				this._removeOprTableSelection();

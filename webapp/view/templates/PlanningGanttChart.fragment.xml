@@ -18,7 +18,7 @@
 									visible="{= ${user>/ENABLE_HIDE_DEPENDENCY} === 'X'}" press="onShowDependencies"
 									tooltip="{= ${viewModel>/bShowDependencies} === false ? ${i18n>xbut.showDependencies} : ${i18n>xbut.hideDependencies}}"/>
 								<Text text="|"/>
-								<Button icon="sap-icon://edit" tooltip="{i18n>xbut.edit}"
+								<Button icon="sap-icon://edit" tooltip="{i18n>xbut.editDisplay}"
 									visible="{= ${user>/ENABLE_PREPLAN_UPDATE} === 'X' &amp;&amp; ${ALLOW_FINAL} === true}" enabled="{viewModel>/validateIW32Auth}"
 									press="onPressShapesEdit"/>
 								<Button icon="{path:'viewModel>/fullscreenGantt',formatter:'.formatter.fullScreenGanttVisibility'}" press="onPressGanttFullScreen"/>

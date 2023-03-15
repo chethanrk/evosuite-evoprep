@@ -15,13 +15,13 @@
 			</Button>
 		</table:template>
 	</table:Column>
-	<table:Column hAlign="Center" sortProperty="OPERATION_LONG_TEXT" filterProperty="OPERATION_LONG_TEXT" width="5rem"
+	<table:Column hAlign="Center"  width="5rem"
 		visible="{user>/ENABLE_LONG_TEXT}">
 		<Label text="{/PlanItemsSet/OPERATION_LONG_TEXT/##com.sap.vocabularies.Common.v1.Label/String}"
 			tooltip="{/PlanItemsSet/OPERATION_LONG_TEXT/##com.sap.vocabularies.Common.v1.Label/String}"/>
 		<table:customData>
 			<core:CustomData key="p13nData"
-				value='\{"columnKey": "OPERATION_LONG_TEXT", "leadingProperty":"OPERATION_LONG_TEXT", "filterProperty":"OPERATION_LONG_TEXT", "sortProperty":"OPERATION_LONG_TEXT", "columnIndex":"7"}'/>
+				value='\{"columnKey": "OPERATION_LONG_TEXT", "leadingProperty":"OPERATION_LONG_TEXT", "columnIndex":"7"}'/>
 		</table:customData>
 		<table:template>
 			<Button icon="{LONG_TEXT_ICON}" press="onPressLongText">

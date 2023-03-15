@@ -1115,9 +1115,7 @@ sap.ui.define([
 				//validate for the duplicate
 				if (!this.checkMultipleDuplicates(oOperationData, oTable, selectionFrom)) {
 					this.bOperationSelectAll = false;
-					sap.ui.getCore().byId("idOprSwitchSelectAll").setState(false);
 					this.showMessageToast(this.getResourceBundle().getText("ymsg.duplicateValidation"));
-					// oTable.removeSelections();
 				}
 
 			} else {
@@ -1237,9 +1235,7 @@ sap.ui.define([
 				//validate for multiple duplicates
 				if (!this.checkMultipleDuplicates(oOperationData, oTable, selectionFrom)) {
 					this.bOperationSelectAll = false;
-					sap.ui.getCore().byId("idOprSwitchSelectAll").setState(false);
 					this.showMessageToast(this.getResourceBundle().getText("ymsg.duplicateValidation"));
-					// oTable.removeSelections();
 				}
 			} else {
 				//validate for the single duplicate

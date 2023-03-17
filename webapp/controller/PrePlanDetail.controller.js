@@ -430,7 +430,7 @@ sap.ui.define([
 				oDraggedData = this.getModel("ganttModel").getProperty(sSourcePath);
 
 				//Validate the past date for header bar
-				if (moment(sNewStartDate).isBefore(moment()) && oDraggedData.HIERARCHY_LEVEL === 0 && !oDraggedData.ENABLE_PAST_DATE) {
+				if (moment(sNewStartDate).isBefore(moment()) && oDraggedData.HIERARCHY_LEVEL === 0 && !this.getModel("user").getProperty("/ENABLE_PAST_DATE")) {
 					this.showMessageToast(this.getResourceBundle().getText("msg.orderPastDateValidation"));
 					return;
 				}

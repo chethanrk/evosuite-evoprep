@@ -62,7 +62,11 @@ sap.ui.define([
 			this._oView.getModel("viewModel").setProperty("/ganttSettings/busy", true);
 			this._updateGanttOperationCall()
 				.then(function (oData) {
-					MessageToast.show(this._oView.getModel('i18n').getResourceBundle().getText("msg.OperationSaveSuccess"));
+					if (!(oData.__batchResponses && oData.__batchResponses[0].response && (oData.__batchResponses[0].response.statusCode ===
+							"400" || oData.__batchResponses[0].response.statusCode ===
+							"500"))) {
+						MessageToast.show(this._oView.getModel('i18n').getResourceBundle().getText("msg.OperationSaveSuccess"));
+					}
 					this._oView.getModel("viewModel").setProperty("/ganttSettings/busy", false);
 					this.refreshGantChartData(this._oView.getModel("viewModel"));
 					this._oView.byId("idPlanningGanttChartTable").getSelection().clear(true);

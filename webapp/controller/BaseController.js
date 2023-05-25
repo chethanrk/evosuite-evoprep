@@ -1175,9 +1175,6 @@ sap.ui.define([
 			if (oViewModel.getProperty("/refreshDetailTabs/Operations")) {
 				oEventBus.publish("RefreshEvoPrepDetailOPerationTable", "detailoperationrefresh");
 			}
-			// //Refreshing Status Dropdown
-			// oEventBus.publish("BaseController", "rebindStatusDropDown");
-			
 
 		},
 

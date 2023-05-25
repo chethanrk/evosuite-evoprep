@@ -1247,7 +1247,10 @@ sap.ui.define([
 		 * Refresh detail header forcefully
 		 */
 		_refrshDetailHeader: function () {
-			this.getOwnerComponent().readData(this._oContext.getPath());
+			this.getOwnerComponent().readData(this._oContext.getPath()).then(function (){
+				//Refreshing Status Dropdown
+				this._rebindPage();
+			}.bind(this));
 		},
 
 		/**

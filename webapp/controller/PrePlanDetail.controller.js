@@ -192,6 +192,7 @@ sap.ui.define([
 			eventBus.subscribe("BaseController", "refreshUtilizationGantt", this._loadUtilizationGantt, this);
 			eventBus.subscribe("RefreshEvoPrepDetailHeader", "refreshDetailHeader", this._refrshDetailHeader, this);
 			eventBus.subscribe("GanttChart", "applyFiltersFromOperations", this._fnFiltersOnGraphic, this);
+			eventBus.subscribe("BaseController", "rebindStatusDropDown", this._rebindPage, this);
 
 			//Initializing GanttActions.js
 			this.GanttActions = this.getOwnerComponent().GanttActions;

@@ -240,7 +240,7 @@ sap.ui.define([
 				aAllOperationsSelected.forEach(function (oSelObject) {
 					delete oSelObject.__metadata;
 					//validate for the duplicate
-					if (this.checkDuplicate(oOperationData.results, oSelObject.ObjectKey)) {
+					if (this.checkDuplicate(oOperationData, oSelObject.ObjectKey)) {
 						oOperationData.results.push(oSelObject);
 					}
 				}.bind(this));
@@ -251,7 +251,7 @@ sap.ui.define([
 						var oSelObject = oItem.getObject();
 						delete oSelObject.__metadata;
 						//validate for the duplicate
-						if (this.checkDuplicate(oOperationData.results, oSelObject.ObjectKey)) {
+						if (this.checkDuplicate(oOperationData, oSelObject.ObjectKey)) {
 							oOperationData.results.push(oSelObject);
 						}
 					}
@@ -451,6 +451,7 @@ sap.ui.define([
 			if (oEvent.getSource().getState()) {
 				this.bSelectAll = true;
 				this.oTable.selectAll(true);
+				this.showMessageToast(this.getResourceBundle().getText("ymsg.maxRowSelection", [this.aAllOperations.length]));
 			} else {
 				this.bSelectAll = false;
 				this._removeOprTableSelection();

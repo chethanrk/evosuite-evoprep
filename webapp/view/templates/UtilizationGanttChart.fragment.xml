@@ -11,6 +11,8 @@
 						<gnt2:ContainerToolbar zoomControlType="None" alignCustomContentToRight="true" style="Clear">
 							<gnt2:content>
 								<ToolbarSpacer/>
+									<Text text="{i18n>lbl.refreshUtilization}"/>
+								<Switch id="idRefreshUtilization" change="onAutoRefreshUtilization"/>
 								<Label
 									text="{i18n>lbl.lastSyn} {path:'viewModel>/ganttUtilization/dLastSync', type:'sap.ui.model.type.DateTime', formatOptions : { style:'medium'}}"/>
 								<Text text="|"/>
@@ -41,7 +43,7 @@
 							<table:Table id="idUtilizationGanttTreeTable" selectionMode="Single" visibleRowCountMode="Auto" rowActionCount="2" threshold="10"
 								enableColumnReordering="true" enableBusyIndicator="true" enableCellFilter="false" columnHeaderVisible="true" selectionBehavior="RowOnly"
 								busyStateChanged="onBusyStateChanged"
-								rows="{ path: '/WorkCenterSet', parameters: {operationMode: 'Server', numberOfExpandedLevels: 1, expand: 'WorkCenterToUtilization', groupId: 'GanttTree' } }">
+								rows="{ path: '/WorkCenterSet', parameters: {countMode:'Inline', operationMode: 'Server', numberOfExpandedLevels: 1, expand: 'WorkCenterToUtilization', groupId: 'GanttTree' } }">
 								<table:columns>
 									<template:repeat list="{path:'tempProps>ganttUtilizationConfigs/lineItems/'}" var="lineItem">
 										<table:Column sortProperty="{= ${path:'lineItem>Value/Path'}}" filterProperty="{= ${path:'lineItem>Value/Path'}}"

@@ -8,7 +8,7 @@
 		editTogglable="{parts: [ {path:'ALLOW_FINAL'}, {path:'user>/ENABLE_ITEM_UPDATE'}, {path:'viewModel>/validateIW32Auth'}], formatter:'.formatter.showOperationEditDel'}"
 		editToggled="onPressEdit" tableBindingPath="PlanHeaderToPlanItems" beforeRebindTable="onTableUpdating"
 		initiallyVisibleFields="COMPONENT_EXISTS"
-		requestAtLeastFields="ObjectKey,HeaderObjectKey,MATERIAL_STATUS,MATERIAL_STATUS_DESC,COMPONENT_EXISTS,MATERIAL_STATUS_ICON,MATERIAL_STATUS_STATE,SYSTEM_STATUS_CODE,ALLOW_EDIT,LONG_TEXT_ICON,ORDER_LONG_TEXT_ICON,CHANGE_LOG_ICON,SYNC_ICON">
+		requestAtLeastFields="ObjectKey,HeaderObjectKey,MATERIAL_STATUS,MATERIAL_STATUS_DESC,COMPONENT_EXISTS,MATERIAL_STATUS_ICON,MATERIAL_STATUS_STATE,SYSTEM_STATUS_CODE,ALLOW_EDIT,LONG_TEXT_ICON,ORDER_LONG_TEXT_ICON,CHANGE_LOG_ICON,SYNC_ICON,OPERATION_NUMBER">
 		<!--layout data used to make the table growing but the filter bar fixed-->
 		<smartTable:layoutData>
 			<FlexItemData growFactor="1" baseSize="0%"/>
@@ -34,13 +34,13 @@
 				<core:ExtensionPoint name="TableExtP|PrePlanDetail|PlanItemsSet|CustomToolbar"/>
 			</Toolbar>
 		</smartTable:customToolbar>
-		<Table mode="{= ${viewModel>/bOperationTableMode} ? 'None' : 'MultiSelect'}" selectionChange="handleSelectionChangeOperation"
+		<Table id="idOperationTableBlock" mode="{= ${viewModel>/bOperationTableMode} ? 'None' : 'MultiSelect'}" selectionChange="handleSelectionChangeOperation"
 			growingThreshold="100">
 			<columns>
 				<Column width="6rem" visible="{user>/ENABLE_MATERIAL_AVAILABILITY}">
 					<customData>
 						<core:CustomData key="p13nData"
-							value='\{"columnKey": "MATERIAL_STATUS", "leadingProperty":"MATERIAL_STATUS", "filterProperty":"MATERIAL_STATUS", "sortProperty":"MATERIAL_STATUS", "columnIndex":"4"}'/>
+							value='\{"columnKey": "MATERIAL_STATUS", "leadingProperty":"MATERIAL_STATUS",  "columnIndex":"4"}'/>
 					</customData>
 					<Label text="{/PlanItemsSet/MATERIAL_STATUS/##com.sap.vocabularies.Common.v1.Label/String}"
 						tooltip="{/PlanItemsSet/MATERIAL_STATUS/##com.sap.vocabularies.Common.v1.Label/String}"/>
@@ -55,7 +55,7 @@
 				<Column width="6rem" visible="{user>/ENABLE_LONG_TEXT}">
 					<customData>
 						<core:CustomData key="p13nData"
-							value='\{"columnKey": "ORDER_LONG_TEXT", "leadingProperty":"ORDER_LONG_TEXT", "filterProperty":"ORDER_LONG_TEXT", "sortProperty":"ORDER_LONG_TEXT", "columnIndex":"6"}'/>
+							value='\{"columnKey": "ORDER_LONG_TEXT", "leadingProperty":"ORDER_LONG_TEXT",  "columnIndex":"6"}'/>
 					</customData>
 					<Label text="{/PlanItemsSet/ORDER_LONG_TEXT/##com.sap.vocabularies.Common.v1.Label/String}"
 						tooltip="{/PlanItemsSet/ORDER_LONG_TEXT/##com.sap.vocabularies.Common.v1.Label/String}"/>
@@ -63,12 +63,12 @@
 				<Column width="6rem" visible="{user>/ENABLE_LONG_TEXT}">
 					<customData>
 						<core:CustomData key="p13nData"
-							value='\{"columnKey": "OPERATION_LONG_TEXT", "leadingProperty":"OPERATION_LONG_TEXT", "filterProperty":"OPERATION_LONG_TEXT", "sortProperty":"OPERATION_LONG_TEXT", "columnIndex":"7"}'/>
+							value='\{"columnKey": "OPERATION_LONG_TEXT", "leadingProperty":"OPERATION_LONG_TEXT", "columnIndex":"7"}'/>
 					</customData>
 					<Label text="{/PlanItemsSet/OPERATION_LONG_TEXT/##com.sap.vocabularies.Common.v1.Label/String}"
 						tooltip="{/PlanItemsSet/OPERATION_LONG_TEXT/##com.sap.vocabularies.Common.v1.Label/String}"/>
 				</Column>
-				<Column width="6rem" >
+				<Column width="6rem" visible="{user>/ENABLE_SYNC_FAILED}">
 					<customData>
 						<core:CustomData key="p13nData"
 							value='\{"columnKey": "ALLOW_REPROCESS", "leadingProperty":"ALLOW_REPROCESS", "columnIndex":"8"}'/>

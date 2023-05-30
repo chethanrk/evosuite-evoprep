@@ -144,6 +144,10 @@ sap.ui.define([
 					public: true,
 					final: true
 				},
+				checkMultipleDuplicates: {
+					public: true,
+					final: true
+				},
 				saveChanges: {
 					public: true,
 					final: true
@@ -712,14 +716,67 @@ sap.ui.define([
 		 * @{param} oData - create model operation data
 		 * @param ObjectKey - object key to compare
 		 */
-		checkDuplicate: function (oData, ObjectKey) {
+		checkDuplicate: function (oData, oObject, selectionFrom) {
 			var bIndicator = true;
-			oData.forEach(function (oItem) {
-				if (oItem.ObjectKey === ObjectKey) {
-					bIndicator = false;
-					return;
-				}
-			});
+			if (selectionFrom === "detail") {
+				oData.forEach(function (oItem) {
+					var tempObject = oItem.getBindingContext().getObject();
+					if (tempObject.ORDER_NUMBER === oObject.ORDER_NUMBER && tempObject.OPERATION_NUMBER === oObject.OPERATION_NUMBER) {
+						bIndicator = false;
+					}
+				});
+			} else {
+				oData.results.forEach(function (oItem) {
+					if (oItem.ObjectKey === oObject.ObjectKey) {
+						bIndicator = false;
+						return;
+					}
+				});
+			}
+			return bIndicator;
+		},
+
+		/**
+		 * check duplicate entires 
+		 * @{param} oData - create model operation data
+		 * @param aItem - item array to compare
+		 * @param compareProp - any property to compare
+		 * @param oTable - table object
+		 */
+		checkMultipleDuplicates: function (oData, oFragTable, selectionFrom) {
+			var bIndicator = true,
+				aItem = oFragTable.getItems(),
+				aDuplicates;
+			if (selectionFrom === "create") {
+				aItem.forEach(function (oTableItem, index) {
+					aDuplicates = oData.results.filter(function (oItem) {
+						return oItem.ObjectKey === oTableItem.getBindingContext().getProperty("ObjectKey");
+					});
+
+					if (aDuplicates.length > 0) {
+						oFragTable.getItems()[index].setSelected(false);
+						bIndicator = false;
+					} else {
+						oFragTable.getItems()[index].setSelected(true);
+					}
+				});
+			} else {
+				aItem.forEach(function (oTableItem, index) {
+					aDuplicates = oData.filter(function (oItem) {
+						var tempObject = oItem.getBindingContext().getObject(),
+							tempFragObject = oTableItem.getBindingContext().getObject();
+						return (tempObject.ORDER_NUMBER === tempFragObject.ORDER_NUMBER && tempObject.OPERATION_NUMBER === tempFragObject.OPERATION_NUMBER);
+					});
+
+					if (aDuplicates.length > 0) {
+						oFragTable.getItems()[index].setSelected(false);
+						bIndicator = false;
+					} else {
+						oFragTable.getItems()[index].setSelected(true);
+					}
+				});
+			}
+
 			return bIndicator;
 		},
 
@@ -1037,10 +1094,30 @@ sap.ui.define([
 		 */
 		onChangeOperationSelectAll: function (oEvent) {
 			var oSmartTable = sap.ui.getCore().byId("idOperationListFragSmartTable"),
-				oTable = oSmartTable.getTable();
+				oTable = oSmartTable.getTable(),
+				oOperationData, selectionFrom,
+				aDemandsBlockOperationTable;
+
+			//check for create or detail
+			if (this.oCreateModel) {
+				oOperationData = this.oCreateModel.getData();
+				selectionFrom = "create";
+			} else {
+				aDemandsBlockOperationTable = this.oSmartTable.getTable();
+				oOperationData = aDemandsBlockOperationTable.getItems();
+				selectionFrom = "detail";
+			}
+
 			if (oEvent.getSource().getState()) {
 				this.bOperationSelectAll = true;
 				oTable.selectAll(true);
+
+				//validate for the duplicate
+				if (!this.checkMultipleDuplicates(oOperationData, oTable, selectionFrom)) {
+					this.bOperationSelectAll = false;
+					this.showMessageToast(this.getResourceBundle().getText("ymsg.duplicateValidation"));
+				}
+
 			} else {
 				this.bOperationSelectAll = false;
 				oTable.removeSelections();
@@ -1078,13 +1155,14 @@ sap.ui.define([
 		 * @param oModel - viewModel instance
 		 */
 		refreshGantChartData: function (oViewModel) {
+			oViewModel.setProperty("/ganttUtilization/bDefaultUtilizationCall", true);
 			var oEventBus = sap.ui.getCore().getEventBus();
 			//Refreshing General Tab
 			if (oViewModel.getProperty("/refreshDetailTabs/General")) {
 				oEventBus.publish("RefreshEvoPrepDetailHeader", "refreshDetailHeader");
 			}
 			//Refreshing Utilization Tab
-			if (oViewModel.getProperty("/refreshDetailTabs/Capacity")) {
+			if (oViewModel.getProperty("/refreshDetailTabs/Capacity") && oViewModel.getProperty("/ganttUtilization/bAutoUpdateUtilization")) {
 				oEventBus.publish("BaseController", "refreshUtilizationGantt");
 			}
 			//Refreshing Graphic Planning Tab
@@ -1130,25 +1208,43 @@ sap.ui.define([
 			var oSelectedItem = oEvent.getParameter("listItem"),
 				oContext = oSelectedItem.getBindingContext(),
 				bUserSelectAll = oEvent.getParameter("selectAll"),
+				oTable = oEvent.getSource().getParent().getTable(),
+				aDemandsBlockOperationTable,
 				iNoOfSelected = 0,
+				selectionFrom = "",
 				oOperationData;
 
 			//check for create or detail
 			if (this.oCreateModel) {
 				oOperationData = this.oCreateModel.getData();
+				selectionFrom = "create";
+			} else {
+				aDemandsBlockOperationTable = this.oSmartTable.getTable();
+				oOperationData = aDemandsBlockOperationTable.getItems();
+				selectionFrom = "detail";
 			}
 
 			//handle messageToast for select all using table checkbox
 			if (bUserSelectAll) {
 				iNoOfSelected = this.getSelectedItemsCount(oEvent.getSource().getParent().getTable());
-				this.showMessageToast(this.getResourceBundle().getText("ymsg.maxRowSelection", [iNoOfSelected]));
+				if (this.bOperationSelectAll) {
+					this.showMessageToast(this.getResourceBundle().getText("ymsg.allOperationsSelected"));
+				} else {
+					this.showMessageToast(this.getResourceBundle().getText("ymsg.maxRowSelection", [iNoOfSelected]));
+				}
+				//validate for multiple duplicates
+				if (!this.checkMultipleDuplicates(oOperationData, oTable, selectionFrom)) {
+					this.bOperationSelectAll = false;
+					this.showMessageToast(this.getResourceBundle().getText("ymsg.duplicateValidation"));
+				}
+			} else {
+				//validate for the single duplicate
+				if (!this.checkDuplicate(oOperationData, oContext.getObject(), selectionFrom)) {
+					this.showMessageToast(this.getResourceBundle().getText("ymsg.duplicateValidation"));
+					oSelectedItem.setSelected(false);
+				}
 			}
 
-			//validate for the duplicate
-			if (!this.checkDuplicate(oOperationData.results, oContext.getProperty("ObjectKey"))) {
-				this.showMessageToast(this.getResourceBundle().getText("ymsg.duplicateValidation"));
-				oSelectedItem.setSelected(false);
-			}
 		},
 
 		/**

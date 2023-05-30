@@ -188,6 +188,8 @@ sap.ui.define([
 			this.getModel("viewModel").setProperty("/isPrePlanSelected", isPreplanDeletEnabled);
 			this.oViewModel.setProperty("/bMaterialsDemandsBlock", false);
 			this.oViewModel.setProperty("/bEnableFinalizeBtn", false);
+			this.oViewModel.setProperty("/bEnableFinalizeBtnGraphicPlan", false);
+			this.oViewModel.setProperty("/bEnableMaterialGraphicPlan", false);
 		},
 
 		/**

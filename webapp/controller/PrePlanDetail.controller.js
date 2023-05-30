@@ -144,6 +144,31 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
+				},
+				onFinalizeBtnPressGraphicPlan: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onPlanningSelectionChange: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onMaterialStatusPressGraphicPlan: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onMaterialInfoButtonPressGraphicPlan: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				onAutoRefreshUtilization: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
@@ -368,6 +393,7 @@ sap.ui.define([
 				oResourceBundle = this.getResourceBundle();
 			//Service Call while clicking on Show Dependencies Button for First Time
 			if (this.oViewModel.getProperty("/bDependencyCall")) {
+				this.oViewModel.setProperty("/ganttSettings/bUtilizationCall", true);
 				this._loadGanttData();
 			}
 			if (sButtonText === oResourceBundle.getText("xbut.hideDependencies")) {
@@ -404,7 +430,7 @@ sap.ui.define([
 				oDraggedData = this.getModel("ganttModel").getProperty(sSourcePath);
 
 				//Validate the past date for header bar
-				if (moment(sNewStartDate).isBefore(moment()) && oDraggedData.HIERARCHY_LEVEL === 0 && !oDraggedData.ENABLE_PAST_DATE) {
+				if (moment(sNewStartDate).isBefore(moment()) && oDraggedData.HIERARCHY_LEVEL === 0 && !this.getModel("user").getProperty("/ENABLE_PAST_DATE")) {
 					this.showMessageToast(this.getResourceBundle().getText("msg.orderPastDateValidation"));
 					return;
 				}
@@ -484,6 +510,7 @@ sap.ui.define([
 		 * On click on Sync button in Utilization Gantt Chart
 		 */
 		onPressUtilizationSync: function () {
+			this.oViewModel.setProperty("/ganttUtilization/bDefaultUtilizationCall", true);
 			this._loadUtilizationGantt();
 		},
 
@@ -491,6 +518,7 @@ sap.ui.define([
 		 * On Selection Change of View Mode in Utilization Gantt Chart 
 		 */
 		onUtilizationSelectionChange: function () {
+			this.oViewModel.setProperty("/ganttUtilization/bDefaultUtilizationCall", true);
 			this._loadUtilizationGantt();
 		},
 
@@ -558,25 +586,27 @@ sap.ui.define([
 		 * @param oEvent
 		 */
 		onDoubleClickPlanningGantt: function (oEvent) {
-			var oShape = oEvent.getParameter("shape"),
-				oContext = oShape.getBindingContext("ganttModel"),
-				oHeaderContext = this.getView().getBindingContext(),
-				mParams = {},
-				bValidate = formatter.checkGanttEditability(this.getModel("user").getProperty("/ENABLE_PREPLAN_UPDATE"), oContext.getProperty(
-					"READ_ONLY"), this.oViewModel.getProperty("/bEnableGanttShapesEdit"), oHeaderContext.getProperty("ALLOW_FINAL"));
+			var oShape = oEvent.getParameter("shape");
+			if (oShape && oShape.sParentAggregationName !== "relationships") {
+				var oContext = oShape.getBindingContext("ganttModel"),
+					oHeaderContext = this.getView().getBindingContext(),
+					mParams = {},
+					bValidate = formatter.checkGanttEditability(this.getModel("user").getProperty("/ENABLE_PREPLAN_UPDATE"), oContext.getProperty(
+						"READ_ONLY"), this.oViewModel.getProperty("/bEnableGanttShapesEdit"), oHeaderContext.getProperty("ALLOW_FINAL"));
 
-			if (oContext && oContext.getProperty("OPERATION_NUMBER") !== "") {
-				mParams = {
-					viewName: "com.evorait.evosuite.evoprep.view.templates.DialogContentWrapper#EditOperations",
-					annotationPath: "com.sap.vocabularies.UI.v1.Facets#EditOperations",
-					entitySet: "GanttHierarchySet",
-					controllerName: "EditOperation",
-					title: "tit.editOperation",
-					type: "Edit",
-					saveButtonVisible: bValidate, //Validate the edit feature based on syatem info/operation status/plan status and edit gantt indicator
-					sPath: "/GanttHierarchySet('" + oContext.getProperty("ObjectKey") + "')"
-				};
-				this.getOwnerComponent().DialogTemplateRenderer.open(this.getView(), mParams);
+				if (oContext && oContext.getProperty("OPERATION_NUMBER") !== "") {
+					mParams = {
+						viewName: "com.evorait.evosuite.evoprep.view.templates.DialogContentWrapper#EditOperations",
+						annotationPath: "com.sap.vocabularies.UI.v1.Facets#EditOperations",
+						entitySet: "GanttHierarchySet",
+						controllerName: "EditOperation",
+						title: "tit.editOperation",
+						type: "Edit",
+						saveButtonVisible: bValidate, //Validate the edit feature based on syatem info/operation status/plan status and edit gantt indicator
+						sPath: "/GanttHierarchySet('" + oContext.getProperty("ObjectKey") + "')"
+					};
+					this.getOwnerComponent().DialogTemplateRenderer.open(this.getView(), mParams);
+				}
 			}
 		},
 
@@ -615,8 +645,68 @@ sap.ui.define([
 					return;
 				}
 			}
-		},
 
+		},
+		/**
+		 * Triigers when shape selection change method of gantt chart
+		 * This method only helps to retrive the shapes that are selected at the moment.
+		 * @param {oEvent}
+		 */
+		onPlanningSelectionChange: function (oEvent) {
+			var aSelectedShapesIds = oEvent.getParameter("shapeUids"),
+				oRowDetails = {},
+				oRowObject = {},
+				bValidate = false,
+				bValidadeFinal = false,
+				oViewModel = this.getView().getModel("viewModel");
+
+			for (var i in aSelectedShapesIds) {
+				oRowDetails = Utility.parseUid(aSelectedShapesIds[i]);
+				oRowObject = this.getModel("ganttModel").getProperty(oRowDetails.shapeDataName);
+				if (oRowObject && oRowObject.HIERARCHY_LEVEL === 0) {
+					bValidate = true;
+					bValidadeFinal = false;
+					break;
+				}
+				if (oRowObject.HIERARCHY_LEVEL === 1 && oRowObject.READ_ONLY === false) {
+					bValidadeFinal = true;
+				}
+			}
+			oViewModel.setProperty("/bEnableFinalizeBtnGraphicPlan", bValidadeFinal);
+			if (bValidate) {
+				// this validation to check multiple shapes is already handled by onPlanningShaprePress
+				return;
+			}
+		},
+		/**
+		 * Method called on the press of finalize button press on the 
+		 * gantt chart in the graphic planning table
+		 *  @param oEvent
+		 */
+		onFinalizeBtnPressGraphicPlan: function (oEvent) {
+			var aSelectedShapesIds = this.getView().byId("idPlanningGanttChartTable").getSelectedShapeUid(),
+				oRowDetails = {},
+				oRowObject = {},
+				sEnittySet,
+				bSaveChanges = false;
+			aSelectedShapesIds.forEach(function (sid) {
+				oRowDetails = Utility.parseUid(sid);
+				oRowObject = this.getModel("ganttModel").getProperty(oRowDetails.shapeDataName);
+				if (oRowObject.HIERARCHY_LEVEL === 1 && oRowObject.READ_ONLY === false) {
+					sEnittySet = oRowObject["__metadata"]["id"].split("/").pop();
+					this.getModel().setProperty("/" + sEnittySet + "/FUNCTION", "OPER_FINAL");
+					bSaveChanges = true;
+				}
+			}.bind(this));
+
+			if (bSaveChanges) {
+				this.saveChangesMain({
+						state: "success",
+						isCreate: false
+					},
+					this._afterSucessFinalizeGraphicPlan.bind(this));
+			}
+		},
 		/**
 		 * Utilization Details PopOver 
 		 * Passing selected shape filter
@@ -673,6 +763,7 @@ sap.ui.define([
 				this.oViewModel.setProperty("/ganttSettings/bShowUtilization", true);
 				//Service Call while Utilization on for First Time
 				if (this.oViewModel.getProperty("/ganttSettings/bUtilizationCall")) {
+					this.oViewModel.setProperty("/bDependencyCall", true);
 					this._loadGanttData();
 				}
 			} else {
@@ -698,6 +789,91 @@ sap.ui.define([
 			this.refreshGantChartData(this.oViewModel);
 			this.resetDeferredGroupToChanges(this.getView());
 		},
+		/**
+		 * Method called on the press of material refresh button on the 
+		 * table in graphic planning table
+		 *  @param oEvent
+		 */
+		onMaterialStatusPressGraphicPlan: function (oEvent) {
+			var aSelectedItems = this._ReturnPropContextTreeTable(this._treeTable, "COMPONENT_EXISTS"),
+				aPromises = [],
+				sEnittySet,
+				oBindingRows = this._treeTable.getBinding("rows"),
+				sPath = oBindingRows.getPath(),
+				oTableData = oBindingRows.getModel().getProperty(sPath)["children"],
+				iIndex;
+			this.oViewModel.setProperty("/busy", true);
+			for (var i in aSelectedItems) {
+				sEnittySet = "/" + aSelectedItems[i]["__metadata"]["id"].split("/").pop();
+				aPromises.push(this.getOwnerComponent().readData(sEnittySet));
+			}
+			Promise.all(aPromises).then(function (oResult) {
+				for (var i in oResult) {
+					if (oResult[i].hasOwnProperty("ObjectKey")) {
+						for (var x in oTableData) {
+							iIndex = oTableData[x]["children"].findIndex(r => r.ObjectKey === oResult[i]["ObjectKey"]);
+							if (iIndex >= 0) {
+								oResult[i]["IsSelected"] = true;
+								oTableData[x]["children"][iIndex] = oResult[i];
+								break;
+							}
+						}
+
+					}
+				}
+				oBindingRows.getModel().refresh();
+				this.oViewModel.setProperty("/busy", false);
+			}.bind(this));
+
+		},
+		/**
+		 * Method called on the press of material information button on the 
+		 * table in graphic planning table
+		 *  @param oEvent
+		 */
+		onMaterialInfoButtonPressGraphicPlan: function (oEvent) {
+			var aSelectedItems = this._ReturnPropContextTreeTable(this._treeTable, "COMPONENT_EXISTS"),
+				aSelectedItemsPath = [];
+			for (var i = 0; i < aSelectedItems.length; i++) {
+				aSelectedItemsPath.push({
+					sPath: "/PlanItemsSet('" + aSelectedItems[i].ObjectKey + "')"
+				});
+			}
+			if (aSelectedItemsPath.length > 0) {
+				this.getOwnerComponent().materialInfoDialog.open(this.getView(), aSelectedItemsPath);
+			}
+		},
+
+		/**
+		 * Method called on the check and uncheck of checkbox in the graphic 
+		 * planning table
+		 *  @param oEvent
+		 */
+		onChangeSelectOperation: function (oEvent) {
+			var oSource = oEvent.getSource(),
+				oBindingContext = oSource.getBindingContext("ganttModel"),
+				sPath = oBindingContext.getPath(),
+				oModel = oBindingContext.getModel("ganttModel");
+			oModel.setProperty(sPath + "/IsSelected", oEvent.getParameter("selected"));
+			var aSelectedItems = this._ReturnPropContextTreeTable(this._treeTable, "COMPONENT_EXISTS");
+			if (aSelectedItems.length > 0) {
+				this.getView().getModel("viewModel").setProperty("/bEnableMaterialGraphicPlan", true);
+			} else {
+				this.getView().getModel("viewModel").setProperty("/bEnableMaterialGraphicPlan", false);
+			}
+		},
+
+		/**
+		 * Method called on press of Refresh Utilization Switch 
+		 * to refresh Utilization Tab on Updating in other tabs
+		 *  @param oEvent
+		 */
+		onAutoRefreshUtilization: function (oEvent) {
+			var oSource = oEvent.getSource(),
+				bState = oSource.getState();
+			this.oViewModel.setProperty("/ganttUtilization/bAutoUpdateUtilization", bState);
+		},
+
 		/* =========================================================== */
 		/* public methods                                              */
 		/* =========================================================== */
@@ -919,6 +1095,7 @@ sap.ui.define([
 					this.oOriginData = deepClone(this.oGanttModel.getProperty("/"));
 					this.iNumberOfLines = this._countLineItems(this.oOriginData);
 					this.getModel("viewModel").setProperty("/ganttSettings/busy", false);
+
 				}.bind(this));
 		},
 
@@ -967,6 +1144,7 @@ sap.ui.define([
 					resolve(iLevel + 1);
 				}.bind(this));
 			}.bind(this));
+
 		},
 
 		/**
@@ -1069,7 +1247,10 @@ sap.ui.define([
 		 * Refresh detail header forcefully
 		 */
 		_refrshDetailHeader: function () {
-			this.getOwnerComponent().readData(this._oContext.getPath());
+			this.getOwnerComponent().readData(this._oContext.getPath()).then(function (){
+				//Refreshing Status Dropdown
+				this._rebindPage();
+			}.bind(this));
 		},
 
 		/**
@@ -1106,8 +1287,11 @@ sap.ui.define([
 			var aFilters = [],
 				sPath = this._oContext.getPath(),
 				sHeaderKey = this.getModel().getProperty(sPath + "/ObjectKey");
-			aFilters.push(new Filter("HeaderObjectKey", FilterOperator.EQ, sHeaderKey));
-			aFilters.push(new Filter("VIEW_MODE", FilterOperator.EQ, sKey));
+			//Loading Utilization Tab Data by default only when this gloabal config is enabled 
+			if (this.oViewModel.getProperty("/ganttUtilization/bDefaultUtilizationCall")) {
+				aFilters.push(new Filter("HeaderObjectKey", FilterOperator.EQ, sHeaderKey));
+				aFilters.push(new Filter("VIEW_MODE", FilterOperator.EQ, sKey));
+			}
 			return aFilters;
 		},
 
@@ -1123,6 +1307,11 @@ sap.ui.define([
 			this.oViewModel.setProperty("/ganttSettings/sEndDate", this.getModel().getProperty(this._oContext.getPath() + "/END_DATE"));
 			if (this._UtilizationSelectView) {
 				this._UtilizationSelectView.setSelectedKey(this.getModel("user").getProperty("/DEFAULT_VIEW_MODE"));
+				var bRefreshUtilization = this.getModel("user").getProperty("/ENABLE_PLAN_DETAIL_UTIL_CALC") === "X" ? true : false;
+				this.getView().byId("idRefreshUtilization").setState(bRefreshUtilization);
+				this.oViewModel.setProperty("/ganttUtilization/bAutoUpdateUtilization", bRefreshUtilization);
+				this.oViewModel.setProperty("/ganttUtilization/bDefaultUtilizationCall", this.getModel("user").getProperty(
+					"/ENABLE_PLAN_OPEN_UTIL_CALC"));
 			}
 			this.getView().byId("idCalculateUtilization").setState(false);
 			this._axisTime.setZoomLevel(6);
@@ -1138,7 +1327,40 @@ sap.ui.define([
 					binding.filter(aFilters, "Application");
 				}
 			}
-		}
+		},
+		/**
+		 * Internal Function trigerred on the success of finlaize button pressed in the function
+		 * onFinalizeBtnPressGraphicPlan
+		 */
+		_afterSucessFinalizeGraphicPlan: function () {
+			var oViewModel = this.getView().getModel("viewModel");
+			oViewModel.setProperty("/bEnableFinalizeBtnGraphicPlan", false);
+			this.refreshGantChartData(oViewModel);
+		},
+		/**
+		 * Returns the array of values in graphic plan table 
+		 * for which a particular passed property value is true and 
+		 * that particular value is checked in the checkbox
+		 * @param {object} oTable - refrence of graphic plan tree table
+		 * @param {string} sProp - property value
+		 * @returns {array}
+		 **/
+		_ReturnPropContextTreeTable: function (oTable, sProp) {
+			var oBindingRows = oTable.getBinding("rows"),
+				sPath = oBindingRows.getPath(),
+				oTableData = oBindingRows.getModel().getProperty(sPath)["children"],
+				aResults = [];
+			oTableData.forEach(function (elem) {
+				aResults = [].concat(elem["children"].filter(function (obj) {
+					if (obj[sProp]) {
+						if (obj["IsSelected"]) {
+							return obj;
+						}
+					}
+				}), aResults);
+			});
+			return aResults;
+		},
 	});
 
 });

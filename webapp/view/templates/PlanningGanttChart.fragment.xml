@@ -18,10 +18,13 @@
 									visible="{= ${user>/ENABLE_HIDE_DEPENDENCY} === 'X'}" press="onShowDependencies"
 									tooltip="{= ${viewModel>/bShowDependencies} === false ? ${i18n>xbut.showDependencies} : ${i18n>xbut.hideDependencies}}"/>
 								<Text text="|"/>
-								<Button icon="sap-icon://edit" tooltip="{i18n>xbut.edit}"
+								<Button icon="sap-icon://edit" tooltip="{i18n>xbut.editDisplay}"
 									visible="{= ${user>/ENABLE_PREPLAN_UPDATE} === 'X' &amp;&amp; ${ALLOW_FINAL} === true}" enabled="{viewModel>/validateIW32Auth}"
 									press="onPressShapesEdit"/>
 								<Button icon="{path:'viewModel>/fullscreenGantt',formatter:'.formatter.fullScreenGanttVisibility'}" press="onPressGanttFullScreen"/>
+								<Button icon="sap-icon://complete" tooltip="{i18n>btn.finalize}" press="onFinalizeBtnPressGraphicPlan"
+									enabled="{parts: ['viewModel>/bEnableFinalizeBtnGraphicPlan', 'viewModel>/validateIW32Auth'], formatter:'.formatter.enableEditToggleBtn'}"
+									visible="{= ${user>/ENABLE_GANTT_FINAL} === 'X' &amp;&amp; ${ALLOW_FINAL} === true}"/>
 								<core:ExtensionPoint name="GanttExtP|PlanningGantt|GanttHierarchySet|ContainerToolbar|After"/>
 							</gnt2:content>
 							<gnt2:legendContainer>
@@ -33,7 +36,7 @@
 						shapePress="onPlanningShaprePress" ghostAlignment="Start" adhocLineLayer="Bottom" nowLineInUTC="false" dragStart="onShapeDragStart"
 						shapeDrop="onShapeDrop" shapeMouseEnter="onShapeMouseEnter" shapeResize="onShapeResize"
 						shapeSelectionSettings="{color: '#808080', strokeWidth: 1, strokeDasharray: '5,2'}" selectionPanelSize="{viewModel>/ganttSelectionPane}"
-						shapeDoubleClick="onDoubleClickPlanningGantt">
+						shapeDoubleClick="onDoubleClickPlanningGantt" shapeSelectionChange="onPlanningSelectionChange">
 						<gnt2:axisTimeStrategy>
 							<axistime:StepwiseZoomStrategy id="idPlanningGanttZoom" zoomLevels="3"></axistime:StepwiseZoomStrategy>
 						</gnt2:axisTimeStrategy>
@@ -64,6 +67,29 @@
 												tooltip="{ganttModel>UTILIZATION}"></core:Icon>
 										</table:template>
 									</table:Column>
+									<table:Column class="sapUiNoContentPadding" visible="{user>/ENABLE_MATERIAL_CHECK}" >
+										<Text text="{/GanttHierarchySet/MATERIAL_STATUS/##com.sap.vocabularies.Common.v1.Label/String}"/>
+										<table:customData>
+											<core:CustomData key="p13nData" value='\{"columnKey": "MATERIAL_STATUS", "leadingProperty": "MATERIAL_STATUS"}'/>
+										</table:customData>
+										<table:template>
+											<HBox>
+												<ObjectStatus class="sapUiTinyMargin" tooltip="{ganttModel>MATERIAL_STATUS_DESC}" text="{ganttModel>MATERIAL_STATUS_DESC}" 	visible="{= ${ganttModel>HIERARCHY_LEVEL} !== 0 }"
+													icon="{ganttModel>MATERIAL_STATUS_ICON}" state="{path:'ganttModel>MATERIAL_STATUS_STATE',formatter:'.formatter.getDemandState'}"/>
+											</HBox>
+										</table:template>
+									</table:Column>
+									<table:Column width="2.5rem" class="sapUiNoContentPadding" visible="{user>/ENABLE_MATERIAL_CHECK}" >
+										<table:customData>
+											<core:CustomData key="p13nData" value='\{"columnKey": "NodeType", "leadingProperty": "NodeType"}'/>
+										</table:customData>
+										<table:template>
+											<HBox>
+												<CheckBox enabled="true" select="onChangeSelectOperation" selected="{ganttModel>IsSelected}"
+													visible="{= ${ganttModel>HIERARCHY_LEVEL} !== 0 &amp;&amp; ${ganttModel>COMPONENT_EXISTS} === true}"/>
+											</HBox>
+										</table:template>
+									</table:Column>
 								</table:columns>
 								<table:extension>
 									<OverflowToolbar>
@@ -81,6 +107,10 @@
 											<Button id="clrFilters" type="Emphasized" icon="sap-icon://clear-filter" tooltip="{i18n>btn.clrFilter}" enabled="{viewModel>/filtersExist}"
 												press="onClrFilters"/>
 											<ToolbarSpacer/>
+											<Button icon="sap-icon://synchronize" enabled="{viewModel>/bEnableMaterialGraphicPlan}" tooltip="{i18n>btn.materialStatus}"
+												visible="{user>/ENABLE_MATERIAL_CHECK}" press="onMaterialStatusPressGraphicPlan"/>
+											<Button tooltip="{i18n>btn.materialInfoButton}" icon="sap-icon://message-information" press="onMaterialInfoButtonPressGraphicPlan"
+												enabled="{viewModel>/bEnableMaterialGraphicPlan}" visible="{user>/ENABLE_MATERIAL_CHECK}"></Button>
 											<Text text="{i18n>lbl.Utilization}"/>
 											<Switch id="idCalculateUtilization" change="onChangeCalculateUtilization"/>
 										</content>

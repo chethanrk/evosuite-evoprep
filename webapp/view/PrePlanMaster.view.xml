@@ -64,7 +64,7 @@
 						<ColumnListItem type="Navigation" press="onClickTableRow">
 							<cells>
 								<core:ExtensionPoint name="TableExtP|PrePlanMaster|PlanHeaderSet|CustomCell"/>
-								<Button icon="sap-icon://show-edit" type="Default" press="showLongText" visible="{= ${NOTES} !== '' }"/>
+								<Button icon="sap-icon://show-edit" tooltip="{i18n>btn.showEdit}" type="Default" press="showLongText" visible="{= ${NOTES} !== '' }"/>
 							</cells>
 						</ColumnListItem>
 					</Table>

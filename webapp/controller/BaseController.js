@@ -1067,11 +1067,13 @@ sap.ui.define([
 		onOperationListDataReceived: function (oEvent) {
 			var oSource = oEvent.getSource(),
 				oParams = oEvent.getParameter("bindingParams"),
-				sId = oSource.getId();
-			if (sId === "idOperationListFragSmartTable") {
+				sId = oSource.getId(),
+				oUserModel = this.getModel("user");
+
+			if (sId === "idOperationListFragSmartTable" && oUserModel.getProperty("/DEFAULT_EXCLUDE_OP_STATUS")) {
 				var oFilterFinalize = new Filter({
 					filters: [
-						new Filter("USER_STATUS_CODE", FilterOperator.NotContains, "FINL")
+						new Filter("USER_STATUS_CODE", FilterOperator.NotContains, oUserModel.getProperty("/DEFAULT_EXCLUDE_OP_STATUS"))
 					],
 					and: true
 				});

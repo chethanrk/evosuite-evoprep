@@ -281,14 +281,13 @@ sap.ui.define([
 			var aFilters = oEvent.getParameter("bindingParams").filters,
 				aLineItems = this.getModel("templateProperties").getData().ganttConfigs.lineItems,
 				aResFilter = [];
-			var aCheckFields = ["ORDER_NUMBER", "OPERATION_DESCRIPTION", "OPERATION_NUMBER", "SYSTEM_STATUS", "USER_STATUS"];
+			var aCheckFields = ["ORDER_NUMBER", "OPR_DESCRIPTION", "OPERATION_NUMBER", "SYSTEM_STATUS_CODE", "USER_STATUS_CODE"];
 			if (aFilters && aFilters.length > 0) {
 				this.getModel("viewModel").setProperty("/bEnableApplyFilter", true);
 				aFilters.forEach(function (oFilter) {
 					if (aCheckFields.indexOf(oFilter.sPath) > -1) {
 						aLineItems.forEach(function (oItem) {
-							if (oFilter.sPath.indexOf(oItem.Value.Path) > -1) {
-								oFilter.sPath = oItem.Value.Path;
+							if (oFilter.sPath === oItem.Value.Path) {
 								aResFilter.push(oFilter);
 							}
 						});

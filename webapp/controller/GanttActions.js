@@ -122,7 +122,6 @@ sap.ui.define([
 		 * @param oDateRange 
 		 */
 		_getHorizonDates: function (sPath, oDateRange) {
-			debugger;
 			var sStartDate = this._oView.getModel().getProperty(sPath + "/START_DATE"),
 				sEndDate = this._oView.getModel().getProperty(sPath + "/END_DATE"),
 				sTotalStartDate = sStartDate,

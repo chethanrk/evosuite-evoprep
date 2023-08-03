@@ -169,6 +169,11 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
+				},
+				onChangeSmartField: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
@@ -873,6 +878,34 @@ sap.ui.define([
 				bState = oSource.getState();
 			this.oViewModel.setProperty("/ganttUtilization/bAutoUpdateUtilization", bState);
 		},
+		
+		/**
+		* Method called on change of Form Fields 
+		* to Validate Start and End Dates
+		*  @param oEvent
+		*/
+		onChangeSmartField: function (oEvent) {
+				var oSource = oEvent.getSource(),
+					oBinding = oSource.getBindingInfo("value")["binding"],
+					newDate = new Date(oEvent.getParameter("newValue")),
+					sMsg = this.getView().getModel("i18n").getResourceBundle().getText("msg.oprDateValidation"),
+					oOrigData = this.getModel().getData(oBinding.getContext().getPath()),
+					sPath = oBinding.getPath(),
+					compareDate, result;
+	
+				if (sPath === 'START_DATE') {
+					compareDate = oOrigData.END_DATE;
+					result = Boolean(newDate > compareDate);
+				} else if (sPath === 'END_DATE') {
+					compareDate = oOrigData.START_DATE;
+					result = Boolean(newDate < compareDate);
+				}
+				if (result) {
+					this.showMessageToast(sMsg);
+					this.getModel().resetChanges();
+					return;
+				}
+			},
 
 		/* =========================================================== */
 		/* public methods                                              */

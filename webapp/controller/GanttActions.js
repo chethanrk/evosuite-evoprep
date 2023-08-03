@@ -126,19 +126,30 @@ sap.ui.define([
 				sEndDate = this._oView.getModel().getProperty(sPath + "/END_DATE"),
 				sTotalStartDate = sStartDate,
 				sTotalEndDate = sEndDate,
-				oHorizonDates;
+				oHorizonDates, sHorizonStartDate, sHorizonEndDate, sHorizonTotalStartDate, sHorizonTotalEndDate;
 			if (oDateRange) {
 				sTotalStartDate = oDateRange.getDateValue();
 				sTotalEndDate = oDateRange.getSecondDateValue();
 			}
+			if (sStartDate.toDateString() === sEndDate.toDateString()) {
+				sHorizonStartDate = moment(sStartDate).startOf("day").subtract(3, "day").toDate();
+				sHorizonEndDate = moment(sEndDate).endOf("day").add(7, "day").toDate();				
+				sHorizonTotalStartDate = moment(sTotalStartDate).startOf("day").subtract(3, "day").toDate();
+				sHorizonTotalEndDate = moment(sTotalEndDate).endOf("day").add(7, "day").toDate();					
+			} else { 				
+				sHorizonStartDate = moment(sStartDate).startOf("day").subtract(1, "day").toDate();
+				sHorizonEndDate = moment(sEndDate).endOf("day").add(1, "day").toDate();				
+				sHorizonTotalStartDate = moment(sTotalStartDate).startOf("day").subtract(1, "day").toDate();
+				sHorizonTotalEndDate = moment(sTotalEndDate).endOf("day").add(1, "day").toDate();				
+			}
 			oHorizonDates = {
 				visibleHorizon: {
-					startDate: moment(sStartDate).startOf("day").subtract(1, "day").toDate(),
-					endDate: moment(sEndDate).endOf("day").add(1, "day").toDate()
+					startDate: sHorizonStartDate,
+					endDate: sHorizonEndDate
 				},
 				totalHorizon: {
-					startDate: moment(sTotalStartDate).startOf("day").subtract(1, "day").toDate(),
-					endDate: moment(sTotalEndDate).endOf("day").add(1, "day").toDate()
+					startDate: sHorizonTotalStartDate,
+					endDate: sHorizonTotalEndDate
 				}
 			};
 			return oHorizonDates;

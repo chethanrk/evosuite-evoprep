@@ -8,8 +8,9 @@ sap.ui.define([
 	"sap/base/util/deepClone",
 	"com/evorait/evosuite/evoprep/model/formatter",
 	"sap/gantt/misc/Utility",
-	"sap/m/MessageBox"
-], function (BaseController, Fragment, OverrideExecution, library, Filter, FilterOperator, deepClone, formatter, Utility, MessageBox) {
+	"sap/m/MessageBox",
+	"sap/gantt/config/TimeHorizon",
+], function (BaseController, Fragment, OverrideExecution, library, Filter, FilterOperator, deepClone, formatter, Utility, MessageBox, TimeHorizon) {
 	"use strict";
 
 	return BaseController.extend("com.evorait.evosuite.evoprep.controller.PrePlanDetail", {
@@ -174,6 +175,21 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
+				}, 
+				updatePlanningGanttHorizon: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				applyCursorPosition: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				getTimeHorizonObject: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
@@ -209,6 +225,8 @@ sap.ui.define([
 
 			this._UtilizationAxisTime = this.getView().byId("idUtilizationGanttZoom");
 			this._UtilizationSelectView = this.getView().byId("idUtilizationSelect");
+
+			this.updatePlanningGanttHorizon();
 		},
 		/**
 		 * Called when the View has been rendered (so its HTML is part of the document). Post-rendering manipulations of the HTML could be done here.
@@ -706,9 +724,9 @@ sap.ui.define([
 
 			if (bSaveChanges) {
 				this.saveChangesMain({
-						state: "success",
-						isCreate: false
-					},
+					state: "success",
+					isCreate: false
+				},
 					this._afterSucessFinalizeGraphicPlan.bind(this));
 			}
 		},
@@ -878,35 +896,77 @@ sap.ui.define([
 				bState = oSource.getState();
 			this.oViewModel.setProperty("/ganttUtilization/bAutoUpdateUtilization", bState);
 		},
-		
+
 		/**
 		* Method called on change of Form Fields 
 		* to Validate Start and End Dates
 		*  @param oEvent
 		*/
 		onChangeSmartField: function (oEvent) {
-				var oSource = oEvent.getSource(),
-					oBinding = oSource.getBindingInfo("value")["binding"],
-					sNewDate = new Date(oEvent.getParameter("newValue")),
-					sMsg = this.getView().getModel("i18n").getResourceBundle().getText("msg.oprDateValidation"),
-					oOrigData = this.getModel().getData(oBinding.getContext().getPath()),
-					sPath = oBinding.getPath(),
-					compareDate, result;
-	
-				if (sPath === 'START_DATE') {
-					compareDate = oOrigData.END_DATE;
-					result = Boolean(sNewDate > compareDate);
-				} else if (sPath === 'END_DATE') {
-					compareDate = oOrigData.START_DATE;
-					result = Boolean(sNewDate < compareDate);
-				}
-				if (result) {
-					this.showMessageToast(sMsg);
-					this.getModel().resetChanges();
-					return;
-				}
-			},
+			var oSource = oEvent.getSource(),
+				oBinding = oSource.getBindingInfo("value")["binding"],
+				sNewDate = new Date(oEvent.getParameter("newValue")),
+				sMsg = this.getView().getModel("i18n").getResourceBundle().getText("msg.oprDateValidation"),
+				oOrigData = this.getModel().getData(oBinding.getContext().getPath()),
+				sPath = oBinding.getPath(),
+				compareDate, result;
 
+			if (sPath === 'START_DATE') {
+				compareDate = oOrigData.END_DATE;
+				result = Boolean(sNewDate > compareDate);
+			} else if (sPath === 'END_DATE') {
+				compareDate = oOrigData.START_DATE;
+				result = Boolean(sNewDate < compareDate);
+			}
+			if (result) {
+				this.showMessageToast(sMsg);
+				this.getModel().resetChanges();
+				return;
+			}
+		},
+		/**
+		 * Function for updating Visible Horizon 
+		 * For Graphic Planning Gantt Chart
+		 */
+		updatePlanningGanttHorizon: function () {
+			var oPlanningGanttChartTable = this.getView().byId("idPlanningGanttChartTable"),
+				oVisibleHorizon = {};
+
+			var fFetchCurrentVisibleHorizon = function () {
+				var oCurrentVisibleHorizon = this._axisTime && this._axisTime.getVisibleHorizon();
+				oVisibleHorizon.startTime = oCurrentVisibleHorizon && oCurrentVisibleHorizon.getStartTime();
+				oVisibleHorizon.endTime = oCurrentVisibleHorizon && oCurrentVisibleHorizon.getEndTime();
+				if (this.oViewModel) {
+					this.oViewModel.setProperty("/PlanningGanttChartVisibleHorizon", oVisibleHorizon);
+				}
+			};
+
+			if (oPlanningGanttChartTable) {
+				oPlanningGanttChartTable.attachShapeDrop(fFetchCurrentVisibleHorizon.bind(this));
+				oPlanningGanttChartTable.attachShapeDoubleClick(fFetchCurrentVisibleHorizon.bind(this));
+				oPlanningGanttChartTable.attachShapeResize(fFetchCurrentVisibleHorizon.bind(this));
+			}
+		},
+		/**
+		 * Function for resetting Visible Horizon 
+		 * For Graphic Planning Gantt Chart
+		 */
+		applyCursorPosition: function () {
+			var oDropShapeVisibleHorizon = this.oViewModel.getProperty("/PlanningGanttChartVisibleHorizon"),
+				oTimeHorizonObject = this.getTimeHorizonObject(oDropShapeVisibleHorizon);
+			if (oDropShapeVisibleHorizon) {
+				this._axisTime.setVisibleHorizon(oTimeHorizonObject);
+			}
+		},
+
+		/**
+		 * Function for Visible Horizon DateTime Formatting
+		 * For Graphic Planning Gantt Chart
+		*/
+		getTimeHorizonObject: function (oDateTimeObject) {
+			return new TimeHorizon(oDateTimeObject);
+		},
+		
 		/* =========================================================== */
 		/* public methods                                              */
 		/* =========================================================== */
@@ -1121,6 +1181,7 @@ sap.ui.define([
 		_loadGanttData: function () {
 			this._initialiseGanttModel();
 			this.GanttActions._createGanttHorizon(this._axisTime, this._oContext);
+			
 			this._getGanttData(0)
 				.then(this._getGanttData.bind(this))
 				.then(function () {
@@ -1128,7 +1189,6 @@ sap.ui.define([
 					this.oOriginData = deepClone(this.oGanttModel.getProperty("/"));
 					this.iNumberOfLines = this._countLineItems(this.oOriginData);
 					this.getModel("viewModel").setProperty("/ganttSettings/busy", false);
-
 				}.bind(this));
 		},
 
@@ -1173,6 +1233,7 @@ sap.ui.define([
 						this._addChildrenToParent(iLevel, oData.results);
 					} else {
 						this.oGanttModel.setProperty("/data/children", oData.results);
+						this.applyCursorPosition();
 					}
 					resolve(iLevel + 1);
 				}.bind(this));
@@ -1246,22 +1307,21 @@ sap.ui.define([
 
 			MessageBox.confirm(
 				sFinalMessage, {
-					//details: typeof (sFinalMessage) === "string" ? sFinalMessage.replace(/\n/g, "<br/>") : sFinalMessage,
-					styleClass: this.getOwnerComponent().getContentDensityClass(),
-					actions: [MessageBox.Action.YES, MessageBox.Action.CANCEL],
-					onClose: function (oAction) {
-						if (oAction === "YES") {
-							var sPath = this._oContext.getPath();
-							this.getModel().setProperty(sPath + "/FUNCTION", this.sFunctionKey);
-							this.getModel().setProperty(sPath + "/SKIP_ERROR_ENTRY", "X");
-							this.saveChangesMain({
-								state: "success",
-								isCreate: false
-							}, this._afterUpdateStatus.bind(this), this._errorCallBackForPlanHeaderSet.bind(this));
-						}
+				styleClass: this.getOwnerComponent().getContentDensityClass(),
+				actions: [MessageBox.Action.YES, MessageBox.Action.CANCEL],
+				onClose: function (oAction) {
+					if (oAction === "YES") {
+						var sPath = this._oContext.getPath();
+						this.getModel().setProperty(sPath + "/FUNCTION", this.sFunctionKey);
+						this.getModel().setProperty(sPath + "/SKIP_ERROR_ENTRY", "X");
+						this.saveChangesMain({
+							state: "success",
+							isCreate: false
+						}, this._afterUpdateStatus.bind(this), this._errorCallBackForPlanHeaderSet.bind(this));
+					}
 
-					}.bind(this)
-				}
+				}.bind(this)
+			}
 			);
 		},
 
@@ -1280,7 +1340,7 @@ sap.ui.define([
 		 * Refresh detail header forcefully
 		 */
 		_refrshDetailHeader: function () {
-			this.getOwnerComponent().readData(this._oContext.getPath()).then(function (){
+			this.getOwnerComponent().readData(this._oContext.getPath()).then(function () {
 				//Refreshing Status Dropdown
 				this._rebindPage();
 			}.bind(this));
@@ -1394,6 +1454,7 @@ sap.ui.define([
 			});
 			return aResults;
 		},
+		
 	});
 
 });

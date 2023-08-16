@@ -706,9 +706,9 @@ sap.ui.define([
 
 			if (bSaveChanges) {
 				this.saveChangesMain({
-						state: "success",
-						isCreate: false
-					},
+					state: "success",
+					isCreate: false
+				},
 					this._afterSucessFinalizeGraphicPlan.bind(this));
 			}
 		},
@@ -878,34 +878,53 @@ sap.ui.define([
 				bState = oSource.getState();
 			this.oViewModel.setProperty("/ganttUtilization/bAutoUpdateUtilization", bState);
 		},
-		
+
 		/**
 		* Method called on change of Form Fields 
 		* to Validate Start and End Dates
 		*  @param oEvent
 		*/
 		onChangeSmartField: function (oEvent) {
-				var oSource = oEvent.getSource(),
-					oBinding = oSource.getBindingInfo("value")["binding"],
-					sNewDate = new Date(oEvent.getParameter("newValue")),
-					sMsg = this.getView().getModel("i18n").getResourceBundle().getText("msg.oprDateValidation"),
-					oOrigData = this.getModel().getData(oBinding.getContext().getPath()),
-					sPath = oBinding.getPath(),
-					compareDate, result;
-	
-				if (sPath === 'START_DATE') {
-					compareDate = oOrigData.END_DATE;
-					result = Boolean(sNewDate > compareDate);
-				} else if (sPath === 'END_DATE') {
-					compareDate = oOrigData.START_DATE;
-					result = Boolean(sNewDate < compareDate);
+			var oSource = oEvent.getSource(),
+				oBinding = oSource.getBindingInfo("value")["binding"],
+				sNewValue = oEvent.getParameter("newValue"),
+				sNewDate = new Date(sNewValue),
+				sMsg = this.getView().getModel("i18n").getResourceBundle().getText("msg.oprDateValidation"),
+				oOrigData = this.getModel().getData(oBinding.getContext().getPath()),
+				sPath = oBinding.getPath(),
+				compareDate, result, oStartDate, oEndDate, bValid, sOperationCheckMsg;
+
+			if (sNewValue.split(/[.\-/_]/).length > 1) {
+				sNewValue = sNewValue.split(/[.\-/_]/),
+				sNewDate = new Date(sNewValue[2] + "-" + sNewValue[1] + "-" + sNewValue[0]);
+			}
+
+			if (sPath === 'START_DATE') {
+				compareDate = oOrigData.END_DATE;
+				result = Boolean(sNewDate > compareDate);
+				oStartDate = this.getFormFieldByName("idSTART_DATE", this.aSmartForms);
+				if (oStartDate) {
+					bValid = oStartDate.getContent().getMaxDate() < sNewDate;
+					sOperationCheckMsg = this.getView().getModel("i18n").getResourceBundle().getText("ymsg.oprValidStartDate");
 				}
-				if (result) {
-					this.showMessageToast(sMsg);
-					this.getModel().resetChanges();
-					return;
+			} else if (sPath === 'END_DATE') {
+				compareDate = oOrigData.START_DATE;
+				result = Boolean(sNewDate < compareDate);
+				oEndDate = this.getFormFieldByName("idEND_DATE", this.aSmartForms);
+				if (oEndDate) {
+					bValid = oEndDate.getContent().getMinDate() > sNewDate;
+					sOperationCheckMsg = this.getView().getModel("i18n").getResourceBundle().getText("ymsg.oprValidEndDate");
 				}
-			},
+			}
+			if (result) {
+				this.showMessageToast(sMsg);
+				this.getModel().resetChanges();
+				return;
+			} else if (bValid) {
+				this.showMessageToast(sOperationCheckMsg);
+				this.getModel().resetChanges();
+			}
+		},
 
 		/* =========================================================== */
 		/* public methods                                              */
@@ -1246,22 +1265,22 @@ sap.ui.define([
 
 			MessageBox.confirm(
 				sFinalMessage, {
-					//details: typeof (sFinalMessage) === "string" ? sFinalMessage.replace(/\n/g, "<br/>") : sFinalMessage,
-					styleClass: this.getOwnerComponent().getContentDensityClass(),
-					actions: [MessageBox.Action.YES, MessageBox.Action.CANCEL],
-					onClose: function (oAction) {
-						if (oAction === "YES") {
-							var sPath = this._oContext.getPath();
-							this.getModel().setProperty(sPath + "/FUNCTION", this.sFunctionKey);
-							this.getModel().setProperty(sPath + "/SKIP_ERROR_ENTRY", "X");
-							this.saveChangesMain({
-								state: "success",
-								isCreate: false
-							}, this._afterUpdateStatus.bind(this), this._errorCallBackForPlanHeaderSet.bind(this));
-						}
+				//details: typeof (sFinalMessage) === "string" ? sFinalMessage.replace(/\n/g, "<br/>") : sFinalMessage,
+				styleClass: this.getOwnerComponent().getContentDensityClass(),
+				actions: [MessageBox.Action.YES, MessageBox.Action.CANCEL],
+				onClose: function (oAction) {
+					if (oAction === "YES") {
+						var sPath = this._oContext.getPath();
+						this.getModel().setProperty(sPath + "/FUNCTION", this.sFunctionKey);
+						this.getModel().setProperty(sPath + "/SKIP_ERROR_ENTRY", "X");
+						this.saveChangesMain({
+							state: "success",
+							isCreate: false
+						}, this._afterUpdateStatus.bind(this), this._errorCallBackForPlanHeaderSet.bind(this));
+					}
 
-					}.bind(this)
-				}
+				}.bind(this)
+			}
 			);
 		},
 
@@ -1280,7 +1299,7 @@ sap.ui.define([
 		 * Refresh detail header forcefully
 		 */
 		_refrshDetailHeader: function () {
-			this.getOwnerComponent().readData(this._oContext.getPath()).then(function (){
+			this.getOwnerComponent().readData(this._oContext.getPath()).then(function () {
 				//Refreshing Status Dropdown
 				this._rebindPage();
 			}.bind(this));

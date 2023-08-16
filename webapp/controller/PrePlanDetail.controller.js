@@ -943,28 +943,6 @@ sap.ui.define([
 				this.getModel().resetChanges();
 			}
 		},
-
-			var oSource = oEvent.getSource(),
-				oBinding = oSource.getBindingInfo("value")["binding"],
-				sNewDate = new Date(oEvent.getParameter("newValue")),
-				sMsg = this.getView().getModel("i18n").getResourceBundle().getText("msg.oprDateValidation"),
-				oOrigData = this.getModel().getData(oBinding.getContext().getPath()),
-				sPath = oBinding.getPath(),
-				compareDate, result;
-
-			if (sPath === 'START_DATE') {
-				compareDate = oOrigData.END_DATE;
-				result = Boolean(sNewDate > compareDate);
-			} else if (sPath === 'END_DATE') {
-				compareDate = oOrigData.START_DATE;
-				result = Boolean(sNewDate < compareDate);
-			}
-			if (result) {
-				this.showMessageToast(sMsg);
-				this.getModel().resetChanges();
-				return;
-			}
-		},
 		/**
 		 * Function for updating Visible Horizon 
 		 * For Graphic Planning Gantt Chart

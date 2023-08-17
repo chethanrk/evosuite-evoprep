@@ -905,23 +905,42 @@ sap.ui.define([
 		onChangeSmartField: function (oEvent) {
 			var oSource = oEvent.getSource(),
 				oBinding = oSource.getBindingInfo("value")["binding"],
-				sNewDate = new Date(oEvent.getParameter("newValue")),
+				sNewValue = oEvent.getParameter("newValue"),
+				sNewDate = new Date(sNewValue),
 				sMsg = this.getView().getModel("i18n").getResourceBundle().getText("msg.oprDateValidation"),
 				oOrigData = this.getModel().getData(oBinding.getContext().getPath()),
 				sPath = oBinding.getPath(),
-				compareDate, result;
+				compareDate, result, oStartDate, oEndDate, bValid, sOperationCheckMsg;
+
+			if (sNewValue.split(/[.\-/_]/).length > 1) {
+				sNewValue = sNewValue.split(/[.\-/_]/),
+				sNewDate = new Date(sNewValue[2] + "-" + sNewValue[1] + "-" + sNewValue[0]);
+			}
 
 			if (sPath === 'START_DATE') {
 				compareDate = oOrigData.END_DATE;
 				result = Boolean(sNewDate > compareDate);
+				oStartDate = this.getFormFieldByName("idSTART_DATE", this.aSmartForms);
+				if (oStartDate) {
+					bValid = oStartDate.getContent().getMaxDate() < sNewDate;
+					sOperationCheckMsg = this.getView().getModel("i18n").getResourceBundle().getText("ymsg.oprValidStartDate");
+				}
 			} else if (sPath === 'END_DATE') {
 				compareDate = oOrigData.START_DATE;
 				result = Boolean(sNewDate < compareDate);
+				oEndDate = this.getFormFieldByName("idEND_DATE", this.aSmartForms);
+				if (oEndDate) {
+					bValid = oEndDate.getContent().getMinDate() > sNewDate;
+					sOperationCheckMsg = this.getView().getModel("i18n").getResourceBundle().getText("ymsg.oprValidEndDate");
+				}
 			}
 			if (result) {
 				this.showMessageToast(sMsg);
 				this.getModel().resetChanges();
 				return;
+			} else if (bValid) {
+				this.showMessageToast(sOperationCheckMsg);
+				this.getModel().resetChanges();
 			}
 		},
 		/**
@@ -1307,18 +1326,19 @@ sap.ui.define([
 
 			MessageBox.confirm(
 				sFinalMessage, {
-				styleClass: this.getOwnerComponent().getContentDensityClass(),
-				actions: [MessageBox.Action.YES, MessageBox.Action.CANCEL],
-				onClose: function (oAction) {
-					if (oAction === "YES") {
-						var sPath = this._oContext.getPath();
-						this.getModel().setProperty(sPath + "/FUNCTION", this.sFunctionKey);
-						this.getModel().setProperty(sPath + "/SKIP_ERROR_ENTRY", "X");
-						this.saveChangesMain({
-							state: "success",
-							isCreate: false
-						}, this._afterUpdateStatus.bind(this), this._errorCallBackForPlanHeaderSet.bind(this));
-					}
+					//details: typeof (sFinalMessage) === "string" ? sFinalMessage.replace(/\n/g, "<br/>") : sFinalMessage,
+					styleClass: this.getOwnerComponent().getContentDensityClass(),
+					actions: [MessageBox.Action.YES, MessageBox.Action.CANCEL],
+					onClose: function (oAction) {
+						if (oAction === "YES") {
+							var sPath = this._oContext.getPath();
+							this.getModel().setProperty(sPath + "/FUNCTION", this.sFunctionKey);
+							this.getModel().setProperty(sPath + "/SKIP_ERROR_ENTRY", "X");
+							this.saveChangesMain({
+								state: "success",
+								isCreate: false
+							}, this._afterUpdateStatus.bind(this), this._errorCallBackForPlanHeaderSet.bind(this));
+						}
 
 				}.bind(this)
 			}

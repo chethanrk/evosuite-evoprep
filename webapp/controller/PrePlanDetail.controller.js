@@ -175,7 +175,7 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
-				}, 
+				},
 				updatePlanningGanttHorizon: {
 					public: true,
 					final: false,
@@ -914,7 +914,7 @@ sap.ui.define([
 
 			if (sNewValue.split(/[.\-/_]/).length > 1) {
 				sNewValue = sNewValue.split(/[.\-/_]/),
-				sNewDate = new Date(sNewValue[2] + "-" + sNewValue[1] + "-" + sNewValue[0]);
+					sNewDate = new Date(sNewValue[2] + "-" + sNewValue[1] + "-" + sNewValue[0]);
 			}
 
 			if (sPath === 'START_DATE') {
@@ -985,7 +985,7 @@ sap.ui.define([
 		getTimeHorizonObject: function (oDateTimeObject) {
 			return new TimeHorizon(oDateTimeObject);
 		},
-		
+
 		/* =========================================================== */
 		/* public methods                                              */
 		/* =========================================================== */
@@ -1013,7 +1013,7 @@ sap.ui.define([
 					this._resetGlobalValues(); //Called to reset all the global values
 					this._rebindPage();
 					this._loadUtilizationGantt();
-					this._loadGanttData();
+					this._loadGanttData(true);
 				}
 			}
 		},
@@ -1194,14 +1194,17 @@ sap.ui.define([
 			this.oGanttModel.setData(deepClone(this.oOriginData));
 		},
 
-		/**
+		/*
 		 * Load the tree data and process the data as child nodes
-		 **/
-		_loadGanttData: function () {
-			this._initialiseGanttModel();
+		 * @param bFirstTime - To Check whether Graphic Planning is loading for first time
+		 */
+		_loadGanttData: function (bFirstTime) {
+			//Initialsing GanttModel only for the first time
+			if (typeof(bFirstTime) === "boolean") {
+				this._initialiseGanttModel();
+			}
 			this.GanttActions._createGanttHorizon(this._axisTime, this._oContext);
-			
-			this._getGanttData(0)
+			this._getGanttData([0, bFirstTime])
 				.then(this._getGanttData.bind(this))
 				.then(function () {
 					//backup original data
@@ -1214,10 +1217,19 @@ sap.ui.define([
 		/**
 		 * set filters and read data for Gantt
 		 * set result with deepClone to Json Model
-		 * @param {object} iLevel - level of hierarchy if Gantt tree
+		 * @param [aParams] 
 		 * @returns {Promise}
-		 **/
-		_getGanttData: function (iLevel) {
+		 */
+		_getGanttData: function (aParams) {
+			var iLevel, bIsShapeRefresh;
+			if (aParams instanceof Array) {
+				iLevel = aParams[0];
+				if (typeof(aParams[1]) === "string") {
+					bIsShapeRefresh = true;
+				}
+			} else {
+				iLevel = aParams;
+			}
 			this.getModel("viewModel").setProperty("/ganttSettings/busy", true);
 			return new Promise(function (resolve) {
 				var sEntitySet = "/GanttHierarchySet",
@@ -1249,12 +1261,16 @@ sap.ui.define([
 				//is also very fast with expands
 				this.getOwnerComponent().readData(sEntitySet, aFilters, mParams).then(function (oData) {
 					if (iLevel > 0) {
-						this._addChildrenToParent(iLevel, oData.results);
+						this._addChildrenToParent(iLevel, oData.results, bIsShapeRefresh);
 					} else {
-						this.oGanttModel.setProperty("/data/children", oData.results);
-						this.applyCursorPosition();
+						if (bIsShapeRefresh) {
+							// for the nodes to be refreshed clear children
+							this.oGanttModel.setProperty("/data/childrenNew", oData.results);
+						} else {
+							this.oGanttModel.setProperty("/data/children", oData.results);
+						} this.applyCursorPosition();
 					}
-					resolve(iLevel + 1);
+					resolve(iLevel + 1, bIsShapeRefresh);
 				}.bind(this));
 			}.bind(this));
 
@@ -1264,9 +1280,14 @@ sap.ui.define([
 		 * when data was loaded then children needs added to right parent node
 		 * @param iLevel
 		 * @param oChildData
+		 * @param bIsShapeRefresh
 		 */
-		_addChildrenToParent: function (iLevel, oChildData) {
+		_addChildrenToParent: function (iLevel, oChildData, bIsShapeRefresh) {
 			var aChildren = this.oGanttModel.getProperty("/data/children");
+			if (bIsShapeRefresh) {
+				aChildren = this.oGanttModel.getProperty("/data/childrenNew");
+				this.oGanttModel.setProperty("/data/children", aChildren);
+			}
 			var callbackFn = function (oItem) {
 				oItem.children = [];
 				oChildData.forEach(function (oResItem) {
@@ -1326,19 +1347,19 @@ sap.ui.define([
 
 			MessageBox.confirm(
 				sFinalMessage, {
-					//details: typeof (sFinalMessage) === "string" ? sFinalMessage.replace(/\n/g, "<br/>") : sFinalMessage,
-					styleClass: this.getOwnerComponent().getContentDensityClass(),
-					actions: [MessageBox.Action.YES, MessageBox.Action.CANCEL],
-					onClose: function (oAction) {
-						if (oAction === "YES") {
-							var sPath = this._oContext.getPath();
-							this.getModel().setProperty(sPath + "/FUNCTION", this.sFunctionKey);
-							this.getModel().setProperty(sPath + "/SKIP_ERROR_ENTRY", "X");
-							this.saveChangesMain({
-								state: "success",
-								isCreate: false
-							}, this._afterUpdateStatus.bind(this), this._errorCallBackForPlanHeaderSet.bind(this));
-						}
+				//details: typeof (sFinalMessage) === "string" ? sFinalMessage.replace(/\n/g, "<br/>") : sFinalMessage,
+				styleClass: this.getOwnerComponent().getContentDensityClass(),
+				actions: [MessageBox.Action.YES, MessageBox.Action.CANCEL],
+				onClose: function (oAction) {
+					if (oAction === "YES") {
+						var sPath = this._oContext.getPath();
+						this.getModel().setProperty(sPath + "/FUNCTION", this.sFunctionKey);
+						this.getModel().setProperty(sPath + "/SKIP_ERROR_ENTRY", "X");
+						this.saveChangesMain({
+							state: "success",
+							isCreate: false
+						}, this._afterUpdateStatus.bind(this), this._errorCallBackForPlanHeaderSet.bind(this));
+					}
 
 				}.bind(this)
 			}
@@ -1474,7 +1495,7 @@ sap.ui.define([
 			});
 			return aResults;
 		},
-		
+
 	});
 
 });

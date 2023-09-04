@@ -1080,7 +1080,7 @@ sap.ui.define([
 				oParams.filters = oParams.filters.concat(oFilterFinalize);
 			}
 			var aFilters = oParams.filters;
-			this.getOwnerComponent().readData("/PlanItemsSet", aFilters).then(function (oData) {
+			this.getOwnerComponent().readData("/PlanItemsSet", aFilters, null, "OperationsGroupId").then(function (oData) {
 				if (sId === "idOperationListFragSmartTable") {
 					this.aOprFrgAllOperations = oData.results;
 				} else {

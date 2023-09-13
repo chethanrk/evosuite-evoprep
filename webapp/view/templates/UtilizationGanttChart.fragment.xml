@@ -37,7 +37,7 @@
 						shapeDoubleClick="onUtilizationShapeDoubleClick" 
 						shapeSelectionSettings="{color: '#808080', strokeWidth: 1, strokeDasharray: '5,2'}" selectionPanelSize="{viewModel>/ganttUtilization/ganttSelectionPane}">
 						<gnt2:axisTimeStrategy>
-							<axistime:StepwiseZoomStrategy id="idUtilizationGanttZoom" zoomLevels="3"></axistime:StepwiseZoomStrategy>
+							<axistime:StepwiseZoomStrategy id="idUtilizationGanttZoom"></axistime:StepwiseZoomStrategy>
 						</gnt2:axisTimeStrategy>
 						<gnt2:table>
 							<table:Table id="idUtilizationGanttTreeTable" selectionMode="Single" visibleRowCountMode="Auto" rowActionCount="2" threshold="10"

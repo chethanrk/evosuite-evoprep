@@ -1266,9 +1266,9 @@ sap.ui.define([
 						if (bIsShapeRefresh) {
 							// for the nodes to be refreshed clear children
 							this.oGanttModel.setProperty("/data/childrenNew", oData.results);
-						} else {
-							this.oGanttModel.setProperty("/data/children", oData.results);
-						} this.applyCursorPosition();
+						} 
+						this.oGanttModel.setProperty("/data/children", oData.results);
+						this.applyCursorPosition();
 					}
 					resolve(iLevel + 1, bIsShapeRefresh);
 				}.bind(this));

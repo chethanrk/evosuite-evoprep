@@ -534,7 +534,7 @@ sap.ui.define([
 		 */
 		onPressUtilizationSync: function () {
 			this.oViewModel.setProperty("/ganttUtilization/bDefaultUtilizationCall", true);
-			this._loadUtilizationGantt();
+			this._loadUtilizationGantt(false);
 		},
 
 		/**
@@ -542,7 +542,7 @@ sap.ui.define([
 		 */
 		onUtilizationSelectionChange: function () {
 			this.oViewModel.setProperty("/ganttUtilization/bDefaultUtilizationCall", true);
-			this._loadUtilizationGantt();
+			this._loadUtilizationGantt(false);
 		},
 
 		/*On Press of Full Screen Button in Utilization Gantt Chart
@@ -1012,7 +1012,7 @@ sap.ui.define([
 					}
 					this._resetGlobalValues(); //Called to reset all the global values
 					this._rebindPage();
-					this._loadUtilizationGantt();
+					this._loadUtilizationGantt(true);
 					this._loadGanttData(true);
 				}
 			}
@@ -1366,18 +1366,22 @@ sap.ui.define([
 			);
 		},
 
-		/**
+		/*
 		 * Loading Utilization Gantt Chart
-		 **/
-		_loadUtilizationGantt: function () {
+		 * @param bFirstTime
+		 */
+		_loadUtilizationGantt: function (bFirstTime) {
 			if (this._UtilizationSelectView) {
+				if (typeof(bFirstTime) !== "boolean") {
+					bFirstTime = true;
+				}
 				var sKey = this._UtilizationSelectView.getSelectedKey();
 				this._setUtilizationGanttFilter(sKey);
-				this.GanttActions._createUtilizationGanttHorizon(this._UtilizationAxisTime, this._oContext, sKey);
+				this.GanttActions._createUtilizationGanttHorizon(this._UtilizationAxisTime, this._oContext, sKey, bFirstTime);
 			}
 		},
 
-		/**
+		/*
 		 * Refresh detail header forcefully
 		 */
 		_refrshDetailHeader: function () {

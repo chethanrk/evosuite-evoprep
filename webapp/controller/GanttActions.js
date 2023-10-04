@@ -63,8 +63,8 @@ sap.ui.define([
 			this._updateGanttOperationCall()
 				.then(function (oData) {
 					if (!(oData.__batchResponses && oData.__batchResponses[0].response && (oData.__batchResponses[0].response.statusCode ===
-							"400" || oData.__batchResponses[0].response.statusCode ===
-							"500"))) {
+						"400" || oData.__batchResponses[0].response.statusCode ===
+						"500"))) {
 						MessageToast.show(this._oView.getModel('i18n').getResourceBundle().getText("msg.OperationSaveSuccess"));
 					}
 					this._oView.getModel("viewModel").setProperty("/ganttSettings/busy", false);
@@ -133,14 +133,14 @@ sap.ui.define([
 			}
 			if (sStartDate.toDateString() === sEndDate.toDateString()) {
 				sHorizonStartDate = moment(sStartDate).startOf("day").subtract(3, "day").toDate();
-				sHorizonEndDate = moment(sEndDate).endOf("day").add(7, "day").toDate();				
+				sHorizonEndDate = moment(sEndDate).endOf("day").add(7, "day").toDate();
 				sHorizonTotalStartDate = moment(sTotalStartDate).startOf("day").subtract(3, "day").toDate();
-				sHorizonTotalEndDate = moment(sTotalEndDate).endOf("day").add(7, "day").toDate();					
-			} else { 				
+				sHorizonTotalEndDate = moment(sTotalEndDate).endOf("day").add(7, "day").toDate();
+			} else {
 				sHorizonStartDate = moment(sStartDate).startOf("day").subtract(1, "day").toDate();
-				sHorizonEndDate = moment(sEndDate).endOf("day").add(1, "day").toDate();				
+				sHorizonEndDate = moment(sEndDate).endOf("day").add(1, "day").toDate();
 				sHorizonTotalStartDate = moment(sTotalStartDate).startOf("day").subtract(1, "day").toDate();
-				sHorizonTotalEndDate = moment(sTotalEndDate).endOf("day").add(1, "day").toDate();				
+				sHorizonTotalEndDate = moment(sTotalEndDate).endOf("day").add(1, "day").toDate();
 			}
 			oHorizonDates = {
 				visibleHorizon: {
@@ -161,7 +161,7 @@ sap.ui.define([
 		 * @param oContext - Detail Page BindingContext
 		 * @param sKey - View Mode Key
 		 */
-		_createUtilizationGanttHorizon: function (oAxisTimeStrategy, oContext, sKey) {
+		_createUtilizationGanttHorizon: function (oAxisTimeStrategy, oContext, sKey, bFirstTime) {
 			if (oAxisTimeStrategy) {
 				var sPath = oContext.getPath(),
 					iZoomLevel = 5,
@@ -169,14 +169,16 @@ sap.ui.define([
 				if (sKey === "D") {
 					iZoomLevel = 6;
 				}
-				oAxisTimeStrategy.setVisibleHorizon(new sap.gantt.config.TimeHorizon({
-					startTime: oHorizonDates.visibleHorizon.startDate,
-					endTime: oHorizonDates.visibleHorizon.endDate
-				}));
-				oAxisTimeStrategy.setTotalHorizon(new sap.gantt.config.TimeHorizon({
-					startTime: oHorizonDates.totalHorizon.startDate,
-					endTime: oHorizonDates.totalHorizon.endDate
-				}));
+				if (bFirstTime) {
+					oAxisTimeStrategy.setVisibleHorizon(new sap.gantt.config.TimeHorizon({
+						startTime: oHorizonDates.visibleHorizon.startDate,
+						endTime: oHorizonDates.visibleHorizon.endDate
+					}));
+					oAxisTimeStrategy.setTotalHorizon(new sap.gantt.config.TimeHorizon({
+						startTime: oHorizonDates.totalHorizon.startDate,
+						endTime: oHorizonDates.totalHorizon.endDate
+					}));
+				}
 				oAxisTimeStrategy.setZoomLevel(iZoomLevel);
 				oAxisTimeStrategy.setTimeLineOption(formatter.getTimeLineOptions(sKey));
 				oAxisTimeStrategy.rerender();

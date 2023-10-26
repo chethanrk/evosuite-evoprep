@@ -8,8 +8,9 @@ sap.ui.define([
 	"sap/base/util/deepClone",
 	"com/evorait/evosuite/evoprep/model/formatter",
 	"sap/gantt/misc/Utility",
-	"sap/m/MessageBox"
-], function (BaseController, Fragment, OverrideExecution, library, Filter, FilterOperator, deepClone, formatter, Utility, MessageBox) {
+	"sap/m/MessageBox",
+	"sap/gantt/config/TimeHorizon",
+], function (BaseController, Fragment, OverrideExecution, library, Filter, FilterOperator, deepClone, formatter, Utility, MessageBox, TimeHorizon) {
 	"use strict";
 
 	return BaseController.extend("com.evorait.evosuite.evoprep.controller.PrePlanDetail", {
@@ -169,6 +170,26 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
+				},
+				onChangeSmartField: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				updatePlanningGanttHorizon: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				applyCursorPosition: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
+				},
+				getTimeHorizonObject: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
@@ -204,6 +225,8 @@ sap.ui.define([
 
 			this._UtilizationAxisTime = this.getView().byId("idUtilizationGanttZoom");
 			this._UtilizationSelectView = this.getView().byId("idUtilizationSelect");
+
+			this.updatePlanningGanttHorizon();
 		},
 		/**
 		 * Called when the View has been rendered (so its HTML is part of the document). Post-rendering manipulations of the HTML could be done here.
@@ -511,7 +534,7 @@ sap.ui.define([
 		 */
 		onPressUtilizationSync: function () {
 			this.oViewModel.setProperty("/ganttUtilization/bDefaultUtilizationCall", true);
-			this._loadUtilizationGantt();
+			this._loadUtilizationGantt(false);
 		},
 
 		/**
@@ -519,7 +542,7 @@ sap.ui.define([
 		 */
 		onUtilizationSelectionChange: function () {
 			this.oViewModel.setProperty("/ganttUtilization/bDefaultUtilizationCall", true);
-			this._loadUtilizationGantt();
+			this._loadUtilizationGantt(false);
 		},
 
 		/*On Press of Full Screen Button in Utilization Gantt Chart
@@ -701,9 +724,9 @@ sap.ui.define([
 
 			if (bSaveChanges) {
 				this.saveChangesMain({
-						state: "success",
-						isCreate: false
-					},
+					state: "success",
+					isCreate: false
+				},
 					this._afterSucessFinalizeGraphicPlan.bind(this));
 			}
 		},
@@ -874,6 +897,95 @@ sap.ui.define([
 			this.oViewModel.setProperty("/ganttUtilization/bAutoUpdateUtilization", bState);
 		},
 
+		/**
+		* Method called on change of Form Fields 
+		* to Validate Start and End Dates
+		*  @param oEvent
+		*/
+		onChangeSmartField: function (oEvent) {
+			var oSource = oEvent.getSource(),
+				oBinding = oSource.getBindingInfo("value")["binding"],
+				sNewValue = oEvent.getParameter("newValue"),
+				sNewDate = new Date(sNewValue),
+				sMsg = this.getView().getModel("i18n").getResourceBundle().getText("msg.oprDateValidation"),
+				oOrigData = this.getModel().getData(oBinding.getContext().getPath()),
+				sPath = oBinding.getPath(),
+				compareDate, result, oStartDate, oEndDate, bValid, sOperationCheckMsg;
+
+			if (sNewValue.split(/[.\-/_]/).length > 1) {
+				sNewValue = sNewValue.split(/[.\-/_]/),
+					sNewDate = new Date(sNewValue[2] + "-" + sNewValue[1] + "-" + sNewValue[0]);
+			}
+
+			if (sPath === 'START_DATE') {
+				compareDate = oOrigData.END_DATE;
+				result = Boolean(sNewDate > compareDate);
+				oStartDate = this.getFormFieldByName("idSTART_DATE", this.aSmartForms);
+				if (oStartDate) {
+					bValid = oStartDate.getContent().getMaxDate() < sNewDate;
+					sOperationCheckMsg = this.getView().getModel("i18n").getResourceBundle().getText("ymsg.oprValidStartDate");
+				}
+			} else if (sPath === 'END_DATE') {
+				compareDate = oOrigData.START_DATE;
+				result = Boolean(sNewDate < compareDate);
+				oEndDate = this.getFormFieldByName("idEND_DATE", this.aSmartForms);
+				if (oEndDate) {
+					bValid = oEndDate.getContent().getMinDate() > sNewDate;
+					sOperationCheckMsg = this.getView().getModel("i18n").getResourceBundle().getText("ymsg.oprValidEndDate");
+				}
+			}
+			if (result) {
+				this.showMessageToast(sMsg);
+				this.getModel().resetChanges();
+				return;
+			} else if (bValid) {
+				this.showMessageToast(sOperationCheckMsg);
+				this.getModel().resetChanges();
+			}
+		},
+		/**
+		 * Function for updating Visible Horizon 
+		 * For Graphic Planning Gantt Chart
+		 */
+		updatePlanningGanttHorizon: function () {
+			var oPlanningGanttChartTable = this.getView().byId("idPlanningGanttChartTable"),
+				oVisibleHorizon = {};
+
+			var fFetchCurrentVisibleHorizon = function () {
+				var oCurrentVisibleHorizon = this._axisTime && this._axisTime.getVisibleHorizon();
+				oVisibleHorizon.startTime = oCurrentVisibleHorizon && oCurrentVisibleHorizon.getStartTime();
+				oVisibleHorizon.endTime = oCurrentVisibleHorizon && oCurrentVisibleHorizon.getEndTime();
+				if (this.oViewModel) {
+					this.oViewModel.setProperty("/PlanningGanttChartVisibleHorizon", oVisibleHorizon);
+				}
+			};
+
+			if (oPlanningGanttChartTable) {
+				oPlanningGanttChartTable.attachShapeDrop(fFetchCurrentVisibleHorizon.bind(this));
+				oPlanningGanttChartTable.attachShapeDoubleClick(fFetchCurrentVisibleHorizon.bind(this));
+				oPlanningGanttChartTable.attachShapeResize(fFetchCurrentVisibleHorizon.bind(this));
+			}
+		},
+		/**
+		 * Function for resetting Visible Horizon 
+		 * For Graphic Planning Gantt Chart
+		 */
+		applyCursorPosition: function () {
+			var oDropShapeVisibleHorizon = this.oViewModel.getProperty("/PlanningGanttChartVisibleHorizon"),
+				oTimeHorizonObject = this.getTimeHorizonObject(oDropShapeVisibleHorizon);
+			if (oDropShapeVisibleHorizon) {
+				this._axisTime.setVisibleHorizon(oTimeHorizonObject);
+			}
+		},
+
+		/**
+		 * Function for Visible Horizon DateTime Formatting
+		 * For Graphic Planning Gantt Chart
+		*/
+		getTimeHorizonObject: function (oDateTimeObject) {
+			return new TimeHorizon(oDateTimeObject);
+		},
+
 		/* =========================================================== */
 		/* public methods                                              */
 		/* =========================================================== */
@@ -900,8 +1012,8 @@ sap.ui.define([
 					}
 					this._resetGlobalValues(); //Called to reset all the global values
 					this._rebindPage();
-					this._loadUtilizationGantt();
-					this._loadGanttData();
+					this._loadUtilizationGantt(true);
+					this._loadGanttData(true);
 				}
 			}
 		},
@@ -1082,30 +1194,42 @@ sap.ui.define([
 			this.oGanttModel.setData(deepClone(this.oOriginData));
 		},
 
-		/**
+		/*
 		 * Load the tree data and process the data as child nodes
-		 **/
-		_loadGanttData: function () {
-			this._initialiseGanttModel();
+		 * @param bFirstTime - To Check whether Graphic Planning is loading for first time
+		 */
+		_loadGanttData: function (bFirstTime) {
+			//Initialsing GanttModel only for the first time
+			if (typeof(bFirstTime) === "boolean") {
+				this._initialiseGanttModel();
+			}
 			this.GanttActions._createGanttHorizon(this._axisTime, this._oContext);
-			this._getGanttData(0)
+			this._getGanttData([0, bFirstTime])
 				.then(this._getGanttData.bind(this))
 				.then(function () {
 					//backup original data
 					this.oOriginData = deepClone(this.oGanttModel.getProperty("/"));
 					this.iNumberOfLines = this._countLineItems(this.oOriginData);
 					this.getModel("viewModel").setProperty("/ganttSettings/busy", false);
-
 				}.bind(this));
 		},
 
 		/**
 		 * set filters and read data for Gantt
 		 * set result with deepClone to Json Model
-		 * @param {object} iLevel - level of hierarchy if Gantt tree
+		 * @param [aParams] 
 		 * @returns {Promise}
-		 **/
-		_getGanttData: function (iLevel) {
+		 */
+		_getGanttData: function (aParams) {
+			var iLevel, bIsShapeRefresh;
+			if (aParams instanceof Array) {
+				iLevel = aParams[0];
+				if (typeof(aParams[1]) === "string") {
+					bIsShapeRefresh = true;
+				}
+			} else {
+				iLevel = aParams;
+			}
 			this.getModel("viewModel").setProperty("/ganttSettings/busy", true);
 			return new Promise(function (resolve) {
 				var sEntitySet = "/GanttHierarchySet",
@@ -1137,11 +1261,16 @@ sap.ui.define([
 				//is also very fast with expands
 				this.getOwnerComponent().readData(sEntitySet, aFilters, mParams).then(function (oData) {
 					if (iLevel > 0) {
-						this._addChildrenToParent(iLevel, oData.results);
+						this._addChildrenToParent(iLevel, oData.results, bIsShapeRefresh);
 					} else {
+						if (bIsShapeRefresh) {
+							// for the nodes to be refreshed clear children
+							this.oGanttModel.setProperty("/data/childrenNew", oData.results);
+						} 
 						this.oGanttModel.setProperty("/data/children", oData.results);
+						this.applyCursorPosition();
 					}
-					resolve(iLevel + 1);
+					resolve(iLevel + 1, bIsShapeRefresh);
 				}.bind(this));
 			}.bind(this));
 
@@ -1151,9 +1280,14 @@ sap.ui.define([
 		 * when data was loaded then children needs added to right parent node
 		 * @param iLevel
 		 * @param oChildData
+		 * @param bIsShapeRefresh
 		 */
-		_addChildrenToParent: function (iLevel, oChildData) {
+		_addChildrenToParent: function (iLevel, oChildData, bIsShapeRefresh) {
 			var aChildren = this.oGanttModel.getProperty("/data/children");
+			if (bIsShapeRefresh) {
+				aChildren = this.oGanttModel.getProperty("/data/childrenNew");
+				this.oGanttModel.setProperty("/data/children", aChildren);
+			}
 			var callbackFn = function (oItem) {
 				oItem.children = [];
 				oChildData.forEach(function (oResItem) {
@@ -1213,41 +1347,45 @@ sap.ui.define([
 
 			MessageBox.confirm(
 				sFinalMessage, {
-					//details: typeof (sFinalMessage) === "string" ? sFinalMessage.replace(/\n/g, "<br/>") : sFinalMessage,
-					styleClass: this.getOwnerComponent().getContentDensityClass(),
-					actions: [MessageBox.Action.YES, MessageBox.Action.CANCEL],
-					onClose: function (oAction) {
-						if (oAction === "YES") {
-							var sPath = this._oContext.getPath();
-							this.getModel().setProperty(sPath + "/FUNCTION", this.sFunctionKey);
-							this.getModel().setProperty(sPath + "/SKIP_ERROR_ENTRY", "X");
-							this.saveChangesMain({
-								state: "success",
-								isCreate: false
-							}, this._afterUpdateStatus.bind(this), this._errorCallBackForPlanHeaderSet.bind(this));
-						}
+				//details: typeof (sFinalMessage) === "string" ? sFinalMessage.replace(/\n/g, "<br/>") : sFinalMessage,
+				styleClass: this.getOwnerComponent().getContentDensityClass(),
+				actions: [MessageBox.Action.YES, MessageBox.Action.CANCEL],
+				onClose: function (oAction) {
+					if (oAction === "YES") {
+						var sPath = this._oContext.getPath();
+						this.getModel().setProperty(sPath + "/FUNCTION", this.sFunctionKey);
+						this.getModel().setProperty(sPath + "/SKIP_ERROR_ENTRY", "X");
+						this.saveChangesMain({
+							state: "success",
+							isCreate: false
+						}, this._afterUpdateStatus.bind(this), this._errorCallBackForPlanHeaderSet.bind(this));
+					}
 
-					}.bind(this)
-				}
+				}.bind(this)
+			}
 			);
 		},
 
-		/**
+		/*
 		 * Loading Utilization Gantt Chart
-		 **/
-		_loadUtilizationGantt: function () {
+		 * @param bFirstTime
+		 */
+		_loadUtilizationGantt: function (bFirstTime) {
 			if (this._UtilizationSelectView) {
+				if (typeof(bFirstTime) !== "boolean") {
+					bFirstTime = true;
+				}
 				var sKey = this._UtilizationSelectView.getSelectedKey();
 				this._setUtilizationGanttFilter(sKey);
-				this.GanttActions._createUtilizationGanttHorizon(this._UtilizationAxisTime, this._oContext, sKey);
+				this.GanttActions._createUtilizationGanttHorizon(this._UtilizationAxisTime, this._oContext, sKey, bFirstTime);
 			}
 		},
 
-		/**
+		/*
 		 * Refresh detail header forcefully
 		 */
 		_refrshDetailHeader: function () {
-			this.getOwnerComponent().readData(this._oContext.getPath()).then(function (){
+			this.getOwnerComponent().readData(this._oContext.getPath()).then(function () {
 				//Refreshing Status Dropdown
 				this._rebindPage();
 			}.bind(this));
@@ -1361,6 +1499,7 @@ sap.ui.define([
 			});
 			return aResults;
 		},
+
 	});
 
 });

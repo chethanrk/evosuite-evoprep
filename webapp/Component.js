@@ -271,11 +271,12 @@ sap.ui.define([
 		 * Read from oData model service url with filters
 		 * returns promise
 		 */
-		readData: function (sUri, aFilters, mUrlParams) {
+		readData: function (sUri, aFilters, mUrlParams, sGroupId) {
 			return new Promise(function (resolve, reject) {
 				this.getModel().read(sUri, {
 					filters: aFilters,
 					urlParameters: mUrlParams || {},
+					groupId : sGroupId || "",
 					success: function (oData) {
 						resolve(oData);
 					},

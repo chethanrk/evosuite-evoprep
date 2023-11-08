@@ -10,7 +10,7 @@
 					<f:header>
 						<f:DynamicPageHeader pinnable="true">
 							<f:content>
-								<smartFilterBar:SmartFilterBar id="idPlanListFragSmartFilterBar" entitySet="PlanHeaderSet" useDateRangeType="true">
+								<smartFilterBar:SmartFilterBar id="idPlanListFragSmartFilterBar" entitySet="PlanHeaderSet" useDateRangeType="true" liveMode="true">
 									<!-- layout data used to make the table growing but the filter bar fixed -->
 									<smartFilterBar:layoutData>
 										<FlexItemData shrinkFactor="0"/>

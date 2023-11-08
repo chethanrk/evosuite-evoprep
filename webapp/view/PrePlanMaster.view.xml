@@ -8,7 +8,7 @@
 				<f:content>
 					<core:ExtensionPoint name="PageExtP|PrePlanMaster|PlanHeaderSet|Head"/>
 					<smartFilterBar:SmartFilterBar id="idPagePrePlanSmartFilterBar" entitySet="PlanHeaderSet" useDateRangeType="true"
-						persistencyKey="com.evorait.evosuite.evoprep.PrePlanFilterbar" initialized="onInitializedSmartVariant">
+						persistencyKey="com.evorait.evosuite.evoprep.PrePlanFilterbar" initialized="onInitializedSmartVariant" liveMode="true">
 						<!-- layout data used to make the table growing but the filter bar fixed -->
 						<smartFilterBar:layoutData>
 							<FlexItemData shrinkFactor="0"/>

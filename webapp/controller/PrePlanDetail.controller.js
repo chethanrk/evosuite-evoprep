@@ -550,7 +550,8 @@ sap.ui.define([
 		 */
 		onPressUtilizationGanttFullScreen: function (oEvent) {
 			var oSource = oEvent.getSource(),
-				oViewModel = this.getModel("viewModel");
+				oViewModel = this.getModel("viewModel"),
+				sKey = this._UtilizationSelectView.getSelectedKey();
 			if (oSource.getIcon() === "sap-icon://full-screen") {
 				oViewModel.setProperty("/layout", library.LayoutType.MidColumnFullScreen);
 				oViewModel.setProperty("/ganttUtilizationFullMode", true);
@@ -573,6 +574,12 @@ sap.ui.define([
 				this._utilizationGanttContainer.setHeight("300px");
 			}
 			oViewModel.setProperty("/ganttUtilization/ganttSelectionPane", "30%");
+
+			//To create GanttHorizon again when switched to fullscreen mode.
+			//setTimeout method is used because switching to full screen mode takes little bit of time, an we dont have any event to handle it.
+			setTimeout(function(){
+				this.GanttActions._createUtilizationGanttHorizon(this._UtilizationAxisTime, this._oContext, sKey);
+			}.bind(this),900);
 		},
 
 		/*On Press of Shape Double Click in Utilization Gantt Chart

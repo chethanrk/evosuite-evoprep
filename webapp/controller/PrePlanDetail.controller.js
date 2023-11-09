@@ -577,7 +577,7 @@ sap.ui.define([
 
 			setTimeout(function(){
 				this.GanttActions._createUtilizationGanttHorizon(this._UtilizationAxisTime, this._oContext, sKey);
-			}.bind(this),1000);
+			}.bind(this),900);
 		},
 
 		/*On Press of Shape Double Click in Utilization Gantt Chart

@@ -350,13 +350,16 @@ sap.ui.define([
 		 * @param sField
 		 * @returns {string}
 		 */
-		formatLogValues: function (sThen, sOldVal, sNow, sNewVal, sField) {
+		formatLogValues: function (sThen, sOldVal, sNow, sNewVal, sField, sDatePattern, sTimePattern, sTimePatternCode) {
 			if (sField.indexOf('DATE') !== -1) {
-				sOldVal = sOldVal ? moment(sOldVal, 'YYYYMMDD').format('MMMM DD, YYYY') : sOldVal;
-				sNewVal = sNewVal ? moment(sNewVal, 'YYYYMMDD').format('MMMM DD, YYYY') : sNewVal;
+				sOldVal = sOldVal ? moment(sOldVal, 'YYYYMMDD').format(sDatePattern.toUpperCase()) : sOldVal;
+				sNewVal = sNewVal ? moment(sNewVal, 'YYYYMMDD').format(sDatePattern.toUpperCase()) : sNewVal;
 			} else if (sField.indexOf('TIME') !== -1) {
-				sOldVal = sOldVal ? moment(sOldVal, 'HHmmss').format('HH:mm:ss') : sOldVal;
-				sNewVal = sNewVal ? moment(sNewVal, 'HHmmss').format('HH:mm:ss') : sNewVal;
+				sOldVal = sOldVal ? moment(sOldVal, 'HHmmss').format(sTimePattern) : sOldVal;
+				sNewVal = sNewVal ? moment(sNewVal, 'HHmmss').format(sTimePattern) : sNewVal;
+
+				sOldVal = (sTimePatternCode === "1" || sTimePatternCode === "3") ? sOldVal.toUpperCase() : sOldVal.toLowerCase();
+				sNewVal = (sTimePatternCode === "1" || sTimePatternCode === "3") ? sNewVal.toUpperCase() : sNewVal.toLowerCase();
 			}
 			return sThen + ' ' + sOldVal + '\n' + sNow + ' ' + sNewVal;
 		},

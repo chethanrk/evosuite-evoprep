@@ -1008,7 +1008,7 @@ sap.ui.define([
 			//To create GanttHorizon again when switched to fullscreen mode.
 			//setTimeout method is used because switching to full screen mode takes little bit of time, an we dont have any event to handle it.
 			setTimeout(function(){
-				this.GanttActions._createUtilizationGanttHorizon(this._UtilizationAxisTime, this._oContext, sKey), true;
+				this.GanttActions._createUtilizationGanttHorizon(this._UtilizationAxisTime, this._oContext, sKey, true);
 			}.bind(this),900);
 		},
 

@@ -190,6 +190,11 @@ sap.ui.define([
 					public: true,
 					final: false,
 					overrideExecution: OverrideExecution.Instead
+				},
+				onPressFullScreen: {
+					public: true,
+					final: false,
+					overrideExecution: OverrideExecution.Instead
 				}
 			}
 		},
@@ -542,7 +547,7 @@ sap.ui.define([
 		 */
 		onUtilizationSelectionChange: function () {
 			this.oViewModel.setProperty("/ganttUtilization/bDefaultUtilizationCall", true);
-			this._loadUtilizationGantt(false);
+			this._loadUtilizationGantt(true);
 		},
 
 		/*On Press of Full Screen Button in Utilization Gantt Chart
@@ -578,7 +583,7 @@ sap.ui.define([
 			//To create GanttHorizon again when switched to fullscreen mode.
 			//setTimeout method is used because switching to full screen mode takes little bit of time, an we dont have any event to handle it.
 			setTimeout(function(){
-				this.GanttActions._createUtilizationGanttHorizon(this._UtilizationAxisTime, this._oContext, sKey);
+				this.GanttActions._createUtilizationGanttHorizon(this._UtilizationAxisTime, this._oContext, sKey, true);
 			}.bind(this),900);
 		},
 
@@ -991,6 +996,20 @@ sap.ui.define([
 		*/
 		getTimeHorizonObject: function (oDateTimeObject) {
 			return new TimeHorizon(oDateTimeObject);
+		},
+
+		/**
+		 * handle detail page full scrren
+		 * validate based on the icon pressed
+		 */
+		onPressFullScreen: function (oEvent) {
+			BaseController.prototype.onPressFullScreen.apply(this, arguments);
+			var sKey = this._UtilizationSelectView.getSelectedKey();
+			//To create GanttHorizon again when switched to fullscreen mode.
+			//setTimeout method is used because switching to full screen mode takes little bit of time, an we dont have any event to handle it.
+			setTimeout(function(){
+				this.GanttActions._createUtilizationGanttHorizon(this._UtilizationAxisTime, this._oContext, sKey), true;
+			}.bind(this),900);
 		},
 
 		/* =========================================================== */

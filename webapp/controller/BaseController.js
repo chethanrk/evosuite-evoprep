@@ -101,7 +101,8 @@ sap.ui.define([
 				},
 				onPressFullScreen: {
 					public: true,
-					final: true
+					final: false,
+					overrideExecution: OverrideExecution.after
 				},
 				onPressClose: {
 					public: true,

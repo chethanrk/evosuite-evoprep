@@ -264,6 +264,8 @@ sap.ui.define([
 				var oNewEntryContext = new sap.ui.model.Context(this.getModel(), "/PlanHeaderSet('" + oResponse.ObjectKey +
 					"')");
 				this.getView().getModel().deleteCreatedEntry(oNewEntryContext);
+				this.refreshPlanList();
+				this.refreshOperationList();
 				this._showSuccessMessage(oResponse);
 			}
 		},

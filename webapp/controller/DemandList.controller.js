@@ -110,12 +110,23 @@ sap.ui.define([
 		 */
 		onInit: function () {
 			OperationTableController.prototype.onInit.apply(this, arguments);
+			this.eventBus = sap.ui.getCore().getEventBus();
 			this.oSmartTable = this.getView().byId("demandListSmartTable");
 			this.oTable = this.oSmartTable.getTable();
 
 			this.oCreateModel = this.getModel("CreateModel");
 
 			this.oViewModel.setProperty("/busy", false);
+			
+			this.eventBus.subscribe("DemandList", "rebindOperationList", this._rebindOperationList, this);
+		},
+
+		/**
+		 * Called when a controller is destroyed 
+		 * @memberOf com.evorait.evosuite.evoprep.view.DemandList
+		 */
+		onExit: function () {
+			this.eventBus.unsubscribe("DemandList", "rebindOperationList", this._rebindOperationList, this);
 		},
 
 		/* =========================================================== */
@@ -527,6 +538,13 @@ sap.ui.define([
 		 */
 		_addExistingError: function () {
 			this.getModel().resetChanges();
+		},
+
+		/**
+		 * EventBus - Refresh Operation List
+		 */
+		_rebindOperationList: function (sChannel, sEvent, oData){
+			this.oSmartTable.rebindTable();
 		}
 
 	});

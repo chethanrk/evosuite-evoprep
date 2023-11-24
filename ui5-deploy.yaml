@@ -20,6 +20,6 @@ builder:
           name: /EVORA/EPP_UI5
           description: EvoPrep Deployment
           package: /EVORA/EPP_UI_UI5
-          transport: ED1K920304
+          transport: ED1K921232
         exclude:
           - /test/

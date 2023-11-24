@@ -1300,6 +1300,15 @@ sap.ui.define([
 			eventBus.publish("RefreshEvoPrepPlanList", "planlistrefresh");
 		},
 
+		/**
+		 * Refresh Operation list forcefully
+		 * Trigger event bus
+		 */
+		refreshOperationList: function () {
+			var eventBus = sap.ui.getCore().getEventBus();
+			eventBus.publish("DemandList", "rebindOperationList");
+		},
+
 		/* =========================================================== */
 		/* Private methods                                              */
 		/* =========================================================== */

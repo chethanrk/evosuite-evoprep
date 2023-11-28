@@ -860,7 +860,6 @@ sap.ui.define([
 						if (mParams.isDelete) {
 							this._deleteCreatedLocalDeleteEntry(mParams);
 						}
-						this.getModel().resetChanges();
 					}.bind(this),
 					error: function (oError) {
 						this.getModel().resetChanges();
@@ -1356,7 +1355,7 @@ sap.ui.define([
 					}
 				}.bind(this));
 			}
-
+			this.getModel().resetChanges();
 		},
 
 		/**

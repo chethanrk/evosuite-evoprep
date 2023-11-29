@@ -322,6 +322,8 @@ sap.ui.define([
 			this.showMessageToast(this.getResourceBundle().getText("msg.saveSuccess"));
 			this.resetDeferredGroupToChanges(this.getView());
 			this.refreshGantChartData(this.getModel("viewModel"));
+			this.refreshPlanList();
+			this.refreshOperationList();
 		},
 
 		/**

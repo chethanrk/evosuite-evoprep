@@ -526,10 +526,15 @@ sap.ui.define([
 					this.getOwnerComponent().readData(this.selectedPlanObject.getPath());
 					this.navToDetail(this.selectedPlanObject.getProperty("ObjectKey"));
 					this.selectedPlanObject = null;
+					this.refreshPlanList();
+					this.refreshOperationList();
 				}
 			};
 
-			var cancelCallback = function () {};
+			var cancelCallback = function () {
+				this.refreshPlanList();
+				this.refreshOperationList();
+			};
 			this.showConfirmDialog(sTitle, sMsg, successcallback.bind(this), cancelCallback.bind(this));
 		},
 

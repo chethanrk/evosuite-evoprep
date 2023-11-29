@@ -1033,13 +1033,12 @@ sap.ui.define([
 				sMsg;
 
 			var fnContinueCallBack = function () {
-				if (oTable) {
-					oTable.rebindTable();
-				}
+				this.refreshPlanList();
 			};
 
 			var fnPlanDetailCallBack = function (oData) {
 				this.navToDetail(newPlanGuid);
+				this.refreshPlanList();
 			};
 
 			var callBackFunction = function (oData) {

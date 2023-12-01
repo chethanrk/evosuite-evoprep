@@ -170,18 +170,18 @@ sap.ui.define([
 					iZoomLevel = 6;
 				}
 				if (bFirstTime) {
-					oAxisTimeStrategy.setVisibleHorizon(new sap.gantt.config.TimeHorizon({
-						startTime: oHorizonDates.visibleHorizon.startDate,
-						endTime: oHorizonDates.visibleHorizon.endDate
-					}));
 					oAxisTimeStrategy.setTotalHorizon(new sap.gantt.config.TimeHorizon({
 						startTime: oHorizonDates.totalHorizon.startDate,
 						endTime: oHorizonDates.totalHorizon.endDate
 					}));
+					oAxisTimeStrategy.setZoomLevel(iZoomLevel);
+					oAxisTimeStrategy.setTimeLineOption(formatter.getTimeLineOptions(sKey));
+					oAxisTimeStrategy.rerender();
+					oAxisTimeStrategy.setVisibleHorizon(new sap.gantt.config.TimeHorizon({
+						startTime: oHorizonDates.visibleHorizon.startDate,
+						endTime: oHorizonDates.visibleHorizon.endDate
+					}));
 				}
-				oAxisTimeStrategy.setZoomLevel(iZoomLevel);
-				oAxisTimeStrategy.setTimeLineOption(formatter.getTimeLineOptions(sKey));
-				oAxisTimeStrategy.rerender();
 			}
 		},
 

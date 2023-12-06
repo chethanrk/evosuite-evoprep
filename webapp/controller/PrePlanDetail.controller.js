@@ -1188,6 +1188,12 @@ sap.ui.define([
 			this.refreshGantChartData(this.getModel("viewModel"));
 			this.refreshPlanList();
 			this._clearData();
+
+			//After save resetting Utilization Gantt Chart
+			//setTimeout method is used because switching to full screen mode takes little bit of time, an we dont have any event to handle it.
+			setTimeout(function(){
+				this.GanttActions._createUtilizationGanttHorizon(this._UtilizationAxisTime, this._oContext, this._UtilizationSelectView.getSelectedKey(), true);
+			}.bind(this),900);
 		},
 
 		/*

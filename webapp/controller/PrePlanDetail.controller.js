@@ -274,6 +274,7 @@ sap.ui.define([
 			this.oViewModel.setProperty("/editMode", false);
 			this.oViewModel.setProperty("/layout", library.LayoutType.MidColumnFullScreen);
 			this.oViewModel.setProperty("/fullscreen", false);
+			this._resetGanttWithSetTimeout();
 		},
 
 		/*On Press of Header Edit Button

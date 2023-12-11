@@ -274,6 +274,7 @@ sap.ui.define([
 			this.oViewModel.setProperty("/editMode", false);
 			this.oViewModel.setProperty("/layout", library.LayoutType.MidColumnFullScreen);
 			this.oViewModel.setProperty("/fullscreen", false);
+			this._resetGanttWithSetTimeout();
 		},
 
 		/*On Press of Header Edit Button
@@ -303,6 +304,7 @@ sap.ui.define([
 				oEvent.getSource().getParent().getParent().getParent().getParent().removeStyleClass("sapUxAPObjectPageSubSectionFitContainer");
 				this._planningGanttContainer.setHeight("500px");
 			}
+			this._resetGanttWithSetTimeout();
 		},
 
 		/**
@@ -579,12 +581,7 @@ sap.ui.define([
 				this._utilizationGanttContainer.setHeight("300px");
 			}
 			oViewModel.setProperty("/ganttUtilization/ganttSelectionPane", "30%");
-
-			//To create GanttHorizon again when switched to fullscreen mode.
-			//setTimeout method is used because switching to full screen mode takes little bit of time, an we dont have any event to handle it.
-			setTimeout(function(){
-				this.GanttActions._createUtilizationGanttHorizon(this._UtilizationAxisTime, this._oContext, sKey, true);
-			}.bind(this),900);
+			this._resetGanttWithSetTimeout();
 		},
 
 		/*On Press of Shape Double Click in Utilization Gantt Chart
@@ -1003,13 +1000,8 @@ sap.ui.define([
 		 * validate based on the icon pressed
 		 */
 		onPressFullScreen: function (oEvent) {
-			BaseController.prototype.onPressFullScreen.apply(this, arguments);
-			var sKey = this._UtilizationSelectView.getSelectedKey();
-			//To create GanttHorizon again when switched to fullscreen mode.
-			//setTimeout method is used because switching to full screen mode takes little bit of time, an we dont have any event to handle it.
-			setTimeout(function(){
-				this.GanttActions._createUtilizationGanttHorizon(this._UtilizationAxisTime, this._oContext, sKey, true);
-			}.bind(this),900);
+			BaseController.prototype.onPressFullScreen.apply(this, arguments);			
+			this._resetGanttWithSetTimeout();
 		},
 
 		/* =========================================================== */
@@ -1201,6 +1193,7 @@ sap.ui.define([
 			this.oViewModel.setProperty("/fullscreen", true);
 			this.oViewModel.setProperty("/bDependencyCall", true);
 			this.oViewModel.setProperty("/ganttSettings/bUtilizationCall", true);
+			this._resetGanttWithSetTimeout();
 		},
 
 		/**
@@ -1525,6 +1518,16 @@ sap.ui.define([
 			});
 			return aResults;
 		},
+		/**
+		 * This method will reset Plannig and Utilization gantt
+		 * setTimeout method is added because some of the function like switching to fullscreen mode take some time and we don't have any event for this
+		 */
+		_resetGanttWithSetTimeout: function(){
+			setTimeout(function(){
+				this.GanttActions._createUtilizationGanttHorizon(this._UtilizationAxisTime, this._oContext, this._UtilizationSelectView.getSelectedKey(), true);				
+				this.GanttActions._createGanttHorizon(this._axisTime, this._oContext);
+			}.bind(this),900);
+		}
 
 	});
 

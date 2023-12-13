@@ -203,8 +203,9 @@ sap.ui.define([
 				sTotalStartDate = sStartDate;
 				sTotalEndDate = sEndDate;
 			}
-			sTotalStartDate = moment(sTotalStartDate).startOf("day").subtract(1, "day").toDate();
-			sTotalEndDate = moment(sTotalEndDate).endOf("day").add(1, "day").toDate();
+			//5 day buffer added for the total horizon because some time we see gantt scrolling issue, and all data is not visible
+			sTotalStartDate = moment(sTotalStartDate).startOf("day").subtract(5, "day").toDate();
+			sTotalEndDate = moment(sTotalEndDate).endOf("day").add(5, "day").toDate();
 
 			var oHorizonDates = {
 				visibleHorizon: {

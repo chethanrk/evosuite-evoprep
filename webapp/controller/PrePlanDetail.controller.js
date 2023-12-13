@@ -1407,6 +1407,7 @@ sap.ui.define([
 			this.getOwnerComponent().readData(this._oContext.getPath()).then(function () {
 				//Refreshing Status Dropdown
 				this._rebindPage();
+				this._resetGanttWithSetTimeout();
 			}.bind(this));
 		},
 

@@ -203,8 +203,8 @@ sap.ui.define([
 				sTotalStartDate = sStartDate;
 				sTotalEndDate = sEndDate;
 			}
-			sTotalStartDate = moment(sTotalStartDate).startOf("day").subtract(1, "day").toDate();
-			sTotalEndDate = moment(sTotalEndDate).endOf("day").add(1, "day").toDate();
+			sTotalStartDate = moment(sTotalStartDate).startOf("day").subtract(5, "day").toDate();
+			sTotalEndDate = moment(sTotalEndDate).endOf("day").add(5, "day").toDate();
 
 			var oHorizonDates = {
 				visibleHorizon: {

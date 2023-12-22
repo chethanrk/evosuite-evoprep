@@ -832,8 +832,6 @@ sap.ui.define([
 		onPressHeaderReload: function () {
 			var eventBus = sap.ui.getCore().getEventBus();
 			eventBus.publish("PrePlanDetail","refreshPlanDetail");
-			// this.refreshGantChartData(this.oViewModel);
-			// this.resetDeferredGroupToChanges(this.getView());
 		},
 		/**
 		 * Method called on the press of material refresh button on the 

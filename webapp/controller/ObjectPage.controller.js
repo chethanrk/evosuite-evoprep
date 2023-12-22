@@ -345,6 +345,9 @@ sap.ui.define([
 			}.bind(this));
 		},
 
+		/**
+		 * This is a event bus method to refresh the compare plan page
+		 */
 		_refreshComparePlanPage: function(){
 			this._setPrePlanComparePageInfo(this.sRouteName, this.oArgs);
 		}

@@ -1311,6 +1311,11 @@ sap.ui.define([
 			var eventBus = sap.ui.getCore().getEventBus();
 			eventBus.publish("PrePlanDetail", "refreshPlanDetail");
 		},
+
+		refreshComparePlan: function(){
+			var eventBus = sap.ui.getCore().getEventBus();
+			eventBus.publish("ObjectPage", "refreshComparePlanPage");
+		},
 		
 		onRefreshPress: function(){
 			var sCurrentView = this.getView().getModel("viewModel").getProperty("/sCurrentView");
@@ -1321,6 +1326,8 @@ sap.ui.define([
 				this.refreshPlanDetail();
 			}else if (sCurrentView === "demandList"){
 				this.refreshOperationList();
+			}else if(sCurrentView === "PrePlanCompare"){
+				this.refreshComparePlan();
 			}
 		},
 

@@ -73,7 +73,10 @@ sap.ui.define([
 
 			this.getRouter().attachRouteMatched(this._routeMatched, this);
 		},
-
+		/**
+		 * Method trigers on every routing and navigation
+		 * @param {object} oEvent - object will hold the current route informtation
+		 */
 		_routeMatched: function(oEvent){
 			if (oEvent.getParameter("name") === "PrePlanMaster");{
 				this.oViewModel.setProperty("/sCurrentView", oEvent.getParameter("name"));

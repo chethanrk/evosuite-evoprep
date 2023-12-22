@@ -84,6 +84,7 @@ sap.ui.define([
 				//get template and create views
 				this.insertTemplateFragment(sPath, sViewName, "ObjectPageWrapper", this._afterBindSuccess.bind(this));
 			}.bind(this));
+			this.oViewModel.setProperty("/sCurrentView", sViewName);
 		},
 
 		_afterBindSuccess: function () {

@@ -119,6 +119,13 @@ sap.ui.define([
 			this.oViewModel.setProperty("/busy", false);
 			
 			this.eventBus.subscribe("DemandList", "rebindOperationList", this._rebindOperationList, this);
+			this.getRouter().attachRouteMatched(this._routeMatched, this);
+		},
+
+		_routeMatched: function(oEvent){
+			if (oEvent.getParameter("name") === "demandList");{
+				this.oViewModel.setProperty("/sCurrentView", oEvent.getParameter("name"));
+			}
 		},
 
 		/**

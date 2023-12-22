@@ -1307,6 +1307,23 @@ sap.ui.define([
 			eventBus.publish("DemandList", "rebindOperationList");
 		},
 
+		refreshPlanDetail: function(){
+			var eventBus = sap.ui.getCore().getEventBus();
+			eventBus.publish("PrePlanDetail", "refreshPlanDetail");
+		},
+		
+		onRefreshPress: function(){
+			var sCurrentView = this.getView().getModel("viewModel").getProperty("/sCurrentView");
+			if (sCurrentView === "PrePlanMaster"){
+				this.refreshPlanList();
+			}else if (sCurrentView === "PrePlanDetail"){
+				this.refreshPlanList();
+				this.refreshPlanDetail();
+			}else if (sCurrentView === "demandList"){
+				this.refreshOperationList();
+			}
+		},
+
 		/* =========================================================== */
 		/* Private methods                                              */
 		/* =========================================================== */

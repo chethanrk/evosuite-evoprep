@@ -1307,6 +1307,42 @@ sap.ui.define([
 			eventBus.publish("DemandList", "rebindOperationList");
 		},
 
+		/**
+		 * RefreshPlan detail page
+		 * Trigger event bus
+		 */
+		refreshPlanDetail: function(){
+			var eventBus = sap.ui.getCore().getEventBus();
+			eventBus.publish("PrePlanDetail", "refreshPlanDetail");
+		},
+
+		/**
+		 * Refresh Compare Plan Page
+		 * Trigger event bus
+		 */
+		refreshComparePlan: function(){
+			var eventBus = sap.ui.getCore().getEventBus();
+			eventBus.publish("ObjectPage", "refreshComparePlanPage");
+		},
+		
+		 /**
+		 * Called when refresh button on application header pressed.
+		 * Based on the view, methods are called to refresh the current page
+		 */
+		onRefreshPress: function(){
+			var sCurrentView = this.getView().getModel("viewModel").getProperty("/sCurrentView");
+			if (sCurrentView === "PrePlanMaster"){
+				this.refreshPlanList();
+			}else if (sCurrentView === "PrePlanDetail"){
+				this.refreshPlanList();
+				this.refreshPlanDetail();
+			}else if (sCurrentView === "demandList"){
+				this.refreshOperationList();
+			}else if(sCurrentView === "PrePlanCompare"){
+				this.refreshComparePlan();
+			}
+		},
+
 		/* =========================================================== */
 		/* Private methods                                              */
 		/* =========================================================== */

@@ -118,7 +118,8 @@ sap.ui.define([
 				sDatePattern: "",
 				sDateTimePattern: "",
 				sTimePattern: "",
-				sTimePatternCode: ""
+				sTimePatternCode: "",
+				sCurrentView:""
 			};
 
 			//GetSystemInformation Call

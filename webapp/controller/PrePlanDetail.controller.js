@@ -218,6 +218,7 @@ sap.ui.define([
 			eventBus.subscribe("BaseController", "refreshUtilizationGantt", this._loadUtilizationGantt, this);
 			eventBus.subscribe("RefreshEvoPrepDetailHeader", "refreshDetailHeader", this._refrshDetailHeader, this);
 			eventBus.subscribe("GanttChart", "applyFiltersFromOperations", this._fnFiltersOnGraphic, this);
+			eventBus.subscribe("PrePlanDetail", "refreshPlanDetail", this._refreshPlanDetailPage, this);
 
 			//Initializing GanttActions.js
 			this.GanttActions = this.getOwnerComponent().GanttActions;
@@ -232,6 +233,17 @@ sap.ui.define([
 			this._UtilizationSelectView = this.getView().byId("idUtilizationSelect");
 
 			this.updatePlanningGanttHorizon();
+
+			this.getRouter().attachRouteMatched(this._routeMatched, this);
+		},
+		/**
+		 * Method trigers on every routing and navigation
+		 * @param {object} oEvent - object will hold the current route informtation
+		 */
+		_routeMatched: function(oEvent){
+			if (oEvent.getParameter("name") === "PrePlanDetail");{
+				this.oViewModel.setProperty("/sCurrentView", oEvent.getParameter("name"));
+			}
 		},
 		/**
 		 * Called when the View has been rendered (so its HTML is part of the document). Post-rendering manipulations of the HTML could be done here.
@@ -818,8 +830,8 @@ sap.ui.define([
 		 * Plan Detail page is refreshed
 		 */
 		onPressHeaderReload: function () {
-			this.refreshGantChartData(this.oViewModel);
-			this.resetDeferredGroupToChanges(this.getView());
+			var eventBus = sap.ui.getCore().getEventBus();
+			eventBus.publish("PrePlanDetail","refreshPlanDetail");
 		},
 		/**
 		 * Method called on the press of material refresh button on the 
@@ -1528,6 +1540,11 @@ sap.ui.define([
 				this.GanttActions._createUtilizationGanttHorizon(this._UtilizationAxisTime, this._oContext, this._UtilizationSelectView.getSelectedKey(), true);				
 				this.GanttActions._createGanttHorizon(this._axisTime, this._oContext);
 			}.bind(this),900);
+		},
+
+		_refreshPlanDetailPage: function(){
+			this.refreshGantChartData(this.oViewModel);
+			this.resetDeferredGroupToChanges(this.getView());
 		}
 
 	});

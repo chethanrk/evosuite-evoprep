@@ -27,6 +27,16 @@ sap.ui.define([
 		onInit: function () {
 			var oEventBus = sap.ui.getCore().getEventBus();
 			oEventBus.subscribe("ChangeLogs", "routeMatched", this._routeMatchedLogs, this);
+			this.oViewModel = this.getModel("viewModel");
+
+			this.getRouter().attachRouteMatched(this._routeMatched, this);
+		},
+		/**
+		 * Method trigers on every routing and navigation
+		 * @param {object} oEvent - object will hold the current route informtation
+		 */
+		_routeMatched: function(oEvent){
+			this.oViewModel.setProperty("/sCurrentView", oEvent.getParameter("name"));
 		},
 
 		/* =========================================================== */

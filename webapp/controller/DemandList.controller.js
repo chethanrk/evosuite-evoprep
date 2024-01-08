@@ -110,12 +110,33 @@ sap.ui.define([
 		 */
 		onInit: function () {
 			OperationTableController.prototype.onInit.apply(this, arguments);
+			this.eventBus = sap.ui.getCore().getEventBus();
 			this.oSmartTable = this.getView().byId("demandListSmartTable");
 			this.oTable = this.oSmartTable.getTable();
 
 			this.oCreateModel = this.getModel("CreateModel");
 
 			this.oViewModel.setProperty("/busy", false);
+			
+			this.eventBus.subscribe("DemandList", "rebindOperationList", this._rebindOperationList, this);
+			this.getRouter().attachRouteMatched(this._routeMatched, this);
+		},
+		/**
+		 * Method trigers on every routing and navigation
+		 * @param {object} oEvent - object will hold the current route informtation
+		 */
+		_routeMatched: function(oEvent){
+			if (oEvent.getParameter("name") === "demandList");{
+				this.oViewModel.setProperty("/sCurrentView", oEvent.getParameter("name"));
+			}
+		},
+
+		/**
+		 * Called when a controller is destroyed 
+		 * @memberOf com.evorait.evosuite.evoprep.view.DemandList
+		 */
+		onExit: function () {
+			this.eventBus.unsubscribe("DemandList", "rebindOperationList", this._rebindOperationList, this);
 		},
 
 		/* =========================================================== */
@@ -515,10 +536,15 @@ sap.ui.define([
 					this.getOwnerComponent().readData(this.selectedPlanObject.getPath());
 					this.navToDetail(this.selectedPlanObject.getProperty("ObjectKey"));
 					this.selectedPlanObject = null;
+					this.refreshPlanList();
+					this.refreshOperationList();
 				}
 			};
 
-			var cancelCallback = function () {};
+			var cancelCallback = function () {
+				this.refreshPlanList();
+				this.refreshOperationList();
+			};
 			this.showConfirmDialog(sTitle, sMsg, successcallback.bind(this), cancelCallback.bind(this));
 		},
 
@@ -527,6 +553,13 @@ sap.ui.define([
 		 */
 		_addExistingError: function () {
 			this.getModel().resetChanges();
+		},
+
+		/**
+		 * EventBus - Refresh Operation List
+		 */
+		_rebindOperationList: function (sChannel, sEvent, oData){
+			this.oSmartTable.rebindTable();
 		}
 
 	});

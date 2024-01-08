@@ -18,6 +18,9 @@ sap.ui.define([
 		},
 
 		oViewModel: null,
+		oEventBus: null,
+		sRouteName: null,
+		oArgs: null,
 
 		/* =========================================================== */
 		/* lifecycle methods                                           */
@@ -28,18 +31,20 @@ sap.ui.define([
 		 */
 		onInit: function () {
 			this.oViewModel = this.getModel("viewModel");
+			this.oEventBus = sap.ui.getCore().getEventBus();
 			if (!this.oViewModel.getProperty("/bObjectPageRouteMatchAttached")) {
 				this.getRouter().attachRouteMatched(function (oEvent) {
 					this.oViewModel.setProperty("/bObjectPageRouteMatchAttached", true);
-					var sRouteName = oEvent.getParameter("name"),
-						oArgs = oEvent.getParameter("arguments");
+					this.sRouteName = oEvent.getParameter("name");
+					this.oArgs = oEvent.getParameter("arguments");
 
-					if (this["_set" + sRouteName + "PageInfo"]) {
-						this["_set" + sRouteName + "PageInfo"](sRouteName, oArgs);
+					if (this["_set" + this.sRouteName + "PageInfo"]) {
+						this["_set" + this.sRouteName + "PageInfo"](this.sRouteName, this.oArgs);
 					}
-
+					this.oViewModel.setProperty("/sCurrentView", this.sRouteName);
 				}.bind(this));
 			}
+			this.oEventBus.subscribe("ObjectPage", "refreshComparePlanPage", this._refreshComparePlanPage, this);
 		},
 
 		/**
@@ -338,6 +343,13 @@ sap.ui.define([
 				});
 				this.getModel("compareModel").setProperty("/compareCollapsed", aData);
 			}.bind(this));
+		},
+
+		/**
+		 * This is a event bus method to refresh the compare plan page
+		 */
+		_refreshComparePlanPage: function(){
+			this._setPrePlanComparePageInfo(this.sRouteName, this.oArgs);
 		}
 	});
 });
